@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>みんなの日本語 Lesson 2</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', 'Zen Maru Gothic', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .presentation {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(10px, 3vw, 40px);
+        }
+        
+        .slide {
+            width: 100%;
+            max-width: 1200px;
+            min-height: calc(100vh - clamp(20px, 6vw, 80px));
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: clamp(15px, 2.5vw, 25px);
+            box-shadow: 
+                0 25px 80px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+            padding: clamp(20px, 4vw, 50px);
+            display: none;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe, #38ef7d, #feca57, #ff6b6b);
+            border-radius: 25px 25px 0 0;
+        }
+        
+        .slide.active {
+            display: flex;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .slide-header {
+            text-align: center;
+            margin-bottom: clamp(15px, 3vw, 30px);
+            flex-shrink: 0;
+        }
+        
+        .slide-header h1 {
+            font-size: clamp(26px, 5vw, 44px);
+            background: linear-gradient(135deg, #4facfe, #0f3460);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        
+        .slide-header h2 {
+            font-size: clamp(20px, 3.5vw, 32px);
+            color: #0f3460;
+            margin-bottom: clamp(5px, 1vw, 10px);
+            font-weight: 600;
+        }
+        
+        .slide-header .subtitle {
+            font-size: clamp(14px, 2vw, 18px);
+            color: #666;
+            font-weight: 400;
+        }
+        
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .grammar-box {
+            background: linear-gradient(135deg, #e8f4fc 0%, #e0f7fa 100%);
+            padding: clamp(18px, 3vw, 30px);
+            border-radius: clamp(12px, 1.5vw, 18px);
+            margin-bottom: clamp(12px, 2vw, 20px);
+            border-left: clamp(4px, 0.6vw, 6px) solid #4facfe;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .grammar-box h3 {
+            font-size: clamp(22px, 3.5vw, 34px);
+            color: #0f3460;
+            margin-bottom: clamp(10px, 1.5vw, 15px);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .grammar-box h3 .particle {
+            background: #4facfe;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.8em;
+        }
+        
+        .explanation {
+            font-size: clamp(14px, 2vw, 18px);
+            color: #444;
+            line-height: 1.8;
+            margin-bottom: clamp(12px, 2vw, 18px);
+        }
+        
+        .explanation strong {
+            color: #4facfe;
+        }
+        
+        .note-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+            margin: clamp(10px, 1.5vw, 15px) 0;
+            border-left: 4px solid #ffc107;
+            font-size: clamp(13px, 1.8vw, 16px);
+        }
+        
+        .note-box::before {
+            content: '📝 ';
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #ffe0e6 0%, #ffd1d9 100%);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+            margin: clamp(10px, 1.5vw, 15px) 0;
+            border-left: 4px solid #e94560;
+            font-size: clamp(13px, 1.8vw, 16px);
+        }
+        
+        .warning-box::before {
+            content: '⚠️ ';
+        }
+        
+        .tip-box {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+            margin: clamp(10px, 1.5vw, 15px) 0;
+            border-left: 4px solid #28a745;
+            font-size: clamp(13px, 1.8vw, 16px);
+        }
+        
+        .tip-box::before {
+            content: '💡 ';
+        }
+        
+        .examples {
+            background: white;
+            padding: clamp(15px, 2.5vw, 25px);
+            border-radius: 12px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .examples-title {
+            font-size: clamp(14px, 2vw, 18px);
+            color: #0f3460;
+            font-weight: 600;
+            margin-bottom: clamp(10px, 1.5vw, 15px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .example {
+            margin: clamp(10px, 1.5vw, 15px) 0;
+            padding: clamp(12px, 2vw, 18px);
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+            border-radius: 10px;
+            border-left: 3px solid #00f2fe;
+        }
+        
+        .japanese {
+            font-size: clamp(18px, 2.8vw, 26px);
+            color: #0f3460;
+            font-weight: 600;
+            margin-bottom: 6px;
+            line-height: 1.6;
+        }
+        
+        .japanese .highlight {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #0097a7;
+        }
+        
+        .english {
+            color: #666;
+            font-size: clamp(13px, 1.8vw, 17px);
+            font-style: italic;
+        }
+        
+        /* Ko-So-A Diagram */
+        .kosa-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: clamp(15px, 3vw, 30px);
+            margin: clamp(15px, 2.5vw, 25px) 0;
+            padding: clamp(20px, 3vw, 35px);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8f4fc 100%);
+            border-radius: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .kosa-person {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .kosa-person .icon {
+            font-size: clamp(40px, 6vw, 60px);
+            margin-bottom: 10px;
+        }
+        
+        .kosa-person .label {
+            font-size: clamp(12px, 1.5vw, 14px);
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .kosa-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: clamp(12px, 2vw, 20px);
+            border-radius: 12px;
+            min-width: clamp(80px, 12vw, 120px);
+        }
+        
+        .kosa-item.kore {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+        
+        .kosa-item.sore {
+            background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+        }
+        
+        .kosa-item.are {
+            background: linear-gradient(135deg, #feca57 0%, #ff9f43 100%);
+            color: #333;
+            box-shadow: 0 4px 15px rgba(254, 202, 87, 0.4);
+        }
+        
+        .kosa-item .word {
+            font-size: clamp(24px, 4vw, 36px);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .kosa-item .meaning {
+            font-size: clamp(11px, 1.3vw, 14px);
+            opacity: 0.9;
+        }
+        
+        .kosa-arrow {
+            font-size: clamp(20px, 3vw, 30px);
+            color: #999;
+        }
+        
+        /* Structure Diagram */
+        .structure-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: clamp(8px, 1.5vw, 15px);
+            margin: clamp(15px, 2.5vw, 25px) 0;
+            flex-wrap: wrap;
+            padding: clamp(15px, 2.5vw, 25px);
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f4ff 100%);
+            border-radius: 15px;
+        }
+        
+        .structure-part {
+            text-align: center;
+            padding: clamp(10px, 2vw, 18px) clamp(15px, 2.5vw, 25px);
+            border-radius: 12px;
+            min-width: clamp(60px, 10vw, 100px);
+        }
+        
+        .structure-part.demo {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+        
+        .structure-part.noun {
+            background: linear-gradient(135deg, #feca57 0%, #ff9f43 100%);
+            color: #333;
+            box-shadow: 0 4px 15px rgba(254, 202, 87, 0.4);
+        }
+        
+        .structure-part.particle {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+            font-weight: 700;
+        }
+        
+        .structure-part.copula {
+            background: linear-gradient(135deg, #ff9ff3 0%, #f368e0 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 159, 243, 0.4);
+        }
+        
+        .structure-part.response {
+            background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+        }
+        
+        .structure-label {
+            font-size: clamp(10px, 1.3vw, 13px);
+            opacity: 0.9;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .structure-text {
+            font-size: clamp(18px, 3vw, 28px);
+            font-weight: 700;
+        }
+        
+        .structure-arrow {
+            font-size: clamp(20px, 3vw, 30px);
+            color: #0f3460;
+        }
+        
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: clamp(10px, 2vw, 20px) 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+            color: white;
+            padding: clamp(12px, 2vw, 18px);
+            font-size: clamp(14px, 2vw, 18px);
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            padding: clamp(12px, 2vw, 18px);
+            font-size: clamp(14px, 2vw, 18px);
+            border-bottom: 1px solid #eee;
+            background: white;
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Q&A Format */
+        .qa-box {
+            background: white;
+            border-radius: 15px;
+            padding: clamp(15px, 2.5vw, 25px);
+            margin: clamp(10px, 1.5vw, 15px) 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .qa-question {
+            background: linear-gradient(135deg, #e8f4f8 0%, #e0f7fa 100%);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .qa-answer {
+            padding: clamp(12px, 2vw, 18px);
+            border-left: 3px solid #28a745;
+            margin-left: 15px;
+        }
+        
+        .qa-answer.positive {
+            border-left-color: #28a745;
+            background: linear-gradient(135deg, #f0fff4 0%, #e8f5e9 100%);
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .qa-answer.negative {
+            border-left-color: #e94560;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffebee 100%);
+            border-radius: 0 10px 10px 0;
+            margin-top: 8px;
+        }
+        
+        .qa-answer.neutral {
+            border-left-color: #ffc107;
+            background: linear-gradient(135deg, #fffef0 0%, #fff8e1 100%);
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: clamp(15px, 3vw, 25px);
+            flex-shrink: 0;
+        }
+        
+        button {
+            padding: clamp(12px, 2vw, 16px) clamp(25px, 4vw, 45px);
+            font-size: clamp(15px, 2vw, 18px);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        
+        button.prev {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button.next {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+        
+        button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .slide-counter {
+            text-align: center;
+            color: #999;
+            margin-top: clamp(10px, 2vw, 15px);
+            font-size: clamp(12px, 1.5vw, 15px);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Title slide specific */
+        .title-slide {
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .title-slide .lesson-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-size: clamp(16px, 2.5vw, 22px);
+            font-weight: 600;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(79, 172, 254, 0.4);
+        }
+        
+        .title-slide h1 {
+            font-size: clamp(36px, 7vw, 64px);
+            background: linear-gradient(135deg, #0f3460, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        
+        .title-slide .subtitle {
+            font-size: clamp(18px, 3vw, 28px);
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .title-slide .topics-preview {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .title-slide .topic-tag {
+            background: linear-gradient(135deg, #e8f4fc 0%, #e0f7fa 100%);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: clamp(12px, 1.8vw, 16px);
+            color: #0f3460;
+            border: 2px solid #4facfe;
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .navigation {
+                flex-wrap: wrap;
+            }
+            
+            button {
+                flex: 1;
+                min-width: 45%;
+            }
+            
+            .structure-diagram {
+                flex-direction: column;
+            }
+            
+            .structure-arrow {
+                transform: rotate(90deg);
+            }
+            
+            .kosa-diagram {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .comparison-table {
+                font-size: 14px;
+            }
+            
+            .comparison-table th,
+            .comparison-table td {
+                padding: 10px;
+            }
+        }
+        
+        /* Large desktop (1920x1080) */
+        @media (min-width: 1400px) {
+            .slide {
+                max-width: 1400px;
+                padding: 50px 70px;
+            }
+        }
+
+        /* Scrollbar styling */
+        .slide-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .slide-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .slide-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <div class="slide-content">
+                <div class="lesson-badge">だい 2 か</div>
+                <h1>みんなの日本語</h1>
+                <p class="subtitle">Lesson 2: ぶんぽう (Grammar)</p>
+                <div class="topics-preview">
+                    <span class="topic-tag">これ／それ／あれ</span>
+                    <span class="topic-tag">この／その／あの N</span>
+                    <span class="topic-tag">そうです</span>
+                    <span class="topic-tag">〜か、〜か</span>
+                    <span class="topic-tag">N₁ の N₂</span>
+                    <span class="topic-tag">の (noun substitute)</span>
+                    <span class="topic-tag">お〜</span>
+                    <span class="topic-tag">そうですか</span>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()" disabled>まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span id="current">1</span> / <span id="total">16</span>
+                <div class="progress-bar"><div class="progress-fill" style="width: 6.25%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 2: これ/それ/あれ Introduction -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 1</h2>
+                <p class="subtitle">これ／それ／あれ - Demonstrative Pronouns</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>これ・それ・あれ</h3>
+                    <div class="explanation">
+                        <strong>これ</strong>, <strong>それ</strong>, and <strong>あれ</strong> are demonstratives and work as <strong>nouns</strong>. They point to things based on distance from the speaker and listener.
+                    </div>
+                </div>
+                
+                <div class="kosa-diagram">
+                    <div class="kosa-person">
+                        <div class="icon">🧑‍🏫</div>
+                        <div class="label">Speaker</div>
+                    </div>
+                    <div class="kosa-item kore">
+                        <div class="word">これ</div>
+                        <div class="meaning">Near speaker</div>
+                    </div>
+                    <div class="kosa-arrow">→</div>
+                    <div class="kosa-item sore">
+                        <div class="word">それ</div>
+                        <div class="meaning">Near listener</div>
+                    </div>
+                    <div class="kosa-person">
+                        <div class="icon">🧑‍🎓</div>
+                        <div class="label">Listener</div>
+                    </div>
+                    <div class="kosa-arrow">→</div>
+                    <div class="kosa-item are">
+                        <div class="word">あれ</div>
+                        <div class="meaning">Far from both</div>
+                    </div>
+                </div>
+                
+                <div class="tip-box">
+                    <strong>Ko-So-A Pattern:</strong> こ (here/speaker) → そ (there/listener) → あ (over there/distant)
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>2</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 12.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 3: これ/それ/あれ Examples -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 1</h2>
+                <p class="subtitle">これ／それ／あれ - Examples</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>Using これ・それ・あれ</h3>
+                    <div class="explanation">
+                        These words function as nouns by themselves. They replace the thing you're pointing to.
+                    </div>
+                </div>
+                
+                <div class="examples">
+                    <div class="examples-title">📚 れいぶん (Examples)</div>
+                    <div class="example">
+                        <div class="japanese"><span class="highlight">これ</span>は じしょですか。</div>
+                        <div class="english">Is this a dictionary?</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese"><span class="highlight">それ</span>は だれの かさですか。</div>
+                        <div class="english">Whose umbrella is that?</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese"><span class="highlight">あれ</span>は なんですか。</div>
+                        <div class="english">What is that (over there)?</div>
+                    </div>
+                </div>
+                
+                <div class="note-box">
+                    <strong>Remember:</strong> これ/それ/あれ are complete nouns. They don't need another noun after them!
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>3</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 18.75%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 4: この/その/あの N -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 2</h2>
+                <p class="subtitle">この N／その N／あの N - Demonstrative Adjectives</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>この・その・あの + Noun</h3>
+                    <div class="explanation">
+                        <strong>この</strong>, <strong>その</strong>, and <strong>あの</strong> <strong>modify nouns</strong>. They must always be followed by a noun.
+                    </div>
+                </div>
+                
+                <div class="structure-diagram">
+                    <div class="structure-part demo">
+                        <div class="structure-label">Demonstrative</div>
+                        <div class="structure-text">この</div>
+                    </div>
+                    <div class="structure-part noun">
+                        <div class="structure-label">Noun</div>
+                        <div class="structure-text">ほん</div>
+                    </div>
+                    <div class="structure-arrow">=</div>
+                    <div class="structure-part response">
+                        <div class="structure-label">Meaning</div>
+                        <div class="structure-text">this book</div>
+                    </div>
+                </div>
+                
+                <div class="examples">
+                    <div class="example">
+                        <div class="japanese"><span class="highlight">この</span> ほんは わたしのです。</div>
+                        <div class="english">This book is mine.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese"><span class="highlight">あの</span> かたは どなたですか。</div>
+                        <div class="english">Who is that person (over there)?</div>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <strong>この/その/あの must have a noun!</strong><br>
+                    ❌ これほん / ❌ このは<br>
+                    ✅ この ほん
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>4</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 25%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 5: これ vs この Comparison -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 2</h2>
+                <p class="subtitle">これ vs この - What's the difference?</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>Comparing これ and この</h3>
+                </div>
+                
+                <table class="comparison-table">
+                    <tr>
+                        <th>Type</th>
+                        <th>Word</th>
+                        <th>Usage</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Noun</strong></td>
+                        <td>これ・それ・あれ</td>
+                        <td>Stands alone</td>
+                        <td>これは ほんです。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Modifier</strong></td>
+                        <td>この・その・あの</td>
+                        <td>+ Noun required</td>
+                        <td>このほんは いいです。</td>
+                    </tr>
+                </table>
+                
+                <div class="examples">
+                    <div class="example">
+                        <div class="japanese"><span class="highlight">これ</span>は ペンです。</div>
+                        <div class="english">This is a pen. (これ = the thing itself)</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese"><span class="highlight">この</span> ペンは いいです。</div>
+                        <div class="english">This pen is good. (この + ペン = this specific pen)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>5</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 31.25%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 6: そうです -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 3</h2>
+                <p class="subtitle">そうです - Affirmative Response</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3><span class="particle">そう</span> そうです</h3>
+                    <div class="explanation">
+                        The word <strong>そう</strong> is often used to answer (in the affirmative) a question requiring an affirmative or negative answer. The expression <strong>はい、そうです</strong> can be used.
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese">それは じしょですか。</div>
+                        <div class="english">Is that a dictionary?</div>
+                    </div>
+                    <div class="qa-answer positive">
+                        <div class="japanese">…はい、<span class="highlight">そうです</span>。</div>
+                        <div class="english">…Yes, it is.</div>
+                    </div>
+                </div>
+                
+                <div class="tip-box">
+                    <strong>そうです</strong> = "That's right" / "Yes, it is"<br>
+                    It confirms what the other person said is correct.
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>6</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 37.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Negative responses -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 3</h2>
+                <p class="subtitle">Negative Responses - ちがいます</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>Answering in the Negative</h3>
+                    <div class="explanation">
+                        <strong>そう</strong> is <strong>not usually used</strong> when answering a question in the negative. It is more common to say <strong>ちがいます</strong> (No, it isn't), followed by the correct answer.
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese">それは ミラーさんのですか。</div>
+                        <div class="english">Is that Mr. Miller's?</div>
+                    </div>
+                    <div class="qa-answer negative">
+                        <div class="japanese">…いいえ、<span class="highlight">ちがいます</span>。</div>
+                        <div class="english">…No, it isn't.</div>
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese">それは シャープペンシルですか。</div>
+                        <div class="english">Is that a mechanical pencil?</div>
+                    </div>
+                    <div class="qa-answer negative">
+                        <div class="japanese">…いいえ、ボールペンです。</div>
+                        <div class="english">…No, it's a ballpoint pen.</div>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <strong>Don't use そうじゃありません!</strong><br>
+                    Use ちがいます for negative responses, then give the correct answer.
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>7</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 43.75%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 8: 〜か、〜か -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 4</h2>
+                <p class="subtitle">〜か、〜か - Alternative Questions</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>〜か、〜か</h3>
+                    <div class="explanation">
+                        This is a question asking the listener to <strong>choose between two or more alternatives</strong>. In answering this type of question, it is usual to state the chosen alternative, <strong>without saying either はい or いいえ</strong>.
+                    </div>
+                </div>
+                
+                <div class="structure-diagram">
+                    <div class="structure-part demo">
+                        <div class="structure-label">Option A</div>
+                        <div class="structure-text">〜か</div>
+                    </div>
+                    <div class="structure-part noun">
+                        <div class="structure-label">Option B</div>
+                        <div class="structure-text">〜か</div>
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese">これは「9」ですか、「7」ですか。</div>
+                        <div class="english">Is this a 9 or a 7?</div>
+                    </div>
+                    <div class="qa-answer neutral">
+                        <div class="japanese">…「9」です。</div>
+                        <div class="english">…It's a 9.</div>
+                    </div>
+                </div>
+                
+                <div class="note-box">
+                    <strong>No はい/いいえ needed!</strong> Just answer with the chosen option directly.
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>8</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 50%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 9: N₁のN₂ - About/Topic -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 5</h2>
+                <p class="subtitle">N₁ の N₂ - More Uses of の</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>N₁ の N₂ (New Uses)</h3>
+                    <div class="explanation">
+                        In Lesson 1, we learned that <strong>の</strong> connects nouns showing organization/belonging. In Lesson 2, we learn two more uses:
+                    </div>
+                    
+                    <div class="tip-box">
+                        <strong>Use 1:</strong> N₁ explains what N₂ is <strong>about</strong><br>
+                        <strong>Use 2:</strong> N₁ indicates who <strong>owns</strong> N₂
+                    </div>
+                </div>
+                
+                <div class="examples">
+                    <div class="examples-title">📚 Use 1: About/Topic</div>
+                    <div class="example">
+                        <div class="japanese">これは コンピューター<span class="highlight">の</span> ほんです。</div>
+                        <div class="english">This is a book <strong>about</strong> computers.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese">それは にほんご<span class="highlight">の</span> じしょですか。</div>
+                        <div class="english">Is that a Japanese dictionary?</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>9</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 56.25%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 10: N₁のN₂ - Ownership -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 5</h2>
+                <p class="subtitle">N₁ の N₂ - Ownership</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>Use 2: Ownership</h3>
+                    <div class="explanation">
+                        N₁ indicates <strong>who owns</strong> N₂. This is similar to "'s" in English.
+                    </div>
+                </div>
+                
+                <div class="structure-diagram">
+                    <div class="structure-part demo">
+                        <div class="structure-label">Owner</div>
+                        <div class="structure-text">わたし</div>
+                    </div>
+                    <div class="structure-part particle">
+                        <div class="structure-label">Particle</div>
+                        <div class="structure-text">の</div>
+                    </div>
+                    <div class="structure-part noun">
+                        <div class="structure-label">Thing</div>
+                        <div class="structure-text">ほん</div>
+                    </div>
+                    <div class="structure-arrow">=</div>
+                    <div class="structure-part response">
+                        <div class="structure-label">Meaning</div>
+                        <div class="structure-text">my book</div>
+                    </div>
+                </div>
+                
+                <div class="examples">
+                    <div class="example">
+                        <div class="japanese">これは <span class="highlight">わたしの</span> ほんです。</div>
+                        <div class="english">This is <strong>my</strong> book.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese">あれは <span class="highlight">やまださんの</span> かばんです。</div>
+                        <div class="english">That is <strong>Mr. Yamada's</strong> bag.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>10</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 62.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 11: の substituting for a noun -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 6</h2>
+                <p class="subtitle">の - Substituting for a Noun</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3><span class="particle">の</span> as a Noun Substitute</h3>
+                    <div class="explanation">
+                        <strong>の</strong> can be used instead of a noun that has <strong>already been mentioned</strong>. If placed after a noun in N₁ の N₂, it enables N₂ to be omitted.
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese">あれは だれの かばんですか。</div>
+                        <div class="english">Whose bag is that?</div>
+                    </div>
+                    <div class="qa-answer positive">
+                        <div class="japanese">…さとうさん<span class="highlight">の</span>です。</div>
+                        <div class="english">…It's Ms. Sato's. (の replaces かばん)</div>
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese">この かばんは あなたのですか。</div>
+                        <div class="english">Is this bag yours?</div>
+                    </div>
+                    <div class="qa-answer negative">
+                        <div class="japanese">…いいえ、わたし<span class="highlight">の</span>じゃ ありません。</div>
+                        <div class="english">…No, it's not mine.</div>
+                    </div>
+                </div>
+                
+                <div class="tip-box">
+                    <strong>の = "one" in English.</strong> It replaces the noun to avoid repetition.<br>
+                    さとうさんの = "Sato's (one)" = "Sato's bag"
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>11</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 68.75%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 12: の for things only -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 6</h2>
+                <p class="subtitle">の - Important Limitation</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>の is for Things, Not People!</h3>
+                    <div class="explanation">
+                        <strong>の</strong> is used as a replacement for <strong>things</strong> but <strong>not for people</strong>.
+                    </div>
+                </div>
+                
+                <div class="examples">
+                    <div class="example" style="border-left-color: #28a745;">
+                        <div class="japanese">✅ ミラーさんは IMC の しゃいんですか。</div>
+                        <div class="japanese" style="margin-top: 5px;">…はい、IMC のです。</div>
+                        <div class="english">Is Mr. Miller an IMC employee? ...Yes, he is (an IMC one).</div>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <strong>Don't use の to replace people!</strong><br>
+                    Use the person's position or role instead.
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese">ミラーさんは IMC の しゃいんですか。</div>
+                        <div class="english">Does Mr. Miller work at IMC?</div>
+                    </div>
+                    <div class="qa-answer positive">
+                        <div class="japanese">…はい、IMC のです。</div>
+                        <div class="english">…Yes, he does. (の = しゃいん, the position)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>12</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 75%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 13: お〜 Polite Prefix -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 7</h2>
+                <p class="subtitle">お〜 - Polite Prefix</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3><span class="particle">お</span> Polite Prefix</h3>
+                    <div class="explanation">
+                        The prefix <strong>お</strong> is attached to words when the speaker is speaking <strong>politely</strong>. It adds respect or formality to certain nouns.
+                    </div>
+                </div>
+                
+                <div class="examples">
+                    <div class="examples-title">📚 Common お〜 Words</div>
+                    <div class="example">
+                        <div class="japanese"><span class="highlight">お</span>なまえは なんですか。</div>
+                        <div class="english">What is your (honorable) name?</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese"><span class="highlight">お</span>くにの じしょですか。</div>
+                        <div class="english">Is this a dictionary from your country?</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese"><span class="highlight">お</span>みやげ、<span class="highlight">お</span>さけ</div>
+                        <div class="english">souvenir, sake (with polite prefix)</div>
+                    </div>
+                </div>
+                
+                <div class="note-box">
+                    <strong>Common words with お:</strong> おなまえ (name), おくに (country), おしごと (job), おみやげ (souvenir), おさけ (alcohol)
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>13</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 81.25%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 14: そうですか -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 8</h2>
+                <p class="subtitle">そうですか - Acknowledgment</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>そうですか</h3>
+                    <div class="explanation">
+                        This expression is used by the speaker to <strong>acknowledge some new information</strong> he or she has just been given. It is pronounced with a <strong>falling intonation ↘</strong>.
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese">この かさは あなたのですか。</div>
+                        <div class="english">Is this umbrella yours?</div>
+                    </div>
+                    <div class="qa-answer negative">
+                        <div class="japanese">…いいえ、ちがいます。シュミットさんのです。</div>
+                        <div class="english">…No, it isn't. It's Mr. Schmidt's.</div>
+                    </div>
+                    <div class="qa-answer neutral" style="margin-top: 10px; border-left-color: #4facfe;">
+                        <div class="japanese"><span class="highlight">そうですか</span>。</div>
+                        <div class="english">Oh, I see.</div>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <strong>そうです vs そうですか</strong><br>
+                    • そうです↗ = "Yes, that's right" (confirming)<br>
+                    • そうですか↘ = "I see / Oh really?" (acknowledging new info)
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>14</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 87.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Summary Chart -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>まとめ</h2>
+                <p class="subtitle">Summary of Lesson 2 Grammar</p>
+            </div>
+            <div class="slide-content">
+                <table class="comparison-table">
+                    <tr>
+                        <th>Pattern</th>
+                        <th>Meaning</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td><strong>これ／それ／あれ</strong></td>
+                        <td>This/That/That (far)</td>
+                        <td>これは ほんです。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>この／その／あの N</strong></td>
+                        <td>This N/That N</td>
+                        <td>この ほんは いいです。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>そうです</strong></td>
+                        <td>Yes, that's right</td>
+                        <td>はい、そうです。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>〜か、〜か</strong></td>
+                        <td>A or B?</td>
+                        <td>9ですか、7ですか。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>N₁ の N₂</strong></td>
+                        <td>About/Ownership</td>
+                        <td>にほんごの ほん</td>
+                    </tr>
+                    <tr>
+                        <td><strong>の (substitute)</strong></td>
+                        <td>= "one"</td>
+                        <td>わたしのです。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>お〜</strong></td>
+                        <td>Polite prefix</td>
+                        <td>おなまえ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>そうですか</strong></td>
+                        <td>I see / Really?</td>
+                        <td>そうですか。</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>15</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 93.75%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Key Points to Remember -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>おぼえましょう！</h2>
+                <p class="subtitle">Key Points to Remember</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>🎯 Important Notes</h3>
+                    
+                    <div class="note-box">
+                        <strong>Ko-So-A Pattern:</strong> こ (near me) → そ (near you) → あ (far from both)
+                    </div>
+                    
+                    <div class="tip-box">
+                        <strong>これ vs この:</strong> これ stands alone, この needs a noun!<br>
+                        ✅ これは ほんです。 / ✅ この ほんは いいです。
+                    </div>
+                    
+                    <div class="warning-box">
+                        <strong>Negative responses:</strong> Use ちがいます, not そうじゃありません!
+                    </div>
+                    
+                    <div class="note-box">
+                        <strong>〜か、〜か questions:</strong> Don't use はい/いいえ! Just state your choice.
+                    </div>
+                    
+                    <div class="tip-box">
+                        <strong>の as substitute:</strong> Replaces things (not people) to avoid repetition.<br>
+                        わたしの = my (thing) / さとうさんの = Sato's (thing)
+                    </div>
+                    
+                    <div class="warning-box">
+                        <strong>そうです↗ vs そうですか↘:</strong> Different intonation = different meaning!
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()" disabled>つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>16</span> / 16
+                <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            slides[currentSlide].classList.add('active');
+            updateButtons();
+            updateProgress();
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        function updateButtons() {
+            document.querySelectorAll('.navigation').forEach((nav, index) => {
+                const prevBtn = nav.querySelector('.prev');
+                const nextBtn = nav.querySelector('.next');
+                if (prevBtn) prevBtn.disabled = currentSlide === 0;
+                if (nextBtn) nextBtn.disabled = currentSlide === totalSlides - 1;
+            });
+        }
+
+        function updateProgress() {
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                bar.style.width = progress + '%';
+            });
+            
+            document.querySelectorAll('.slide-counter span').forEach((span, index) => {
+                if (index % 2 === 0) {
+                    span.textContent = currentSlide + 1;
+                }
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            }
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Touch swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) {
+                nextSlide();
+            }
+            if (touchEndX > touchStartX + swipeThreshold) {
+                prevSlide();
+            }
+        }
+
+        // Initialize
+        updateButtons();
+    </script>
+</body>
+</html>

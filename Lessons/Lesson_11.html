@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>みんなの日本語 Lesson 11</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', 'Zen Maru Gothic', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .presentation {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(10px, 3vw, 40px);
+        }
+        
+        .slide {
+            width: 100%;
+            max-width: 1200px;
+            min-height: calc(100vh - clamp(20px, 6vw, 80px));
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: clamp(15px, 2.5vw, 25px);
+            box-shadow: 
+                0 25px 80px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+            padding: clamp(20px, 4vw, 50px);
+            display: none;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #f093fb, #f5576c, #ff9a9e, #fad0c4, #ffecd2);
+            border-radius: 25px 25px 0 0;
+        }
+        
+        .slide.active {
+            display: flex;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .slide-header {
+            text-align: center;
+            margin-bottom: clamp(15px, 3vw, 30px);
+            flex-shrink: 0;
+        }
+        
+        .slide-header h1 {
+            font-size: clamp(26px, 5vw, 44px);
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        
+        .slide-header h2 {
+            font-size: clamp(20px, 3.5vw, 32px);
+            color: #0f3460;
+            margin-bottom: clamp(5px, 1vw, 10px);
+            font-weight: 600;
+        }
+        
+        .slide-header .subtitle {
+            font-size: clamp(14px, 2vw, 18px);
+            color: #666;
+            font-weight: 400;
+        }
+        
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .grammar-box {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            padding: clamp(18px, 3vw, 30px);
+            border-radius: clamp(12px, 1.5vw, 18px);
+            margin-bottom: clamp(12px, 2vw, 20px);
+            border-left: clamp(4px, 0.6vw, 6px) solid #f5576c;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .grammar-box h3 {
+            font-size: clamp(22px, 3.5vw, 34px);
+            color: #0f3460;
+            margin-bottom: clamp(10px, 1.5vw, 15px);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .grammar-box h3 .particle {
+            background: #f5576c;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.8em;
+        }
+        
+        .explanation {
+            font-size: clamp(14px, 2vw, 18px);
+            color: #444;
+            line-height: 1.8;
+            margin-bottom: clamp(12px, 2vw, 18px);
+        }
+        
+        .explanation strong {
+            color: #f5576c;
+        }
+        
+        .note-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+            margin: clamp(10px, 1.5vw, 15px) 0;
+            border-left: 4px solid #ffc107;
+            font-size: clamp(13px, 1.8vw, 16px);
+        }
+        
+        .note-box::before {
+            content: '📝 ';
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #ffe0e6 0%, #ffd1d9 100%);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+            margin: clamp(10px, 1.5vw, 15px) 0;
+            border-left: 4px solid #e94560;
+            font-size: clamp(13px, 1.8vw, 16px);
+        }
+        
+        .warning-box::before {
+            content: '⚠️ ';
+        }
+        
+        .tip-box {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+            margin: clamp(10px, 1.5vw, 15px) 0;
+            border-left: 4px solid #28a745;
+            font-size: clamp(13px, 1.8vw, 16px);
+        }
+        
+        .tip-box::before {
+            content: '💡 ';
+        }
+        
+        .examples {
+            background: white;
+            padding: clamp(15px, 2.5vw, 25px);
+            border-radius: 12px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .example {
+            margin: clamp(10px, 1.5vw, 15px) 0;
+            padding: clamp(12px, 2vw, 18px);
+            background: linear-gradient(135deg, #fce4ec 0%, #fff 100%);
+            border-radius: 10px;
+            border-left: 3px solid #f093fb;
+        }
+        
+        .japanese {
+            font-size: clamp(18px, 2.8vw, 26px);
+            color: #0f3460;
+            font-weight: 600;
+            margin-bottom: 6px;
+            line-height: 1.6;
+        }
+        
+        .japanese .highlight {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c2185b;
+        }
+        
+        .japanese .highlight-counter {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #1565c0;
+        }
+        
+        .japanese .highlight-time {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #2e7d32;
+        }
+        
+        .japanese .highlight-only {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e65100;
+        }
+        
+        .english {
+            color: #666;
+            font-size: clamp(13px, 1.8vw, 17px);
+            font-style: italic;
+        }
+        
+        /* Counter Cards Grid */
+        .counter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: clamp(8px, 1.5vw, 12px);
+            margin: clamp(15px, 2.5vw, 25px) 0;
+        }
+        
+        .counter-card {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            border-radius: 12px;
+            padding: clamp(12px, 1.8vw, 18px);
+            text-align: center;
+            border: 2px solid #f5576c;
+            box-shadow: 0 4px 12px rgba(245, 87, 108, 0.2);
+        }
+        
+        .counter-card h5 {
+            font-size: clamp(18px, 2.5vw, 24px);
+            color: #c2185b;
+            margin-bottom: 6px;
+        }
+        
+        .counter-card .meaning {
+            font-size: clamp(11px, 1.4vw, 14px);
+            color: #666;
+            margin-bottom: 6px;
+        }
+        
+        .counter-card .examples-small {
+            font-size: clamp(10px, 1.2vw, 12px);
+            color: #888;
+        }
+        
+        /* Hitotsu Counting Grid */
+        .hitotsu-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: clamp(6px, 1vw, 10px);
+            margin: clamp(15px, 2.5vw, 25px) 0;
+        }
+        
+        .hitotsu-card {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 10px;
+            padding: clamp(10px, 1.5vw, 15px);
+            text-align: center;
+            border: 2px solid #2196f3;
+        }
+        
+        .hitotsu-card .number {
+            font-size: clamp(12px, 1.6vw, 16px);
+            color: #1565c0;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .hitotsu-card .reading {
+            font-size: clamp(14px, 2vw, 18px);
+            color: #0d47a1;
+            font-weight: 600;
+        }
+        
+        /* Time Counter Cards */
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: clamp(8px, 1.5vw, 12px);
+            margin: clamp(15px, 2.5vw, 25px) 0;
+        }
+        
+        .time-card {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 12px;
+            padding: clamp(12px, 1.8vw, 18px);
+            text-align: center;
+            border: 2px solid #4caf50;
+        }
+        
+        .time-card h5 {
+            font-size: clamp(16px, 2.2vw, 22px);
+            color: #2e7d32;
+            margin-bottom: 4px;
+        }
+        
+        .time-card .meaning {
+            font-size: clamp(11px, 1.4vw, 14px);
+            color: #666;
+        }
+        
+        /* Comparison Table */
+        .compare-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: clamp(10px, 2vw, 20px) 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .compare-table th {
+            padding: clamp(12px, 2vw, 18px);
+            font-size: clamp(14px, 2vw, 18px);
+            font-weight: 600;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .compare-table td {
+            padding: clamp(12px, 2vw, 18px);
+            font-size: clamp(14px, 2vw, 18px);
+            border-bottom: 1px solid #eee;
+            background: white;
+        }
+        
+        .compare-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .compare-table .irregular {
+            color: #f5576c;
+            font-weight: 700;
+        }
+        
+        /* Q&A Format */
+        .qa-box {
+            background: white;
+            border-radius: 15px;
+            padding: clamp(15px, 2.5vw, 25px);
+            margin: clamp(10px, 1.5vw, 15px) 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .qa-question {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .qa-answer {
+            padding: clamp(12px, 2vw, 18px);
+            margin-left: 15px;
+            border-left: 3px solid #4caf50;
+            background: linear-gradient(135deg, #f0fff4 0%, #e8f5e9 100%);
+            border-radius: 0 10px 10px 0;
+        }
+        
+        /* Pattern Diagram */
+        .pattern-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: clamp(8px, 1.5vw, 15px);
+            margin: clamp(15px, 2.5vw, 25px) 0;
+            padding: clamp(15px, 2.5vw, 25px);
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            flex-wrap: wrap;
+        }
+        
+        .pattern-part {
+            padding: clamp(10px, 1.5vw, 15px) clamp(15px, 2vw, 25px);
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .pattern-part.noun {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            border: 2px solid #f5576c;
+            color: #c2185b;
+        }
+        
+        .pattern-part.particle {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            color: #e65100;
+            font-size: clamp(18px, 2.5vw, 24px);
+        }
+        
+        .pattern-part.quantifier {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 2px solid #2196f3;
+            color: #1565c0;
+        }
+        
+        .pattern-part.verb {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 2px solid #4caf50;
+            color: #2e7d32;
+        }
+        
+        .pattern-part .label {
+            font-size: clamp(10px, 1.2vw, 12px);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            opacity: 0.8;
+        }
+        
+        .pattern-part .text {
+            font-size: clamp(16px, 2.2vw, 22px);
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: clamp(15px, 3vw, 25px);
+            flex-shrink: 0;
+        }
+        
+        button {
+            padding: clamp(12px, 2vw, 16px) clamp(25px, 4vw, 45px);
+            font-size: clamp(15px, 2vw, 18px);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        
+        button.prev {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+        }
+        
+        button.next {
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+        
+        button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .slide-counter {
+            text-align: center;
+            color: #999;
+            margin-top: clamp(10px, 2vw, 15px);
+            font-size: clamp(12px, 1.5vw, 15px);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f093fb, #f5576c, #ff9a9e);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Title slide specific */
+        .title-slide {
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .title-slide .lesson-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-size: clamp(16px, 2.5vw, 22px);
+            font-weight: 600;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(240, 147, 251, 0.4);
+        }
+        
+        .title-slide h1 {
+            font-size: clamp(36px, 7vw, 64px);
+            background: linear-gradient(135deg, #0f3460, #f5576c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        
+        .title-slide .subtitle {
+            font-size: clamp(18px, 3vw, 28px);
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .title-slide .topics-preview {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .title-slide .topic-tag {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: clamp(12px, 1.8vw, 16px);
+            color: #0f3460;
+            border: 2px solid #f5576c;
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .navigation {
+                flex-wrap: wrap;
+            }
+            
+            button {
+                flex: 1;
+                min-width: 45%;
+            }
+            
+            .hitotsu-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .pattern-diagram {
+                flex-direction: column;
+            }
+        }
+        
+        /* Large desktop (1920x1080) */
+        @media (min-width: 1400px) {
+            .slide {
+                max-width: 1400px;
+                padding: 50px 70px;
+            }
+        }
+
+        /* Scrollbar styling */
+        .slide-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .slide-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .slide-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <div class="slide-content">
+                <div class="lesson-badge">だい 11 か</div>
+                <h1>みんなの日本語</h1>
+                <p class="subtitle">Lesson 11: ぶんぽう (Grammar)</p>
+                <p style="color: #f5576c; font-size: clamp(16px, 2.5vw, 22px); margin-bottom: 20px;">すうりょうし と じょすうし (Quantifiers & Counters)</p>
+                <div class="topics-preview">
+                    <span class="topic-tag">ひとつ Counting</span>
+                    <span class="topic-tag">Counter Suffixes</span>
+                    <span class="topic-tag">Quantifier Position</span>
+                    <span class="topic-tag">いくつ / なん〜</span>
+                    <span class="topic-tag">どのくらい</span>
+                    <span class="topic-tag">〜ぐらい</span>
+                    <span class="topic-tag">Period に 〜回</span>
+                    <span class="topic-tag">〜だけ</span>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()" disabled>まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span id="current">1</span> / <span id="total">22</span>
+                <div class="progress-bar"><div class="progress-fill" style="width: 4.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 2: How to Say Numbers - ひとつ System -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 1</h2>
+                <p class="subtitle">How to Say Numbers - ひとつ Counting</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>ひとつ, ふたつ, ... とお</h3>
+                    <div class="explanation">
+                        The words <strong>ひとつ, ふたつ, ... とお</strong> are used to count things up to <strong>10</strong>. The numbers themselves are used when counting things from <strong>11 and higher</strong>.
+                    </div>
+                </div>
+                
+                <div class="hitotsu-grid">
+                    <div class="hitotsu-card">
+                        <div class="number">1</div>
+                        <div class="reading">ひとつ</div>
+                    </div>
+                    <div class="hitotsu-card">
+                        <div class="number">2</div>
+                        <div class="reading">ふたつ</div>
+                    </div>
+                    <div class="hitotsu-card">
+                        <div class="number">3</div>
+                        <div class="reading">みっつ</div>
+                    </div>
+                    <div class="hitotsu-card">
+                        <div class="number">4</div>
+                        <div class="reading">よっつ</div>
+                    </div>
+                    <div class="hitotsu-card">
+                        <div class="number">5</div>
+                        <div class="reading">いつつ</div>
+                    </div>
+                    <div class="hitotsu-card">
+                        <div class="number">6</div>
+                        <div class="reading">むっつ</div>
+                    </div>
+                    <div class="hitotsu-card">
+                        <div class="number">7</div>
+                        <div class="reading">ななつ</div>
+                    </div>
+                    <div class="hitotsu-card">
+                        <div class="number">8</div>
+                        <div class="reading">やっつ</div>
+                    </div>
+                    <div class="hitotsu-card">
+                        <div class="number">9</div>
+                        <div class="reading">ここのつ</div>
+                    </div>
+                    <div class="hitotsu-card">
+                        <div class="number">10</div>
+                        <div class="reading">とお</div>
+                    </div>
+                </div>
+                
+                <div class="note-box">
+                    <strong>For 11+:</strong> Use regular numbers (じゅういち, じゅうに, etc.)
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>2</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 9%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Counter Suffixes Introduction -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 1</h2>
+                <p class="subtitle">Counter Suffixes (じょすうし)</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>Counter Suffixes</h3>
+                    <div class="explanation">
+                        When counting people and things, various different <strong>counter suffixes</strong> are used depending on <strong>what is being counted</strong>.
+                    </div>
+                </div>
+                
+                <div class="counter-grid">
+                    <div class="counter-card">
+                        <h5>〜人</h5>
+                        <div class="meaning">People</div>
+                        <div class="examples-small">ひとり, ふたり...</div>
+                    </div>
+                    <div class="counter-card">
+                        <h5>〜台</h5>
+                        <div class="meaning">Machines & Vehicles</div>
+                        <div class="examples-small">いちだい, にだい...</div>
+                    </div>
+                    <div class="counter-card">
+                        <h5>〜枚</h5>
+                        <div class="meaning">Flat things</div>
+                        <div class="examples-small">いちまい, にまい...</div>
+                    </div>
+                    <div class="counter-card">
+                        <h5>〜回</h5>
+                        <div class="meaning">Times/Frequency</div>
+                        <div class="examples-small">いっかい, にかい...</div>
+                    </div>
+                </div>
+                
+                <div class="tip-box">
+                    <strong>〜枚 (まい)</strong> is used for thin, flat things such as <strong>paper, shirts, dishes, and CDs</strong>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>3</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 13.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 4: People Counter - Irregular -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 1</h2>
+                <p class="subtitle">〜人 (にん) - People Counter</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>〜人 Counter - Irregulars!</h3>
+                    <div class="explanation">
+                        <strong>Exception:</strong> One person is counted <strong>ひとり</strong> (1人), and two people are counted <strong>ふたり</strong> (2人). Also, <strong>4人</strong> is pronounced <strong>よにん</strong>.
+                    </div>
+                </div>
+                
+                <table class="compare-table">
+                    <tr>
+                        <th>Number</th>
+                        <th>Reading</th>
+                        <th>Notes</th>
+                    </tr>
+                    <tr>
+                        <td>1人</td>
+                        <td class="irregular">ひとり</td>
+                        <td>⚠️ Irregular!</td>
+                    </tr>
+                    <tr>
+                        <td>2人</td>
+                        <td class="irregular">ふたり</td>
+                        <td>⚠️ Irregular!</td>
+                    </tr>
+                    <tr>
+                        <td>3人</td>
+                        <td>さんにん</td>
+                        <td>Regular</td>
+                    </tr>
+                    <tr>
+                        <td>4人</td>
+                        <td class="irregular">よにん</td>
+                        <td>⚠️ NOT しにん!</td>
+                    </tr>
+                    <tr>
+                        <td>5人</td>
+                        <td>ごにん</td>
+                        <td>Regular</td>
+                    </tr>
+                </table>
+                
+                <div class="warning-box">
+                    <strong>Remember:</strong> ひとり, ふたり, よにん are IRREGULAR readings!
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>4</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 18%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Time Counters -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 1</h2>
+                <p class="subtitle">Time Duration Counters</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>Time Duration Counters</h3>
+                </div>
+                
+                <div class="time-grid">
+                    <div class="time-card">
+                        <h5>〜分</h5>
+                        <div class="meaning">minutes</div>
+                    </div>
+                    <div class="time-card">
+                        <h5>〜時間</h5>
+                        <div class="meaning">hours</div>
+                    </div>
+                    <div class="time-card">
+                        <h5>〜日</h5>
+                        <div class="meaning">days</div>
+                    </div>
+                    <div class="time-card">
+                        <h5>〜週間</h5>
+                        <div class="meaning">weeks</div>
+                    </div>
+                    <div class="time-card">
+                        <h5>〜か月</h5>
+                        <div class="meaning">months</div>
+                    </div>
+                    <div class="time-card">
+                        <h5>〜年</h5>
+                        <div class="meaning">years</div>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <strong>Important:</strong> For duration, <strong>1日</strong> is pronounced <strong>いちにち</strong>, NOT ついたち (which is for dates)!
+                </div>
+                
+                <div class="examples">
+                    <div class="example">
+                        <div class="japanese"><span class="highlight-time">2時間</span> べんきょうしました。</div>
+                        <div class="english">I studied for two hours.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>5</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 22.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 6: How to Use Quantifiers -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 2</h2>
+                <p class="subtitle">How to Use Quantifiers</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>Quantifier Position</h3>
+                    <div class="explanation">
+                        Quantifiers (numbers with counter suffixes) are usually put <strong>straight after the noun + particle</strong> that determines the type of quantifier. However, this is <strong>not always the case with length of time</strong>.
+                    </div>
+                </div>
+                
+                <div class="pattern-diagram">
+                    <div class="pattern-part noun">
+                        <div class="label">Noun</div>
+                        <div class="text">りんご</div>
+                    </div>
+                    <div class="pattern-part particle">を</div>
+                    <div class="pattern-part quantifier">
+                        <div class="label">Quantifier</div>
+                        <div class="text">4つ</div>
+                    </div>
+                    <div class="pattern-part verb">
+                        <div class="label">Verb</div>
+                        <div class="text">かいました</div>
+                    </div>
+                </div>
+                
+                <div class="examples">
+                    <div class="example">
+                        <div class="japanese">りんごを <span class="highlight-counter">4つ</span> かいました。</div>
+                        <div class="english">I bought four apples.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese">がいこくじんの がくせいが <span class="highlight-counter">2人</span> います。</div>
+                        <div class="english">There are two foreign students.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>6</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 27%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Time Duration Position -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 2</h2>
+                <p class="subtitle">Time Duration - Flexible Position</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>Time Duration Position</h3>
+                    <div class="explanation">
+                        For <strong>length of time</strong>, the quantifier position is <strong>more flexible</strong> and can come before the object.
+                    </div>
+                </div>
+                
+                <div class="examples">
+                    <div class="example">
+                        <div class="japanese">くにで <span class="highlight-time">2かげつ</span> にほんごを べんきょうしました。</div>
+                        <div class="english">I studied Japanese for two months in my home country.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese">まいばん <span class="highlight-time">2じかん</span> にほんごを べんきょうします。</div>
+                        <div class="english">I study Japanese for two hours every night.</div>
+                    </div>
+                </div>
+                
+                <div class="note-box">
+                    <strong>Time duration</strong> often comes earlier in the sentence, before the object!
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>7</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 31.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Asking How Many - いくつ -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 2</h2>
+                <p class="subtitle">Asking How Many - いくつ</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>いくつ - How many?</h3>
+                    <div class="explanation">
+                        The word <strong>いくつ</strong> is used when asking how many there are of items counted by the <strong>ひとつ, ふたつ method</strong> (general objects).
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese">みかんを <span class="highlight">いくつ</span> かいましたか。</div>
+                        <div class="english">How many mandarin oranges did you buy?</div>
+                    </div>
+                    <div class="qa-answer">
+                        <div class="japanese">…<span class="highlight-counter">8つ</span> かいました。</div>
+                        <div class="english">…[I bought] eight.</div>
+                    </div>
+                </div>
+                
+                <div class="tip-box">
+                    <strong>いくつ</strong> is for counting general objects (apples, oranges, boxes, etc.)
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>8</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 36%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Asking How Many - なん + Counter -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 2</h2>
+                <p class="subtitle">Asking How Many - なん + Counter</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>なん + Counter Suffix</h3>
+                    <div class="explanation">
+                        <strong>なん + counter suffix</strong> is used when asking how many there are of things with a <strong>specific counter suffix</strong> attached.
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese">この かいしゃに がいこくじんが <span class="highlight">なんにん</span> いますか。</div>
+                        <div class="english">How many foreign people are there in this company?</div>
+                    </div>
+                    <div class="qa-answer">
+                        <div class="japanese">…<span class="highlight-counter">5人</span> います。</div>
+                        <div class="english">…[There are] five.</div>
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese">まいばん <span class="highlight">なんじかん</span> にほんごを べんきょうしますか。</div>
+                        <div class="english">How many hours do you study Japanese every night?</div>
+                    </div>
+                    <div class="qa-answer">
+                        <div class="japanese">…<span class="highlight-time">2じかん</span> べんきょうします。</div>
+                        <div class="english">…[I study for] two hours.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>9</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 40.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Question Words Summary -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>まとめ</h2>
+                <p class="subtitle">Question Words for "How Many"</p>
+            </div>
+            <div class="slide-content">
+                <table class="compare-table">
+                    <tr>
+                        <th>Question</th>
+                        <th>Use For</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td><strong>いくつ</strong></td>
+                        <td>General objects (ひとつ counting)</td>
+                        <td>りんごを いくつ？</td>
+                    </tr>
+                    <tr>
+                        <td><strong>なんにん</strong></td>
+                        <td>People</td>
+                        <td>がくせいが なんにん？</td>
+                    </tr>
+                    <tr>
+                        <td><strong>なんだい</strong></td>
+                        <td>Machines/Vehicles</td>
+                        <td>くるまが なんだい？</td>
+                    </tr>
+                    <tr>
+                        <td><strong>なんまい</strong></td>
+                        <td>Flat things</td>
+                        <td>きってを なんまい？</td>
+                    </tr>
+                    <tr>
+                        <td><strong>なんかい</strong></td>
+                        <td>Times/Frequency</td>
+                        <td>なんかい いきましたか？</td>
+                    </tr>
+                    <tr>
+                        <td><strong>なんじかん</strong></td>
+                        <td>Hours</td>
+                        <td>なんじかん べんきょう？</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>10</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 45%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 11: どのくらい -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 2</h2>
+                <p class="subtitle">どのくらい - How Long?</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>どのくらい</h3>
+                    <div class="explanation">
+                        <strong>どのくらい</strong> is used to ask the <strong>length of time</strong> something takes.
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese"><span class="highlight">どのくらい</span> にほんごを べんきょうしましたか。</div>
+                        <div class="english">How long did you study Japanese for?</div>
+                    </div>
+                    <div class="qa-answer">
+                        <div class="japanese">…<span class="highlight-time">3ねん</span> べんきょうしました。</div>
+                        <div class="english">…[I studied it for] three years.</div>
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese">おおさかから とうきょうまで <span class="highlight">どのくらい</span> かかりますか。</div>
+                        <div class="english">How long does it take from Osaka to Tokyo?</div>
+                    </div>
+                    <div class="qa-answer">
+                        <div class="japanese">…しんかんせんで <span class="highlight-time">2じかんはん</span> かかります。</div>
+                        <div class="english">…[It takes] two and a half hours by Shinkansen.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>11</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 50%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 12: 〜ぐらい (About) -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 3</h2>
+                <p class="subtitle">〜ぐらい - About / Approximately</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>〜ぐらい</h3>
+                    <div class="explanation">
+                        <strong>ぐらい</strong> is added <strong>after quantifiers</strong> to mean <strong>'about'</strong> or 'approximately'.
+                    </div>
+                </div>
+                
+                <div class="examples">
+                    <div class="example">
+                        <div class="japanese">がっこうに せんせいが <span class="highlight">30にん<span style="color: #c2185b;">ぐらい</span></span> います。</div>
+                        <div class="english">There are about thirty teachers at our school.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese"><span class="highlight">15ふん<span style="color: #c2185b;">ぐらい</span></span> かかります。</div>
+                        <div class="english">It takes about fifteen minutes.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese">にほんに <span class="highlight">1ねん<span style="color: #c2185b;">ぐらい</span></span> います。</div>
+                        <div class="english">I'll be (I've been) in Japan for about one year.</div>
+                    </div>
+                </div>
+                
+                <div class="tip-box">
+                    <strong>Pattern:</strong> [Number + Counter] + <strong>ぐらい</strong> = about [amount]
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>12</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 54.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Frequency Expression -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 3</h2>
+                <p class="subtitle">Time Period に 〜回 V - Frequency</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>Quantifier (time period) <span class="particle">に</span> 〜回 V</h3>
+                    <div class="explanation">
+                        This expression indicates <strong>frequency</strong> - how many times per time period.
+                    </div>
+                </div>
+                
+                <div class="pattern-diagram">
+                    <div class="pattern-part quantifier">
+                        <div class="label">Time Period</div>
+                        <div class="text">1かげつ</div>
+                    </div>
+                    <div class="pattern-part particle">に</div>
+                    <div class="pattern-part quantifier">
+                        <div class="label">Frequency</div>
+                        <div class="text">2かい</div>
+                    </div>
+                    <div class="pattern-part verb">
+                        <div class="label">Verb</div>
+                        <div class="text">えいがを みます</div>
+                    </div>
+                </div>
+                
+                <div class="examples">
+                    <div class="example">
+                        <div class="japanese"><span class="highlight-time">1かげつ</span><span class="highlight">に</span> <span class="highlight-counter">2かい</span> えいがを みます。</div>
+                        <div class="english">I go to see a film about twice a month.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>13</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 59%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Frequency Examples -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>れんしゅう</h2>
+                <p class="subtitle">Frequency Examples</p>
+            </div>
+            <div class="slide-content">
+                <table class="compare-table">
+                    <tr>
+                        <th>Japanese</th>
+                        <th>English</th>
+                    </tr>
+                    <tr>
+                        <td>いちにち<strong>に</strong> 3かい</td>
+                        <td>3 times a day</td>
+                    </tr>
+                    <tr>
+                        <td>いっしゅうかん<strong>に</strong> 2かい</td>
+                        <td>twice a week</td>
+                    </tr>
+                    <tr>
+                        <td>1かげつ<strong>に</strong> 1かい</td>
+                        <td>once a month</td>
+                    </tr>
+                    <tr>
+                        <td>1ねん<strong>に</strong> 4かい</td>
+                        <td>4 times a year</td>
+                    </tr>
+                </table>
+                
+                <div class="qa-box">
+                    <div class="qa-question">
+                        <div class="japanese">いっしゅうかんに なんかい うんどうしますか。</div>
+                        <div class="english">How many times a week do you exercise?</div>
+                    </div>
+                    <div class="qa-answer">
+                        <div class="japanese">いっしゅうかんに 3かい ジムに いきます。</div>
+                        <div class="english">I go to the gym 3 times a week.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>14</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 63.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 15: だけ Introduction -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ぶんぽう 4</h2>
+                <p class="subtitle">Quantifier だけ / N だけ - Only</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>Quantifier <span class="particle">だけ</span> / N <span class="particle">だけ</span></h3>
+                    <div class="explanation">
+                        <strong>だけ</strong> means <strong>'only'</strong>. It is added after quantifiers or nouns to indicate that there is <strong>no more or nothing else</strong>.
+                    </div>
+                </div>
+                
+                <div class="examples">
+                    <div class="example">
+                        <div class="japanese">パワーでんきに がいこくじんの しゃいんが <span class="highlight-only">1人だけ</span> います。</div>
+                        <div class="english">There is only one foreign employee at Power Electric.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese">やすみは <span class="highlight-only">にちようびだけ</span>です。</div>
+                        <div class="english">Sunday is my only day off.</div>
+                    </div>
+                </div>
+                
+                <div class="tip-box">
+                    <strong>だけ</strong> emphasizes exclusivity or limitation
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>15</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 68%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 16: だけ Examples -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>れんしゅう</h2>
+                <p class="subtitle">だけ Examples</p>
+            </div>
+            <div class="slide-content">
+                <div class="examples">
+                    <div class="example">
+                        <div class="japanese">みかんを <span class="highlight-only">ひとつだけ</span> たべました。</div>
+                        <div class="english">I ate only one orange.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese">コーヒーを <span class="highlight-only">いっぱいだけ</span> のみます。</div>
+                        <div class="english">I'll drink only one cup of coffee.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese"><span class="highlight-only">すこしだけ</span> わかります。</div>
+                        <div class="english">I understand only a little.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese"><span class="highlight-only">やまださんだけ</span> きました。</div>
+                        <div class="english">Only Mr. Yamada came.</div>
+                    </div>
+                </div>
+                
+                <div class="note-box">
+                    <strong>だけ</strong> can follow: quantifiers (1人だけ), nouns (にちようびだけ), or adverbs (すこしだけ)
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>16</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 72.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Summary Chart -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>まとめ</h2>
+                <p class="subtitle">Lesson 11 Grammar Summary</p>
+            </div>
+            <div class="slide-content">
+                <table class="compare-table" style="font-size: clamp(12px, 1.6vw, 15px);">
+                    <tr>
+                        <th>Pattern</th>
+                        <th>Meaning</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td>ひとつ, ふたつ...</td>
+                        <td>1-10 (general objects)</td>
+                        <td>りんごを みっつ</td>
+                    </tr>
+                    <tr>
+                        <td>N を [Q] V</td>
+                        <td>Quantifier after noun</td>
+                        <td>きってを 5まい かいます</td>
+                    </tr>
+                    <tr>
+                        <td>いくつ</td>
+                        <td>How many? (general)</td>
+                        <td>いくつ かいましたか</td>
+                    </tr>
+                    <tr>
+                        <td>なん + counter</td>
+                        <td>How many? (specific)</td>
+                        <td>なんにん いますか</td>
+                    </tr>
+                    <tr>
+                        <td>どのくらい</td>
+                        <td>How long?</td>
+                        <td>どのくらい かかりますか</td>
+                    </tr>
+                    <tr>
+                        <td>[Q]ぐらい</td>
+                        <td>About [amount]</td>
+                        <td>30ぷんぐらい</td>
+                    </tr>
+                    <tr>
+                        <td>[Period]に [X]かい</td>
+                        <td>X times per [period]</td>
+                        <td>1しゅうかんに 2かい</td>
+                    </tr>
+                    <tr>
+                        <td>[Q/N]だけ</td>
+                        <td>Only [amount/thing]</td>
+                        <td>1人だけ います</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>17</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 77%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Key Points -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>おぼえましょう！</h2>
+                <p class="subtitle">Key Points to Remember</p>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-box">
+                    <h3>🎯 Important Notes</h3>
+                    
+                    <div class="warning-box">
+                        <strong>Irregular People Counter:</strong><br>
+                        • 1人 = ひとり (NOT いちにん)<br>
+                        • 2人 = ふたり (NOT ににん)<br>
+                        • 4人 = よにん (NOT しにん)
+                    </div>
+                    
+                    <div class="note-box">
+                        <strong>1日 pronunciation:</strong><br>
+                        • Duration: いちにち (one day)<br>
+                        • Date (1st): ついたち
+                    </div>
+                    
+                    <div class="tip-box">
+                        <strong>Question Words:</strong><br>
+                        • いくつ = general objects<br>
+                        • なん + counter = specific counter
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>18</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 81.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Counter Reference -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>さんこう</h2>
+                <p class="subtitle">Counter Reference Chart</p>
+            </div>
+            <div class="slide-content">
+                <table class="compare-table" style="font-size: clamp(11px, 1.4vw, 14px);">
+                    <tr>
+                        <th>Counter</th>
+                        <th>Used For</th>
+                        <th>Examples</th>
+                    </tr>
+                    <tr>
+                        <td>〜人 (にん)</td>
+                        <td>People</td>
+                        <td>ひとり, ふたり, さんにん, よにん</td>
+                    </tr>
+                    <tr>
+                        <td>〜台 (だい)</td>
+                        <td>Machines, vehicles</td>
+                        <td>いちだい, にだい, さんだい</td>
+                    </tr>
+                    <tr>
+                        <td>〜枚 (まい)</td>
+                        <td>Paper, shirts, dishes, CDs</td>
+                        <td>いちまい, にまい, さんまい</td>
+                    </tr>
+                    <tr>
+                        <td>〜回 (かい)</td>
+                        <td>Times (frequency)</td>
+                        <td>いっかい, にかい, さんかい</td>
+                    </tr>
+                    <tr>
+                        <td>〜分 (ふん/ぷん)</td>
+                        <td>Minutes</td>
+                        <td>いっぷん, にふん, さんぷん</td>
+                    </tr>
+                    <tr>
+                        <td>〜時間 (じかん)</td>
+                        <td>Hours</td>
+                        <td>いちじかん, にじかん</td>
+                    </tr>
+                    <tr>
+                        <td>〜日 (にち)</td>
+                        <td>Days (duration)</td>
+                        <td>いちにち, ふつか, みっか</td>
+                    </tr>
+                    <tr>
+                        <td>〜週間 (しゅうかん)</td>
+                        <td>Weeks</td>
+                        <td>いっしゅうかん, にしゅうかん</td>
+                    </tr>
+                    <tr>
+                        <td>〜か月 (かげつ)</td>
+                        <td>Months</td>
+                        <td>いっかげつ, にかげつ</td>
+                    </tr>
+                    <tr>
+                        <td>〜年 (ねん)</td>
+                        <td>Years</td>
+                        <td>いちねん, にねん, さんねん</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>19</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 86%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 20: Practice Sentences -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>れんしゅう</h2>
+                <p class="subtitle">Practice Sentences</p>
+            </div>
+            <div class="slide-content">
+                <div class="examples">
+                    <div class="example">
+                        <div class="japanese">かいぎしつに テーブルが 7つ あります。</div>
+                        <div class="english">There are seven tables in the meeting room.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese">にほんに 1ねん います。</div>
+                        <div class="english">I'll be (I've been) in Japan for one year.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese">80えんの きってを 5まいと、はがきを 2まい ください。</div>
+                        <div class="english">Five eighty-yen stamps and two postcards, please.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese">きょうだいは なんにん いますか。<br>…3人です。あねが 2人と あにが 1人です。</div>
+                        <div class="english">How many brothers and sisters do you have?<br>…Three. Two elder sisters and one elder brother.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>20</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 90.5%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 21: Conversation Part 1 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>かいわ れんしゅう</h2>
+                <p class="subtitle">I'd Like to Send This, Please (Part 1)</p>
+            </div>
+            <div class="slide-content">
+                <div class="qa-box">
+                    <div class="qa-question" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+                        <div class="japanese" style="font-size: clamp(14px, 2vw, 18px); color: #1565c0;">かんりにん:</div>
+                        <div class="japanese">いい おてんきですね。おでかけですか。</div>
+                        <div class="english">Lovely weather, isn't it? Are you going out?</div>
+                    </div>
+                    <div class="qa-answer">
+                        <div class="japanese" style="font-size: clamp(14px, 2vw, 18px); color: #f5576c;">ワン:</div>
+                        <div class="japanese">ええ、ちょっと ゆうびんきょくまで。</div>
+                        <div class="english">Yes, just to the post office.</div>
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-question" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+                        <div class="japanese" style="font-size: clamp(14px, 2vw, 18px); color: #1565c0;">かんりにん:</div>
+                        <div class="japanese">そうですか。いってらっしゃい。</div>
+                        <div class="english">Are you? See you later.</div>
+                    </div>
+                    <div class="qa-answer">
+                        <div class="japanese" style="font-size: clamp(14px, 2vw, 18px); color: #f5576c;">ワン:</div>
+                        <div class="japanese">いってきます。</div>
+                        <div class="english">See you.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()">つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>21</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 95%"></div></div>
+            </div>
+        </div>
+
+        <!-- Slide 22: Conversation Part 2 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>かいわ れんしゅう</h2>
+                <p class="subtitle">I'd Like to Send This, Please (Part 2)</p>
+            </div>
+            <div class="slide-content">
+                <div class="qa-box">
+                    <div class="qa-question" style="background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);">
+                        <div class="japanese" style="font-size: clamp(14px, 2vw, 18px); color: #f5576c;">ワン:</div>
+                        <div class="japanese">これを オーストラリアまで おねがいします。</div>
+                        <div class="english">I'd like to send this to Australia, please.</div>
+                    </div>
+                    <div class="qa-answer">
+                        <div class="japanese" style="font-size: clamp(14px, 2vw, 18px); color: #1565c0;">きょくいん:</div>
+                        <div class="japanese">ふなびんですか。こうくうびんですか。</div>
+                        <div class="english">Sea mail, or airmail?</div>
+                    </div>
+                </div>
+                
+                <div class="qa-box">
+                    <div class="qa-answer">
+                        <div class="japanese" style="font-size: clamp(14px, 2vw, 18px); color: #f5576c;">ワン:</div>
+                        <div class="japanese">こうくうびんは いくらですか。</div>
+                        <div class="english">How much is airmail?</div>
+                    </div>
+                    <div class="qa-answer">
+                        <div class="japanese" style="font-size: clamp(14px, 2vw, 18px); color: #1565c0;">きょくいん:</div>
+                        <div class="japanese">7,600えんです。… ふなびんは 3,450えんです。<br>こうくうびんは <span class="highlight-time">1しゅうかん</span><span class="highlight">ぐらい</span>、ふなびんは <span class="highlight-time">2かげつ</span><span class="highlight">ぐらい</span> かかります。</div>
+                        <div class="english">¥7,600. ... Sea mail is ¥3,450.<br>Around seven days by air and two months by sea.</div>
+                    </div>
+                </div>
+                
+                <div class="note-box">
+                    Notice the use of <strong>ぐらい</strong> (about) with time durations: 1しゅうかん<strong>ぐらい</strong>, 2かげつ<strong>ぐらい</strong>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="prev" onclick="prevSlide()">まえ</button>
+                <button class="next" onclick="nextSlide()" disabled>つぎ</button>
+            </div>
+            <div class="slide-counter">
+                スライド <span>22</span> / 22
+                <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            slides[currentSlide].classList.add('active');
+            updateButtons();
+            updateProgress();
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        function updateButtons() {
+            document.querySelectorAll('.navigation').forEach((nav, index) => {
+                const prevBtn = nav.querySelector('.prev');
+                const nextBtn = nav.querySelector('.next');
+                if (prevBtn) prevBtn.disabled = currentSlide === 0;
+                if (nextBtn) nextBtn.disabled = currentSlide === totalSlides - 1;
+            });
+        }
+
+        function updateProgress() {
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                bar.style.width = progress + '%';
+            });
+            
+            document.querySelectorAll('.slide-counter span').forEach((span, index) => {
+                if (index % 2 === 0) {
+                    span.textContent = currentSlide + 1;
+                }
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            }
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Touch swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) {
+                nextSlide();
+            }
+            if (touchEndX > touchStartX + swipeThreshold) {
+                prevSlide();
+            }
+        }
+
+        // Initialize
+        updateButtons();
+    </script>
+</body>
+</html>
