@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>だい6-10か かんじクイズ - Lessons 6-10 Kanji Quiz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', 'Zen Maru Gothic', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: clamp(10px, 3vw, 20px);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: clamp(15px, 3vw, 30px);
+        }
+        
+        .header h1 {
+            font-size: clamp(24px, 5vw, 42px);
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #e94560, #ff6b6b, #feca57, #48dbfb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+        }
+        
+        .header p {
+            font-size: clamp(14px, 2.5vw, 20px);
+            opacity: 0.9;
+        }
+        
+        .lesson-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: clamp(12px, 2vw, 16px);
+            font-weight: 600;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+        }
+        
+        /* Score Board */
+        .score-board {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: clamp(10px, 2vw, 15px);
+            padding: clamp(12px, 2vw, 20px);
+            margin-bottom: clamp(15px, 2vw, 20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-top: 5px solid;
+            border-image: linear-gradient(90deg, #e94560, #ff6b6b, #feca57, #48dbfb, #ff9ff3) 1;
+        }
+        
+        .score-item {
+            text-align: center;
+            min-width: 80px;
+        }
+        
+        .score-label {
+            font-size: clamp(11px, 1.5vw, 14px);
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .score-value {
+            font-size: clamp(20px, 3vw, 28px);
+            font-weight: bold;
+            color: #e94560;
+        }
+        
+        .progress-bar {
+            width: clamp(120px, 20vw, 200px);
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Cards */
+        .card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: clamp(12px, 2vw, 20px);
+            padding: clamp(15px, 3vw, 30px);
+            margin-bottom: clamp(15px, 2vw, 20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #e94560, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+        }
+        
+        .card-title {
+            font-size: clamp(16px, 2.5vw, 22px);
+            color: #0f3460;
+            margin-bottom: clamp(12px, 2vw, 20px);
+            padding-bottom: clamp(10px, 1.5vw, 15px);
+            border-bottom: 3px solid #e94560;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Start Screen */
+        .start-screen {
+            text-align: center;
+            padding: clamp(30px, 5vw, 50px) clamp(20px, 4vw, 40px);
+        }
+        
+        .start-icon {
+            font-size: clamp(60px, 12vw, 100px);
+            margin-bottom: 20px;
+        }
+        
+        .start-title {
+            font-size: clamp(24px, 4vw, 36px);
+            color: #0f3460;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .start-subtitle {
+            font-size: clamp(14px, 2vw, 18px);
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: clamp(10px, 2vw, 15px);
+            margin-bottom: 25px;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #ffe8ec 0%, #ffd4dc 100%);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+            border-left: 4px solid #e94560;
+        }
+        
+        .info-box .emoji {
+            font-size: clamp(24px, 4vw, 32px);
+            margin-bottom: 8px;
+        }
+        
+        .info-box .label {
+            font-size: clamp(11px, 1.5vw, 13px);
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .info-box .value {
+            font-size: clamp(14px, 2vw, 18px);
+            color: #0f3460;
+            font-weight: 700;
+        }
+        
+        .start-btn {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            color: white;
+            border: none;
+            padding: clamp(15px, 3vw, 20px) clamp(40px, 8vw, 60px);
+            font-size: clamp(18px, 3vw, 24px);
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4);
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(233, 69, 96, 0.5);
+        }
+        
+        /* Question Box */
+        .question-box {
+            background: linear-gradient(135deg, #ffe8ec 0%, #ffd4dc 100%);
+            border-radius: clamp(12px, 2vw, 18px);
+            padding: clamp(20px, 4vw, 35px);
+            margin-bottom: clamp(15px, 2vw, 20px);
+            text-align: center;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .question-number {
+            font-size: clamp(12px, 1.5vw, 14px);
+            color: #e94560;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ffd4dc, #ffc0cb);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        .lesson-indicator {
+            font-size: clamp(10px, 1.3vw, 12px);
+            padding: 5px 12px;
+            border-radius: 15px;
+            color: white;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        
+        .question-type {
+            font-size: clamp(10px, 1.3vw, 12px);
+            padding: 5px 12px;
+            border-radius: 15px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .question-type.meaning { background: linear-gradient(135deg, #e94560, #ff6b6b); }
+        .question-type.reading { background: linear-gradient(135deg, #feca57, #ff9f43); color: #333; }
+        .question-type.kanji { background: linear-gradient(135deg, #48dbfb, #0abde3); }
+        
+        .kanji-prompt {
+            font-size: clamp(48px, 12vw, 100px);
+            color: #0f3460;
+            font-weight: 700;
+            margin: clamp(15px, 3vw, 25px) 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .meaning-prompt {
+            font-size: clamp(20px, 4vw, 32px);
+            color: #0f3460;
+            font-weight: 600;
+            margin: clamp(15px, 3vw, 25px) 0;
+        }
+        
+        .reading-prompt {
+            font-size: clamp(28px, 6vw, 48px);
+            color: #e94560;
+            font-weight: 600;
+            margin: clamp(15px, 3vw, 25px) 0;
+        }
+        
+        .question-instruction {
+            font-size: clamp(13px, 1.8vw, 16px);
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        /* Answer Options */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: clamp(10px, 2vw, 15px);
+            margin-top: clamp(15px, 2vw, 20px);
+        }
+        
+        .option-btn {
+            padding: clamp(15px, 3vw, 25px);
+            font-size: clamp(16px, 2.5vw, 22px);
+            border: 3px solid #e0e0e0;
+            border-radius: clamp(12px, 2vw, 18px);
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 500;
+        }
+        
+        .option-btn:hover:not(.selected):not(.correct):not(.incorrect) {
+            border-color: #e94560;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(233, 69, 96, 0.2);
+        }
+        
+        .option-btn.selected {
+            border-color: #ff6b6b;
+            background: linear-gradient(135deg, #ffe8ec, #ffd4dc);
+        }
+        
+        .option-btn.correct {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+        }
+        
+        .option-btn.correct::after {
+            content: ' ✓';
+            color: #28a745;
+        }
+        
+        .option-btn.incorrect {
+            border-color: #dc3545;
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+        }
+        
+        .option-btn.incorrect::after {
+            content: ' ✗';
+            color: #dc3545;
+        }
+        
+        /* Feedback */
+        .feedback {
+            margin-top: clamp(15px, 2vw, 20px);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+            font-size: clamp(14px, 2vw, 18px);
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .feedback.correct {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+        
+        .feedback.incorrect {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Navigation */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: clamp(15px, 3vw, 25px);
+        }
+        
+        .nav-btn {
+            padding: clamp(12px, 2vw, 16px) clamp(25px, 4vw, 45px);
+            font-size: clamp(15px, 2vw, 18px);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        
+        .nav-btn.prev {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .nav-btn.next {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+        }
+        
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Results Screen */
+        .results-screen {
+            text-align: center;
+            padding: clamp(30px, 5vw, 50px);
+        }
+        
+        .result-icon {
+            font-size: clamp(70px, 15vw, 120px);
+            margin-bottom: 20px;
+        }
+        
+        .result-title {
+            font-size: clamp(28px, 5vw, 42px);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .result-title.pass {
+            color: #28a745;
+        }
+        
+        .result-title.fail {
+            color: #e94560;
+        }
+        
+        .result-score {
+            font-size: clamp(48px, 10vw, 80px);
+            font-weight: 700;
+            margin: 20px 0;
+        }
+        
+        .result-score.pass {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .result-score.fail {
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .result-message {
+            font-size: clamp(14px, 2vw, 18px);
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .result-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: clamp(10px, 2vw, 15px);
+            margin: 25px 0;
+        }
+        
+        .breakdown-item {
+            background: linear-gradient(135deg, #ffe8ec, #ffd4dc);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+        }
+        
+        .breakdown-label {
+            font-size: clamp(11px, 1.5vw, 13px);
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .breakdown-value {
+            font-size: clamp(20px, 3vw, 28px);
+            font-weight: 700;
+            color: #0f3460;
+        }
+        
+        .retry-btn {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            color: white;
+            border: none;
+            padding: clamp(15px, 3vw, 20px) clamp(40px, 8vw, 60px);
+            font-size: clamp(18px, 3vw, 24px);
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4);
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans JP', sans-serif;
+            margin-top: 20px;
+        }
+        
+        .retry-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(233, 69, 96, 0.5);
+        }
+        
+        /* Notes Section */
+        .notes-card {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+            border-radius: clamp(12px, 2vw, 18px);
+            padding: clamp(15px, 3vw, 25px);
+            margin-top: clamp(15px, 2vw, 20px);
+            border-left: 5px solid #ffc107;
+        }
+        
+        .notes-title {
+            font-size: clamp(16px, 2.5vw, 20px);
+            color: #856404;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        
+        .notes-content {
+            font-size: clamp(13px, 1.8vw, 16px);
+            color: #856404;
+            line-height: 1.7;
+        }
+        
+        .notes-content ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .notes-content li {
+            margin-bottom: 8px;
+        }
+        
+        .kanji-example {
+            display: inline-block;
+            background: white;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #0f3460;
+            margin: 0 3px;
+        }
+        
+        /* Reference Toggle */
+        .reference-toggle {
+            text-align: center;
+            margin-top: clamp(15px, 2vw, 20px);
+        }
+        
+        .reference-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: clamp(10px, 2vw, 14px) clamp(20px, 4vw, 30px);
+            font-size: clamp(14px, 2vw, 16px);
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        
+        .reference-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .reference-card {
+            display: none;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: clamp(12px, 2vw, 18px);
+            padding: clamp(15px, 3vw, 25px);
+            margin-top: clamp(15px, 2vw, 20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .reference-card.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .ref-section {
+            margin-bottom: clamp(15px, 2vw, 20px);
+        }
+        
+        .ref-section-title {
+            font-size: clamp(14px, 2vw, 18px);
+            color: #e94560;
+            font-weight: 700;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e94560;
+        }
+        
+        .ref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(clamp(90px, 12vw, 120px), 1fr));
+            gap: clamp(6px, 1vw, 10px);
+        }
+        
+        .ref-item {
+            background: linear-gradient(135deg, #ffe8ec, #ffd4dc);
+            padding: clamp(8px, 1.2vw, 12px);
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .ref-item:hover {
+            border-color: #e94560;
+            transform: translateY(-2px);
+        }
+        
+        .ref-kanji {
+            font-size: clamp(18px, 2.5vw, 24px);
+            color: #0f3460;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+        
+        .ref-reading {
+            font-size: clamp(9px, 1.2vw, 11px);
+            color: #e94560;
+            margin-bottom: 2px;
+        }
+        
+        .ref-meaning {
+            font-size: clamp(8px, 1vw, 10px);
+            color: #666;
+        }
+        
+        /* Lesson tabs in reference */
+        .lesson-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        
+        .lesson-tab {
+            padding: 8px 16px;
+            border: 2px solid #e94560;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: clamp(12px, 1.5vw, 14px);
+        }
+        
+        .lesson-tab:hover, .lesson-tab.active {
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            color: white;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .navigation {
+                flex-wrap: wrap;
+            }
+            
+            .nav-btn {
+                flex: 1;
+                min-width: 45%;
+            }
+            
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .question-header {
+                justify-content: center;
+            }
+        }
+        
+        /* Large Desktop (1920x1080) */
+        @media (min-width: 1400px) {
+            .container {
+                max-width: 1200px;
+            }
+            
+            .card {
+                padding: 40px;
+            }
+        }
+        
+        /* Hide sections */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="lesson-badge">だい 6-10 か</div>
+            <h1>📝 かんじクイズ</h1>
+            <p>Lessons 6-10 Comprehensive Kanji Quiz</p>
+        </div>
+        
+        <!-- Score Board -->
+        <div class="score-board" id="scoreBoard">
+            <div class="score-item">
+                <div class="score-label">もんだい</div>
+                <div class="score-value"><span id="currentQ">0</span>/40</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">せいかい</div>
+                <div class="score-value" id="correctCount">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">しんちょく</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Start Screen -->
+        <div class="card" id="startScreen">
+            <div class="start-screen">
+                <div class="start-icon">🍱</div>
+                <h2 class="start-title">かんじ そうごう れんしゅう</h2>
+                <p class="start-subtitle">
+                    だい6かから だい10かまでの かんじを まなびましょう！<br>
+                    Comprehensive kanji practice from Lessons 6-10!
+                </p>
+                
+                <div class="info-grid">
+                    <div class="info-box">
+                        <div class="emoji">📊</div>
+                        <div class="label">もんだいすう</div>
+                        <div class="value">40 もん</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="emoji">🎯</div>
+                        <div class="label">ごうかくてん</div>
+                        <div class="value">80%</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="emoji">🔀</div>
+                        <div class="label">もんだい</div>
+                        <div class="value">ランダム</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="emoji">📖</div>
+                        <div class="label">レッスン</div>
+                        <div class="value">6-10</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="emoji">🔤</div>
+                        <div class="label">しゅるい</div>
+                        <div class="value">3 タイプ</div>
+                    </div>
+                </div>
+                
+                <button class="start-btn" onclick="startQuiz()">
+                    はじめる 🚀
+                </button>
+            </div>
+        </div>
+        
+        <!-- Question Screen -->
+        <div class="card hidden" id="questionScreen">
+            <div class="card-title">
+                <span id="questionTypeIcon">📖</span>
+                <span id="questionTypeLabel">いみ → かんじ</span>
+            </div>
+            
+            <div class="question-box">
+                <div class="question-header">
+                    <span class="question-number" id="questionNumber">もんだい 1</span>
+                    <span class="lesson-indicator" id="lessonIndicator">L6</span>
+                    <span class="question-type meaning" id="questionTypeBadge">いみ</span>
+                </div>
+                
+                <div class="question-instruction" id="questionInstruction">
+                    つぎの いみの かんじを えらんでください
+                </div>
+                
+                <div class="kanji-prompt hidden" id="kanjiPrompt">漢字</div>
+                <div class="meaning-prompt hidden" id="meaningPrompt">meaning</div>
+                <div class="reading-prompt hidden" id="readingPrompt">よみかた</div>
+                
+                <div class="options-grid" id="optionsGrid">
+                    <!-- Options will be generated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="feedback" id="feedback">
+                <span id="feedbackText"></span>
+            </div>
+            
+            <div class="navigation">
+                <button class="nav-btn prev" onclick="prevQuestion()" id="prevBtn" disabled>まえ</button>
+                <button class="nav-btn next" onclick="nextQuestion()" id="nextBtn" disabled>つぎ</button>
+            </div>
+        </div>
+        
+        <!-- Results Screen -->
+        <div class="card hidden" id="resultsScreen">
+            <div class="results-screen">
+                <div class="result-icon" id="resultIcon">🎉</div>
+                <h2 class="result-title pass" id="resultTitle">ごうかく！</h2>
+                <div class="result-score pass" id="resultScore">100%</div>
+                <p class="result-message" id="resultMessage">
+                    すばらしい！ かんじを よく おぼえていますね！
+                </p>
+                
+                <div class="result-breakdown">
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">せいかい</div>
+                        <div class="breakdown-value" id="finalCorrect">40</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">ふせいかい</div>
+                        <div class="breakdown-value" id="finalIncorrect">0</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">せいかいりつ</div>
+                        <div class="breakdown-value" id="finalPercent">100%</div>
+                    </div>
+                </div>
+                
+                <button class="retry-btn" onclick="retryQuiz()">
+                    もう いちど 🔄
+                </button>
+            </div>
+        </div>
+        
+        <!-- Notes Section -->
+        <div class="notes-card">
+            <div class="notes-title">📝 べんきょうの ポイント</div>
+            <div class="notes-content">
+                <strong>だい6-10かの かんじ について：</strong>
+                <ul>
+                    <li>🍽️ <strong>L6:</strong> <span class="kanji-example">食べます</span>、<span class="kanji-example">飲みます</span>、<span class="kanji-example">野菜</span> - Food & daily verbs</li>
+                    <li>👨‍👩‍👧 <strong>L7:</strong> <span class="kanji-example">父</span>、<span class="kanji-example">母</span>、<span class="kanji-example">兄弟</span> - Family & giving/receiving</li>
+                    <li>🎨 <strong>L8:</strong> <span class="kanji-example">大きい</span>、<span class="kanji-example">新しい</span>、<span class="kanji-example">白い</span> - Adjectives & colors</li>
+                    <li>🎵 <strong>L9:</strong> <span class="kanji-example">好き</span>、<span class="kanji-example">音楽</span>、<span class="kanji-example">料理</span> - Likes/dislikes & hobbies</li>
+                    <li>🏠 <strong>L10:</strong> <span class="kanji-example">上</span>、<span class="kanji-example">下</span>、<span class="kanji-example">中</span> - Location & existence</li>
+                </ul>
+                <p style="margin-top: 15px;">
+                    💡 <strong>ヒント：</strong> かぞくの よびかたは 「わたしの」と「ほかのひとの」で ちがいます！<br>
+                    <em>Tip: Family terms differ between "my family" and "someone else's family"!</em>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Reference Toggle -->
+        <div class="reference-toggle">
+            <button class="reference-btn" onclick="toggleReference()">📖 かんじリストを みる</button>
+        </div>
+        
+        <!-- Reference Card -->
+        <div class="reference-card" id="referenceCard">
+            <!-- Lesson Tabs -->
+            <div class="lesson-tabs">
+                <button class="lesson-tab active" onclick="showLesson(6)">L6</button>
+                <button class="lesson-tab" onclick="showLesson(7)">L7</button>
+                <button class="lesson-tab" onclick="showLesson(8)">L8</button>
+                <button class="lesson-tab" onclick="showLesson(9)">L9</button>
+                <button class="lesson-tab" onclick="showLesson(10)">L10</button>
+                <button class="lesson-tab" onclick="showLesson(0)">All</button>
+            </div>
+            
+            <!-- Lesson 6 Reference -->
+            <div class="lesson-content" id="lesson6Content">
+                <div class="ref-section">
+                    <div class="ref-section-title">🍽️ L6: たべもの・のみもの・どうし (Food & Verbs)</div>
+                    <div class="ref-grid">
+                        <div class="ref-item"><div class="ref-kanji">食べます</div><div class="ref-reading">たべます</div><div class="ref-meaning">eat</div></div>
+                        <div class="ref-item"><div class="ref-kanji">飲みます</div><div class="ref-reading">のみます</div><div class="ref-meaning">drink</div></div>
+                        <div class="ref-item"><div class="ref-kanji">見ます</div><div class="ref-reading">みます</div><div class="ref-meaning">see, watch</div></div>
+                        <div class="ref-item"><div class="ref-kanji">聞きます</div><div class="ref-reading">ききます</div><div class="ref-meaning">hear, listen</div></div>
+                        <div class="ref-item"><div class="ref-kanji">読みます</div><div class="ref-reading">よみます</div><div class="ref-meaning">read</div></div>
+                        <div class="ref-item"><div class="ref-kanji">書きます</div><div class="ref-reading">かきます</div><div class="ref-meaning">write</div></div>
+                        <div class="ref-item"><div class="ref-kanji">買います</div><div class="ref-reading">かいます</div><div class="ref-meaning">buy</div></div>
+                        <div class="ref-item"><div class="ref-kanji">撮ります</div><div class="ref-reading">とります</div><div class="ref-meaning">take photo</div></div>
+                        <div class="ref-item"><div class="ref-kanji">会います</div><div class="ref-reading">あいます</div><div class="ref-meaning">meet</div></div>
+                        <div class="ref-item"><div class="ref-kanji">朝ごはん</div><div class="ref-reading">あさごはん</div><div class="ref-meaning">breakfast</div></div>
+                        <div class="ref-item"><div class="ref-kanji">昼ごはん</div><div class="ref-reading">ひるごはん</div><div class="ref-meaning">lunch</div></div>
+                        <div class="ref-item"><div class="ref-kanji">晩ごはん</div><div class="ref-reading">ばんごはん</div><div class="ref-meaning">dinner</div></div>
+                        <div class="ref-item"><div class="ref-kanji">卵</div><div class="ref-reading">たまご</div><div class="ref-meaning">egg</div></div>
+                        <div class="ref-item"><div class="ref-kanji">肉</div><div class="ref-reading">にく</div><div class="ref-meaning">meat</div></div>
+                        <div class="ref-item"><div class="ref-kanji">魚</div><div class="ref-reading">さかな</div><div class="ref-meaning">fish</div></div>
+                        <div class="ref-item"><div class="ref-kanji">野菜</div><div class="ref-reading">やさい</div><div class="ref-meaning">vegetable</div></div>
+                        <div class="ref-item"><div class="ref-kanji">果物</div><div class="ref-reading">くだもの</div><div class="ref-meaning">fruit</div></div>
+                        <div class="ref-item"><div class="ref-kanji">水</div><div class="ref-reading">みず</div><div class="ref-meaning">water</div></div>
+                        <div class="ref-item"><div class="ref-kanji">お茶</div><div class="ref-reading">おちゃ</div><div class="ref-meaning">tea</div></div>
+                        <div class="ref-item"><div class="ref-kanji">牛乳</div><div class="ref-reading">ぎゅうにゅう</div><div class="ref-meaning">milk</div></div>
+                        <div class="ref-item"><div class="ref-kanji">手紙</div><div class="ref-reading">てがみ</div><div class="ref-meaning">letter</div></div>
+                        <div class="ref-item"><div class="ref-kanji">写真</div><div class="ref-reading">しゃしん</div><div class="ref-meaning">photo</div></div>
+                        <div class="ref-item"><div class="ref-kanji">店</div><div class="ref-reading">みせ</div><div class="ref-meaning">shop</div></div>
+                        <div class="ref-item"><div class="ref-kanji">庭</div><div class="ref-reading">にわ</div><div class="ref-meaning">garden</div></div>
+                        <div class="ref-item"><div class="ref-kanji">宿題</div><div class="ref-reading">しゅくだい</div><div class="ref-meaning">homework</div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lesson 7 Reference -->
+            <div class="lesson-content hidden" id="lesson7Content">
+                <div class="ref-section">
+                    <div class="ref-section-title">👨‍👩‍👧 L7: かぞく・あげもらい (Family & Giving/Receiving)</div>
+                    <div class="ref-grid">
+                        <div class="ref-item"><div class="ref-kanji">切ります</div><div class="ref-reading">きります</div><div class="ref-meaning">cut</div></div>
+                        <div class="ref-item"><div class="ref-kanji">送ります</div><div class="ref-reading">おくります</div><div class="ref-meaning">send</div></div>
+                        <div class="ref-item"><div class="ref-kanji">貸します</div><div class="ref-reading">かします</div><div class="ref-meaning">lend</div></div>
+                        <div class="ref-item"><div class="ref-kanji">借ります</div><div class="ref-reading">かります</div><div class="ref-meaning">borrow</div></div>
+                        <div class="ref-item"><div class="ref-kanji">教えます</div><div class="ref-reading">おしえます</div><div class="ref-meaning">teach</div></div>
+                        <div class="ref-item"><div class="ref-kanji">習います</div><div class="ref-reading">ならいます</div><div class="ref-meaning">learn</div></div>
+                        <div class="ref-item"><div class="ref-kanji">手</div><div class="ref-reading">て</div><div class="ref-meaning">hand</div></div>
+                        <div class="ref-item"><div class="ref-kanji">紙</div><div class="ref-reading">かみ</div><div class="ref-meaning">paper</div></div>
+                        <div class="ref-item"><div class="ref-kanji">花</div><div class="ref-reading">はな</div><div class="ref-meaning">flower</div></div>
+                        <div class="ref-item"><div class="ref-kanji">荷物</div><div class="ref-reading">にもつ</div><div class="ref-meaning">luggage</div></div>
+                        <div class="ref-item"><div class="ref-kanji">お金</div><div class="ref-reading">おかね</div><div class="ref-meaning">money</div></div>
+                        <div class="ref-item"><div class="ref-kanji">切符</div><div class="ref-reading">きっぷ</div><div class="ref-meaning">ticket</div></div>
+                        <div class="ref-item"><div class="ref-kanji">父</div><div class="ref-reading">ちち</div><div class="ref-meaning">father (my)</div></div>
+                        <div class="ref-item"><div class="ref-kanji">母</div><div class="ref-reading">はは</div><div class="ref-meaning">mother (my)</div></div>
+                        <div class="ref-item"><div class="ref-kanji">お父さん</div><div class="ref-reading">おとうさん</div><div class="ref-meaning">father</div></div>
+                        <div class="ref-item"><div class="ref-kanji">お母さん</div><div class="ref-reading">おかあさん</div><div class="ref-meaning">mother</div></div>
+                        <div class="ref-item"><div class="ref-kanji">兄</div><div class="ref-reading">あに</div><div class="ref-meaning">elder brother</div></div>
+                        <div class="ref-item"><div class="ref-kanji">姉</div><div class="ref-reading">あね</div><div class="ref-meaning">elder sister</div></div>
+                        <div class="ref-item"><div class="ref-kanji">弟</div><div class="ref-reading">おとうと</div><div class="ref-meaning">younger brother</div></div>
+                        <div class="ref-item"><div class="ref-kanji">妹</div><div class="ref-reading">いもうと</div><div class="ref-meaning">younger sister</div></div>
+                        <div class="ref-item"><div class="ref-kanji">両親</div><div class="ref-reading">りょうしん</div><div class="ref-meaning">parents</div></div>
+                        <div class="ref-item"><div class="ref-kanji">兄弟</div><div class="ref-reading">きょうだい</div><div class="ref-meaning">siblings</div></div>
+                        <div class="ref-item"><div class="ref-kanji">夫婦</div><div class="ref-reading">ふうふ</div><div class="ref-meaning">married couple</div></div>
+                        <div class="ref-item"><div class="ref-kanji">娘</div><div class="ref-reading">むすめ</div><div class="ref-meaning">daughter</div></div>
+                        <div class="ref-item"><div class="ref-kanji">息子</div><div class="ref-reading">むすこ</div><div class="ref-meaning">son</div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lesson 8 Reference -->
+            <div class="lesson-content hidden" id="lesson8Content">
+                <div class="ref-section">
+                    <div class="ref-section-title">🎨 L8: けいようし・いろ (Adjectives & Colors)</div>
+                    <div class="ref-grid">
+                        <div class="ref-item"><div class="ref-kanji">静か</div><div class="ref-reading">しずか</div><div class="ref-meaning">quiet</div></div>
+                        <div class="ref-item"><div class="ref-kanji">有名</div><div class="ref-reading">ゆうめい</div><div class="ref-meaning">famous</div></div>
+                        <div class="ref-item"><div class="ref-kanji">親切</div><div class="ref-reading">しんせつ</div><div class="ref-meaning">kind</div></div>
+                        <div class="ref-item"><div class="ref-kanji">元気</div><div class="ref-reading">げんき</div><div class="ref-meaning">healthy</div></div>
+                        <div class="ref-item"><div class="ref-kanji">暇</div><div class="ref-reading">ひま</div><div class="ref-meaning">free time</div></div>
+                        <div class="ref-item"><div class="ref-kanji">便利</div><div class="ref-reading">べんり</div><div class="ref-meaning">convenient</div></div>
+                        <div class="ref-item"><div class="ref-kanji">大きい</div><div class="ref-reading">おおきい</div><div class="ref-meaning">big</div></div>
+                        <div class="ref-item"><div class="ref-kanji">小さい</div><div class="ref-reading">ちいさい</div><div class="ref-meaning">small</div></div>
+                        <div class="ref-item"><div class="ref-kanji">新しい</div><div class="ref-reading">あたらしい</div><div class="ref-meaning">new</div></div>
+                        <div class="ref-item"><div class="ref-kanji">古い</div><div class="ref-reading">ふるい</div><div class="ref-meaning">old</div></div>
+                        <div class="ref-item"><div class="ref-kanji">暑い</div><div class="ref-reading">あつい</div><div class="ref-meaning">hot</div></div>
+                        <div class="ref-item"><div class="ref-kanji">寒い</div><div class="ref-reading">さむい</div><div class="ref-meaning">cold</div></div>
+                        <div class="ref-item"><div class="ref-kanji">難しい</div><div class="ref-reading">むずかしい</div><div class="ref-meaning">difficult</div></div>
+                        <div class="ref-item"><div class="ref-kanji">易しい</div><div class="ref-reading">やさしい</div><div class="ref-meaning">easy</div></div>
+                        <div class="ref-item"><div class="ref-kanji">高い</div><div class="ref-reading">たかい</div><div class="ref-meaning">expensive/tall</div></div>
+                        <div class="ref-item"><div class="ref-kanji">安い</div><div class="ref-reading">やすい</div><div class="ref-meaning">cheap</div></div>
+                        <div class="ref-item"><div class="ref-kanji">忙しい</div><div class="ref-reading">いそがしい</div><div class="ref-meaning">busy</div></div>
+                        <div class="ref-item"><div class="ref-kanji">楽しい</div><div class="ref-reading">たのしい</div><div class="ref-meaning">fun</div></div>
+                        <div class="ref-item"><div class="ref-kanji">白い</div><div class="ref-reading">しろい</div><div class="ref-meaning">white</div></div>
+                        <div class="ref-item"><div class="ref-kanji">黒い</div><div class="ref-reading">くろい</div><div class="ref-meaning">black</div></div>
+                        <div class="ref-item"><div class="ref-kanji">赤い</div><div class="ref-reading">あかい</div><div class="ref-meaning">red</div></div>
+                        <div class="ref-item"><div class="ref-kanji">青い</div><div class="ref-reading">あおい</div><div class="ref-meaning">blue</div></div>
+                        <div class="ref-item"><div class="ref-kanji">桜</div><div class="ref-reading">さくら</div><div class="ref-meaning">cherry blossom</div></div>
+                        <div class="ref-item"><div class="ref-kanji">山</div><div class="ref-reading">やま</div><div class="ref-meaning">mountain</div></div>
+                        <div class="ref-item"><div class="ref-kanji">町</div><div class="ref-reading">まち</div><div class="ref-meaning">town</div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lesson 9 Reference -->
+            <div class="lesson-content hidden" id="lesson9Content">
+                <div class="ref-section">
+                    <div class="ref-section-title">🎵 L9: すき・しゅみ (Likes & Hobbies)</div>
+                    <div class="ref-grid">
+                        <div class="ref-item"><div class="ref-kanji">好き</div><div class="ref-reading">すき</div><div class="ref-meaning">like</div></div>
+                        <div class="ref-item"><div class="ref-kanji">嫌い</div><div class="ref-reading">きらい</div><div class="ref-meaning">dislike</div></div>
+                        <div class="ref-item"><div class="ref-kanji">上手</div><div class="ref-reading">じょうず</div><div class="ref-meaning">good at</div></div>
+                        <div class="ref-item"><div class="ref-kanji">下手</div><div class="ref-reading">へた</div><div class="ref-meaning">poor at</div></div>
+                        <div class="ref-item"><div class="ref-kanji">飲み物</div><div class="ref-reading">のみもの</div><div class="ref-meaning">drinks</div></div>
+                        <div class="ref-item"><div class="ref-kanji">料理</div><div class="ref-reading">りょうり</div><div class="ref-meaning">cooking</div></div>
+                        <div class="ref-item"><div class="ref-kanji">野球</div><div class="ref-reading">やきゅう</div><div class="ref-meaning">baseball</div></div>
+                        <div class="ref-item"><div class="ref-kanji">旅行</div><div class="ref-reading">りょこう</div><div class="ref-meaning">travel</div></div>
+                        <div class="ref-item"><div class="ref-kanji">音楽</div><div class="ref-reading">おんがく</div><div class="ref-meaning">music</div></div>
+                        <div class="ref-item"><div class="ref-kanji">歌</div><div class="ref-reading">うた</div><div class="ref-meaning">song</div></div>
+                        <div class="ref-item"><div class="ref-kanji">歌舞伎</div><div class="ref-reading">かぶき</div><div class="ref-meaning">Kabuki</div></div>
+                        <div class="ref-item"><div class="ref-kanji">絵</div><div class="ref-reading">え</div><div class="ref-meaning">picture</div></div>
+                        <div class="ref-item"><div class="ref-kanji">字</div><div class="ref-reading">じ</div><div class="ref-meaning">character</div></div>
+                        <div class="ref-item"><div class="ref-kanji">漢字</div><div class="ref-reading">かんじ</div><div class="ref-meaning">kanji</div></div>
+                        <div class="ref-item"><div class="ref-kanji">時間</div><div class="ref-reading">じかん</div><div class="ref-meaning">time</div></div>
+                        <div class="ref-item"><div class="ref-kanji">用事</div><div class="ref-reading">ようじ</div><div class="ref-meaning">errand</div></div>
+                        <div class="ref-item"><div class="ref-kanji">約束</div><div class="ref-reading">やくそく</div><div class="ref-meaning">promise</div></div>
+                        <div class="ref-item"><div class="ref-kanji">主人</div><div class="ref-reading">しゅじん</div><div class="ref-meaning">husband</div></div>
+                        <div class="ref-item"><div class="ref-kanji">家内</div><div class="ref-reading">かない</div><div class="ref-meaning">wife (my)</div></div>
+                        <div class="ref-item"><div class="ref-kanji">子ども</div><div class="ref-reading">こども</div><div class="ref-meaning">child</div></div>
+                        <div class="ref-item"><div class="ref-kanji">少し</div><div class="ref-reading">すこし</div><div class="ref-meaning">a little</div></div>
+                        <div class="ref-item"><div class="ref-kanji">全然</div><div class="ref-reading">ぜんぜん</div><div class="ref-meaning">not at all</div></div>
+                        <div class="ref-item"><div class="ref-kanji">早く</div><div class="ref-reading">はやく</div><div class="ref-meaning">early/fast</div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lesson 10 Reference -->
+            <div class="lesson-content hidden" id="lesson10Content">
+                <div class="ref-section">
+                    <div class="ref-section-title">🏠 L10: ばしょ・そんざい (Location & Existence)</div>
+                    <div class="ref-grid">
+                        <div class="ref-item"><div class="ref-kanji">男の人</div><div class="ref-reading">おとこのひと</div><div class="ref-meaning">man</div></div>
+                        <div class="ref-item"><div class="ref-kanji">女の人</div><div class="ref-reading">おんなのひと</div><div class="ref-meaning">woman</div></div>
+                        <div class="ref-item"><div class="ref-kanji">男の子</div><div class="ref-reading">おとこのこ</div><div class="ref-meaning">boy</div></div>
+                        <div class="ref-item"><div class="ref-kanji">女の子</div><div class="ref-reading">おんなのこ</div><div class="ref-meaning">girl</div></div>
+                        <div class="ref-item"><div class="ref-kanji">犬</div><div class="ref-reading">いぬ</div><div class="ref-meaning">dog</div></div>
+                        <div class="ref-item"><div class="ref-kanji">猫</div><div class="ref-reading">ねこ</div><div class="ref-meaning">cat</div></div>
+                        <div class="ref-item"><div class="ref-kanji">木</div><div class="ref-reading">き</div><div class="ref-meaning">tree</div></div>
+                        <div class="ref-item"><div class="ref-kanji">物</div><div class="ref-reading">もの</div><div class="ref-meaning">thing</div></div>
+                        <div class="ref-item"><div class="ref-kanji">電池</div><div class="ref-reading">でんち</div><div class="ref-meaning">battery</div></div>
+                        <div class="ref-item"><div class="ref-kanji">箱</div><div class="ref-reading">はこ</div><div class="ref-meaning">box</div></div>
+                        <div class="ref-item"><div class="ref-kanji">棚</div><div class="ref-reading">たな</div><div class="ref-meaning">shelf</div></div>
+                        <div class="ref-item"><div class="ref-kanji">窓</div><div class="ref-reading">まど</div><div class="ref-meaning">window</div></div>
+                        <div class="ref-item"><div class="ref-kanji">公園</div><div class="ref-reading">こうえん</div><div class="ref-meaning">park</div></div>
+                        <div class="ref-item"><div class="ref-kanji">喫茶店</div><div class="ref-reading">きっさてん</div><div class="ref-meaning">cafe</div></div>
+                        <div class="ref-item"><div class="ref-kanji">上</div><div class="ref-reading">うえ</div><div class="ref-meaning">above</div></div>
+                        <div class="ref-item"><div class="ref-kanji">下</div><div class="ref-reading">した</div><div class="ref-meaning">below</div></div>
+                        <div class="ref-item"><div class="ref-kanji">前</div><div class="ref-reading">まえ</div><div class="ref-meaning">front</div></div>
+                        <div class="ref-item"><div class="ref-kanji">右</div><div class="ref-reading">みぎ</div><div class="ref-meaning">right</div></div>
+                        <div class="ref-item"><div class="ref-kanji">左</div><div class="ref-reading">ひだり</div><div class="ref-meaning">left</div></div>
+                        <div class="ref-item"><div class="ref-kanji">中</div><div class="ref-reading">なか</div><div class="ref-meaning">inside</div></div>
+                        <div class="ref-item"><div class="ref-kanji">外</div><div class="ref-reading">そと</div><div class="ref-meaning">outside</div></div>
+                        <div class="ref-item"><div class="ref-kanji">隣</div><div class="ref-reading">となり</div><div class="ref-meaning">next door</div></div>
+                        <div class="ref-item"><div class="ref-kanji">近く</div><div class="ref-reading">ちかく</div><div class="ref-meaning">near</div></div>
+                        <div class="ref-item"><div class="ref-kanji">間</div><div class="ref-reading">あいだ</div><div class="ref-meaning">between</div></div>
+                        <div class="ref-item"><div class="ref-kanji">玄関</div><div class="ref-reading">げんかん</div><div class="ref-meaning">entrance</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive Kanji Data for Lessons 6-10
+        const kanjiData = [
+            // Lesson 6 - Food & Daily Verbs
+            { kanji: '食べます', reading: 'たべます', meaning: 'eat', lesson: 6, emoji: '🍽️' },
+            { kanji: '飲みます', reading: 'のみます', meaning: 'drink', lesson: 6, emoji: '🥤' },
+            { kanji: '見ます', reading: 'みます', meaning: 'see, watch', lesson: 6, emoji: '👀' },
+            { kanji: '聞きます', reading: 'ききます', meaning: 'hear, listen', lesson: 6, emoji: '👂' },
+            { kanji: '読みます', reading: 'よみます', meaning: 'read', lesson: 6, emoji: '📖' },
+            { kanji: '書きます', reading: 'かきます', meaning: 'write', lesson: 6, emoji: '✍️' },
+            { kanji: '買います', reading: 'かいます', meaning: 'buy', lesson: 6, emoji: '🛒' },
+            { kanji: '撮ります', reading: 'とります', meaning: 'take (photo)', lesson: 6, emoji: '📷' },
+            { kanji: '会います', reading: 'あいます', meaning: 'meet', lesson: 6, emoji: '🤝' },
+            { kanji: '朝ごはん', reading: 'あさごはん', meaning: 'breakfast', lesson: 6, emoji: '🌅' },
+            { kanji: '昼ごはん', reading: 'ひるごはん', meaning: 'lunch', lesson: 6, emoji: '☀️' },
+            { kanji: '晩ごはん', reading: 'ばんごはん', meaning: 'dinner', lesson: 6, emoji: '🌙' },
+            { kanji: '卵', reading: 'たまご', meaning: 'egg', lesson: 6, emoji: '🥚' },
+            { kanji: '肉', reading: 'にく', meaning: 'meat', lesson: 6, emoji: '🥩' },
+            { kanji: '魚', reading: 'さかな', meaning: 'fish', lesson: 6, emoji: '🐟' },
+            { kanji: '野菜', reading: 'やさい', meaning: 'vegetable', lesson: 6, emoji: '🥬' },
+            { kanji: '果物', reading: 'くだもの', meaning: 'fruit', lesson: 6, emoji: '🍎' },
+            { kanji: '水', reading: 'みず', meaning: 'water', lesson: 6, emoji: '💧' },
+            { kanji: 'お茶', reading: 'おちゃ', meaning: 'tea', lesson: 6, emoji: '🍵' },
+            { kanji: '牛乳', reading: 'ぎゅうにゅう', meaning: 'milk', lesson: 6, emoji: '🥛' },
+            { kanji: '手紙', reading: 'てがみ', meaning: 'letter', lesson: 6, emoji: '✉️' },
+            { kanji: '写真', reading: 'しゃしん', meaning: 'photo', lesson: 6, emoji: '📸' },
+            { kanji: '店', reading: 'みせ', meaning: 'shop', lesson: 6, emoji: '🏪' },
+            { kanji: '庭', reading: 'にわ', meaning: 'garden', lesson: 6, emoji: '🌳' },
+            { kanji: '宿題', reading: 'しゅくだい', meaning: 'homework', lesson: 6, emoji: '📝' },
+            
+            // Lesson 7 - Family & Giving/Receiving
+            { kanji: '切ります', reading: 'きります', meaning: 'cut', lesson: 7, emoji: '✂️' },
+            { kanji: '送ります', reading: 'おくります', meaning: 'send', lesson: 7, emoji: '📤' },
+            { kanji: '貸します', reading: 'かします', meaning: 'lend', lesson: 7, emoji: '🤲' },
+            { kanji: '借ります', reading: 'かります', meaning: 'borrow', lesson: 7, emoji: '🙏' },
+            { kanji: '教えます', reading: 'おしえます', meaning: 'teach', lesson: 7, emoji: '👨‍🏫' },
+            { kanji: '習います', reading: 'ならいます', meaning: 'learn', lesson: 7, emoji: '📚' },
+            { kanji: '手', reading: 'て', meaning: 'hand', lesson: 7, emoji: '✋' },
+            { kanji: '紙', reading: 'かみ', meaning: 'paper', lesson: 7, emoji: '📄' },
+            { kanji: '花', reading: 'はな', meaning: 'flower', lesson: 7, emoji: '🌸' },
+            { kanji: '荷物', reading: 'にもつ', meaning: 'luggage', lesson: 7, emoji: '🧳' },
+            { kanji: 'お金', reading: 'おかね', meaning: 'money', lesson: 7, emoji: '💴' },
+            { kanji: '切符', reading: 'きっぷ', meaning: 'ticket', lesson: 7, emoji: '🎫' },
+            { kanji: '父', reading: 'ちち', meaning: 'father (my)', lesson: 7, emoji: '👨' },
+            { kanji: '母', reading: 'はは', meaning: 'mother (my)', lesson: 7, emoji: '👩' },
+            { kanji: 'お父さん', reading: 'おとうさん', meaning: 'father', lesson: 7, emoji: '👴' },
+            { kanji: 'お母さん', reading: 'おかあさん', meaning: 'mother', lesson: 7, emoji: '👵' },
+            { kanji: '兄', reading: 'あに', meaning: 'elder brother', lesson: 7, emoji: '👦' },
+            { kanji: '姉', reading: 'あね', meaning: 'elder sister', lesson: 7, emoji: '👧' },
+            { kanji: '弟', reading: 'おとうと', meaning: 'younger brother', lesson: 7, emoji: '👦' },
+            { kanji: '妹', reading: 'いもうと', meaning: 'younger sister', lesson: 7, emoji: '👧' },
+            { kanji: '両親', reading: 'りょうしん', meaning: 'parents', lesson: 7, emoji: '👨‍👩‍👧' },
+            { kanji: '兄弟', reading: 'きょうだい', meaning: 'siblings', lesson: 7, emoji: '👫' },
+            { kanji: '夫婦', reading: 'ふうふ', meaning: 'married couple', lesson: 7, emoji: '💑' },
+            { kanji: '娘', reading: 'むすめ', meaning: 'daughter', lesson: 7, emoji: '👧' },
+            { kanji: '息子', reading: 'むすこ', meaning: 'son', lesson: 7, emoji: '👦' },
+            
+            // Lesson 8 - Adjectives & Colors
+            { kanji: '静か', reading: 'しずか', meaning: 'quiet', lesson: 8, emoji: '🤫' },
+            { kanji: '有名', reading: 'ゆうめい', meaning: 'famous', lesson: 8, emoji: '⭐' },
+            { kanji: '親切', reading: 'しんせつ', meaning: 'kind', lesson: 8, emoji: '💕' },
+            { kanji: '元気', reading: 'げんき', meaning: 'healthy, energetic', lesson: 8, emoji: '💪' },
+            { kanji: '暇', reading: 'ひま', meaning: 'free (time)', lesson: 8, emoji: '😌' },
+            { kanji: '便利', reading: 'べんり', meaning: 'convenient', lesson: 8, emoji: '👍' },
+            { kanji: '大きい', reading: 'おおきい', meaning: 'big', lesson: 8, emoji: '🐘' },
+            { kanji: '小さい', reading: 'ちいさい', meaning: 'small', lesson: 8, emoji: '🐜' },
+            { kanji: '新しい', reading: 'あたらしい', meaning: 'new', lesson: 8, emoji: '✨' },
+            { kanji: '古い', reading: 'ふるい', meaning: 'old', lesson: 8, emoji: '🏚️' },
+            { kanji: '暑い', reading: 'あつい', meaning: 'hot (weather)', lesson: 8, emoji: '🥵' },
+            { kanji: '寒い', reading: 'さむい', meaning: 'cold (weather)', lesson: 8, emoji: '🥶' },
+            { kanji: '難しい', reading: 'むずかしい', meaning: 'difficult', lesson: 8, emoji: '😰' },
+            { kanji: '易しい', reading: 'やさしい', meaning: 'easy', lesson: 8, emoji: '😊' },
+            { kanji: '高い', reading: 'たかい', meaning: 'expensive, tall', lesson: 8, emoji: '📈' },
+            { kanji: '安い', reading: 'やすい', meaning: 'cheap', lesson: 8, emoji: '💰' },
+            { kanji: '忙しい', reading: 'いそがしい', meaning: 'busy', lesson: 8, emoji: '🏃' },
+            { kanji: '楽しい', reading: 'たのしい', meaning: 'fun, enjoyable', lesson: 8, emoji: '🎉' },
+            { kanji: '白い', reading: 'しろい', meaning: 'white', lesson: 8, emoji: '⬜' },
+            { kanji: '黒い', reading: 'くろい', meaning: 'black', lesson: 8, emoji: '⬛' },
+            { kanji: '赤い', reading: 'あかい', meaning: 'red', lesson: 8, emoji: '🔴' },
+            { kanji: '青い', reading: 'あおい', meaning: 'blue', lesson: 8, emoji: '🔵' },
+            { kanji: '桜', reading: 'さくら', meaning: 'cherry blossom', lesson: 8, emoji: '🌸' },
+            { kanji: '山', reading: 'やま', meaning: 'mountain', lesson: 8, emoji: '⛰️' },
+            { kanji: '町', reading: 'まち', meaning: 'town', lesson: 8, emoji: '🏘️' },
+            
+            // Lesson 9 - Likes & Hobbies
+            { kanji: '好き', reading: 'すき', meaning: 'like', lesson: 9, emoji: '❤️' },
+            { kanji: '嫌い', reading: 'きらい', meaning: 'dislike', lesson: 9, emoji: '💔' },
+            { kanji: '上手', reading: 'じょうず', meaning: 'good at', lesson: 9, emoji: '👏' },
+            { kanji: '下手', reading: 'へた', meaning: 'poor at', lesson: 9, emoji: '😅' },
+            { kanji: '飲み物', reading: 'のみもの', meaning: 'drinks', lesson: 9, emoji: '🥤' },
+            { kanji: '料理', reading: 'りょうり', meaning: 'cooking', lesson: 9, emoji: '🍳' },
+            { kanji: '野球', reading: 'やきゅう', meaning: 'baseball', lesson: 9, emoji: '⚾' },
+            { kanji: '旅行', reading: 'りょこう', meaning: 'travel', lesson: 9, emoji: '✈️' },
+            { kanji: '音楽', reading: 'おんがく', meaning: 'music', lesson: 9, emoji: '🎵' },
+            { kanji: '歌', reading: 'うた', meaning: 'song', lesson: 9, emoji: '🎤' },
+            { kanji: '歌舞伎', reading: 'かぶき', meaning: 'Kabuki', lesson: 9, emoji: '🎭' },
+            { kanji: '絵', reading: 'え', meaning: 'picture', lesson: 9, emoji: '🖼️' },
+            { kanji: '字', reading: 'じ', meaning: 'character', lesson: 9, emoji: '🔤' },
+            { kanji: '漢字', reading: 'かんじ', meaning: 'kanji', lesson: 9, emoji: '🇯🇵' },
+            { kanji: '時間', reading: 'じかん', meaning: 'time', lesson: 9, emoji: '⏰' },
+            { kanji: '用事', reading: 'ようじ', meaning: 'errand', lesson: 9, emoji: '📋' },
+            { kanji: '約束', reading: 'やくそく', meaning: 'promise', lesson: 9, emoji: '🤞' },
+            { kanji: '主人', reading: 'しゅじん', meaning: 'husband', lesson: 9, emoji: '👨' },
+            { kanji: '家内', reading: 'かない', meaning: 'wife (my)', lesson: 9, emoji: '👩' },
+            { kanji: '子ども', reading: 'こども', meaning: 'child', lesson: 9, emoji: '👶' },
+            { kanji: '少し', reading: 'すこし', meaning: 'a little', lesson: 9, emoji: '🤏' },
+            { kanji: '全然', reading: 'ぜんぜん', meaning: 'not at all', lesson: 9, emoji: '❌' },
+            { kanji: '早く', reading: 'はやく', meaning: 'early, fast', lesson: 9, emoji: '⏩' },
+            
+            // Lesson 10 - Location & Existence
+            { kanji: '男の人', reading: 'おとこのひと', meaning: 'man', lesson: 10, emoji: '👨' },
+            { kanji: '女の人', reading: 'おんなのひと', meaning: 'woman', lesson: 10, emoji: '👩' },
+            { kanji: '男の子', reading: 'おとこのこ', meaning: 'boy', lesson: 10, emoji: '👦' },
+            { kanji: '女の子', reading: 'おんなのこ', meaning: 'girl', lesson: 10, emoji: '👧' },
+            { kanji: '犬', reading: 'いぬ', meaning: 'dog', lesson: 10, emoji: '🐕' },
+            { kanji: '猫', reading: 'ねこ', meaning: 'cat', lesson: 10, emoji: '🐈' },
+            { kanji: '木', reading: 'き', meaning: 'tree', lesson: 10, emoji: '🌲' },
+            { kanji: '物', reading: 'もの', meaning: 'thing', lesson: 10, emoji: '📦' },
+            { kanji: '電池', reading: 'でんち', meaning: 'battery', lesson: 10, emoji: '🔋' },
+            { kanji: '箱', reading: 'はこ', meaning: 'box', lesson: 10, emoji: '📦' },
+            { kanji: '棚', reading: 'たな', meaning: 'shelf', lesson: 10, emoji: '🗄️' },
+            { kanji: '窓', reading: 'まど', meaning: 'window', lesson: 10, emoji: '🪟' },
+            { kanji: '公園', reading: 'こうえん', meaning: 'park', lesson: 10, emoji: '🏞️' },
+            { kanji: '喫茶店', reading: 'きっさてん', meaning: 'cafe', lesson: 10, emoji: '☕' },
+            { kanji: '上', reading: 'うえ', meaning: 'above, on', lesson: 10, emoji: '⬆️' },
+            { kanji: '下', reading: 'した', meaning: 'below, under', lesson: 10, emoji: '⬇️' },
+            { kanji: '前', reading: 'まえ', meaning: 'front, before', lesson: 10, emoji: '⏪' },
+            { kanji: '右', reading: 'みぎ', meaning: 'right', lesson: 10, emoji: '👉' },
+            { kanji: '左', reading: 'ひだり', meaning: 'left', lesson: 10, emoji: '👈' },
+            { kanji: '中', reading: 'なか', meaning: 'inside', lesson: 10, emoji: '🔲' },
+            { kanji: '外', reading: 'そと', meaning: 'outside', lesson: 10, emoji: '🚪' },
+            { kanji: '隣', reading: 'となり', meaning: 'next door', lesson: 10, emoji: '🏠' },
+            { kanji: '近く', reading: 'ちかく', meaning: 'near', lesson: 10, emoji: '📍' },
+            { kanji: '間', reading: 'あいだ', meaning: 'between', lesson: 10, emoji: '↔️' },
+            { kanji: '玄関', reading: 'げんかん', meaning: 'entrance hall', lesson: 10, emoji: '🚪' }
+        ];
+        
+        // Question types
+        const questionTypes = [
+            { type: 'meaning', label: 'いみ → かんじ', icon: '📖', badge: 'いみ', instruction: 'つぎの いみの かんじを えらんでください' },
+            { type: 'reading', label: 'よみかた → かんじ', icon: '📝', badge: 'よみ', instruction: 'つぎの よみかたの かんじを えらんでください' },
+            { type: 'kanji', label: 'かんじ → いみ', icon: '🔤', badge: 'かんじ', instruction: 'つぎの かんじの いみを えらんでください' }
+        ];
+        
+        // Quiz state
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let userAnswers = [];
+        const TOTAL_QUESTIONS = 40;
+        const PASS_PERCENT = 80;
+        
+        // Shuffle function
+        function shuffle(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+        
+        // Generate questions ensuring coverage from all lessons
+        function generateQuestions() {
+            currentQuestions = [];
+            
+            // Get kanji from each lesson
+            const lessonGroups = {};
+            for (let i = 6; i <= 10; i++) {
+                lessonGroups[i] = kanjiData.filter(k => k.lesson === i);
+            }
+            
+            // Distribute questions: 8 per lesson
+            const questionsPerLesson = 8;
+            let selectedKanji = [];
+            
+            for (let lesson = 6; lesson <= 10; lesson++) {
+                const shuffledLesson = shuffle(lessonGroups[lesson]);
+                selectedKanji = selectedKanji.concat(shuffledLesson.slice(0, questionsPerLesson));
+            }
+            
+            // Shuffle all selected kanji
+            selectedKanji = shuffle(selectedKanji);
+            
+            // Create questions
+            for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+                const kanji = selectedKanji[i];
+                const questionType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+                
+                // Generate wrong answers from same lesson for more challenge
+                let wrongAnswers = [];
+                const sameLesson = kanjiData.filter(k => k.lesson === kanji.lesson && k.kanji !== kanji.kanji);
+                const otherKanji = kanjiData.filter(k => k.kanji !== kanji.kanji);
+                
+                // Mix: 2 from same lesson, 1 from different
+                const shuffledSame = shuffle(sameLesson);
+                const shuffledOther = shuffle(otherKanji.filter(k => k.lesson !== kanji.lesson));
+                
+                if (questionType.type === 'meaning' || questionType.type === 'reading') {
+                    wrongAnswers = [
+                        ...shuffledSame.slice(0, 2).map(k => k.kanji),
+                        ...shuffledOther.slice(0, 1).map(k => k.kanji)
+                    ];
+                } else {
+                    wrongAnswers = [
+                        ...shuffledSame.slice(0, 2).map(k => k.meaning),
+                        ...shuffledOther.slice(0, 1).map(k => k.meaning)
+                    ];
+                }
+                
+                currentQuestions.push({
+                    ...kanji,
+                    questionType: questionType,
+                    correctAnswer: questionType.type === 'kanji' ? kanji.meaning : kanji.kanji,
+                    options: shuffle([
+                        questionType.type === 'kanji' ? kanji.meaning : kanji.kanji,
+                        ...wrongAnswers.slice(0, 3)
+                    ])
+                });
+            }
+        }
+        
+        // Start quiz
+        function startQuiz() {
+            generateQuestions();
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            userAnswers = new Array(TOTAL_QUESTIONS).fill(null);
+            
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('questionScreen').classList.remove('hidden');
+            document.getElementById('resultsScreen').classList.add('hidden');
+            
+            displayQuestion();
+        }
+        
+        // Display question
+        function displayQuestion() {
+            const question = currentQuestions[currentQuestionIndex];
+            const qType = question.questionType;
+            
+            // Update header
+            document.getElementById('questionTypeIcon').textContent = qType.icon;
+            document.getElementById('questionTypeLabel').textContent = qType.label;
+            document.getElementById('questionNumber').textContent = `もんだい ${currentQuestionIndex + 1}`;
+            document.getElementById('lessonIndicator').textContent = `L${question.lesson}`;
+            document.getElementById('questionInstruction').textContent = qType.instruction;
+            
+            // Update badge
+            const badge = document.getElementById('questionTypeBadge');
+            badge.textContent = qType.badge;
+            badge.className = 'question-type ' + qType.type;
+            
+            // Show appropriate prompt
+            const kanjiPrompt = document.getElementById('kanjiPrompt');
+            const meaningPrompt = document.getElementById('meaningPrompt');
+            const readingPrompt = document.getElementById('readingPrompt');
+            
+            kanjiPrompt.classList.add('hidden');
+            meaningPrompt.classList.add('hidden');
+            readingPrompt.classList.add('hidden');
+            
+            if (qType.type === 'meaning') {
+                meaningPrompt.textContent = `${question.emoji} ${question.meaning}`;
+                meaningPrompt.classList.remove('hidden');
+            } else if (qType.type === 'reading') {
+                readingPrompt.textContent = question.reading;
+                readingPrompt.classList.remove('hidden');
+            } else {
+                kanjiPrompt.textContent = question.kanji;
+                kanjiPrompt.classList.remove('hidden');
+            }
+            
+            // Generate options
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(index, option);
+                
+                // Check if this was previously answered
+                if (userAnswers[currentQuestionIndex] !== null) {
+                    if (option === question.correctAnswer) {
+                        btn.classList.add('correct');
+                    } else if (option === userAnswers[currentQuestionIndex] && option !== question.correctAnswer) {
+                        btn.classList.add('incorrect');
+                    }
+                    btn.style.pointerEvents = 'none';
+                }
+                
+                optionsGrid.appendChild(btn);
+            });
+            
+            // Update progress
+            document.getElementById('currentQ').textContent = currentQuestionIndex + 1;
+            document.getElementById('progressFill').style.width = `${((currentQuestionIndex + 1) / TOTAL_QUESTIONS) * 100}%`;
+            
+            // Update navigation
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            document.getElementById('nextBtn').disabled = userAnswers[currentQuestionIndex] === null;
+            document.getElementById('nextBtn').textContent = currentQuestionIndex === TOTAL_QUESTIONS - 1 ? 'けっか' : 'つぎ';
+            
+            // Update feedback
+            const feedback = document.getElementById('feedback');
+            if (userAnswers[currentQuestionIndex] !== null) {
+                showFeedback(userAnswers[currentQuestionIndex] === question.correctAnswer, question);
+            } else {
+                feedback.classList.remove('show');
+            }
+        }
+        
+        // Select answer
+        function selectAnswer(index, answer) {
+            const question = currentQuestions[currentQuestionIndex];
+            const isCorrect = answer === question.correctAnswer;
+            
+            // Store answer
+            if (userAnswers[currentQuestionIndex] === null) {
+                userAnswers[currentQuestionIndex] = answer;
+                if (isCorrect) {
+                    correctAnswers++;
+                    document.getElementById('correctCount').textContent = correctAnswers;
+                }
+            }
+            
+            // Update button styles
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach((btn, i) => {
+                const optionText = btn.textContent;
+                if (optionText === question.correctAnswer) {
+                    btn.classList.add('correct');
+                } else if (i === index && !isCorrect) {
+                    btn.classList.add('incorrect');
+                }
+                btn.style.pointerEvents = 'none';
+            });
+            
+            // Show feedback
+            showFeedback(isCorrect, question);
+            
+            // Enable next button
+            document.getElementById('nextBtn').disabled = false;
+        }
+        
+        // Show feedback
+        function showFeedback(isCorrect, question) {
+            const feedback = document.getElementById('feedback');
+            const feedbackText = document.getElementById('feedbackText');
+            
+            feedback.classList.remove('correct', 'incorrect');
+            feedback.classList.add(isCorrect ? 'correct' : 'incorrect');
+            
+            if (isCorrect) {
+                feedbackText.innerHTML = `✨ せいかい！ <strong>${question.kanji}</strong>（${question.reading}）= ${question.meaning} [L${question.lesson}]`;
+            } else {
+                feedbackText.innerHTML = `❌ ざんねん！ せいかいは <strong>${question.kanji}</strong>（${question.reading}）= ${question.meaning} [L${question.lesson}]`;
+            }
+            
+            feedback.classList.add('show');
+        }
+        
+        // Navigation
+        function nextQuestion() {
+            if (currentQuestionIndex < TOTAL_QUESTIONS - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+        
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+        
+        // Show results
+        function showResults() {
+            document.getElementById('questionScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            const percent = Math.round((correctAnswers / TOTAL_QUESTIONS) * 100);
+            const passed = percent >= PASS_PERCENT;
+            
+            const resultIcon = document.getElementById('resultIcon');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultScore = document.getElementById('resultScore');
+            const resultMessage = document.getElementById('resultMessage');
+            
+            resultIcon.textContent = passed ? '🎉' : '📚';
+            resultTitle.textContent = passed ? 'ごうかく！' : 'もう いちど！';
+            resultTitle.className = 'result-title ' + (passed ? 'pass' : 'fail');
+            resultScore.textContent = `${percent}%`;
+            resultScore.className = 'result-score ' + (passed ? 'pass' : 'fail');
+            
+            if (passed) {
+                resultMessage.innerHTML = 'すばらしい！ だい6-10かの かんじを よく おぼえていますね！<br><em>Excellent! You know the kanji from Lessons 6-10 well!</em>';
+            } else {
+                resultMessage.innerHTML = `がんばって！ 80%が ごうかくです。<br><em>Keep trying! You need 80% to pass.</em>`;
+            }
+            
+            document.getElementById('finalCorrect').textContent = correctAnswers;
+            document.getElementById('finalIncorrect').textContent = TOTAL_QUESTIONS - correctAnswers;
+            document.getElementById('finalPercent').textContent = `${percent}%`;
+        }
+        
+        // Retry quiz
+        function retryQuiz() {
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            document.getElementById('correctCount').textContent = '0';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('currentQ').textContent = '0';
+        }
+        
+        // Toggle reference
+        function toggleReference() {
+            const refCard = document.getElementById('referenceCard');
+            refCard.classList.toggle('show');
+            const btn = document.querySelector('.reference-btn');
+            btn.textContent = refCard.classList.contains('show') ? '📖 かんじリストを かくす' : '📖 かんじリストを みる';
+        }
+        
+        // Show lesson content
+        function showLesson(lessonNum) {
+            // Update tabs
+            document.querySelectorAll('.lesson-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Hide all lesson contents
+            document.querySelectorAll('.lesson-content').forEach(content => content.classList.add('hidden'));
+            
+            if (lessonNum === 0) {
+                // Show all
+                document.querySelectorAll('.lesson-content').forEach(content => content.classList.remove('hidden'));
+            } else {
+                document.getElementById(`lesson${lessonNum}Content`).classList.remove('hidden');
+            }
+        }
+        
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0 && !document.getElementById('nextBtn').disabled) {
+                    nextQuestion();
+                } else if (diff < 0 && !document.getElementById('prevBtn').disabled) {
+                    prevQuestion();
+                }
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('questionScreen').classList.contains('hidden')) return;
+            
+            if (e.key === 'ArrowRight' && !document.getElementById('nextBtn').disabled) {
+                nextQuestion();
+            } else if (e.key === 'ArrowLeft' && !document.getElementById('prevBtn').disabled) {
+                prevQuestion();
+            } else if (e.key >= '1' && e.key <= '4') {
+                const index = parseInt(e.key) - 1;
+                const buttons = document.querySelectorAll('.option-btn');
+                if (buttons[index] && !buttons[index].classList.contains('correct') && !buttons[index].classList.contains('incorrect')) {
+                    buttons[index].click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
