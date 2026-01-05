@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>どうしのかつよう - Verb Conjugation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1a5a2e 0%, #2d8a4e 50%, #45a049 100%); min-height: 100vh; overflow-x: hidden; }
+        .presentation { width: 100%; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: clamp(10px, 3vw, 40px); }
+        .slide { width: 100%; max-width: 1200px; min-height: calc(100vh - clamp(20px, 6vw, 80px)); background: white; border-radius: clamp(10px, 2vw, 20px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); padding: clamp(15px, 3vw, 50px); display: none; flex-direction: column; }
+        .slide.active { display: flex; animation: slideIn 0.5s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        .slide-header { text-align: center; margin-bottom: clamp(10px, 2vw, 20px); flex-shrink: 0; }
+        .slide-header h2 { font-size: clamp(18px, 3vw, 26px); color: #1a5a2e; margin-bottom: 5px; }
+        .slide-header .subtitle { font-size: clamp(12px, 1.8vw, 16px); color: #666; }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; overflow-y: auto; min-height: 0; gap: clamp(10px, 1.5vw, 15px); }
+        
+        /* Grammar boxes */
+        .grammar-point { background: #f0f9f2; padding: clamp(12px, 2vw, 20px); border-radius: clamp(8px, 1vw, 12px); border-left: clamp(4px, 0.5vw, 6px) solid #2d8a4e; }
+        .grammar-point h3 { font-size: clamp(18px, 3vw, 28px); color: #1a5a2e; margin-bottom: clamp(8px, 1.5vw, 15px); font-weight: 600; }
+        .meaning { font-size: clamp(13px, 1.8vw, 17px); color: #555; margin-bottom: clamp(10px, 1.5vw, 15px); font-style: italic; background: white; padding: clamp(8px, 1vw, 12px); border-radius: 8px; }
+        
+        /* Verb group colors */
+        .group1 { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-left-color: #1976d2; }
+        .group1 h3 { color: #1565c0; }
+        .group2 { background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-left-color: #f57c00; }
+        .group2 h3 { color: #e65100; }
+        .group3 { background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%); border-left-color: #c2185b; }
+        .group3 h3 { color: #ad1457; }
+        
+        /* Tables */
+        .conj-table { width: 100%; border-collapse: collapse; margin: clamp(8px, 1.5vw, 15px) 0; font-size: clamp(11px, 1.5vw, 15px); }
+        .conj-table th, .conj-table td { padding: clamp(5px, 0.8vw, 10px); text-align: center; border: 1px solid #ddd; }
+        .conj-table th { background: #2d8a4e; color: white; font-weight: 600; }
+        .conj-table tr:nth-child(even) { background: #f5f5f5; }
+        .conj-table .g1 { background: #e3f2fd; }
+        .conj-table .g2 { background: #fff3e0; }
+        .conj-table .g3 { background: #fce4ec; }
+        .conj-table .special { background: #ffebee; color: #c62828; font-weight: 600; }
+        .conj-table .header-g1 { background: #1976d2; color: white; }
+        .conj-table .header-g2 { background: #f57c00; color: white; }
+        .conj-table .header-g3 { background: #c2185b; color: white; }
+        
+        /* Highlights */
+        .highlight { background: #fff59d; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+        .highlight-blue { background: #bbdefb; }
+        .highlight-orange { background: #ffe0b2; }
+        .highlight-pink { background: #f8bbd9; }
+        .highlight-green { background: #c8e6c9; }
+        .highlight-red { color: #d32f2f; font-weight: bold; }
+        .highlight-a { background: #ffcdd2; }
+        .highlight-i { background: #c8e6c9; }
+        .highlight-u { background: #bbdefb; }
+        .highlight-e { background: #e1bee7; }
+        .highlight-o { background: #ffe0b2; }
+        
+        /* Pattern boxes */
+        .pattern-box { background: #e8f5e9; padding: clamp(10px, 1.5vw, 15px); border-radius: 10px; margin: clamp(8px, 1vw, 12px) 0; border: 2px dashed #4caf50; }
+        .pattern-box h4 { color: #2e7d32; font-size: clamp(14px, 2vw, 18px); margin-bottom: 8px; }
+        .pattern { font-size: clamp(16px, 2.5vw, 24px); color: #1a5a2e; font-weight: 600; text-align: center; }
+        
+        /* Clue boxes */
+        .clue-box { background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); padding: clamp(10px, 1.5vw, 15px); border-radius: 10px; margin: clamp(8px, 1vw, 12px) 0; border-left: 4px solid #ffc107; }
+        .clue-box h4 { color: #ff8f00; font-size: clamp(13px, 1.8vw, 16px); margin-bottom: 6px; }
+        .clue-box ul { margin-left: clamp(15px, 2vw, 25px); font-size: clamp(12px, 1.6vw, 15px); }
+        .clue-box li { margin: 4px 0; color: #5d4037; }
+        
+        /* Examples */
+        .examples { background: white; padding: clamp(10px, 1.5vw, 15px); border-radius: 10px; }
+        .example { font-size: clamp(13px, 1.8vw, 18px); margin: clamp(6px, 1vw, 10px) 0; padding: clamp(6px, 1vw, 10px); border-left: 3px solid #45a049; background: #fafafa; }
+        .japanese { color: #1a5a2e; font-weight: 600; font-size: clamp(16px, 2.5vw, 22px); margin-bottom: 4px; line-height: 1.4; }
+        .english { color: #666; font-size: clamp(12px, 1.6vw, 15px); }
+        
+        /* Step indicators */
+        .steps { display: flex; flex-wrap: wrap; gap: clamp(8px, 1.5vw, 15px); justify-content: center; margin: clamp(10px, 1.5vw, 15px) 0; }
+        .step { flex: 1; min-width: 120px; max-width: 200px; background: white; padding: clamp(10px, 1.5vw, 15px); border-radius: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .step-num { width: 30px; height: 30px; background: #2d8a4e; color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 8px; }
+        .step-text { font-size: clamp(12px, 1.5vw, 14px); color: #333; }
+        
+        /* Vowel chart */
+        .vowel-chart { display: grid; grid-template-columns: repeat(5, 1fr); gap: clamp(5px, 1vw, 10px); margin: clamp(10px, 1.5vw, 15px) 0; }
+        .vowel-item { padding: clamp(10px, 1.5vw, 20px); border-radius: 10px; text-align: center; }
+        .vowel-item .kana { font-size: clamp(24px, 4vw, 40px); font-weight: bold; }
+        .vowel-item .label { font-size: clamp(10px, 1.4vw, 14px); margin-top: 5px; }
+        .vowel-a { background: #ffcdd2; color: #c62828; }
+        .vowel-i { background: #c8e6c9; color: #2e7d32; }
+        .vowel-u { background: #bbdefb; color: #1565c0; }
+        .vowel-e { background: #e1bee7; color: #7b1fa2; }
+        .vowel-o { background: #ffe0b2; color: #e65100; }
+        
+        /* Arrows */
+        .arrow { font-size: clamp(20px, 3vw, 30px); color: #2d8a4e; text-align: center; }
+        .flow { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: clamp(5px, 1vw, 10px); margin: clamp(8px, 1vw, 12px) 0; }
+        .flow-item { background: #f0f9f2; padding: clamp(8px, 1vw, 12px) clamp(12px, 1.5vw, 18px); border-radius: 8px; font-size: clamp(14px, 2vw, 18px); font-weight: 600; color: #1a5a2e; }
+        
+        /* Warning/Note boxes */
+        .note { background: #e3f2fd; padding: clamp(8px, 1.2vw, 12px); border-radius: 8px; margin-top: clamp(8px, 1vw, 12px); border-left: 4px solid #2196f3; font-size: clamp(12px, 1.6vw, 14px); color: #1565c0; }
+        .warning { background: #ffebee; padding: clamp(8px, 1.2vw, 12px); border-radius: 8px; margin-top: clamp(8px, 1vw, 12px); border-left: 4px solid #f44336; font-size: clamp(12px, 1.6vw, 14px); color: #c62828; }
+        .tip { background: #f3e5f5; padding: clamp(8px, 1.2vw, 12px); border-radius: 8px; margin-top: clamp(8px, 1vw, 12px); border-left: 4px solid #9c27b0; font-size: clamp(12px, 1.6vw, 14px); color: #7b1fa2; }
+        
+        /* Navigation */
+        .navigation { display: flex; justify-content: space-between; gap: 10px; margin-top: clamp(10px, 1.5vw, 15px); flex-shrink: 0; }
+        button { padding: clamp(8px, 1.5vw, 12px) clamp(15px, 3vw, 30px); font-size: clamp(13px, 1.8vw, 16px); border: none; border-radius: 10px; cursor: pointer; background: #2d8a4e; color: white; transition: all 0.3s; font-weight: 600; flex: 1; max-width: 130px; }
+        button:hover { background: #1a5a2e; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        button:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+        .slide-counter { text-align: center; color: #999; margin-top: clamp(5px, 1vw, 10px); font-size: clamp(11px, 1.4vw, 14px); flex-shrink: 0; }
+        
+        /* Title slide */
+        .title-slide { justify-content: center; text-align: center; }
+        .title-slide h1 { font-size: clamp(28px, 5vw, 56px); color: #1a5a2e; margin-bottom: 15px; }
+        .title-slide p { font-size: clamp(14px, 2.5vw, 24px); color: #666; margin-top: 15px; }
+        .title-slide .emoji { font-size: clamp(40px, 6vw, 70px); margin: 20px 0; }
+        
+        /* Grid layouts */
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: clamp(10px, 1.5vw, 15px); }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: clamp(8px, 1.2vw, 12px); }
+        
+        /* Compact table for mobile */
+        .compact-list { display: flex; flex-wrap: wrap; gap: clamp(5px, 1vw, 10px); justify-content: center; }
+        .compact-item { background: #f5f5f5; padding: clamp(4px, 0.8vw, 8px) clamp(8px, 1.2vw, 15px); border-radius: 6px; font-size: clamp(13px, 1.8vw, 16px); }
+        
+        /* Scrollable table container */
+        .table-scroll { overflow-x: auto; margin: clamp(8px, 1vw, 12px) 0; }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .navigation { flex-wrap: wrap; }
+            button { max-width: none; min-width: 45%; }
+            .conj-table { font-size: 10px; }
+            .conj-table th, .conj-table td { padding: 3px 2px; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .steps { flex-direction: column; align-items: center; }
+            .step { max-width: 100%; }
+            .vowel-chart { grid-template-columns: repeat(5, 1fr); gap: 3px; }
+            .vowel-item { padding: 8px 4px; }
+            .vowel-item .kana { font-size: 20px; }
+            .vowel-item .label { font-size: 9px; }
+        }
+        @media (min-width: 1400px) {
+            .slide { max-width: 1500px; padding: 50px 70px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <div class="slide-content">
+                <h1>どうしの かつよう</h1>
+                <div class="emoji">📚🔄✨</div>
+                <h1 style="font-size: clamp(24px, 4vw, 44px);">Verb Conjugation</h1>
+                <p>N5〜N4 みんなのにほんご</p>
+                <p style="color: #2d8a4e; margin-top: 30px;">Step-by-Step Guide to Japanese Verbs</p>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()" disabled>まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span id="current">1</span> / <span id="total">30</span></div>
+        </div>
+
+        <!-- Slide 2: Overview -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>📋 もくじ - Contents</h2>
+            </div>
+            <div class="slide-content">
+                <div class="grid-2">
+                    <div class="grammar-point">
+                        <h3>Part 1: どうしの グループ</h3>
+                        <ul style="margin-left: 20px; line-height: 1.8;">
+                            <li>Group 1 (ます→ります)</li>
+                            <li>Group 2 (ます→ます)</li>
+                            <li>Group 3 (Irregular)</li>
+                            <li>10+ Examples Each</li>
+                        </ul>
+                    </div>
+                    <div class="grammar-point">
+                        <h3>Part 2: あいうえお System</h3>
+                        <ul style="margin-left: 20px; line-height: 1.8;">
+                            <li>あ - ない form</li>
+                            <li>い - Stem form</li>
+                            <li>う - Casual form</li>
+                            <li>え - Potential form</li>
+                            <li>お - Volitional form</li>
+                        </ul>
+                    </div>
+                    <div class="grammar-point">
+                        <h3>Part 3: Conjugations</h3>
+                        <ul style="margin-left: 20px; line-height: 1.8;">
+                            <li>Stem → ます form</li>
+                            <li>ます → Casual form</li>
+                            <li>Potential form</li>
+                            <li>Volitional form</li>
+                            <li>ない form</li>
+                        </ul>
+                    </div>
+                    <div class="grammar-point" style="background: #e8f5e9;">
+                        <h3>Part 4: て & た Forms</h3>
+                        <ul style="margin-left: 20px; line-height: 1.8;">
+                            <li>て form (from casual)</li>
+                            <li>た form (past casual)</li>
+                            <li>Usage patterns</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>2</span> / 30</div>
+        </div>
+
+        <!-- Slide 3: The 3 Verb Groups Overview -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🔢 The 3 Verb Groups</h2>
+                <div class="subtitle">Using ます Form to Identify</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point">
+                    <h3>Why Use ます Form?</h3>
+                    <div class="meaning">N5 and N4 students learn ます form first. It's easier to identify groups from the polite form!</div>
+                </div>
+                <div class="grid-3">
+                    <div class="grammar-point group1">
+                        <h3>グループ 1</h3>
+                        <p style="font-size: clamp(14px, 2vw, 18px); margin-bottom: 10px;"><strong>〜います</strong></p>
+                        <p style="font-size: clamp(12px, 1.6vw, 15px);">Stem ends in い-sound</p>
+                        <div style="margin-top: 10px; text-align: center;">
+                            <span class="highlight highlight-blue">か<strong>き</strong>ます</span><br>
+                            <span class="highlight highlight-blue">の<strong>み</strong>ます</span><br>
+                            <span class="highlight highlight-blue">はな<strong>し</strong>ます</span>
+                        </div>
+                    </div>
+                    <div class="grammar-point group2">
+                        <h3>グループ 2</h3>
+                        <p style="font-size: clamp(14px, 2vw, 18px); margin-bottom: 10px;"><strong>〜ます</strong></p>
+                        <p style="font-size: clamp(12px, 1.6vw, 15px);">Stem ends in え or い</p>
+                        <div style="margin-top: 10px; text-align: center;">
+                            <span class="highlight highlight-orange">た<strong>べ</strong>ます</span><br>
+                            <span class="highlight highlight-orange"><strong>み</strong>ます</span><br>
+                            <span class="highlight highlight-orange">お<strong>き</strong>ます</span>
+                        </div>
+                    </div>
+                    <div class="grammar-point group3">
+                        <h3>グループ 3</h3>
+                        <p style="font-size: clamp(14px, 2vw, 18px); margin-bottom: 10px;"><strong>Irregular</strong></p>
+                        <p style="font-size: clamp(12px, 1.6vw, 15px);">Only 2 verbs!</p>
+                        <div style="margin-top: 10px; text-align: center;">
+                            <span class="highlight highlight-pink">します</span><br>
+                            <span class="highlight highlight-pink">きます</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="tip">💡 <strong>Key Difference:</strong> Group 1 stem always ends in an <strong>い-row</strong> sound (き、み、し、ち、に、び、り). Group 2 stem ends in え or い vowel sound directly!</div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>3</span> / 30</div>
+        </div>
+
+        <!-- Slide 4: Group 1 Examples -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🔵 グループ 1 - Examples</h2>
+                <div class="subtitle">10+ Common Verbs (Stem ends in い-row)</div>
+            </div>
+            <div class="slide-content">
+                <div class="table-scroll">
+                    <table class="conj-table">
+                        <tr><th>#</th><th>ます Form</th><th>Stem</th><th>Meaning</th><th>Note</th></tr>
+                        <tr class="g1"><td>1</td><td>か<strong>き</strong>ます</td><td>かき</td><td>to write</td><td></td></tr>
+                        <tr class="g1"><td>2</td><td>の<strong>み</strong>ます</td><td>のみ</td><td>to drink</td><td></td></tr>
+                        <tr class="g1"><td>3</td><td>はな<strong>し</strong>ます</td><td>はなし</td><td>to speak</td><td></td></tr>
+                        <tr class="g1"><td>4</td><td>ま<strong>ち</strong>ます</td><td>まち</td><td>to wait</td><td></td></tr>
+                        <tr class="g1"><td>5</td><td>い<strong>き</strong>ます</td><td>いき</td><td>to go</td><td class="special">⚠️ て form irregular</td></tr>
+                        <tr class="g1"><td>6</td><td>か<strong>い</strong>ます</td><td>かい</td><td>to buy</td><td></td></tr>
+                        <tr class="g1"><td>7</td><td>よ<strong>み</strong>ます</td><td>よみ</td><td>to read</td><td></td></tr>
+                        <tr class="g1"><td>8</td><td>あそ<strong>び</strong>ます</td><td>あそび</td><td>to play</td><td></td></tr>
+                        <tr class="g1"><td>9</td><td>の<strong>り</strong>ます</td><td>のり</td><td>to ride</td><td></td></tr>
+                        <tr class="g1"><td>10</td><td>およ<strong>ぎ</strong>ます</td><td>およぎ</td><td>to swim</td><td></td></tr>
+                        <tr class="special"><td>11</td><td>はい<strong>り</strong>ます</td><td>はいり</td><td>to enter</td><td>⚠️ Looks like G2!</td></tr>
+                        <tr class="special"><td>12</td><td>かえ<strong>り</strong>ます</td><td>かえり</td><td>to return</td><td>⚠️ Looks like G2!</td></tr>
+                        <tr class="special"><td>13</td><td>し<strong>り</strong>ます</td><td>しり</td><td>to know</td><td>⚠️ Looks like G2!</td></tr>
+                    </table>
+                </div>
+                <div class="warning">⚠️ <strong>Special Verbs:</strong> はいります、かえります、しります look like Group 2 (ending in いる/える) but are actually Group 1! Notice the stem ends in <strong>り</strong> (い-row).</div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>4</span> / 30</div>
+        </div>
+
+        <!-- Slide 5: Group 2 Examples -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🟠 グループ 2 - Examples</h2>
+                <div class="subtitle">10+ Common Verbs (Stem ends in え/い vowel)</div>
+            </div>
+            <div class="slide-content">
+                <div class="table-scroll">
+                    <table class="conj-table">
+                        <tr><th>#</th><th>ます Form</th><th>Stem</th><th>Meaning</th><th>Note</th></tr>
+                        <tr class="g2"><td>1</td><td>た<strong>べ</strong>ます</td><td>たべ</td><td>to eat</td><td>え ending</td></tr>
+                        <tr class="g2"><td>2</td><td><strong>み</strong>ます</td><td>み</td><td>to see/watch</td><td>い ending</td></tr>
+                        <tr class="g2"><td>3</td><td>お<strong>き</strong>ます</td><td>おき</td><td>to wake up</td><td>い ending</td></tr>
+                        <tr class="g2"><td>4</td><td><strong>ね</strong>ます</td><td>ね</td><td>to sleep</td><td>え ending</td></tr>
+                        <tr class="g2"><td>5</td><td>あ<strong>け</strong>ます</td><td>あけ</td><td>to open</td><td>え ending</td></tr>
+                        <tr class="g2"><td>6</td><td>し<strong>め</strong>ます</td><td>しめ</td><td>to close</td><td>え ending</td></tr>
+                        <tr class="g2"><td>7</td><td>お<strong>り</strong>ます</td><td>おり</td><td>to get off</td><td>い ending</td></tr>
+                        <tr class="g2"><td>8</td><td><strong>で</strong>ます</td><td>で</td><td>to exit</td><td>え ending</td></tr>
+                        <tr class="g2"><td>9</td><td><strong>き</strong>ます</td><td>き</td><td>to wear</td><td>い ending</td></tr>
+                        <tr class="g2"><td>10</td><td><strong>い</strong>ます</td><td>い</td><td>to exist (living)</td><td>い ending</td></tr>
+                        <tr class="g2"><td>11</td><td>おし<strong>え</strong>ます</td><td>おしえ</td><td>to teach</td><td>え ending</td></tr>
+                        <tr class="g2"><td>12</td><td>つ<strong>け</strong>ます</td><td>つけ</td><td>to turn on</td><td>え ending</td></tr>
+                    </table>
+                </div>
+                <div class="clue-box">
+                    <h4>🔍 How to Identify Group 2:</h4>
+                    <ul>
+                        <li>Remove ます → stem ends in <strong>え</strong> or <strong>い</strong> vowel sound</li>
+                        <li>The stem itself (not the consonant) ends in the vowel</li>
+                        <li>Examples: たべ(e), み(i), ね(e), おき(i)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>5</span> / 30</div>
+        </div>
+
+        <!-- Slide 6: Group 3 Examples -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🩷 グループ 3 - Examples</h2>
+                <div class="subtitle">Irregular Verbs (Only 2 + Compounds)</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point group3">
+                    <h3>The Only 2 Irregular Verbs</h3>
+                    <div class="grid-2" style="margin-top: 15px;">
+                        <div style="text-align: center; padding: 20px; background: white; border-radius: 10px;">
+                            <div style="font-size: clamp(28px, 4vw, 40px); color: #c2185b;">します</div>
+                            <div style="font-size: clamp(14px, 2vw, 18px); color: #666; margin-top: 10px;">to do</div>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: white; border-radius: 10px;">
+                            <div style="font-size: clamp(28px, 4vw, 40px); color: #c2185b;">きます</div>
+                            <div style="font-size: clamp(14px, 2vw, 18px); color: #666; margin-top: 10px;">to come</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-scroll">
+                    <table class="conj-table">
+                        <tr><th>#</th><th>ます Form</th><th>Meaning</th><th>Base Word</th></tr>
+                        <tr class="g3"><td>1</td><td>します</td><td>to do</td><td>する</td></tr>
+                        <tr class="g3"><td>2</td><td>きます</td><td>to come</td><td>くる</td></tr>
+                        <tr class="g3"><td>3</td><td>べんきょうします</td><td>to study</td><td>べんきょう + する</td></tr>
+                        <tr class="g3"><td>4</td><td>りょこうします</td><td>to travel</td><td>りょこう + する</td></tr>
+                        <tr class="g3"><td>5</td><td>うんどうします</td><td>to exercise</td><td>うんどう + する</td></tr>
+                        <tr class="g3"><td>6</td><td>そうじします</td><td>to clean</td><td>そうじ + する</td></tr>
+                        <tr class="g3"><td>7</td><td>せんたくします</td><td>to do laundry</td><td>せんたく + する</td></tr>
+                        <tr class="g3"><td>8</td><td>りょうりします</td><td>to cook</td><td>りょうり + する</td></tr>
+                        <tr class="g3"><td>9</td><td>かいものします</td><td>to shop</td><td>かいもの + する</td></tr>
+                        <tr class="g3"><td>10</td><td>けっこんします</td><td>to marry</td><td>けっこん + する</td></tr>
+                    </table>
+                </div>
+                <div class="note">💡 All 〜します compound verbs follow the same irregular pattern as します!</div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>6</span> / 30</div>
+        </div>
+
+        <!-- Slide 7: All Groups Comparison Table -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>📊 All Groups Side by Side</h2>
+                <div class="subtitle">Complete Comparison</div>
+            </div>
+            <div class="slide-content">
+                <div class="table-scroll">
+                    <table class="conj-table">
+                        <tr>
+                            <th class="header-g1">Group 1 (〜います)</th>
+                            <th class="header-g2">Group 2 (〜ます)</th>
+                            <th class="header-g3">Group 3 (Irregular)</th>
+                        </tr>
+                        <tr><td class="g1">かきます (to write)</td><td class="g2">たべます (to eat)</td><td class="g3">します (to do)</td></tr>
+                        <tr><td class="g1">のみます (to drink)</td><td class="g2">みます (to see)</td><td class="g3">きます (to come)</td></tr>
+                        <tr><td class="g1">はなします (to speak)</td><td class="g2">おきます (to wake)</td><td class="g3">べんきょうします</td></tr>
+                        <tr><td class="g1">まちます (to wait)</td><td class="g2">ねます (to sleep)</td><td class="g3">りょこうします</td></tr>
+                        <tr><td class="g1">いきます (to go)</td><td class="g2">あけます (to open)</td><td class="g3">うんどうします</td></tr>
+                        <tr><td class="g1">かいます (to buy)</td><td class="g2">しめます (to close)</td><td class="g3">そうじします</td></tr>
+                        <tr><td class="g1">よみます (to read)</td><td class="g2">おります (to get off)</td><td class="g3">せんたくします</td></tr>
+                        <tr><td class="g1">あそびます (to play)</td><td class="g2">でます (to exit)</td><td class="g3">りょうりします</td></tr>
+                        <tr><td class="g1">のります (to ride)</td><td class="g2">きます (to wear)</td><td class="g3">かいものします</td></tr>
+                        <tr><td class="g1">およぎます (to swim)</td><td class="g2">います (to exist)</td><td class="g3">けっこんします</td></tr>
+                        <tr class="special"><td>はいります ⚠️</td><td class="g2">おしえます (to teach)</td><td class="g3">でんわします</td></tr>
+                        <tr class="special"><td>かえります ⚠️</td><td class="g2">つけます (to turn on)</td><td class="g3">さんぽします</td></tr>
+                    </table>
+                </div>
+                <div class="warning">⚠️ <strong>Trick Verbs:</strong> はいります、かえります、しります look like G2 but are G1! Check if stem ends in り (G1) or vowel (G2).</div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>7</span> / 30</div>
+        </div>
+
+        <!-- Slide 8: Stem Form Introduction -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🌱 Stem Form (れんようけい)</h2>
+                <div class="subtitle">The Foundation of All Conjugations</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point">
+                    <h3>Finding the Stem is Easy!</h3>
+                    <div class="meaning">Just remove ます from the ます-form. That's it!</div>
+                </div>
+                <div class="flow">
+                    <div class="flow-item" style="font-size: clamp(18px, 3vw, 26px);">ます Form</div>
+                    <div class="arrow">→</div>
+                    <div class="flow-item" style="background: #ffebee; font-size: clamp(18px, 3vw, 26px);">Remove ます</div>
+                    <div class="arrow">→</div>
+                    <div class="flow-item" style="background: #c8e6c9; font-size: clamp(18px, 3vw, 26px);">Stem!</div>
+                </div>
+                <div class="grid-3">
+                    <div class="pattern-box" style="background: #e3f2fd;">
+                        <h4 style="color: #1976d2;">Group 1</h4>
+                        <div style="font-size: clamp(14px, 2vw, 18px); margin-top: 10px;">
+                            かき<span style="color: #999;">ます</span> → <span class="highlight-blue">かき</span><br>
+                            のみ<span style="color: #999;">ます</span> → <span class="highlight-blue">のみ</span><br>
+                            はなし<span style="color: #999;">ます</span> → <span class="highlight-blue">はなし</span>
+                        </div>
+                    </div>
+                    <div class="pattern-box" style="background: #fff3e0;">
+                        <h4 style="color: #f57c00;">Group 2</h4>
+                        <div style="font-size: clamp(14px, 2vw, 18px); margin-top: 10px;">
+                            たべ<span style="color: #999;">ます</span> → <span class="highlight-orange">たべ</span><br>
+                            み<span style="color: #999;">ます</span> → <span class="highlight-orange">み</span><br>
+                            おき<span style="color: #999;">ます</span> → <span class="highlight-orange">おき</span>
+                        </div>
+                    </div>
+                    <div class="pattern-box" style="background: #fce4ec;">
+                        <h4 style="color: #c2185b;">Group 3</h4>
+                        <div style="font-size: clamp(14px, 2vw, 18px); margin-top: 10px;">
+                            し<span style="color: #999;">ます</span> → <span class="highlight-pink">し</span><br>
+                            き<span style="color: #999;">ます</span> → <span class="highlight-pink">き</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="tip">💡 <strong>The stem is your best friend!</strong> Once you know the stem, you can build ALL other forms. Since N5/N4 students learn ます form first, this is the easiest starting point!</div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>8</span> / 30</div>
+        </div>
+
+        <!-- Slide 9: AIUEO Chart Introduction -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🎯 The あいうえお Conjugation System</h2>
+                <div class="subtitle">The Secret to Japanese Verb Conjugation!</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point">
+                    <h3>Each Vowel = One Form!</h3>
+                    <div class="meaning">Group 1 verbs change their ending vowel to create different forms. This is the key pattern!</div>
+                </div>
+                <div class="vowel-chart">
+                    <div class="vowel-item vowel-a">
+                        <div class="kana">あ</div>
+                        <div class="label"><strong>ない Form</strong><br>Negative</div>
+                    </div>
+                    <div class="vowel-item vowel-i">
+                        <div class="kana">い</div>
+                        <div class="label"><strong>Stem Form</strong><br>ます base</div>
+                    </div>
+                    <div class="vowel-item vowel-u">
+                        <div class="kana">う</div>
+                        <div class="label"><strong>Casual Form</strong><br>Dictionary</div>
+                    </div>
+                    <div class="vowel-item vowel-e">
+                        <div class="kana">え</div>
+                        <div class="label"><strong>Potential</strong><br>Can do</div>
+                    </div>
+                    <div class="vowel-item vowel-o">
+                        <div class="kana">お</div>
+                        <div class="label"><strong>Volitional</strong><br>Let's do</div>
+                    </div>
+                </div>
+                <div class="pattern-box">
+                    <h4>Example with かく (to write)</h4>
+                    <table class="conj-table" style="margin-top: 10px;">
+                        <tr><th>Vowel</th><th>Form</th><th>Conjugation</th><th>Meaning</th></tr>
+                        <tr><td class="highlight-a">あ</td><td>ない</td><td>か<strong>か</strong>ない</td><td>don't write</td></tr>
+                        <tr><td class="highlight-i">い</td><td>Stem</td><td>か<strong>き</strong>（ます）</td><td>write (polite)</td></tr>
+                        <tr><td class="highlight-u">う</td><td>Casual</td><td>か<strong>く</strong></td><td>write (casual)</td></tr>
+                        <tr><td class="highlight-e">え</td><td>Potential</td><td>か<strong>け</strong>る</td><td>can write</td></tr>
+                        <tr><td class="highlight-o">お</td><td>Volitional</td><td>か<strong>こ</strong>う</td><td>let's write</td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>9</span> / 30</div>
+        </div>
+
+        <!-- Slide 10: AIUEO Chart Details -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🎯 Complete あいうえお Chart</h2>
+                <div class="subtitle">All Consonant Rows</div>
+            </div>
+            <div class="slide-content">
+                <div class="table-scroll">
+                    <table class="conj-table">
+                        <tr>
+                            <th>Row</th>
+                            <th class="highlight-a">あ (ない)</th>
+                            <th class="highlight-i">い (Stem)</th>
+                            <th class="highlight-u">う (Casual)</th>
+                            <th class="highlight-e">え (Potential)</th>
+                            <th class="highlight-o">お (Volitional)</th>
+                        </tr>
+                        <tr><td>あ</td><td>わ</td><td>い</td><td>う</td><td>え</td><td>お</td></tr>
+                        <tr><td>か</td><td>か</td><td>き</td><td>く</td><td>け</td><td>こ</td></tr>
+                        <tr><td>が</td><td>が</td><td>ぎ</td><td>ぐ</td><td>げ</td><td>ご</td></tr>
+                        <tr><td>さ</td><td>さ</td><td>し</td><td>す</td><td>せ</td><td>そ</td></tr>
+                        <tr><td>た</td><td>た</td><td>ち</td><td>つ</td><td>て</td><td>と</td></tr>
+                        <tr><td>な</td><td>な</td><td>に</td><td>ぬ</td><td>ね</td><td>の</td></tr>
+                        <tr><td>ば</td><td>ば</td><td>び</td><td>ぶ</td><td>べ</td><td>ぼ</td></tr>
+                        <tr><td>ま</td><td>ま</td><td>み</td><td>む</td><td>め</td><td>も</td></tr>
+                        <tr><td>ら</td><td>ら</td><td>り</td><td>る</td><td>れ</td><td>ろ</td></tr>
+                    </table>
+                </div>
+                <div class="clue-box">
+                    <h4>🔑 How to Use This Chart:</h4>
+                    <ul>
+                        <li>Find your verb's stem ending (い column)</li>
+                        <li>Move left/right in that row to find other forms</li>
+                        <li>Example: かき → か<strong>き</strong> is in か-row → か<strong>か</strong>ない, か<strong>く</strong>, か<strong>け</strong>る, か<strong>こ</strong>う</li>
+                    </ul>
+                </div>
+                <div class="warning">⚠️ <strong>Exception:</strong> あ-row verbs use <strong>わ</strong> for ない form, not あ! (かう → か<strong>わ</strong>ない)</div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>10</span> / 30</div>
+        </div>
+
+        <!-- Slide 11: Stem to Masu Form -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>✨ Step 1: Stem → ます Form</h2>
+                <div class="subtitle">The Easiest Conjugation!</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point">
+                    <h3>Stem + ます = Polite Form</h3>
+                    <div class="meaning">Just add ます to the stem. Works for ALL groups!</div>
+                </div>
+                <div class="flow">
+                    <div class="flow-item highlight-i">Stem (い)</div>
+                    <div class="arrow">+</div>
+                    <div class="flow-item">ます</div>
+                    <div class="arrow">=</div>
+                    <div class="flow-item" style="background: #c8e6c9;">Polite Form</div>
+                </div>
+                <table class="conj-table">
+                    <tr><th>Group</th><th>Stem</th><th>+ ます</th><th>Result</th></tr>
+                    <tr class="g1"><td>1</td><td>かき</td><td>+ ます</td><td>かきます</td></tr>
+                    <tr class="g1"><td>1</td><td>のみ</td><td>+ ます</td><td>のみます</td></tr>
+                    <tr class="g1"><td>1</td><td>はなし</td><td>+ ます</td><td>はなします</td></tr>
+                    <tr class="g2"><td>2</td><td>たべ</td><td>+ ます</td><td>たべます</td></tr>
+                    <tr class="g2"><td>2</td><td>み</td><td>+ ます</td><td>みます</td></tr>
+                    <tr class="g3"><td>3</td><td>し</td><td>+ ます</td><td>します</td></tr>
+                    <tr class="g3"><td>3</td><td>き</td><td>+ ます</td><td>きます</td></tr>
+                </table>
+                <div class="pattern-box">
+                    <h4>ます Form Variations</h4>
+                    <table class="conj-table" style="margin-top: 10px;">
+                        <tr><th></th><th>Present (+)</th><th>Present (−)</th><th>Past (+)</th><th>Past (−)</th></tr>
+                        <tr><td>Pattern</td><td>〜ます</td><td>〜ません</td><td>〜ました</td><td>〜ませんでした</td></tr>
+                        <tr><td>Example</td><td>かきます</td><td>かきません</td><td>かきました</td><td>かきませんでした</td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>11</span> / 30</div>
+        </div>
+
+        <!-- Slide 12: Masu to Casual Form -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>📖 Step 2: ます Form → Casual Form</h2>
+                <div class="subtitle">い → う (Dictionary Form)</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point">
+                    <h3>Moving from い-column to う-column</h3>
+                    <div class="meaning">Use the あいうえお chart! Find the い sound and change to う sound in the same row.</div>
+                </div>
+                <div class="grid-3">
+                    <div class="pattern-box" style="background: #e3f2fd;">
+                        <h4 style="color: #1976d2;">Group 1</h4>
+                        <div class="pattern">Stem い → う</div>
+                        <div style="font-size: clamp(12px, 1.6vw, 15px); margin-top: 10px;">
+                            か<strong>き</strong> → か<span class="highlight-u">く</span><br>
+                            の<strong>み</strong> → の<span class="highlight-u">む</span><br>
+                            はな<strong>し</strong> → はな<span class="highlight-u">す</span><br>
+                            ま<strong>ち</strong> → ま<span class="highlight-u">つ</span>
+                        </div>
+                    </div>
+                    <div class="pattern-box" style="background: #fff3e0;">
+                        <h4 style="color: #f57c00;">Group 2</h4>
+                        <div class="pattern">Stem + る</div>
+                        <div style="font-size: clamp(12px, 1.6vw, 15px); margin-top: 10px;">
+                            たべ → たべ<span class="highlight-orange">る</span><br>
+                            み → み<span class="highlight-orange">る</span><br>
+                            おき → おき<span class="highlight-orange">る</span><br>
+                            ね → ね<span class="highlight-orange">る</span>
+                        </div>
+                    </div>
+                    <div class="pattern-box" style="background: #fce4ec;">
+                        <h4 style="color: #c2185b;">Group 3</h4>
+                        <div class="pattern">Memorize</div>
+                        <div style="font-size: clamp(12px, 1.6vw, 15px); margin-top: 10px;">
+                            し → <span class="highlight-pink">する</span><br>
+                            き → <span class="highlight-pink">くる</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="clue-box">
+                    <h4>🔑 Group 1 い → う Changes:</h4>
+                    <div class="compact-list" style="margin-top: 8px;">
+                        <span class="compact-item">き→く</span>
+                        <span class="compact-item">ぎ→ぐ</span>
+                        <span class="compact-item">し→す</span>
+                        <span class="compact-item">ち→つ</span>
+                        <span class="compact-item">に→ぬ</span>
+                        <span class="compact-item">び→ぶ</span>
+                        <span class="compact-item">み→む</span>
+                        <span class="compact-item">り→る</span>
+                        <span class="compact-item">い→う</span>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>12</span> / 30</div>
+        </div>
+
+        <!-- Slide 13: Potential Form -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>💪 Step 3: Potential Form (Can do)</h2>
+                <div class="subtitle">い → え + る</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point">
+                    <h3>Moving from い-column to え-column</h3>
+                    <div class="meaning">Find the い sound in your stem and change to え sound, then add る!</div>
+                </div>
+                <div class="grid-3">
+                    <div class="pattern-box" style="background: #e3f2fd;">
+                        <h4 style="color: #1976d2;">Group 1</h4>
+                        <div class="pattern">Stem い → え + る</div>
+                        <div style="font-size: clamp(12px, 1.6vw, 15px); margin-top: 10px;">
+                            か<strong>き</strong> → か<span class="highlight-e">け</span>る<br>
+                            の<strong>み</strong> → の<span class="highlight-e">め</span>る<br>
+                            はな<strong>し</strong> → はな<span class="highlight-e">せ</span>る<br>
+                            ま<strong>ち</strong> → ま<span class="highlight-e">て</span>る
+                        </div>
+                    </div>
+                    <div class="pattern-box" style="background: #fff3e0;">
+                        <h4 style="color: #f57c00;">Group 2</h4>
+                        <div class="pattern">Stem + られる</div>
+                        <div style="font-size: clamp(12px, 1.6vw, 15px); margin-top: 10px;">
+                            たべ → たべ<span class="highlight-orange">られる</span><br>
+                            み → み<span class="highlight-orange">られる</span><br>
+                            おき → おき<span class="highlight-orange">られる</span>
+                        </div>
+                        <p style="font-size: 11px; color: #999; margin-top: 5px;">*Often shortened: たべれる</p>
+                    </div>
+                    <div class="pattern-box" style="background: #fce4ec;">
+                        <h4 style="color: #c2185b;">Group 3</h4>
+                        <div style="font-size: clamp(12px, 1.6vw, 15px); margin-top: 10px;">
+                            し → <span class="highlight-pink">できる</span><br>
+                            き → <span class="highlight-pink">こられる</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="examples">
+                    <div class="example">
+                        <div class="japanese">にほんごが はなせます。</div>
+                        <div class="english">I can speak Japanese.</div>
+                    </div>
+                    <div class="example">
+                        <div class="japanese">かんじが よめますか。</div>
+                        <div class="english">Can you read kanji?</div>
+                    </div>
+                </div>
+                <div class="note">💡 Potential verbs become Group 2 verbs! They conjugate like たべる.</div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>13</span> / 30</div>
+        </div>
+
+        <!-- Slide 14: Volitional Form -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>💭 Step 4: Volitional Form (Let's do)</h2>
+                <div class="subtitle">いしけい - Casual & Polite</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point">
+                    <h3>Two Versions: Casual 〜(よ)う & Polite 〜ましょう</h3>
+                    <div class="meaning">Casual: Change い→お and add う | Polite: Stem + ましょう (same for ALL groups!)</div>
+                </div>
+                <div class="table-scroll">
+                    <table class="conj-table">
+                        <tr>
+                            <th>Group</th>
+                            <th>ます Form</th>
+                            <th>Stem</th>
+                            <th>Casual Pattern</th>
+                            <th>Casual 〜(よ)う</th>
+                            <th>Polite 〜ましょう</th>
+                        </tr>
+                        <tr class="g1"><td rowspan="4" style="background: #1976d2; color: white;"><strong>G1</strong></td><td>かきます</td><td>かき</td><td>き→こ+う</td><td>か<span class="highlight-o">こう</span></td><td>かき<span class="highlight-green">ましょう</span></td></tr>
+                        <tr class="g1"><td>のみます</td><td>のみ</td><td>み→も+う</td><td>の<span class="highlight-o">もう</span></td><td>のみ<span class="highlight-green">ましょう</span></td></tr>
+                        <tr class="g1"><td>はなします</td><td>はなし</td><td>し→そ+う</td><td>はな<span class="highlight-o">そう</span></td><td>はなし<span class="highlight-green">ましょう</span></td></tr>
+                        <tr class="g1"><td>いきます</td><td>いき</td><td>き→こ+う</td><td>い<span class="highlight-o">こう</span></td><td>いき<span class="highlight-green">ましょう</span></td></tr>
+                        <tr class="g2"><td rowspan="3" style="background: #f57c00; color: white;"><strong>G2</strong></td><td>たべます</td><td>たべ</td><td>stem+よう</td><td>たべ<span class="highlight-o">よう</span></td><td>たべ<span class="highlight-green">ましょう</span></td></tr>
+                        <tr class="g2"><td>みます</td><td>み</td><td>stem+よう</td><td>み<span class="highlight-o">よう</span></td><td>み<span class="highlight-green">ましょう</span></td></tr>
+                        <tr class="g2"><td>おきます</td><td>おき</td><td>stem+よう</td><td>おき<span class="highlight-o">よう</span></td><td>おき<span class="highlight-green">ましょう</span></td></tr>
+                        <tr class="g3"><td rowspan="2" style="background: #c2185b; color: white;"><strong>G3</strong></td><td>します</td><td>し</td><td>irregular</td><td><span class="highlight-pink">しよう</span></td><td>し<span class="highlight-green">ましょう</span></td></tr>
+                        <tr class="g3"><td>きます</td><td>き</td><td>irregular</td><td><span class="highlight-pink">こよう</span></td><td>き<span class="highlight-green">ましょう</span></td></tr>
+                    </table>
+                </div>
+                <div class="grid-2">
+                    <div class="clue-box">
+                        <h4>🔑 Casual Pattern Summary</h4>
+                        <ul>
+                            <li><strong>G1:</strong> い→お + う (use あいうえお chart!)</li>
+                            <li><strong>G2:</strong> Stem + よう</li>
+                            <li><strong>G3:</strong> しよう / こよう (memorize)</li>
+                        </ul>
+                    </div>
+                    <div class="pattern-box" style="background: #c8e6c9;">
+                        <h4 style="color: #2e7d32;">✨ Polite is EASY!</h4>
+                        <div style="font-size: clamp(14px, 2vw, 18px); margin-top: 8px; text-align: center;">
+                            <strong>ALL Groups:</strong> Stem + ましょう<br>
+                            <span style="font-size: clamp(12px, 1.5vw, 14px);">Same pattern for everyone!</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="examples">
+                    <div class="example">
+                        <div class="japanese">いっしょに いきましょう！ / いっしょに いこう！</div>
+                        <div class="english">Let's go together! (polite / casual)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>14</span> / 30</div>
+        </div>
+
+        <!-- Slide 15: Nai Form -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🚫 Step 5: ない Form (Negative)</h2>
+                <div class="subtitle">い → あ + ない</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point">
+                    <h3>Moving from い-column to あ-column</h3>
+                    <div class="meaning">Find the い sound in your stem and change to あ sound, then add ない!</div>
+                </div>
+                <div class="grid-3">
+                    <div class="pattern-box" style="background: #e3f2fd;">
+                        <h4 style="color: #1976d2;">Group 1</h4>
+                        <div class="pattern">Stem い → あ + ない</div>
+                        <div style="font-size: clamp(12px, 1.6vw, 15px); margin-top: 10px;">
+                            か<strong>き</strong> → か<span class="highlight-a">か</span>ない<br>
+                            の<strong>み</strong> → の<span class="highlight-a">ま</span>ない<br>
+                            はな<strong>し</strong> → はな<span class="highlight-a">さ</span>ない<br>
+                            ま<strong>ち</strong> → ま<span class="highlight-a">た</span>ない
+                        </div>
+                    </div>
+                    <div class="pattern-box" style="background: #fff3e0;">
+                        <h4 style="color: #f57c00;">Group 2</h4>
+                        <div class="pattern">Stem + ない</div>
+                        <div style="font-size: clamp(12px, 1.6vw, 15px); margin-top: 10px;">
+                            たべ → たべ<span class="highlight-orange">ない</span><br>
+                            み → み<span class="highlight-orange">ない</span><br>
+                            おき → おき<span class="highlight-orange">ない</span>
+                        </div>
+                    </div>
+                    <div class="pattern-box" style="background: #fce4ec;">
+                        <h4 style="color: #c2185b;">Group 3</h4>
+                        <div style="font-size: clamp(12px, 1.6vw, 15px); margin-top: 10px;">
+                            し → <span class="highlight-pink">しない</span><br>
+                            き → <span class="highlight-pink">こない</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="warning">⚠️ <strong>Important Exception!</strong> Verbs with い in stem (like かいます) use <strong>わ</strong> not あ!<br>
+                かい → か<strong>わ</strong>ない (NOT かあない)</div>
+                <div class="clue-box">
+                    <h4>🔑 Group 1 い → あ Changes:</h4>
+                    <div class="compact-list" style="margin-top: 8px;">
+                        <span class="compact-item">き→か</span>
+                        <span class="compact-item">ぎ→が</span>
+                        <span class="compact-item">し→さ</span>
+                        <span class="compact-item">ち→た</span>
+                        <span class="compact-item">に→な</span>
+                        <span class="compact-item">び→ば</span>
+                        <span class="compact-item">み→ま</span>
+                        <span class="compact-item">り→ら</span>
+                        <span class="compact-item highlight-red">い→わ</span>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>15</span> / 30</div>
+        </div>
+
+        <!-- Slide 16: Nai Form Uses -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🚫 ない Form - Common Patterns</h2>
+                <div class="subtitle">Useful Grammar with ない</div>
+            </div>
+            <div class="slide-content">
+                <div class="grid-2">
+                    <div class="grammar-point">
+                        <h3>〜ないでください</h3>
+                        <div class="meaning">Please don't ~</div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">ここで たばこを すわないでください。</div>
+                                <div class="english">Please don't smoke here.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grammar-point">
+                        <h3>〜なければなりません</h3>
+                        <div class="meaning">Must ~ / Have to ~</div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">しゅくだいを しなければなりません。</div>
+                                <div class="english">I have to do homework.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grammar-point">
+                        <h3>〜なくてもいいです</h3>
+                        <div class="meaning">Don't have to ~</div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">きょうは こなくてもいいです。</div>
+                                <div class="english">You don't have to come today.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grammar-point">
+                        <h3>〜ないで</h3>
+                        <div class="meaning">Without ~ing</div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">あさごはんを たべないで いきました。</div>
+                                <div class="english">I went without eating breakfast.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>16</span> / 30</div>
+        </div>
+
+        <!-- Slide 17: AIUEO Summary -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>📊 あいうえお Summary Chart</h2>
+                <div class="subtitle">All Forms at a Glance (Group 1)</div>
+            </div>
+            <div class="slide-content">
+                <div class="table-scroll">
+                    <table class="conj-table">
+                        <tr>
+                            <th>Verb</th>
+                            <th class="highlight-a">あ (ない)</th>
+                            <th class="highlight-i">い (Stem/ます)</th>
+                            <th class="highlight-u">う (Casual)</th>
+                            <th class="highlight-e">え (Potential)</th>
+                            <th class="highlight-o">お (Volitional)</th>
+                        </tr>
+                        <tr class="g1"><td>write</td><td>かかない</td><td>かきます</td><td>かく</td><td>かける</td><td>かこう</td></tr>
+                        <tr class="g1"><td>drink</td><td>のまない</td><td>のみます</td><td>のむ</td><td>のめる</td><td>のもう</td></tr>
+                        <tr class="g1"><td>speak</td><td>はなさない</td><td>はなします</td><td>はなす</td><td>はなせる</td><td>はなそう</td></tr>
+                        <tr class="g1"><td>wait</td><td>またない</td><td>まちます</td><td>まつ</td><td>まてる</td><td>まとう</td></tr>
+                        <tr class="g1"><td>buy</td><td>か<span class="highlight-red">わ</span>ない</td><td>かいます</td><td>かう</td><td>かえる</td><td>かおう</td></tr>
+                        <tr class="g1"><td>swim</td><td>およがない</td><td>およぎます</td><td>およぐ</td><td>およげる</td><td>およごう</td></tr>
+                        <tr class="g1"><td>play</td><td>あそばない</td><td>あそびます</td><td>あそぶ</td><td>あそべる</td><td>あそぼう</td></tr>
+                        <tr class="g1"><td>ride</td><td>のらない</td><td>のります</td><td>のる</td><td>のれる</td><td>のろう</td></tr>
+                    </table>
+                </div>
+                <div class="tip">💡 <strong>Pattern Recognition:</strong> Once you memorize the あいうえお chart, you can conjugate ANY Group 1 verb instantly!</div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>17</span> / 30</div>
+        </div>
+
+        <!-- Slide 18: Te Form Introduction -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🔗 て Form - Overview</h2>
+                <div class="subtitle">The Most Important Conjugation!</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point">
+                    <h3>Why て Form is Essential</h3>
+                    <div class="meaning">The て form connects verbs and is used in many grammar patterns. Master this form!</div>
+                </div>
+                <div class="clue-box">
+                    <h4>🔍 Uses of て Form:</h4>
+                    <ul>
+                        <li>〜てください (Please do ~)</li>
+                        <li>〜ています (Currently doing ~ / State)</li>
+                        <li>〜てもいいですか (May I ~?)</li>
+                        <li>〜てはいけません (Must not ~)</li>
+                        <li>〜てから (After doing ~)</li>
+                        <li>Connecting sentences (and then...)</li>
+                    </ul>
+                </div>
+                <div class="pattern-box" style="background: #e8f5e9;">
+                    <h4>🔑 Key Insight: て Form from Casual Form!</h4>
+                    <div style="font-size: clamp(14px, 2vw, 18px); margin-top: 10px; text-align: center;">
+                        It's easier to make て form from the <strong>casual form (う-form)</strong>!<br>
+                        Look at the <strong>ending sound</strong> of the casual form.
+                    </div>
+                </div>
+                <div class="grid-3">
+                    <div class="pattern-box" style="background: #e3f2fd;">
+                        <h4 style="color: #1976d2;">Group 1</h4>
+                        <p style="font-size: clamp(12px, 1.5vw, 14px);">Based on casual ending<br>(See next slide!)</p>
+                    </div>
+                    <div class="pattern-box" style="background: #fff3e0;">
+                        <h4 style="color: #f57c00;">Group 2</h4>
+                        <p style="font-size: clamp(14px, 2vw, 18px);">る → て</p>
+                        <p style="font-size: clamp(12px, 1.5vw, 14px);">たべる → たべて</p>
+                    </div>
+                    <div class="pattern-box" style="background: #fce4ec;">
+                        <h4 style="color: #c2185b;">Group 3</h4>
+                        <p style="font-size: clamp(12px, 1.5vw, 14px);">する → して<br>くる → きて</p>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>18</span> / 30</div>
+        </div>
+
+        <!-- Slide 19: Te Form Group 1 Rules -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🔗 て Form - Group 1 Rules</h2>
+                <div class="subtitle">Based on Casual Form Ending</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point group1">
+                    <h3>Group 1 て Form Patterns</h3>
+                    <table class="conj-table">
+                        <tr><th>Casual Ending</th><th>Change</th><th>Example</th><th>て Form</th></tr>
+                        <tr class="g1"><td>〜う・〜つ・〜る</td><td>→ <strong>って</strong></td><td>かう、まつ、のる</td><td>かって、まって、のって</td></tr>
+                        <tr class="g1"><td>〜む・〜ぶ・〜ぬ</td><td>→ <strong>んで</strong></td><td>のむ、あそぶ、しぬ</td><td>のんで、あそんで、しんで</td></tr>
+                        <tr class="g1"><td>〜く</td><td>→ <strong>いて</strong></td><td>かく、きく</td><td>かいて、きいて</td></tr>
+                        <tr class="g1"><td>〜ぐ</td><td>→ <strong>いで</strong></td><td>およぐ、いそぐ</td><td>およいで、いそいで</td></tr>
+                        <tr class="g1"><td>〜す</td><td>→ <strong>して</strong></td><td>はなす、けす</td><td>はなして、けして</td></tr>
+                    </table>
+                </div>
+                <div class="pattern-box" style="background: #e8f5e9;">
+                    <h4>🎵 Memory Song</h4>
+                    <div style="font-size: clamp(14px, 2vw, 18px); text-align: center; line-height: 2; margin-top: 10px;">
+                        <strong>う・つ・る</strong> → って ♪<br>
+                        <strong>む・ぶ・ぬ</strong> → んで ♪<br>
+                        <strong>く</strong> → いて、<strong>ぐ</strong> → いで ♪<br>
+                        <strong>す</strong> → して ♪
+                    </div>
+                </div>
+                <div class="warning">⚠️ <strong>Exception:</strong> いく (to go) → い<strong>って</strong> (NOT いいて)</div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>19</span> / 30</div>
+        </div>
+
+        <!-- Slide 20: Te Form Complete Chart -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🔗 て Form - Complete Chart</h2>
+                <div class="subtitle">All Groups</div>
+            </div>
+            <div class="slide-content">
+                <div class="table-scroll">
+                    <table class="conj-table">
+                        <tr><th>Group</th><th>ます Form</th><th>Casual</th><th>Rule</th><th>て Form</th></tr>
+                        <tr class="g1"><td>1</td><td>かきます</td><td>かく</td><td>く→いて</td><td>かいて</td></tr>
+                        <tr class="g1"><td>1</td><td>およぎます</td><td>およぐ</td><td>ぐ→いで</td><td>およいで</td></tr>
+                        <tr class="g1"><td>1</td><td>のみます</td><td>のむ</td><td>む→んで</td><td>のんで</td></tr>
+                        <tr class="g1"><td>1</td><td>あそびます</td><td>あそぶ</td><td>ぶ→んで</td><td>あそんで</td></tr>
+                        <tr class="g1"><td>1</td><td>まちます</td><td>まつ</td><td>つ→って</td><td>まって</td></tr>
+                        <tr class="g1"><td>1</td><td>のります</td><td>のる</td><td>る→って</td><td>のって</td></tr>
+                        <tr class="g1"><td>1</td><td>かいます</td><td>かう</td><td>う→って</td><td>かって</td></tr>
+                        <tr class="g1"><td>1</td><td>はなします</td><td>はなす</td><td>す→して</td><td>はなして</td></tr>
+                        <tr class="special"><td>1</td><td>いきます</td><td>いく</td><td>⚠️ irregular</td><td>いって</td></tr>
+                        <tr class="g2"><td>2</td><td>たべます</td><td>たべる</td><td>る→て</td><td>たべて</td></tr>
+                        <tr class="g2"><td>2</td><td>みます</td><td>みる</td><td>る→て</td><td>みて</td></tr>
+                        <tr class="g3"><td>3</td><td>します</td><td>する</td><td>irregular</td><td>して</td></tr>
+                        <tr class="g3"><td>3</td><td>きます</td><td>くる</td><td>irregular</td><td>きて</td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>20</span> / 30</div>
+        </div>
+
+        <!-- Slide 21: Te Form Uses -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🔗 て Form - Common Uses</h2>
+                <div class="subtitle">Essential Patterns</div>
+            </div>
+            <div class="slide-content">
+                <div class="grid-2">
+                    <div class="grammar-point">
+                        <h3>〜てください</h3>
+                        <div class="meaning">Please do ~</div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">ちょっと まってください。</div>
+                                <div class="english">Please wait a moment.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grammar-point">
+                        <h3>〜ています</h3>
+                        <div class="meaning">Currently doing ~ / Is in a state</div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">いま、ほんを よんでいます。</div>
+                                <div class="english">I'm reading a book now.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grammar-point">
+                        <h3>〜てもいいですか</h3>
+                        <div class="meaning">May I ~?</div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">しゃしんを とってもいいですか。</div>
+                                <div class="english">May I take a photo?</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grammar-point">
+                        <h3>〜てはいけません</h3>
+                        <div class="meaning">Must not ~</div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">ここで たべてはいけません。</div>
+                                <div class="english">You must not eat here.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>21</span> / 30</div>
+        </div>
+
+        <!-- Slide 22: Ta Form Introduction -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>⏰ た Form (Past Casual)</h2>
+                <div class="subtitle">Same Pattern as て Form!</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point">
+                    <h3>た Form = て Form with Different Ending</h3>
+                    <div class="meaning">If you know て form, you already know た form! Just change て→た and で→だ</div>
+                </div>
+                <div class="flow">
+                    <div class="flow-item">て Form</div>
+                    <div class="arrow">→</div>
+                    <div class="flow-item" style="background: #ffebee;">て → た<br>で → だ</div>
+                    <div class="arrow">=</div>
+                    <div class="flow-item" style="background: #c8e6c9;">た Form</div>
+                </div>
+                <div class="grammar-point group1">
+                    <h3>Group 1 た Form Patterns</h3>
+                    <table class="conj-table">
+                        <tr><th>Casual Ending</th><th>て Form</th><th>た Form</th></tr>
+                        <tr class="g1"><td>う・つ・る</td><td>って</td><td><strong>った</strong></td></tr>
+                        <tr class="g1"><td>む・ぶ・ぬ</td><td>んで</td><td><strong>んだ</strong></td></tr>
+                        <tr class="g1"><td>く</td><td>いて</td><td><strong>いた</strong></td></tr>
+                        <tr class="g1"><td>ぐ</td><td>いで</td><td><strong>いだ</strong></td></tr>
+                        <tr class="g1"><td>す</td><td>して</td><td><strong>した</strong></td></tr>
+                    </table>
+                </div>
+                <div class="tip">💡 <strong>Memory Tip:</strong> て→た, で→だ. That's all you need to remember!</div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>22</span> / 30</div>
+        </div>
+
+        <!-- Slide 23: Ta Form Complete Chart -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>⏰ た Form - Complete Chart</h2>
+                <div class="subtitle">All Groups</div>
+            </div>
+            <div class="slide-content">
+                <div class="table-scroll">
+                    <table class="conj-table">
+                        <tr><th>Group</th><th>ます Form</th><th>Casual</th><th>て Form</th><th>た Form</th></tr>
+                        <tr class="g1"><td>1</td><td>かきます</td><td>かく</td><td>かいて</td><td>かいた</td></tr>
+                        <tr class="g1"><td>1</td><td>およぎます</td><td>およぐ</td><td>およいで</td><td>およいだ</td></tr>
+                        <tr class="g1"><td>1</td><td>のみます</td><td>のむ</td><td>のんで</td><td>のんだ</td></tr>
+                        <tr class="g1"><td>1</td><td>あそびます</td><td>あそぶ</td><td>あそんで</td><td>あそんだ</td></tr>
+                        <tr class="g1"><td>1</td><td>まちます</td><td>まつ</td><td>まって</td><td>まった</td></tr>
+                        <tr class="g1"><td>1</td><td>のります</td><td>のる</td><td>のって</td><td>のった</td></tr>
+                        <tr class="g1"><td>1</td><td>かいます</td><td>かう</td><td>かって</td><td>かった</td></tr>
+                        <tr class="g1"><td>1</td><td>はなします</td><td>はなす</td><td>はなして</td><td>はなした</td></tr>
+                        <tr class="special"><td>1</td><td>いきます</td><td>いく</td><td>いって</td><td>いった</td></tr>
+                        <tr class="g2"><td>2</td><td>たべます</td><td>たべる</td><td>たべて</td><td>たべた</td></tr>
+                        <tr class="g2"><td>2</td><td>みます</td><td>みる</td><td>みて</td><td>みた</td></tr>
+                        <tr class="g3"><td>3</td><td>します</td><td>する</td><td>して</td><td>した</td></tr>
+                        <tr class="g3"><td>3</td><td>きます</td><td>くる</td><td>きて</td><td>きた</td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>23</span> / 30</div>
+        </div>
+
+        <!-- Slide 24: Ta Form Uses -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>⏰ た Form - Common Uses</h2>
+                <div class="subtitle">Essential Patterns</div>
+            </div>
+            <div class="slide-content">
+                <div class="grid-2">
+                    <div class="grammar-point">
+                        <h3>Plain Past Statement</h3>
+                        <div class="meaning">Casual past tense</div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">きのう えいがを みた。</div>
+                                <div class="english">I watched a movie yesterday.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grammar-point">
+                        <h3>〜たことがあります</h3>
+                        <div class="meaning">Have experienced ~</div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">にほんに いったことがあります。</div>
+                                <div class="english">I have been to Japan.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grammar-point">
+                        <h3>〜たり〜たりする</h3>
+                        <div class="meaning">Do things like ~ and ~</div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">やすみに ほんを よんだり、えいがを みたりします。</div>
+                                <div class="english">On holidays I read books and watch movies (etc).</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grammar-point">
+                        <h3>〜たあとで</h3>
+                        <div class="meaning">After doing ~</div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">ごはんを たべたあとで、さんぽします。</div>
+                                <div class="english">After eating, I take a walk.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>24</span> / 30</div>
+        </div>
+
+        <!-- Slide 25: Conditional Forms -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🔀 Conditional Forms (N4)</h2>
+                <div class="subtitle">If ~ / When ~</div>
+            </div>
+            <div class="slide-content">
+                <div class="grid-2">
+                    <div class="grammar-point">
+                        <h3>〜たら (If/When)</h3>
+                        <div class="meaning">た form + ら</div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">あめが ふっ<span class="highlight">たら</span>、いえにいます。</div>
+                                <div class="english">If it rains, I'll stay home.</div>
+                            </div>
+                            <div class="example">
+                                <div class="japanese">しごとが おわっ<span class="highlight">たら</span>、でんわします。</div>
+                                <div class="english">When work ends, I'll call.</div>
+                            </div>
+                        </div>
+                        <div class="note">💡 Most common conditional. Natural for hypotheticals.</div>
+                    </div>
+                    <div class="grammar-point">
+                        <h3>〜ば (If)</h3>
+                        <div class="meaning">え form + ば</div>
+                        <div class="clue-box">
+                            <h4>Pattern (use え-column!):</h4>
+                            <ul>
+                                <li>G1: い→え+ば (かき→かけば)</li>
+                                <li>G2: stem+れば (たべ→たべれば)</li>
+                                <li>G3: すれば、くれば</li>
+                            </ul>
+                        </div>
+                        <div class="examples">
+                            <div class="example">
+                                <div class="japanese">べんきょうす<span class="highlight">れば</span>、じょうずになります。</div>
+                                <div class="english">If you study, you'll improve.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pattern-box">
+                    <h4>〜と (When/If - Natural consequence)</h4>
+                    <div class="examples" style="margin-top: 10px;">
+                        <div class="example">
+                            <div class="japanese">このボタンを おす<span class="highlight">と</span>、ドアがあきます。</div>
+                            <div class="english">When you press this button, the door opens.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>25</span> / 30</div>
+        </div>
+
+        <!-- Slide 26: Complete Group 1 Chart -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>📊 Complete Chart - Group 1</h2>
+                <div class="subtitle">All Forms</div>
+            </div>
+            <div class="slide-content">
+                <div class="table-scroll">
+                    <table class="conj-table" style="font-size: clamp(9px, 1.3vw, 13px);">
+                        <tr>
+                            <th>ます</th>
+                            <th>Stem</th>
+                            <th>Casual</th>
+                            <th>ない</th>
+                            <th>Potential</th>
+                            <th>Volitional</th>
+                            <th>て</th>
+                            <th>た</th>
+                        </tr>
+                        <tr class="g1"><td>かきます</td><td>かき</td><td>かく</td><td>かかない</td><td>かける</td><td>かこう</td><td>かいて</td><td>かいた</td></tr>
+                        <tr class="g1"><td>のみます</td><td>のみ</td><td>のむ</td><td>のまない</td><td>のめる</td><td>のもう</td><td>のんで</td><td>のんだ</td></tr>
+                        <tr class="g1"><td>はなします</td><td>はなし</td><td>はなす</td><td>はなさない</td><td>はなせる</td><td>はなそう</td><td>はなして</td><td>はなした</td></tr>
+                        <tr class="g1"><td>まちます</td><td>まち</td><td>まつ</td><td>またない</td><td>まてる</td><td>まとう</td><td>まって</td><td>まった</td></tr>
+                        <tr class="g1"><td>かいます</td><td>かい</td><td>かう</td><td>かわない</td><td>かえる</td><td>かおう</td><td>かって</td><td>かった</td></tr>
+                        <tr class="g1"><td>およぎます</td><td>およぎ</td><td>およぐ</td><td>およがない</td><td>およげる</td><td>およごう</td><td>およいで</td><td>およいだ</td></tr>
+                        <tr class="g1"><td>あそびます</td><td>あそび</td><td>あそぶ</td><td>あそばない</td><td>あそべる</td><td>あそぼう</td><td>あそんで</td><td>あそんだ</td></tr>
+                        <tr class="g1"><td>のります</td><td>のり</td><td>のる</td><td>のらない</td><td>のれる</td><td>のろう</td><td>のって</td><td>のった</td></tr>
+                        <tr class="special"><td>いきます</td><td>いき</td><td>いく</td><td>いかない</td><td>いける</td><td>いこう</td><td>いって⚠️</td><td>いった</td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>26</span> / 30</div>
+        </div>
+
+        <!-- Slide 27: Complete Group 2 Chart -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>📊 Complete Chart - Group 2</h2>
+                <div class="subtitle">All Forms</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point group2">
+                    <h3>Group 2 Pattern Summary</h3>
+                    <div class="meaning">Remove る, then add the appropriate ending. Much simpler than Group 1!</div>
+                </div>
+                <div class="table-scroll">
+                    <table class="conj-table">
+                        <tr>
+                            <th>ます</th>
+                            <th>Stem</th>
+                            <th>Casual</th>
+                            <th>ない</th>
+                            <th>Potential</th>
+                            <th>Volitional</th>
+                            <th>て</th>
+                            <th>た</th>
+                        </tr>
+                        <tr class="g2"><td>たべます</td><td>たべ</td><td>たべる</td><td>たべない</td><td>たべられる</td><td>たべよう</td><td>たべて</td><td>たべた</td></tr>
+                        <tr class="g2"><td>みます</td><td>み</td><td>みる</td><td>みない</td><td>みられる</td><td>みよう</td><td>みて</td><td>みた</td></tr>
+                        <tr class="g2"><td>おきます</td><td>おき</td><td>おきる</td><td>おきない</td><td>おきられる</td><td>おきよう</td><td>おきて</td><td>おきた</td></tr>
+                        <tr class="g2"><td>ねます</td><td>ね</td><td>ねる</td><td>ねない</td><td>ねられる</td><td>ねよう</td><td>ねて</td><td>ねた</td></tr>
+                        <tr class="g2"><td>あけます</td><td>あけ</td><td>あける</td><td>あけない</td><td>あけられる</td><td>あけよう</td><td>あけて</td><td>あけた</td></tr>
+                        <tr class="g2"><td>でます</td><td>で</td><td>でる</td><td>でない</td><td>でられる</td><td>でよう</td><td>でて</td><td>でた</td></tr>
+                    </table>
+                </div>
+                <div class="pattern-box">
+                    <h4>Group 2 Endings at a Glance</h4>
+                    <div class="compact-list" style="margin-top: 10px;">
+                        <span class="compact-item">Casual: +る</span>
+                        <span class="compact-item">ない: +ない</span>
+                        <span class="compact-item">Potential: +られる</span>
+                        <span class="compact-item">Volitional: +よう</span>
+                        <span class="compact-item">て: +て</span>
+                        <span class="compact-item">た: +た</span>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>27</span> / 30</div>
+        </div>
+
+        <!-- Slide 28: Complete Group 3 Chart -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>📊 Complete Chart - Group 3</h2>
+                <div class="subtitle">Irregular Verbs - Just Memorize!</div>
+            </div>
+            <div class="slide-content">
+                <div class="grammar-point group3">
+                    <h3>する and くる - All Forms</h3>
+                </div>
+                <div class="table-scroll">
+                    <table class="conj-table">
+                        <tr>
+                            <th>Form</th>
+                            <th class="header-g3">する (to do)</th>
+                            <th class="header-g3">くる (to come)</th>
+                        </tr>
+                        <tr><td><strong>ます</strong></td><td class="g3">します</td><td class="g3">きます</td></tr>
+                        <tr><td><strong>Stem</strong></td><td class="g3">し</td><td class="g3">き</td></tr>
+                        <tr><td><strong>Casual</strong></td><td class="g3">する</td><td class="g3">くる</td></tr>
+                        <tr><td><strong>ない</strong></td><td class="g3">しない</td><td class="g3">こない</td></tr>
+                        <tr><td><strong>Potential</strong></td><td class="g3">できる</td><td class="g3">こられる</td></tr>
+                        <tr><td><strong>Volitional</strong></td><td class="g3">しよう</td><td class="g3">こよう</td></tr>
+                        <tr><td><strong>て</strong></td><td class="g3">して</td><td class="g3">きて</td></tr>
+                        <tr><td><strong>た</strong></td><td class="g3">した</td><td class="g3">きた</td></tr>
+                        <tr><td><strong>〜たら</strong></td><td class="g3">したら</td><td class="g3">きたら</td></tr>
+                        <tr><td><strong>〜ば</strong></td><td class="g3">すれば</td><td class="g3">くれば</td></tr>
+                    </table>
+                </div>
+                <div class="warning">⚠️ <strong>Note:</strong> する potential is できる (completely different word!), not すれる</div>
+                <div class="tip">💡 All 〜する compound verbs (べんきょうする、りょこうする, etc.) follow する's pattern!</div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>28</span> / 30</div>
+        </div>
+
+        <!-- Slide 29: Quick Reference -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🎯 Quick Reference Card</h2>
+                <div class="subtitle">あいうえお at a Glance</div>
+            </div>
+            <div class="slide-content">
+                <div class="vowel-chart">
+                    <div class="vowel-item vowel-a">
+                        <div class="kana">あ</div>
+                        <div class="label"><strong>ない</strong></div>
+                    </div>
+                    <div class="vowel-item vowel-i">
+                        <div class="kana">い</div>
+                        <div class="label"><strong>Stem</strong></div>
+                    </div>
+                    <div class="vowel-item vowel-u">
+                        <div class="kana">う</div>
+                        <div class="label"><strong>Casual</strong></div>
+                    </div>
+                    <div class="vowel-item vowel-e">
+                        <div class="kana">え</div>
+                        <div class="label"><strong>Potential</strong></div>
+                    </div>
+                    <div class="vowel-item vowel-o">
+                        <div class="kana">お</div>
+                        <div class="label"><strong>Volitional</strong></div>
+                    </div>
+                </div>
+                <div class="grid-3">
+                    <div class="pattern-box" style="background: #e3f2fd;">
+                        <h4 style="color: #1976d2;">Group 1</h4>
+                        <ul style="font-size: clamp(11px, 1.4vw, 13px); margin-left: 15px;">
+                            <li>Use あいうえお chart</li>
+                            <li>て form: う/つ/る→って</li>
+                            <li>む/ぶ/ぬ→んで</li>
+                            <li>く→いて, ぐ→いで</li>
+                            <li>す→して</li>
+                        </ul>
+                    </div>
+                    <div class="pattern-box" style="background: #fff3e0;">
+                        <h4 style="color: #f57c00;">Group 2</h4>
+                        <ul style="font-size: clamp(11px, 1.4vw, 13px); margin-left: 15px;">
+                            <li>Stem + ending</li>
+                            <li>Casual: +る</li>
+                            <li>ない: +ない</li>
+                            <li>Potential: +られる</li>
+                            <li>て/た: +て/た</li>
+                        </ul>
+                    </div>
+                    <div class="pattern-box" style="background: #fce4ec;">
+                        <h4 style="color: #c2185b;">Group 3</h4>
+                        <ul style="font-size: clamp(11px, 1.4vw, 13px); margin-left: 15px;">
+                            <li>Just memorize!</li>
+                            <li>する/くる</li>
+                            <li>Potential: できる</li>
+                            <li>ない: しない/こない</li>
+                            <li>て: して/きて</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pattern-box" style="background: #e8f5e9;">
+                    <h4>🎵 て Form Song</h4>
+                    <div style="font-size: clamp(12px, 1.6vw, 15px); text-align: center;">
+                        う・つ・る→って | む・ぶ・ぬ→んで | く→いて | ぐ→いで | す→して
+                    </div>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()">つぎ</button></div>
+            <div class="slide-counter">スライド <span>29</span> / 30</div>
+        </div>
+
+        <!-- Slide 30: Summary -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>🎓 Summary & Study Tips</h2>
+            </div>
+            <div class="slide-content">
+                <div class="grid-2">
+                    <div class="grammar-point">
+                        <h3>🔑 Key Takeaways</h3>
+                        <ul style="margin-left: 20px; line-height: 1.8; font-size: clamp(12px, 1.6vw, 15px);">
+                            <li>Identify groups using <strong>ます form</strong></li>
+                            <li><strong>Stem</strong> = ます form minus ます</li>
+                            <li>Group 1 uses <strong>あいうえお</strong> system</li>
+                            <li>Group 2 just adds endings to stem</li>
+                            <li>Group 3 = memorize する & くる</li>
+                            <li>て/た form based on <strong>casual ending</strong></li>
+                        </ul>
+                    </div>
+                    <div class="grammar-point">
+                        <h3>📝 Study Order</h3>
+                        <ol style="margin-left: 20px; line-height: 1.8; font-size: clamp(12px, 1.6vw, 15px);">
+                            <li>Master verb group identification</li>
+                            <li>Learn stem form (remove ます)</li>
+                            <li>Practice あいうえお changes</li>
+                            <li>て form patterns (song!)</li>
+                            <li>た form (same as て!)</li>
+                            <li>Advanced: Conditional forms</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="pattern-box" style="background: #e8f5e9; text-align: center;">
+                    <h4>💪 がんばってください！</h4>
+                    <div style="font-size: clamp(14px, 2vw, 18px); margin-top: 10px;">
+                        Practice makes perfect!<br>
+                        <span style="font-size: clamp(16px, 2.5vw, 22px); color: #2e7d32;">れんしゅうすれば、じょうずに なれます！</span>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation"><button onclick="prevSlide()">まえ</button><button onclick="nextSlide()" disabled>つぎ</button></div>
+            <div class="slide-counter">スライド <span>30</span> / 30</div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total').textContent = totalSlides;
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = n;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current').textContent = currentSlide + 1;
+            updateButtons();
+        }
+        
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) showSlide(currentSlide + 1);
+        }
+        
+        function prevSlide() {
+            if (currentSlide > 0) showSlide(currentSlide - 1);
+        }
+        
+        function updateButtons() {
+            document.querySelectorAll('.navigation').forEach(nav => {
+                const prevBtn = nav.querySelector('button:first-child');
+                const nextBtn = nav.querySelector('button:last-child');
+                if (prevBtn) prevBtn.disabled = currentSlide === 0;
+                if (nextBtn) nextBtn.disabled = currentSlide === totalSlides - 1;
+            });
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+        
+        let touchStartX = 0, touchEndX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 50) nextSlide();
+            if (touchEndX > touchStartX + 50) prevSlide();
+        });
+        
+        updateButtons();
+    </script>
+</body>
+</html>
