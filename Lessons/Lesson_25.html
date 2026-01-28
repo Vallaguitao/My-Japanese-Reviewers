@@ -741,7 +741,7 @@
                 <p class="subtitle">How to Make Conditionals</p>
             </div>
             <div class="slide-content">
-                <div class="summary-table">
+                <table class="summary-table">
                     <tr>
                         <th>Type</th>
                         <th>Plain Past</th>
@@ -1019,7 +1019,7 @@
                 <p class="subtitle">How to Make "Even if"</p>
             </div>
             <div class="slide-content">
-                <div class="summary-table">
+                <table class="summary-table">
                     <tr>
                         <th>Type</th>
                         <th>Form</th>
@@ -1830,33 +1830,43 @@
         </div>
     </div>
 
+    
     <script>
+        // Robust slideshow controller (prevents "blank after slide" even if a slide has malformed content)
         let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
+        const slides = Array.from(document.querySelectorAll('.slide'));
         const totalSlides = slides.length;
 
+        function clamp(n, min, max) {
+            return Math.max(min, Math.min(max, n));
+        }
+
         function showSlide(n) {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = n;
-            slides[currentSlide].classList.add('active');
+            if (!slides.length) return;
+
+            // Remove active safely
+            const prev = slides[currentSlide];
+            if (prev) prev.classList.remove('active');
+
+            // Clamp target and activate
+            currentSlide = clamp(n, 0, totalSlides - 1);
+            const next = slides[currentSlide];
+            if (next) next.classList.add('active');
+
             updateButtons();
             updateProgress();
         }
 
         function nextSlide() {
-            if (currentSlide < totalSlides - 1) {
-                showSlide(currentSlide + 1);
-            }
+            showSlide(currentSlide + 1);
         }
 
         function prevSlide() {
-            if (currentSlide > 0) {
-                showSlide(currentSlide - 1);
-            }
+            showSlide(currentSlide - 1);
         }
 
         function updateButtons() {
-            document.querySelectorAll('.navigation').forEach((nav, index) => {
+            document.querySelectorAll('.navigation').forEach((nav) => {
                 const prevBtn = nav.querySelector('.prev');
                 const nextBtn = nav.querySelector('.next');
                 if (prevBtn) prevBtn.disabled = currentSlide === 0;
@@ -1866,24 +1876,25 @@
 
         function updateProgress() {
             const progress = ((currentSlide + 1) / totalSlides) * 100;
+
             document.querySelectorAll('.progress-fill').forEach(bar => {
                 bar.style.width = progress + '%';
             });
-            
-            document.querySelectorAll('.slide-counter span').forEach((span, index) => {
-                if (index % 2 === 0) {
-                    span.textContent = currentSlide + 1;
-                }
-            });
+
+            // Only update the dedicated counter on the title slide (ids are unique & safe)
+            const curEl = document.getElementById('current');
+            const totalEl = document.getElementById('total');
+            if (curEl) curEl.textContent = String(currentSlide + 1);
+            if (totalEl) totalEl.textContent = String(totalSlides);
         }
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === ' ') {
+            const key = e.key;
+            if (key === 'ArrowRight' || key === ' ') {
                 e.preventDefault();
                 nextSlide();
-            }
-            if (e.key === 'ArrowLeft') {
+            } else if (key === 'ArrowLeft') {
                 e.preventDefault();
                 prevSlide();
             }
@@ -1892,28 +1903,27 @@
         // Touch swipe support for mobile
         let touchStartX = 0;
         let touchEndX = 0;
-        
+
         document.addEventListener('touchstart', e => {
             touchStartX = e.changedTouches[0].screenX;
         }, { passive: true });
-        
+
         document.addEventListener('touchend', e => {
             touchEndX = e.changedTouches[0].screenX;
             handleSwipe();
         }, { passive: true });
-        
+
         function handleSwipe() {
             const swipeThreshold = 50;
-            if (touchEndX < touchStartX - swipeThreshold) {
-                nextSlide();
-            }
-            if (touchEndX > touchStartX + swipeThreshold) {
-                prevSlide();
-            }
+            if (touchEndX < touchStartX - swipeThreshold) nextSlide();
+            if (touchEndX > touchStartX + swipeThreshold) prevSlide();
         }
 
-        // Initialize
+        // Initialize (make sure exactly one slide is active)
+        slides.forEach((s, i) => s.classList.toggle('active', i === 0));
         updateButtons();
+        updateProgress();
     </script>
+
 </body>
 </html>
