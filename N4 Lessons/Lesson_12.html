@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>いろどり Irodori A2 - Lesson 12: お弁当、おいしそうですね</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========== CSS Variables - Burgundy/Red Bento Theme ========== */
+        :root {
+            --primary: #be123c;
+            --primary-light: #fb7185;
+            --primary-dark: #9f1239;
+            --accent: #0d9488;
+            --accent-light: #5eead4;
+            --accent-dark: #0f766e;
+            --secondary: #e11d48;
+            --secondary-light: #fecdd3;
+            --success: #16a34a;
+            --success-light: #bbf7d0;
+            --error: #dc2626;
+            --error-light: #fecaca;
+            --warning: #ca8a04;
+            --warning-light: #fef9c3;
+            --bg-light: #fff1f2;
+            --bg-rose: #ffe4e6;
+            --bg-card: #ffffff;
+            --text-primary: #881337;
+            --text-secondary: #9f1239;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ========== Reset & Base ========== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-rose) 100%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== Progress Bar ========== */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--bg-card);
+            box-shadow: var(--shadow);
+            padding: 12px 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .progress-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-title .lesson-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .progress-bar-wrapper {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .progress-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:disabled {
+            background: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ========== Main Container ========== */
+        .presentation {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        /* ========== Slides ========== */
+        .slide {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== Title Slide ========== */
+        .title-slide {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .title-slide .book-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+
+        .title-slide h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .title-slide .lesson-title-jp {
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .title-slide .lesson-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .bento-icons {
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+        }
+
+        .title-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            max-width: 850px;
+            margin: 0 auto 40px;
+        }
+
+        .title-card h2 {
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .grammar-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .grammar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-light);
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .grammar-item:hover {
+            transform: translateX(8px);
+            background: var(--secondary-light);
+        }
+
+        .grammar-number {
+            width: 26px;
+            height: 26px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 14px rgba(190, 18, 60, 0.4);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(190, 18, 60, 0.5);
+        }
+
+        /* ========== Content Slides ========== */
+        .content-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .slide-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .grammar-badge {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .slide-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            flex: 1;
+        }
+
+        .slide-header .jp-title {
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* ========== Ruby (Furigana) Styling ========== */
+        ruby {
+            ruby-position: over;
+        }
+
+        ruby rt {
+            font-size: 0.6em;
+            color: var(--text-muted);
+        }
+
+        /* ========== Example Boxes ========== */
+        .example-box {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #fda4af 100%);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .example-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-japanese {
+            font-size: 1.35rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 2;
+        }
+
+        .example-english {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* ========== Conversation Box ========== */
+        .conversation-box {
+            background: linear-gradient(135deg, #ecfdf5 0%, #a7f3d0 100%);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 20px 0;
+            border-left: 4px solid #10b981;
+        }
+
+        .conversation-box .example-label {
+            color: #065f46;
+        }
+
+        .speaker {
+            font-weight: 600;
+            color: var(--primary-dark);
+            min-width: 24px;
+            display: inline-block;
+        }
+
+        .speaker.b {
+            color: var(--accent-dark);
+        }
+
+        /* ========== Comparison Boxes ========== */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-box {
+            padding: 20px;
+            border-radius: var(--radius);
+        }
+
+        .looks-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+        }
+
+        .taste-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .intrans-box {
+            background: linear-gradient(135deg, #f5f3ff 0%, #ddd6fe 100%);
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .trans-box {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            border-left: 4px solid #ec4899;
+        }
+
+        .positive-box {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left: 4px solid #10b981;
+        }
+
+        .negative-box {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-left: 4px solid #ef4444;
+        }
+
+        .concern-box {
+            background: linear-gradient(135deg, #ecfeff 0%, #a5f3fc 100%);
+            border-left: 4px solid #06b6d4;
+        }
+
+        .box-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .looks-box .box-label { color: #92400e; }
+        .taste-box .box-label { color: #1e40af; }
+        .intrans-box .box-label { color: #6d28d9; }
+        .trans-box .box-label { color: #be185d; }
+        .positive-box .box-label { color: #065f46; }
+        .negative-box .box-label { color: #b91c1c; }
+        .concern-box .box-label { color: #0e7490; }
+
+        /* ========== Explanation Sections ========== */
+        .explanation {
+            margin: 24px 0;
+        }
+
+        .explanation h3 {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .explanation p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .key-point {
+            background: var(--secondary-light);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 16px 0;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .key-point strong {
+            color: var(--primary-dark);
+        }
+
+        .warning-point {
+            background: var(--warning-light);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 16px 0;
+            border-left: 4px solid var(--warning);
+        }
+
+        /* ========== Structure Box ========== */
+        .structure-box {
+            background: linear-gradient(135deg, #ecfeff 0%, #a5f3fc 100%);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #06b6d4;
+        }
+
+        .structure-box .label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #0e7490;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .structure-formula {
+            font-size: 1.05rem;
+            font-family: 'Outfit', monospace;
+            color: var(--primary-dark);
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 8px 4px;
+        }
+
+        .structure-formula .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .structure-formula .accent {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* ========== Verb Pair Table ========== */
+        .verb-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .verb-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 16px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .verb-table td {
+            padding: 12px 16px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .verb-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .verb-table tr:nth-child(even) {
+            background: var(--bg-light);
+        }
+
+        .intrans-cell {
+            color: #6d28d9;
+            font-weight: 500;
+        }
+
+        .trans-cell {
+            color: #be185d;
+            font-weight: 500;
+        }
+
+        /* ========== Food Adjective Grid ========== */
+        .adj-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .adj-item {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #fda4af 100%);
+            border-radius: var(--radius);
+            padding: 14px;
+            text-align: center;
+            border-left: 3px solid var(--primary);
+        }
+
+        .adj-jp {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+
+        .adj-en {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* ========== Collapsible MNN Notes ========== */
+        .mnn-connection {
+            margin: 24px 0;
+        }
+
+        .mnn-toggle {
+            width: 100%;
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            border: none;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #b91c1c;
+            transition: var(--transition);
+        }
+
+        .mnn-toggle:hover {
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+        }
+
+        .mnn-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .mnn-toggle.open .icon {
+            transform: rotate(180deg);
+        }
+
+        .mnn-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            background: #fef2f2;
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .mnn-content.open {
+            max-height: 500px;
+            padding: 20px;
+            border: 1px solid #fecaca;
+            border-top: none;
+        }
+
+        .mnn-content h4 {
+            color: #b91c1c;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .mnn-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .mnn-lesson-ref {
+            display: inline-block;
+            background: #b91c1c;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+
+        /* ========== Quiz Slides ========== */
+        .quiz-card {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #fda4af 100%);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .quiz-badge {
+            background: var(--accent);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .quiz-header h2 {
+            font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        .quiz-question {
+            background: white;
+            padding: 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .question-number {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .question-context {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+
+        .fill-blank {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 1.25rem;
+            margin: 20px 0;
+        }
+
+        .blank-input {
+            border: 2px dashed var(--primary);
+            background: var(--bg-light);
+            padding: 8px 16px;
+            border-radius: 8px;
+            min-width: 100px;
+            font-size: 1.05rem;
+            font-family: inherit;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .blank-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
+        }
+
+        .check-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+        }
+
+        .check-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* ========== Answer Slides ========== */
+        .answer-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .answer-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .answer-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .answer-result {
+            padding: 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+
+        .answer-result.correct {
+            background: var(--success-light);
+            border-left: 4px solid var(--success);
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--success);
+        }
+
+        .answer-text {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .answer-explanation {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        /* ========== Summary Slide ========== */
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            color: white;
+            text-align: center;
+        }
+
+        .summary-card h2 {
+            font-size: 2rem;
+            margin-bottom: 24px;
+        }
+
+        .summary-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin: 32px 0;
+        }
+
+        .summary-point {
+            background: rgba(255,255,255,0.15);
+            padding: 20px 16px;
+            border-radius: var(--radius);
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-point h4 {
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .summary-point p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .restart-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 16px 48px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 24px;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        /* ========== Responsive Design ========== */
+        @media (max-width: 768px) {
+            .progress-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .progress-bar-wrapper {
+                width: 100%;
+                max-width: none;
+            }
+
+            .progress-nav {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .content-card, .quiz-card, .answer-card {
+                padding: 24px;
+            }
+
+            .slide-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .example-japanese {
+                font-size: 1.15rem;
+            }
+
+            .fill-blank {
+                font-size: 1.1rem;
+            }
+
+            .structure-formula {
+                font-size: 0.95rem;
+                padding: 10px 14px;
+                margin: 4px 2px;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-points {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .verb-table {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .progress-title {
+                font-size: 0.8rem;
+            }
+
+            .nav-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .title-slide h1 {
+                font-size: 2rem;
+            }
+
+            .grammar-item {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+
+            .bento-icons {
+                font-size: 2rem;
+            }
+
+            .summary-points {
+                grid-template-columns: 1fr;
+            }
+
+            .adj-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ========== Animations ========== */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title">
+                <span class="lesson-badge">A2</span>
+                いろどり Lesson 12
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text"><span id="currentSlide">1</span> / <span id="totalSlides">16</span></div>
+            </div>
+            <div class="progress-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()">
+                    ◀ <span class="btn-text">Back</span>
+                </button>
+                <button class="nav-btn" id="nextBtn" onclick="nextSlide()">
+                    <span class="btn-text">Next</span> ▶
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Presentation -->
+    <div class="presentation">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <div class="book-badge">いろどり IRODORI • 入門 A2</div>
+                <h1>Lesson 12</h1>
+                <div class="bento-icons">🍱 🥚 🍙 🥢 🍳</div>
+                <div class="lesson-title-jp">お<ruby>弁当<rt>べんとう</rt></ruby>、おいし<ruby>そう<rt></rt></ruby>ですね</div>
+                <div class="lesson-subtitle">Your bento looks delicious • Delicious Cooking</div>
+                
+                <div class="title-card">
+                    <h2>📚 <ruby>文法<rt>ぶんぽう</rt></ruby>ノート Grammar Points</h2>
+                    <div class="grammar-list">
+                        <div class="grammar-item">
+                            <span class="grammar-number">1</span>
+                            <span>ナA-/イA- そうです — "Looks like ~" (appearance)</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">2</span>
+                            <span>〜そうな N — Modifying nouns with そう</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">3</span>
+                            <span>イA-くて、〜 / イA-くなくて、〜 — Connecting adjectives</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">4</span>
+                            <span>V-てみます — "Try doing ~"</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">5</span>
+                            <span><ruby>自動詞<rt>じどうし</rt></ruby>・<ruby>他動詞<rt>たどうし</rt></ruby> — Intransitive/Transitive verbs</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">6</span>
+                            <span>イA-くないですか？ — Expressing concern</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="start-btn pulse" onclick="nextSlide()">
+                    🍱 <ruby>始<rt>はじ</rt></ruby>めましょう！Start Learning
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Grammar 1 - そうです (appearance) -->
+        <div class="slide" data-slide="2">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 1</span>
+                    <div>
+                        <h2>ナA-/イA- そうです</h2>
+                        <span class="jp-title">"Looks like ~" (appearance judgment)</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        そのお<ruby>弁当<rt>べんとう</rt></ruby>、おいし<strong>そうですね</strong>。
+                    </div>
+                    <div class="example-english">Your bento looks delicious.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>This expression is used to indicate an <strong>intuitive judgment from appearance</strong>. In this lesson, it's used to comment on the taste of dishes and food from their appearance—you haven't actually tasted it yet, but it <strong>looks</strong> that way!</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        イA - <span class="highlight">い</span> + <span class="accent">そうです</span>
+                    </div>
+                    <div class="structure-formula">
+                        ナA - <span class="highlight">な</span> + <span class="accent">そうです</span>
+                    </div>
+                    <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-muted);">
+                        Remove い from イ-adjectives, and な from ナ-adjectives, then add そうです.<br>
+                        おいしい → おいし<strong>そう</strong> | <ruby>元気<rt>げんき</rt></ruby>(な) → <ruby>元気<rt>げんき</rt></ruby><strong>そう</strong>
+                    </p>
+                </div>
+
+                <div class="adj-grid">
+                    <div class="adj-item">
+                        <div class="adj-jp">おいしそう</div>
+                        <div class="adj-en">looks delicious</div>
+                    </div>
+                    <div class="adj-item">
+                        <div class="adj-jp"><ruby>辛<rt>から</rt></ruby>そう</div>
+                        <div class="adj-en">looks spicy</div>
+                    </div>
+                    <div class="adj-item">
+                        <div class="adj-jp">すっぱそう</div>
+                        <div class="adj-en">looks sour</div>
+                    </div>
+                    <div class="adj-item">
+                        <div class="adj-jp"><ruby>甘<rt>あま</rt></ruby>そう</div>
+                        <div class="adj-en">looks sweet</div>
+                    </div>
+                    <div class="adj-item">
+                        <div class="adj-jp"><ruby>元気<rt>げんき</rt></ruby>そう</div>
+                        <div class="adj-en">looks healthy</div>
+                    </div>
+                    <div class="adj-item">
+                        <div class="adj-jp"><ruby>大変<rt>たいへん</rt></ruby>そう</div>
+                        <div class="adj-en">looks hard</div>
+                    </div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Conversation Example</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span>みかん、ちょっとすっぱそうですね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">This orange looks a bit sour.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker b">B:</span>そんなことないわよ。<ruby>甘<rt>あま</rt></ruby>いわよ。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">No, it's not. It's sweet.</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Point:</strong><br>
+                    〜そうです means "looks like ~" based on appearance <strong>without</strong> actually tasting/experiencing it. The speaker is making an intuitive judgment!
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 43</span> 〜そうです (appearance/conjecture)</p>
+                        <p><strong>Key Point:</strong> MNN Lesson 43 introduces そうです for expressing appearance-based judgments. This is different from そうです (hearsay) in MNN Lesson 47. Here, it's always about what something LOOKS like to you.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Grammar 2 - 〜そうな N -->
+        <div class="slide" data-slide="3">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 2</span>
+                    <div>
+                        <h2>〜そうな N</h2>
+                        <span class="jp-title">Modifying Nouns with そう</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        それ、<ruby>辛<rt>から</rt></ruby><strong>そうな</strong><ruby>料理<rt>りょうり</rt></ruby>ですね。
+                    </div>
+                    <div class="example-english">This looks like a spicy dish.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>〜そうです can also be used to <strong>qualify nouns</strong>. In this case, you say 〜そうな N. You can also say その<ruby>料理<rt>りょうり</rt></ruby>、<ruby>辛<rt>から</rt></ruby>そうですね instead of それ、<ruby>辛<rt>から</rt></ruby>そうな<ruby>料理<rt>りょうり</rt></ruby>ですね.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        イA-<span class="highlight">そうな</span> + N
+                    </div>
+                    <div class="structure-formula">
+                        ナA-<span class="accent">そうな</span> + N
+                    </div>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box looks-box">
+                        <div class="box-label">🟡 Modifying a Noun</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            おいし<strong>そうな</strong>ケーキですね。<br>
+                            <span class="example-english">That's a delicious-looking cake.</span>
+                        </div>
+                    </div>
+                    <div class="comparison-box taste-box">
+                        <div class="box-label">🔵 Same meaning, different form</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            そのケーキ、おいし<strong>そうですね</strong>。<br>
+                            <span class="example-english">That cake looks delicious.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">💬 More Examples</div>
+                    <div class="example-japanese">
+                        <ruby>元気<rt>げんき</rt></ruby>そうな<ruby>子供<rt>こども</rt></ruby>ですね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">That's a healthy-looking child.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        <ruby>難<rt>むずか</rt></ruby>しそうな<ruby>本<rt>ほん</rt></ruby>を<ruby>読<rt>よ</rt></ruby>んでいますね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">You're reading a difficult-looking book.</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 そうです vs そうな:</strong><br><br>
+                    • <strong>〜そうです</strong> = End of sentence (predicate)<br>
+                    • <strong>〜そうな N</strong> = Before a noun (modifier)
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 43</span> 〜そうな N (noun modification)</p>
+                        <p><strong>Key Point:</strong> When そう modifies a noun directly, it changes to そうな. This is similar to how ナ-adjectives work: <ruby>静<rt>しず</rt></ruby>か → <ruby>静<rt>しず</rt></ruby>かな<ruby>部屋<rt>へや</rt></ruby>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Quiz 1 & 2 -->
+        <div class="slide" data-slide="4">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 1 & 2</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">You see a curry that looks spicy (<ruby>辛<rt>から</rt></ruby>い).</div>
+                    <div class="question-text">Say "This curry looks spicy":</div>
+                    <div class="fill-blank">
+                        このカレー、<ruby>辛<rt>から</rt></ruby>
+                        <input type="text" class="blank-input" id="q1-1" placeholder="？">
+                        。
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Describe a delicious-looking cake using そうな before the noun.</div>
+                    <div class="question-text">Complete: "a delicious-looking cake"</div>
+                    <div class="fill-blank">
+                        おいし
+                        <input type="text" class="blank-input" id="q1-2" placeholder="？">
+                        ケーキ
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Answers 1 & 2 -->
+        <div class="slide" data-slide="5">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 1 & 2</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        このカレー、<ruby>辛<rt>から</rt></ruby><strong>そうですね</strong>。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> <ruby>辛<rt>から</rt></ruby>い → <ruby>辛<rt>から</rt></ruby>そう (remove い, add そう). This expresses your judgment based on how it looks.
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        おいし<strong>そうな</strong>ケーキ
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> When modifying a noun, use 〜そうな. おいしい → おいしそうな + ケーキ = a delicious-looking cake.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Grammar 3 - イA-くて、〜 / イA-くなくて、〜 -->
+        <div class="slide" data-slide="6">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 3</span>
+                    <div>
+                        <h2>イA-くて、〜 / イA-くなくて、〜</h2>
+                        <span class="jp-title">Connecting Adjectives</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Examples</div>
+                    <div class="example-japanese">
+                        この<ruby>卵焼<rt>たまごや</rt></ruby>き、<ruby>甘<rt>あま</rt></ruby><strong>くて</strong>、おいしいですね。
+                    </div>
+                    <div class="example-english">This omelet is sweet and tasty.</div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        <ruby>茶碗蒸<rt>ちゃわんむ</rt></ruby>し、<ruby>甘<rt>あま</rt></ruby><strong>くなくて</strong>、おいしいですよ。
+                    </div>
+                    <div class="example-english">Chawanmushi is delicious because it's not sweet.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>Lesson 5 introduced 〜くて to list two or more イ-adjectives. 〜くて can also describe a <strong>reason</strong> for the next sentence. Here, the reason the omelet is おいしい is that it's <ruby>甘<rt>あま</rt></ruby>い.</p>
+                    <p>The <strong>negative form</strong> is 〜くなくて. The reason <ruby>茶碗蒸<rt>ちゃわんむ</rt></ruby>し is おいしい is that it's NOT <ruby>甘<rt>あま</rt></ruby>い.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        イA - い → イA - <span class="highlight">くて</span>、〜
+                    </div>
+                    <div class="structure-formula">
+                        イA - い → イA - <span class="accent">くなくて</span>、〜
+                    </div>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box positive-box">
+                        <div class="box-label">🟢 Positive (くて)</div>
+                        <div class="example-japanese" style="font-size: 1.05rem;">
+                            このラーメン、<ruby>熱<rt>あつ</rt></ruby><strong>くて</strong>おいしい！<br>
+                            <span class="example-english">This ramen is hot and delicious!</span>
+                        </div>
+                    </div>
+                    <div class="comparison-box negative-box">
+                        <div class="box-label">🔴 Negative (くなくて)</div>
+                        <div class="example-japanese" style="font-size: 1.05rem;">
+                            この<ruby>料理<rt>りょうり</rt></ruby>は<ruby>辛<rt>から</rt></ruby><strong>くなくて</strong>、<ruby>子<rt>こ</rt></ruby>どもも<ruby>食<rt>た</rt></ruby>べられます。<br>
+                            <span class="example-english">This dish is not spicy, so children can eat it too.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">💬 More Examples</div>
+                    <div class="example-japanese">
+                        <ruby>梅干<rt>うめぼ</rt></ruby>しはすっぱくて、<ruby>苦手<rt>にがて</rt></ruby>です。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">I am not a fan of umeboshi because they are too sour.</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 くて vs くなくて:</strong><br><br>
+                    • <ruby>甘<rt>あま</rt></ruby>い → <ruby>甘<rt>あま</rt></ruby><strong>くて</strong> (sweet, and...)<br>
+                    • <ruby>甘<rt>あま</rt></ruby>い → <ruby>甘<rt>あま</rt></ruby><strong>くなくて</strong> (not sweet, and...)
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 16</span> イA-くて connecting form</p>
+                        <p><span class="mnn-lesson-ref">Lesson 16</span> ナA-で connecting form</p>
+                        <p><strong>Key Point:</strong> MNN Lesson 16 introduces adjective connection. The くて form can list qualities AND explain reasons. The negative くなくて follows the same pattern.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Grammar 4 - V-てみます -->
+        <div class="slide" data-slide="7">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 4</span>
+                    <div>
+                        <h2>V-てみます</h2>
+                        <span class="jp-title">"Try doing ~"</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        よかったら、この<ruby>卵焼<rt>たまごや</rt></ruby>き、<ruby>食<rt>た</rt></ruby>べ<strong>てみて</strong>ください。
+                    </div>
+                    <div class="example-english">If you'd like, please try some of this omelet.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>V-てみる is used when you are <strong>trying a new activity or product</strong> to see how it is. In this lesson, V-てみてください is used to <strong>offer food</strong> to someone.</p>
+                    <p>Lesson 10 covered V-てみたいんですが... (wanting to try something new).</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        V-<span class="highlight">て</span> + <span class="accent">みます</span> (try doing V)
+                    </div>
+                    <div class="structure-formula">
+                        V-<span class="highlight">て</span> + <span class="accent">みてください</span> (please try V)
+                    </div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Conversation Examples</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span><ruby>梅干<rt>うめぼ</rt></ruby>し、<ruby>食<rt>た</rt></ruby>べてみる？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Do you want to try some umeboshi?</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 8px;">
+                        <span class="speaker b">B:</span>はい。いただきます。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Yes, please.</span>
+                    </div>
+                    <div style="margin-top: 16px; border-top: 1px dashed #10b981; padding-top: 16px;">
+                    <div class="example-japanese">
+                        <ruby>今度<rt>こんど</rt></ruby>、おすしを<ruby>作<rt>つく</rt></ruby>ってみます。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">I will make sushi next time (to try it).</span>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Related Expressions:</strong><br><br>
+                    • <ruby>行<rt>い</rt></ruby>ってみませんか？ (Would you like to go try it?)<br>
+                    • <ruby>行<rt>い</rt></ruby>ってみる？ (Do you want to go try?)<br>
+                    • <ruby>行<rt>い</rt></ruby>ってみたい (I want to go try)<br>
+                    • <ruby>行<rt>い</rt></ruby>ってみます (I will go try)
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 40</span> V-てみます (try doing)</p>
+                        <p><strong>Key Point:</strong> MNN Lesson 40 introduces V-てみる for trying/testing something. It implies you want to see the result or experience something new. Perfect for offering or trying food!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Quiz 3 & 4 -->
+        <div class="slide" data-slide="8">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 3 & 4</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">This soup is delicious because it's hot (<ruby>熱<rt>あつ</rt></ruby>い).</div>
+                    <div class="question-text">Connect using くて:</div>
+                    <div class="fill-blank">
+                        このスープ、<ruby>熱<rt>あつ</rt></ruby>
+                        <input type="text" class="blank-input" id="q3-1" placeholder="？">
+                        、おいしいです。
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Offer someone to try eating (<ruby>食<rt>た</rt></ruby>べる) this sushi.</div>
+                    <div class="question-text">Say "Please try eating this":</div>
+                    <div class="fill-blank">
+                        このおすし、<ruby>食<rt>た</rt></ruby>べ
+                        <input type="text" class="blank-input" id="q3-2" placeholder="？">
+                        ください。
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 9: Answers 3 & 4 -->
+        <div class="slide" data-slide="9">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 3 & 4</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        このスープ、<ruby>熱<rt>あつ</rt></ruby><strong>くて</strong>、おいしいです。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> <ruby>熱<rt>あつ</rt></ruby>い → <ruby>熱<rt>あつ</rt></ruby>くて. The くて form connects adjectives and can also express a reason. The soup is delicious BECAUSE it's hot.
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        このおすし、<ruby>食<rt>た</rt></ruby>べ<strong>てみて</strong>ください。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> <ruby>食<rt>た</rt></ruby>べる → <ruby>食<rt>た</rt></ruby>べて + みてください. V-てみてください is used to offer someone a chance to try something.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Grammar 5 - 自動詞・他動詞 -->
+        <div class="slide" data-slide="10">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 5</span>
+                    <div>
+                        <h2><ruby>自動詞<rt>じどうし</rt></ruby>・<ruby>他動詞<rt>たどうし</rt></ruby></h2>
+                        <span class="jp-title">Intransitive & Transitive Verbs</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Examples</div>
+                    <div class="example-japanese">
+                        <ruby>鶏肉<rt>とりにく</rt></ruby>とか、エビとか、きのことかが<ruby>入<rt>はい</rt></ruby>っ<strong>ています</strong>。
+                    </div>
+                    <div class="example-english">It contains chicken, shrimp, and mushroom.</div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        ときどき、<ruby>銀杏<rt>ぎんなん</rt></ruby>も<ruby>入<rt>い</rt></ruby>れ<strong>ます</strong>よ。
+                    </div>
+                    <div class="example-english">It also contains gingko nuts sometimes. (I put them in.)</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>There are two types of verbs: <strong>intransitive verbs</strong> (<ruby>自動詞<rt>じどうし</rt></ruby>) and <strong>transitive verbs</strong> (<ruby>他動詞<rt>たどうし</rt></ruby>).</p>
+                    <p><strong>Transitive</strong> verbs describe when a person <strong>performs an act intentionally</strong> (ごはんを<ruby>食<rt>た</rt></ruby>べる = eat a meal).</p>
+                    <p><strong>Intransitive</strong> verbs focus on <strong>the event</strong>, not the person doing it (<ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>る = rain falls).</p>
+                </div>
+
+                <table class="verb-table">
+                    <tr>
+                        <th><ruby>自動詞<rt>じどうし</rt></ruby> (Intransitive)</th>
+                        <th><ruby>他動詞<rt>たどうし</rt></ruby> (Transitive)</th>
+                    </tr>
+                    <tr>
+                        <td class="intrans-cell"><ruby>入<rt>はい</rt></ruby>る (contain)</td>
+                        <td class="trans-cell"><ruby>入<rt>い</rt></ruby>れる (put in)</td>
+                    </tr>
+                    <tr>
+                        <td class="intrans-cell"><ruby>焼<rt>や</rt></ruby>ける (done grilling)</td>
+                        <td class="trans-cell"><ruby>焼<rt>や</rt></ruby>く (grill)</td>
+                    </tr>
+                    <tr>
+                        <td class="intrans-cell"><ruby>煮<rt>に</rt></ruby>える (done simmering)</td>
+                        <td class="trans-cell"><ruby>煮<rt>に</rt></ruby>る (simmer)</td>
+                    </tr>
+                </table>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box intrans-box">
+                        <div class="box-label">💜 Intransitive (N が V)</div>
+                        <div class="example-japanese" style="font-size: 1.05rem;">
+                            すき<ruby>焼<rt>や</rt></ruby>きには<ruby>牛肉<rt>ぎゅうにく</rt></ruby>、<ruby>豆腐<rt>とうふ</rt></ruby>、ねぎが<strong><ruby>入<rt>はい</rt></ruby>っています</strong>。<br>
+                            <span class="example-english">Sukiyaki contains beef, tofu, and green onion.</span>
+                        </div>
+                    </div>
+                    <div class="comparison-box trans-box">
+                        <div class="box-label">🩷 Transitive ([Person が] N を V)</div>
+                        <div class="example-japanese" style="font-size: 1.05rem;">
+                            ときどき、しいたけを<strong><ruby>入<rt>い</rt></ruby>れます</strong>よ。<br>
+                            <span class="example-english">I put in shiitake mushrooms sometimes.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Cooking Conversation</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span><ruby>肉<rt>にく</rt></ruby>が<ruby>焼<rt>や</rt></ruby>けましたよ。<ruby>食<rt>た</rt></ruby>べてください。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">The meat is done grilling. Please eat.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 8px;">
+                        <span class="speaker b">B:</span>いただきます。<br>
+                        <span class="speaker">A:</span><ruby>次<rt>つぎ</rt></ruby>は<ruby>何<rt>なに</rt></ruby>を<ruby>焼<rt>や</rt></ruby>きますか？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">What should I grill next?</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Difference:</strong><br><br>
+                    • <ruby>入<rt>はい</rt></ruby>る / <ruby>入<rt>はい</rt></ruby>っています = describes WHAT is contained (focus on state)<br>
+                    • <ruby>入<rt>い</rt></ruby>れる / <ruby>入<rt>い</rt></ruby>れます = describes that YOU put something in (focus on action)
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 29</span> Intransitive/Transitive verb pairs</p>
+                        <p><span class="mnn-lesson-ref">Lesson 30</span> V-ています (resultant state)</p>
+                        <p><strong>Key Point:</strong> MNN Lessons 29-30 introduce verb pairs like <ruby>開<rt>あ</rt></ruby>く/<ruby>開<rt>あ</rt></ruby>ける, <ruby>閉<rt>し</rt></ruby>まる/<ruby>閉<rt>し</rt></ruby>める. Intransitive verbs + ています describe states; transitive verbs describe intentional actions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Grammar 6 - イA-くないですか？ -->
+        <div class="slide" data-slide="11">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 6</span>
+                    <div>
+                        <h2>イA-くないですか？</h2>
+                        <span class="jp-title">Expressing Concern</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        <ruby>味<rt>あじ</rt></ruby>は、うす<strong>くないですか</strong>？
+                    </div>
+                    <div class="example-english">Isn't the taste too plain for you?</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>This expression is used to <strong>express a concern</strong> and ask if someone is okay. In this example, it's used to ask about <strong>taste</strong>. The person asks because they are concerned that other people who are not used to eating Japanese dishes feel the taste is too plain.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        イA - い → イA - <span class="highlight">くないですか</span>？
+                    </div>
+                    <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-muted);">
+                        This is a negative question expressing concern = "Isn't it too ~?"
+                    </p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box concern-box">
+                        <div class="box-label">🩵 Common Concern Questions</div>
+                        <div class="example-japanese" style="font-size: 1.05rem;">
+                            <ruby>辛<rt>から</rt></ruby>くないですか？<br>
+                            <span class="example-english">Isn't it too spicy (for you)?</span>
+                        </div>
+                        <div class="example-japanese" style="font-size: 1.05rem; margin-top: 12px;">
+                            <ruby>難<rt>むずか</rt></ruby>しくないですか？<br>
+                            <span class="example-english">Isn't it too difficult?</span>
+                        </div>
+                        <div class="example-japanese" style="font-size: 1.05rem; margin-top: 12px;">
+                            <ruby>寒<rt>さむ</rt></ruby>くないですか？<br>
+                            <span class="example-english">Isn't it too cold?</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Conversation Example</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span>わさび、<ruby>辛<rt>から</rt></ruby>くないですか？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Isn't wasabi too spicy for you?</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker b">B:</span>だいじょうぶです。わさび、<ruby>大好<rt>だいす</rt></ruby>きですから。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">I am fine. I love wasabi.</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 When to Use:</strong><br>
+                    Use イA-くないですか when you're <strong>worried</strong> about someone and want to check if they're okay. It's a caring way to ask!
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 12</span> 〜くないです (negative adjective)</p>
+                        <p><span class="mnn-lesson-ref">Lesson 12</span> Negative questions</p>
+                        <p><strong>Key Point:</strong> The negative question form 〜くないですか expresses concern or seeks confirmation. It's softer than asking directly and shows you care about the other person's comfort.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Quiz 5 & 6 -->
+        <div class="slide" data-slide="12">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 5 & 6</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Describe what's in miso soup: tofu (<ruby>豆腐<rt>とうふ</rt></ruby>) and wakame.</div>
+                    <div class="question-text">Use the intransitive verb <ruby>入<rt>はい</rt></ruby>る:</div>
+                    <div class="fill-blank">
+                        <ruby>味噌汁<rt>みそしる</rt></ruby>には、<ruby>豆腐<rt>とうふ</rt></ruby>とわかめが
+                        <input type="text" class="blank-input" id="q5-1" placeholder="？">
+                        。
+                    </div>
+                    <div class="example-english">"Miso soup contains tofu and wakame."</div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Express concern: Is the room too cold for them? (<ruby>寒<rt>さむ</rt></ruby>い)</div>
+                    <div class="question-text">Ask with concern:</div>
+                    <div class="fill-blank">
+                        <ruby>部屋<rt>へや</rt></ruby>、<ruby>寒<rt>さむ</rt></ruby>
+                        <input type="text" class="blank-input" id="q5-2" placeholder="？">
+                        ？
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 13: Answers 5 & 6 -->
+        <div class="slide" data-slide="13">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 5 & 6</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        <ruby>味噌汁<rt>みそしる</rt></ruby>には、<ruby>豆腐<rt>とうふ</rt></ruby>とわかめが<strong><ruby>入<rt>はい</rt></ruby>っています</strong>。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> <ruby>入<rt>はい</rt></ruby>る (intransitive) + ています describes a state = "contains." Use N が <ruby>入<rt>はい</rt></ruby>っています to describe what something contains.
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        <ruby>部屋<rt>へや</rt></ruby>、<ruby>寒<rt>さむ</rt></ruby><strong>くないですか</strong>？
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> <ruby>寒<rt>さむ</rt></ruby>い → <ruby>寒<rt>さむ</rt></ruby>くないですか？ This negative question expresses concern for the other person's comfort. "Isn't it too cold?"
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Comprehensive Practice -->
+        <div class="slide" data-slide="14">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">🎯 Final Practice</span>
+                    <h2>Bento Lunch Scenario</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Putting It All Together</div>
+                    <div class="question-context">You're sharing bento with a coworker. Use all the grammar!</div>
+                    <div style="padding: 16px; background: white; border-radius: 8px; margin: 16px 0;">
+                        <p style="margin-bottom: 16px;"><strong>Scenario:</strong> Commenting on and sharing a homemade bento.</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>1. Comment on appearance:</strong></p>
+                        <p style="color: var(--text-muted);">そのお<ruby>弁当<rt>べんとう</rt></ruby>、おいし<strong>そうですね</strong>！</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>2. Describe what's in it:</strong></p>
+                        <p style="color: var(--text-muted);"><ruby>鶏肉<rt>とりにく</rt></ruby>と<ruby>卵焼<rt>たまごや</rt></ruby>きが<strong><ruby>入<rt>はい</rt></ruby>っています</strong>。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>3. Describe the omelet:</strong></p>
+                        <p style="color: var(--text-muted);"><ruby>卵焼<rt>たまごや</rt></ruby>き、<ruby>甘<rt>あま</rt></ruby><strong>くて</strong>おいしいですよ。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>4. Offer to share:</strong></p>
+                        <p style="color: var(--text-muted);">よかったら、<ruby>食<rt>た</rt></ruby>べ<strong>てみて</strong>ください。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>5. Check if it's okay:</strong></p>
+                        <p style="color: var(--text-muted);"><ruby>味<rt>あじ</rt></ruby>、うす<strong>くないですか</strong>？</p>
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">See Summary →</button>
+            </div>
+        </div>
+
+        <!-- Slide 15: Summary -->
+        <div class="slide" data-slide="15">
+            <div class="summary-card">
+                <h2>🎉 Lesson 12 Complete!</h2>
+                <p>You've mastered 6 essential grammar points for talking about food!</p>
+                
+                <div class="summary-points">
+                    <div class="summary-point">
+                        <h4>1. 〜そうです</h4>
+                        <p>"Looks like ~"<br>(appearance)</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>2. 〜そうな N</h4>
+                        <p>Modify nouns<br>("delicious-looking")</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>3. くて/くなくて</h4>
+                        <p>Connect adjectives<br>(reason)</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>4. V-てみます</h4>
+                        <p>"Try doing ~"<br>(offer food)</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>5. <ruby>自動詞<rt>じ</rt></ruby>・<ruby>他動詞<rt>た</rt></ruby></h4>
+                        <p>Intrans/Trans<br>(<ruby>入<rt>はい</rt></ruby>る/<ruby>入<rt>い</rt></ruby>れる)</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>6. くないですか</h4>
+                        <p>Express concern<br>("Isn't it too ~?")</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 32px; padding: 20px; background: rgba(255,255,255,0.2); border-radius: var(--radius);">
+                    <h3 style="margin-bottom: 12px;">🍱 Now You Can:</h3>
+                    <p style="font-size: 1rem; opacity: 0.95;">
+                        おいしそうな<ruby>料理<rt>りょうり</rt></ruby>ですね！<br>
+                        <ruby>甘<rt>あま</rt></ruby>くて、おいしいですよ。<br>
+                        <ruby>食<rt>た</rt></ruby>べてみてください！
+                    </p>
+                </div>
+
+                <button class="restart-btn" onclick="restartPresentation()">
+                    🔄 <ruby>最初<rt>さいしょ</rt></ruby>から Start Over
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ========== Slide Navigation ==========
+        let currentSlide = 1;
+        const totalSlides = 15;
+
+        function updateSlide() {
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            const activeSlide = document.querySelector(`[data-slide="${currentSlide}"]`);
+            if (activeSlide) {
+                activeSlide.classList.add('active');
+            }
+            
+            document.getElementById('currentSlide').textContent = currentSlide;
+            document.getElementById('totalSlides').textContent = totalSlides;
+            
+            const progress = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(slideNum) {
+            currentSlide = slideNum;
+            updateSlide();
+        }
+
+        function restartPresentation() {
+            currentSlide = 1;
+            updateSlide();
+        }
+
+        // ========== MNN Toggle ==========
+        function toggleMNN(button) {
+            const content = button.nextElementSibling;
+            button.classList.toggle('open');
+            content.classList.toggle('open');
+        }
+
+        // ========== Keyboard Navigation ==========
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // ========== Touch/Swipe Navigation (Mobile) ==========
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+
+        // ========== Initialize ==========
+        updateSlide();
+    </script>
+</body>
+</html>
