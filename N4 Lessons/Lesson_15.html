@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>いろどり Irodori A2 - Lesson 15: 熱があってのどが痛いんです</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #e11d48;
+            --primary-light: #fb7185;
+            --primary-dark: #be123c;
+            --accent: #0d9488;
+            --accent-light: #5eead4;
+            --accent-dark: #0f766e;
+            --secondary: #f97316;
+            --secondary-light: #fed7aa;
+            --success: #16a34a;
+            --success-light: #bbf7d0;
+            --error: #dc2626;
+            --error-light: #fecaca;
+            --warning: #ca8a04;
+            --warning-light: #fef9c3;
+            --bg-light: #fff1f2;
+            --bg-warm: #ffe4e6;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border: #fecdd3;
+            --shadow: 0 4px 6px -1px rgba(225, 29, 72, 0.1), 0 2px 4px -1px rgba(225, 29, 72, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(225, 29, 72, 0.1), 0 4px 6px -2px rgba(225, 29, 72, 0.05);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-warm) 100%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: var(--bg-card); box-shadow: var(--shadow); padding: 12px 20px;
+        }
+        .progress-header {
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 1200px; margin: 0 auto; gap: 20px;
+        }
+        .progress-title {
+            font-size: 0.9rem; font-weight: 600; color: var(--primary);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .progress-title .lesson-badge {
+            background: var(--primary); color: white; padding: 2px 10px;
+            border-radius: 20px; font-size: 0.75rem;
+        }
+        .progress-bar-wrapper { flex: 1; max-width: 500px; }
+        .progress-bar { height: 8px; background: var(--border); border-radius: 10px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 10px; transition: width 0.5s ease; width: 0%;
+        }
+        .progress-text { font-size: 0.8rem; color: var(--text-muted); text-align: right; margin-top: 4px; }
+        .progress-nav { display: flex; gap: 8px; }
+        .nav-btn {
+            background: var(--primary); color: white; border: none; padding: 8px 16px;
+            border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 500;
+            transition: var(--transition); display: flex; align-items: center; gap: 6px;
+        }
+        .nav-btn:hover { background: var(--accent); transform: translateY(-1px); }
+        .nav-btn:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; transform: none; }
+
+        /* Slides */
+        .presentation { padding-top: 80px; min-height: 100vh; }
+        .slide { display: none; max-width: 1000px; margin: 0 auto; padding: 40px 20px; animation: fadeIn 0.5s ease; }
+        .slide.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Title Slide */
+        .title-slide { text-align: center; padding: 60px 20px; }
+        .title-slide .book-badge {
+            display: inline-block; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 8px 24px; border-radius: 30px; font-size: 0.9rem;
+            font-weight: 500; margin-bottom: 24px; letter-spacing: 1px;
+        }
+        .title-slide h1 { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700; color: var(--primary-dark); margin-bottom: 16px; line-height: 1.2; }
+        .title-slide .lesson-title-jp { font-size: clamp(1rem, 2.5vw, 1.4rem); color: var(--primary); margin-bottom: 8px; }
+        .title-slide .lesson-subtitle { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 40px; }
+        .health-icons { font-size: 2.5rem; margin-bottom: 24px; }
+        .title-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); max-width: 850px; margin: 0 auto 40px; }
+        .title-card h2 { color: var(--primary-dark); font-size: 1.3rem; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .grammar-list { display: grid; gap: 10px; }
+        .grammar-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg-light); border-radius: var(--radius); border-left: 4px solid var(--primary); transition: var(--transition); font-size: 0.95rem; }
+        .grammar-item:hover { transform: translateX(8px); background: var(--bg-warm); }
+        .grammar-number { width: 26px; height: 26px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600; flex-shrink: 0; }
+        .start-btn { background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color: white; border: none; padding: 16px 48px; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 14px rgba(225, 29, 72, 0.4); }
+        .start-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(225, 29, 72, 0.5); }
+
+        /* Content Cards */
+        .content-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); margin-bottom: 24px; }
+        .slide-header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+        .grammar-badge { background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        .slide-header h2 { font-size: 1.5rem; color: var(--primary-dark); flex: 1; min-width: 200px; }
+        .slide-header .jp-title { font-size: 1rem; color: var(--primary); font-weight: 500; }
+
+        /* Ruby/Furigana */
+        ruby { ruby-position: over; }
+        ruby rt { font-size: 0.6em; color: var(--text-muted); }
+        .furigana { font-size: 0.75em; color: var(--text-muted); }
+
+        /* Example Boxes */
+        .example-box { background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-warm) 100%); border-radius: var(--radius); padding: 24px; margin: 20px 0; border-left: 4px solid var(--primary); }
+        .example-box .jp { font-size: 1.3rem; color: var(--primary-dark); margin-bottom: 8px; line-height: 1.8; }
+        .example-box .en { color: var(--text-secondary); font-size: 0.95rem; }
+        .example-box .arrow { color: var(--accent); margin: 0 8px; }
+
+        /* Dialogue Box */
+        .dialogue-box { background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 20px 0; }
+        .dialogue-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+        .dialogue-header .icon { font-size: 1.5rem; }
+        .dialogue-header h4 { color: var(--primary-dark); font-size: 1rem; }
+        .dialogue-line { display: flex; gap: 12px; margin: 12px 0; align-items: flex-start; }
+        .dialogue-speaker { background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; white-space: nowrap; }
+        .dialogue-speaker.patient { background: var(--accent); }
+        .dialogue-text { flex: 1; }
+        .dialogue-text .jp { font-size: 1.1rem; color: var(--text-primary); margin-bottom: 4px; }
+        .dialogue-text .en { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* Formation Tables */
+        .formation-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95rem; }
+        .formation-table th { background: var(--primary); color: white; padding: 14px; text-align: left; font-weight: 500; }
+        .formation-table td { padding: 14px; border-bottom: 1px solid var(--border); }
+        .formation-table tr:hover { background: var(--bg-light); }
+        .formation-table .pattern { font-weight: 600; color: var(--primary-dark); }
+        .formation-table .example-jp { color: var(--text-primary); }
+        .formation-table .example-en { color: var(--text-muted); font-size: 0.85rem; }
+
+        /* Vocabulary Grid */
+        .vocab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 24px 0; }
+        .vocab-card { background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; transition: var(--transition); }
+        .vocab-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow); }
+        .vocab-card .emoji { font-size: 2rem; margin-bottom: 8px; }
+        .vocab-card .word { font-size: 1.2rem; color: var(--primary-dark); font-weight: 600; margin-bottom: 4px; }
+        .vocab-card .reading { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
+        .vocab-card .meaning { font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* Medicine Cards */
+        .medicine-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 24px 0; }
+        .medicine-card { background: linear-gradient(135deg, #ffffff 0%, var(--bg-light) 100%); border-radius: var(--radius); padding: 20px; border: 2px solid var(--border); transition: var(--transition); }
+        .medicine-card:hover { border-color: var(--accent); box-shadow: var(--shadow-lg); }
+        .medicine-card .header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .medicine-card .icon { font-size: 2rem; }
+        .medicine-card .name { font-size: 1.1rem; font-weight: 600; color: var(--primary-dark); }
+        .medicine-card .name-reading { font-size: 0.8rem; color: var(--text-muted); }
+        .medicine-card .effect { background: var(--accent-light); color: var(--accent-dark); padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; margin-top: 8px; }
+        .medicine-card .instruction { font-size: 0.85rem; color: var(--text-secondary); margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); }
+
+        /* Timeline */
+        .timeline-container { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 24px 0; padding: 20px; background: var(--bg-light); border-radius: var(--radius); flex-wrap: wrap; }
+        .timeline-item { text-align: center; padding: 12px 16px; }
+        .timeline-item.action { background: var(--primary); color: white; border-radius: var(--radius); min-width: 120px; }
+        .timeline-item.medicine { background: var(--accent); color: white; border-radius: var(--radius); min-width: 120px; }
+        .timeline-arrow { font-size: 1.5rem; color: var(--primary); }
+        .timeline-label { font-size: 0.8rem; opacity: 0.9; margin-top: 4px; }
+
+        /* Key Points */
+        .key-point { background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%); color: white; border-radius: var(--radius); padding: 20px; margin: 20px 0; }
+        .key-point h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 1rem; }
+        .key-point ul { list-style: none; }
+        .key-point li { padding: 8px 0; padding-left: 24px; position: relative; }
+        .key-point li::before { content: "✓"; position: absolute; left: 0; }
+
+        /* Comparison Box */
+        .comparison-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 20px 0; }
+        .comparison-item { background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius); padding: 20px; }
+        .comparison-item.correct { border-color: var(--success); background: var(--success-light); }
+        .comparison-item.incorrect { border-color: var(--error); background: var(--error-light); }
+        .comparison-item h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 0.95rem; }
+        .comparison-item .jp { font-size: 1.1rem; color: var(--text-primary); }
+
+        /* MNN Connection */
+        .mnn-toggle { background: var(--secondary); color: white; border: none; padding: 12px 20px; border-radius: var(--radius); cursor: pointer; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; margin: 20px 0; transition: var(--transition); width: 100%; justify-content: space-between; }
+        .mnn-toggle:hover { background: var(--primary); }
+        .mnn-toggle .arrow { transition: transform 0.3s ease; }
+        .mnn-toggle.open .arrow { transform: rotate(180deg); }
+        .mnn-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; background: var(--secondary-light); border-radius: 0 0 var(--radius) var(--radius); }
+        .mnn-content.open { max-height: 600px; }
+        .mnn-content-inner { padding: 20px; }
+        .mnn-content h4 { color: var(--primary-dark); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .mnn-content ul { list-style: none; }
+        .mnn-content li { padding: 8px 0; padding-left: 20px; position: relative; color: var(--text-secondary); border-bottom: 1px dashed var(--border); }
+        .mnn-content li:last-child { border-bottom: none; }
+        .mnn-content li::before { content: "📖"; position: absolute; left: 0; }
+
+        /* Mini Quiz */
+        .mini-quiz { background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%); border: 2px solid var(--accent); border-radius: var(--radius); padding: 24px; margin: 24px 0; }
+        .mini-quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+        .mini-quiz-header .icon { font-size: 1.5rem; }
+        .mini-quiz-header h4 { color: var(--accent-dark); font-size: 1rem; }
+        .mini-quiz-question { font-size: 1rem; color: var(--text-primary); margin-bottom: 16px; }
+        .mini-quiz-options { display: grid; gap: 10px; }
+        .mini-quiz-option { background: var(--bg-card); border: 2px solid var(--border); border-radius: 8px; padding: 14px 18px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 12px; }
+        .mini-quiz-option:hover { border-color: var(--accent); background: var(--accent-light); }
+        .mini-quiz-option.selected { border-color: var(--accent); background: var(--accent-light); }
+        .mini-quiz-option.correct { border-color: var(--success); background: var(--success-light); }
+        .mini-quiz-option.incorrect { border-color: var(--error); background: var(--error-light); }
+        .mini-quiz-option .marker { width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0; }
+        .mini-quiz-option.correct .marker { background: var(--success); border-color: var(--success); color: white; }
+        .mini-quiz-option.incorrect .marker { background: var(--error); border-color: var(--error); color: white; }
+        .mini-quiz-feedback { margin-top: 16px; padding: 16px; border-radius: 8px; display: none; }
+        .mini-quiz-feedback.show { display: block; animation: fadeIn 0.3s ease; }
+        .mini-quiz-feedback.correct { background: var(--success-light); border-left: 4px solid var(--success); }
+        .mini-quiz-feedback.incorrect { background: var(--error-light); border-left: 4px solid var(--error); }
+        .mini-quiz-feedback h5 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .mini-quiz-feedback.correct h5 { color: var(--success); }
+        .mini-quiz-feedback.incorrect h5 { color: var(--error); }
+
+        /* Full Quiz Card */
+        .quiz-card { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); border-radius: var(--radius-lg); padding: 40px; color: white; }
+        .quiz-header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 2px solid rgba(255,255,255,0.2); }
+        .quiz-badge { background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        .quiz-header h2 { font-size: 1.4rem; }
+        .quiz-question { background: rgba(255,255,255,0.1); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+        .question-number { font-size: 0.85rem; opacity: 0.8; margin-bottom: 8px; }
+        .question-context { font-size: 0.95rem; opacity: 0.9; margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,0.1); border-radius: 8px; }
+        .question-text { font-size: 1.1rem; margin-bottom: 16px; }
+        .fill-blank { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 1.2rem; }
+        .blank-input { background: rgba(255,255,255,0.9); border: 2px solid transparent; border-radius: 8px; padding: 10px 16px; font-size: 1rem; color: var(--text-primary); width: 180px; transition: var(--transition); font-family: inherit; }
+        .blank-input:focus { outline: none; border-color: var(--primary); }
+        .check-btn { background: white; color: var(--accent-dark); border: none; padding: 14px 32px; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); margin-top: 20px; }
+        .check-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        /* Answer Card */
+        .answer-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); }
+        .answer-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--border); }
+        .answer-badge { background: var(--success); color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        .answer-header h2 { color: var(--primary-dark); font-size: 1.3rem; }
+        .answer-result { padding: 20px; border-radius: var(--radius); margin-bottom: 16px; }
+        .answer-result.correct { background: var(--success-light); border-left: 4px solid var(--success); }
+        .result-label { font-size: 0.85rem; color: var(--success); font-weight: 600; margin-bottom: 8px; }
+        .answer-text { font-size: 1.2rem; color: var(--text-primary); margin-bottom: 12px; }
+        .answer-explanation { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; }
+
+        /* Summary Card */
+        .summary-card { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: var(--radius-lg); padding: 48px; color: white; text-align: center; }
+        .summary-card h2 { font-size: 2rem; margin-bottom: 16px; }
+        .summary-card > p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 32px; }
+        .summary-points { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
+        .summary-point { background: rgba(255,255,255,0.15); border-radius: var(--radius); padding: 20px; }
+        .summary-point h4 { font-size: 1rem; margin-bottom: 8px; }
+        .summary-point p { font-size: 0.85rem; opacity: 0.9; }
+        .restart-btn { background: white; color: var(--primary-dark); border: none; padding: 14px 32px; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); }
+        .restart-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        /* Body Parts Diagram */
+        .body-symptoms { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 20px 0; }
+        .symptom-item { background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; transition: var(--transition); }
+        .symptom-item:hover { border-color: var(--primary); transform: scale(1.02); }
+        .symptom-item .emoji { font-size: 1.8rem; margin-bottom: 6px; }
+        .symptom-item .jp { font-size: 1rem; color: var(--primary-dark); font-weight: 500; }
+        .symptom-item .reading { font-size: 0.75rem; color: var(--text-muted); }
+        .symptom-item .en { font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; }
+
+        /* Highlight */
+        .highlight { background: linear-gradient(120deg, var(--primary-light) 0%, var(--primary-light) 100%); background-repeat: no-repeat; background-size: 100% 40%; background-position: 0 90%; padding: 0 4px; }
+        .grammar-highlight { color: var(--primary); font-weight: 600; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .progress-header { flex-wrap: wrap; gap: 12px; }
+            .progress-bar-wrapper { order: 3; flex-basis: 100%; max-width: none; }
+            .progress-nav { gap: 6px; }
+            .nav-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .content-card, .quiz-card, .answer-card, .summary-card { padding: 24px 16px; }
+            .slide-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .formation-table { font-size: 0.85rem; }
+            .formation-table th, .formation-table td { padding: 10px 8px; }
+            .dialogue-line { flex-direction: column; gap: 6px; }
+            .timeline-container { flex-direction: column; }
+            .timeline-arrow { transform: rotate(90deg); }
+            .vocab-grid { grid-template-columns: repeat(2, 1fr); }
+            .medicine-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .title-slide h1 { font-size: 2rem; }
+            .grammar-item { font-size: 0.85rem; padding: 10px 12px; }
+            .example-box .jp { font-size: 1.1rem; }
+            .vocab-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .vocab-card { padding: 12px; }
+            .body-symptoms { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title">
+                <span class="lesson-badge">L15</span>
+                <span>🏥 <ruby>健康<rt>けんこう</rt></ruby>な<ruby>生活<rt>せいかつ</rt></ruby></span>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <div class="progress-text"><span id="currentSlide">1</span> / <span id="totalSlides">24</span></div>
+            </div>
+            <div class="progress-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()">← <ruby>前<rt>まえ</rt></ruby></button>
+                <button class="nav-btn" id="nextBtn" onclick="nextSlide()"><ruby>次<rt>つぎ</rt></ruby> →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Presentation -->
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <div class="book-badge">いろどり IRODORI • 初級1 A2</div>
+                <div class="health-icons">🏥 💊 🩺 🤒 💉</div>
+                <div class="lesson-title-jp">第15課 • <ruby>健康<rt>けんこう</rt></ruby>な<ruby>生活<rt>せいかつ</rt></ruby></div>
+                <h1><ruby>熱<rt>ねつ</rt></ruby>があってのどが<ruby>痛<rt>いた</rt></ruby>いんです</h1>
+                <p class="lesson-subtitle">I have a fever and my throat hurts</p>
+                
+                <div class="title-card">
+                    <h2>📚 <ruby>文法<rt>ぶんぽう</rt></ruby>ポイント Grammar Points</h2>
+                    <div class="grammar-list">
+                        <div class="grammar-item"><span class="grammar-number">1</span> ～んです② — Explaining symptoms (nouns/adjectives/verbs)</div>
+                        <div class="grammar-item"><span class="grammar-number">2</span> V-ないでください — Negative instructions/requests</div>
+                        <div class="grammar-item"><span class="grammar-number">3</span> V (plain-form) + N — Describing what something does</div>
+                        <div class="grammar-item"><span class="grammar-number">4</span> V-る<ruby>前<rt>まえ</rt></ruby>に / V-たあと — Before/After doing</div>
+                        <div class="grammar-item"><span class="grammar-number">5</span> ～とき(に)、～ — When (situation/timing)</div>
+                    </div>
+                </div>
+                
+                <button class="start-btn" onclick="nextSlide()">🩺 <ruby>始<rt>はじ</rt></ruby>めましょう！Start Learning</button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Vocabulary - Body Parts & Symptoms -->
+        <div class="slide" data-slide="2">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">📝 VOCAB</span>
+                    <h2>Body Parts & Symptoms</h2>
+                    <span class="jp-title"><ruby>体<rt>からだ</rt></ruby>の<ruby>部分<rt>ぶぶん</rt></ruby>と<ruby>症状<rt>しょうじょう</rt></ruby></span>
+                </div>
+
+                <p style="margin-bottom: 20px; color: var(--text-secondary);">Before learning grammar, let's review key vocabulary for describing symptoms at the doctor's office! 🏥</p>
+
+                <h4 style="color: var(--primary-dark); margin-bottom: 16px;">🦴 Body Parts</h4>
+                <div class="body-symptoms">
+                    <div class="symptom-item">
+                        <div class="emoji">🗣️</div>
+                        <div class="jp">のど</div>
+                        <div class="en">throat</div>
+                    </div>
+                    <div class="symptom-item">
+                        <div class="emoji">🤕</div>
+                        <div class="jp"><ruby>頭<rt>あたま</rt></ruby></div>
+                        <div class="en">head</div>
+                    </div>
+                    <div class="symptom-item">
+                        <div class="emoji">🦵</div>
+                        <div class="jp"><ruby>足<rt>あし</rt></ruby></div>
+                        <div class="en">leg/foot</div>
+                    </div>
+                    <div class="symptom-item">
+                        <div class="emoji">💪</div>
+                        <div class="jp"><ruby>腕<rt>うで</rt></ruby></div>
+                        <div class="en">arm</div>
+                    </div>
+                    <div class="symptom-item">
+                        <div class="emoji">🫁</div>
+                        <div class="jp"><ruby>胃<rt>い</rt></ruby></div>
+                        <div class="en">stomach</div>
+                    </div>
+                    <div class="symptom-item">
+                        <div class="emoji">👂</div>
+                        <div class="jp"><ruby>耳<rt>みみ</rt></ruby></div>
+                        <div class="en">ear</div>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--primary-dark); margin: 24px 0 16px;">🤒 Symptoms</h4>
+                <div class="body-symptoms">
+                    <div class="symptom-item">
+                        <div class="emoji">🌡️</div>
+                        <div class="jp"><ruby>熱<rt>ねつ</rt></ruby></div>
+                        <div class="en">fever</div>
+                    </div>
+                    <div class="symptom-item">
+                        <div class="emoji">🤧</div>
+                        <div class="jp">せき</div>
+                        <div class="en">cough</div>
+                    </div>
+                    <div class="symptom-item">
+                        <div class="emoji">🤢</div>
+                        <div class="jp"><ruby>吐<rt>は</rt></ruby>き<ruby>気<rt>け</rt></ruby></div>
+                        <div class="en">nausea</div>
+                    </div>
+                    <div class="symptom-item">
+                        <div class="emoji">😵</div>
+                        <div class="jp"><ruby>風邪<rt>かぜ</rt></ruby></div>
+                        <div class="en">cold</div>
+                    </div>
+                    <div class="symptom-item">
+                        <div class="emoji">🤕</div>
+                        <div class="jp">けが</div>
+                        <div class="en">injury</div>
+                    </div>
+                    <div class="symptom-item">
+                        <div class="emoji">🍺</div>
+                        <div class="jp"><ruby>二日酔<rt>ふつかよ</rt></ruby>い</div>
+                        <div class="en">hangover</div>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 24px;" onclick="nextSlide()">Continue to Grammar 1 →</button>
+            </div>
+        </div>
+
+        <!-- Slide 3: Grammar 1 - ～んです② Introduction -->
+        <div class="slide" data-slide="3">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 1</span>
+                    <h2>～んです ②</h2>
+                    <span class="jp-title">Explaining Symptoms</span>
+                </div>
+
+                <div class="example-box">
+                    <div class="jp"><ruby>昨日<rt>きのう</rt></ruby>から38<ruby>度<rt>ど</rt></ruby>の<ruby>熱<rt>ねつ</rt></ruby>があって、のどがすごく<span class="grammar-highlight"><ruby>痛<rt>いた</rt></ruby>いんです</span>。</div>
+                    <div class="en">I have had a 38-degree fever since yesterday, and my throat is very sore.</div>
+                </div>
+
+                <div class="key-point">
+                    <h4>💡 What is ～んです?</h4>
+                    <ul>
+                        <li>Used to <strong>explain a situation</strong> to someone (like a doctor)</li>
+                        <li>In Lesson 14, we learned ～んです with <strong>verbs</strong></li>
+                        <li>This lesson adds <strong>nouns</strong> and <strong>adjectives</strong></li>
+                        <li>Adds a sense of "the reason is..." or "the thing is..."</li>
+                    </ul>
+                </div>
+
+                <h4 style="color: var(--primary-dark); margin: 24px 0 16px;">🏥 Common Questions at the Doctor</h4>
+                
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <h4>😟 Casual: どうしたんですか？</h4>
+                        <p class="jp">What's the matter?</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">Used when someone looks different than usual</p>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>👨‍⚕️ Formal: どうしましたか？</h4>
+                        <p class="jp">What's wrong? (professional)</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">Used by doctors to ask about symptoms</p>
+                    </div>
+                </div>
+
+                <button class="mnn-toggle" onclick="toggleMNN(this)">
+                    <span>📖 MNN Connection: みんなの日本語</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="mnn-content">
+                    <div class="mnn-content-inner">
+                        <h4>📚 Related MNN Lessons</h4>
+                        <ul>
+                            <li><strong>Lesson 17:</strong> Introduces ない-form (needed for ～ないんです)</li>
+                            <li><strong>Lesson 19:</strong> た-form + ことがある (experience)</li>
+                            <li><strong>Lesson 20:</strong> Plain form basics (dictionary form, た-form)</li>
+                            <li><strong>Lesson 26:</strong> ～んです for explanations (main introduction)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">See Formation Rules →</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Grammar 1 - Formation Table -->
+        <div class="slide" data-slide="4">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 1</span>
+                    <h2>～んです Formation</h2>
+                    <span class="jp-title">「～んです」の<ruby>作<rt>つく</rt></ruby>り<ruby>方<rt>かた</rt></ruby></span>
+                </div>
+
+                <table class="formation-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Pattern</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Noun</strong><br><span class="furigana">名詞(めいし)</span></td>
+                            <td class="pattern">N + <span class="grammar-highlight">なんです</span></td>
+                            <td>
+                                <div class="example-jp"><ruby>風邪<rt>かぜ</rt></ruby><span class="grammar-highlight">なんです</span></div>
+                                <div class="example-en">I have a cold</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>ナ-adjective</strong><br><span class="furigana">ナ形容詞</span></td>
+                            <td class="pattern">ナA + <span class="grammar-highlight">なんです</span></td>
+                            <td>
+                                <div class="example-jp"><ruby>大変<rt>たいへん</rt></ruby><span class="grammar-highlight">なんです</span></div>
+                                <div class="example-en">It's terrible</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>イ-adjective</strong><br><span class="furigana">イ形容詞</span></td>
+                            <td class="pattern">イA + <span class="grammar-highlight">んです</span></td>
+                            <td>
+                                <div class="example-jp">のどが<ruby>痛<rt>いた</rt></ruby><span class="grammar-highlight">いんです</span></div>
+                                <div class="example-en">My throat hurts</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3"><strong>Verb</strong><br><span class="furigana">動詞(どうし)</span></td>
+                            <td class="pattern">V-る + <span class="grammar-highlight">んです</span><br><span class="furigana">(辞書形)</span></td>
+                            <td>
+                                <div class="example-jp"><ruby>熱<rt>ねつ</rt></ruby>が<ruby>あ<rt></rt></ruby>る<span class="grammar-highlight">んです</span></div>
+                                <div class="example-en">I have a fever</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pattern">V-た + <span class="grammar-highlight">んです</span><br><span class="furigana">(タ形)</span></td>
+                            <td>
+                                <div class="example-jp"><ruby>足<rt>あし</rt></ruby>をくじい<ruby>た<rt></rt></ruby><span class="grammar-highlight">んです</span></div>
+                                <div class="example-en">I twisted my ankle</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pattern">V-ない + <span class="grammar-highlight">んです</span><br><span class="furigana">(ナイ形)</span></td>
+                            <td>
+                                <div class="example-jp">せきが<ruby>止<rt>と</rt></ruby>まら<ruby>ない<rt></rt></ruby><span class="grammar-highlight">んです</span></div>
+                                <div class="example-en">I can't stop coughing</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="key-point" style="background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);">
+                    <h4>⚠️ Important Difference</h4>
+                    <ul>
+                        <li><strong>Nouns/ナ-adj:</strong> Use ～<strong>な</strong>んです</li>
+                        <li><strong>イ-adj/Verbs:</strong> Use ～んです (no な)</li>
+                        <li>Multiple symptoms? Connect with <strong>て-form</strong>!</li>
+                    </ul>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">See Examples →</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Grammar 1 - Dialogue Example -->
+        <div class="slide" data-slide="5">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 1</span>
+                    <h2>Doctor-Patient Dialogue</h2>
+                    <span class="jp-title"><ruby>医者<rt>いしゃ</rt></ruby>と<ruby>患者<rt>かんじゃ</rt></ruby>の<ruby>会話<rt>かいわ</rt></ruby></span>
+                </div>
+
+                <div class="dialogue-box">
+                    <div class="dialogue-header">
+                        <span class="icon">🏥</span>
+                        <h4>At the Hospital</h4>
+                    </div>
+                    
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">👨‍⚕️ <ruby>医者<rt>いしゃ</rt></ruby></span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>今日<rt>きょう</rt></ruby>は、どうしましたか？</div>
+                            <div class="en">What is wrong with you today?</div>
+                        </div>
+                    </div>
+                    
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker patient">🤒 <ruby>患者<rt>かんじゃ</rt></ruby></span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>頭<rt>あたま</rt></ruby>が<ruby>痛<rt>いた</rt></ruby>くて、<ruby>吐<rt>は</rt></ruby>き<ruby>気<rt>け</rt></ruby>がする<span class="grammar-highlight">んです</span>。</div>
+                            <div class="en">I have a headache and nausea.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">👨‍⚕️ <ruby>医者<rt>いしゃ</rt></ruby></span>
+                        <div class="dialogue-text">
+                            <div class="jp">いつからですか？</div>
+                            <div class="en">Since when?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--primary-dark); margin: 24px 0 16px;">💬 More Examples</h4>
+
+                <div class="dialogue-box">
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">A</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>腕<rt>うで</rt></ruby>のけが、どうしたんですか？</div>
+                            <div class="en">What happened to your arm?</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker patient">B</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>自転車<rt>じてんしゃ</rt></ruby>で<ruby>転<rt>ころ</rt></ruby>んだ<span class="grammar-highlight">んです</span>。</div>
+                            <div class="en">I fell off my bicycle.</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">A</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>気<rt>き</rt></ruby>をつけてくださいね。</div>
+                            <div class="en">Please take care.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Try Mini Quiz →</button>
+            </div>
+        </div>
+
+        <!-- Slide 6: Grammar 1 - Mini Quiz -->
+        <div class="slide" data-slide="6">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 1</span>
+                    <h2>Comprehension Check</h2>
+                    <span class="jp-title">～んです</span>
+                </div>
+
+                <div class="mini-quiz" id="quiz1">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        The doctor asks "どうしましたか？" You want to say "I have a cold."<br>
+                        Which is correct?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz1', this, false)">
+                            <span class="marker">A</span>
+                            <span><ruby>風邪<rt>かぜ</rt></ruby>んです。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz1', this, true)">
+                            <span class="marker">B</span>
+                            <span><ruby>風邪<rt>かぜ</rt></ruby><strong>な</strong>んです。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz1', this, false)">
+                            <span class="marker">C</span>
+                            <span><ruby>風邪<rt>かぜ</rt></ruby>いんです。</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz1-feedback"></div>
+                </div>
+
+                <div class="mini-quiz" id="quiz1b" style="margin-top: 24px;">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check #2!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        You want to explain "My head hurts" (using イ-adjective <ruby>痛<rt>いた</rt></ruby>い).<br>
+                        Which is correct?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz1b', this, false)">
+                            <span class="marker">A</span>
+                            <span><ruby>頭<rt>あたま</rt></ruby>が<ruby>痛<rt>いた</rt></ruby><strong>な</strong>んです。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz1b', this, true)">
+                            <span class="marker">B</span>
+                            <span><ruby>頭<rt>あたま</rt></ruby>が<ruby>痛<rt>いた</rt></ruby><strong>い</strong>んです。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz1b', this, false)">
+                            <span class="marker">C</span>
+                            <span><ruby>頭<rt>あたま</rt></ruby>が<ruby>痛<rt>いた</rt></ruby>くんです。</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz1b-feedback"></div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 24px;" onclick="nextSlide()">Continue to Grammar 2 →</button>
+            </div>
+        </div>
+
+        <!-- Slide 7: Grammar 2 - V-ないでください Introduction -->
+        <div class="slide" data-slide="7">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 2</span>
+                    <h2>V-ないでください</h2>
+                    <span class="jp-title">Negative Instructions</span>
+                </div>
+
+                <div class="example-box">
+                    <div class="jp"><ruby>今週<rt>こんしゅう</rt></ruby>は<ruby>仕事<rt>しごと</rt></ruby>を<ruby>休<rt>やす</rt></ruby>んで、できるだけ<ruby>人<rt>ひと</rt></ruby>に<ruby>会<rt>あ</rt></ruby>わ<span class="grammar-highlight">ないでください</span>。</div>
+                    <div class="en">Please take some time off from work this week, and do not see people if at all possible.</div>
+                </div>
+
+                <div class="key-point">
+                    <h4>💡 What is V-ないでください?</h4>
+                    <ul>
+                        <li>Used to <strong>instruct or request someone NOT to do something</strong></li>
+                        <li>Common at hospitals when doctors give instructions</li>
+                        <li>Connects to the verb's <strong>ナイ-form</strong></li>
+                        <li>Polite way to say "Please don't..."</li>
+                    </ul>
+                </div>
+
+                <h4 style="color: var(--primary-dark); margin: 24px 0 16px;">📊 Politeness Levels</h4>
+                <table class="formation-table">
+                    <thead>
+                        <tr>
+                            <th>Expression</th>
+                            <th>Politeness</th>
+                            <th>When to Use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="pattern">V-ないで</td>
+                            <td>Casual</td>
+                            <td>Friends, family</td>
+                        </tr>
+                        <tr>
+                            <td class="pattern">V-ないでください</td>
+                            <td>Polite ✓</td>
+                            <td>Standard polite request</td>
+                        </tr>
+                        <tr>
+                            <td class="pattern">V-ないでくれる？</td>
+                            <td>Casual request</td>
+                            <td>Asking a favor (casual)</td>
+                        </tr>
+                        <tr>
+                            <td class="pattern">V-ないでもらえませんか？</td>
+                            <td>Very polite</td>
+                            <td>Formal situations</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button class="mnn-toggle" onclick="toggleMNN(this)">
+                    <span>📖 MNN Connection: みんなの日本語</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="mnn-content">
+                    <div class="mnn-content-inner">
+                        <h4>📚 Related MNN Lessons</h4>
+                        <ul>
+                            <li><strong>Lesson 17:</strong> ない-form introduction (V-ないでください first appears)</li>
+                            <li><strong>Lesson 14:</strong> V-てください (positive request - learned first)</li>
+                            <li><strong>Lesson 24:</strong> V-てもらえませんか (polite request forms)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">See Medical Examples →</button>
+            </div>
+        </div>
+
+        <!-- Slide 8: Grammar 2 - Medical Instructions -->
+        <div class="slide" data-slide="8">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 2</span>
+                    <h2>Doctor's Instructions</h2>
+                    <span class="jp-title"><ruby>医者<rt>いしゃ</rt></ruby>の<ruby>指示<rt>しじ</rt></ruby></span>
+                </div>
+
+                <div class="dialogue-box">
+                    <div class="dialogue-header">
+                        <span class="icon">👨‍⚕️</span>
+                        <h4>Common Medical Instructions</h4>
+                    </div>
+                    
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">👨‍⚕️ Dr.</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>風邪<rt>かぜ</rt></ruby>ですね。しばらく、<ruby>激<rt>はげ</rt></ruby>しい<ruby>運動<rt>うんどう</rt></ruby>を<span class="grammar-highlight">しないでください</span>。</div>
+                            <div class="en">You have a cold. Do not engage in vigorous physical activity for a while.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dialogue-box">
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker patient">🤒 Patient</span>
+                        <div class="dialogue-text">
+                            <div class="jp">お<ruby>風呂<rt>ふろ</rt></ruby>に<ruby>入<rt>はい</rt></ruby>ってもいいですか？</div>
+                            <div class="en">Can I take a bath?</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">👨‍⚕️ Dr.</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>熱<rt>ねつ</rt></ruby>がありますから、<ruby>今日<rt>きょう</rt></ruby>は、<span class="grammar-highlight"><ruby>入<rt>はい</rt></ruby>らないでください</span>。</div>
+                            <div class="en">You have a fever, so please do not take a bath today.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--primary-dark); margin: 24px 0 16px;">🚫 Common "Don't" Instructions</h4>
+                <div class="vocab-grid">
+                    <div class="vocab-card">
+                        <div class="emoji">🏃</div>
+                        <div class="word"><ruby>運動<rt>うんどう</rt></ruby>しないで</div>
+                        <div class="meaning">Don't exercise</div>
+                    </div>
+                    <div class="vocab-card">
+                        <div class="emoji">🛁</div>
+                        <div class="word"><ruby>入<rt>はい</rt></ruby>らないで</div>
+                        <div class="meaning">Don't take a bath</div>
+                    </div>
+                    <div class="vocab-card">
+                        <div class="emoji">🍺</div>
+                        <div class="word"><ruby>飲<rt>の</rt></ruby>まないで</div>
+                        <div class="meaning">Don't drink (alcohol)</div>
+                    </div>
+                    <div class="vocab-card">
+                        <div class="emoji">🚗</div>
+                        <div class="word"><ruby>運転<rt>うんてん</rt></ruby>しないで</div>
+                        <div class="meaning">Don't drive</div>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Try Mini Quiz →</button>
+            </div>
+        </div>
+
+        <!-- Slide 9: Grammar 2 - Mini Quiz -->
+        <div class="slide" data-slide="9">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 2</span>
+                    <h2>Comprehension Check</h2>
+                    <span class="jp-title">V-ないでください</span>
+                </div>
+
+                <div class="mini-quiz" id="quiz2">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        The doctor says you shouldn't drive after taking medicine. How would they say "Please don't drive"?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz2', this, false)">
+                            <span class="marker">A</span>
+                            <span><ruby>運転<rt>うんてん</rt></ruby>してください。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz2', this, true)">
+                            <span class="marker">B</span>
+                            <span><ruby>運転<rt>うんてん</rt></ruby><strong>しないで</strong>ください。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz2', this, false)">
+                            <span class="marker">C</span>
+                            <span><ruby>運転<rt>うんてん</rt></ruby>しなくてください。</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz2-feedback"></div>
+                </div>
+
+                <div class="mini-quiz" id="quiz2b" style="margin-top: 24px;">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check #2!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        What's the ない-form of <ruby>食<rt>た</rt></ruby>べる (to eat)?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz2b', this, false)">
+                            <span class="marker">A</span>
+                            <span><ruby>食<rt>た</rt></ruby>べらない</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz2b', this, true)">
+                            <span class="marker">B</span>
+                            <span><ruby>食<rt>た</rt></ruby>べない</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz2b', this, false)">
+                            <span class="marker">C</span>
+                            <span><ruby>食<rt>た</rt></ruby>ばない</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz2b-feedback"></div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 24px;" onclick="nextSlide()">Continue to Grammar 3 →</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: Grammar 3 - V (plain-form) + N Introduction -->
+        <div class="slide" data-slide="10">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 3</span>
+                    <h2>V (plain-form) + N</h2>
+                    <span class="jp-title">Describing What Medicine Does</span>
+                </div>
+
+                <div class="example-box">
+                    <div class="jp">こちらは、せきを<ruby>抑<rt>おさ</rt></ruby>える<span class="grammar-highlight"><ruby>薬<rt>くすり</rt></ruby></span>です。</div>
+                    <div class="en">This is medicine that suppresses coughing.</div>
+                </div>
+
+                <div class="key-point">
+                    <h4>💡 Qualifying Nouns with Verbs</h4>
+                    <ul>
+                        <li>In Japanese, modifiers come <strong>BEFORE</strong> the noun</li>
+                        <li>Use the <strong>plain/dictionary form</strong> of verbs to describe nouns</li>
+                        <li>Very useful for explaining <strong>what medicine does</strong></li>
+                        <li>Pattern: [verb plain-form] + [noun]</li>
+                    </ul>
+                </div>
+
+                <h4 style="color: var(--primary-dark); margin: 24px 0 16px;">🔄 How It Works</h4>
+                <div class="example-box" style="background: white; border: 2px solid var(--border);">
+                    <p style="margin-bottom: 12px; color: var(--text-secondary);">Combining two sentences:</p>
+                    <div class="jp" style="font-size: 1.1rem;">これは、<ruby>薬<rt>くすり</rt></ruby>です。 + この<ruby>薬<rt>くすり</rt></ruby>は、せきを<ruby>抑<rt>おさ</rt></ruby>えます。</div>
+                    <div class="en" style="margin-bottom: 16px;">"This is medicine." + "This medicine suppresses coughing."</div>
+                    <div style="text-align: center; font-size: 1.5rem; color: var(--primary);">↓</div>
+                    <div class="jp" style="font-size: 1.2rem; margin-top: 12px;">これは、せきを<ruby>抑<rt>おさ</rt></ruby>える<span class="grammar-highlight"><ruby>薬<rt>くすり</rt></ruby></span>です。</div>
+                    <div class="en">"This is medicine that suppresses coughing."</div>
+                </div>
+
+                <button class="mnn-toggle" onclick="toggleMNN(this)">
+                    <span>📖 MNN Connection: みんなの日本語</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="mnn-content">
+                    <div class="mnn-content-inner">
+                        <h4>📚 Related MNN Lessons</h4>
+                        <ul>
+                            <li><strong>Lesson 20:</strong> Plain form basics (dictionary form = non-past affirmative plain form)</li>
+                            <li><strong>Lesson 22:</strong> Noun modification with plain form verbs (main lesson for this grammar)</li>
+                            <li><strong>Lesson 38:</strong> More complex noun modification patterns</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">See Medicine Examples →</button>
+            </div>
+        </div>
+
+        <!-- Slide 11: Grammar 3 - Medicine Cards -->
+        <div class="slide" data-slide="11">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 3</span>
+                    <h2>Medicine Descriptions</h2>
+                    <span class="jp-title"><ruby>薬<rt>くすり</rt></ruby>の<ruby>説明<rt>せつめい</rt></ruby></span>
+                </div>
+
+                <div class="medicine-grid">
+                    <div class="medicine-card">
+                        <div class="header">
+                            <span class="icon">🌡️</span>
+                            <div>
+                                <div class="name"><ruby>熱<rt>ねつ</rt></ruby>を<ruby>下<rt>さ</rt></ruby>げる<ruby>薬<rt>くすり</rt></ruby></div>
+                                <div class="name-reading">fever reducer</div>
+                            </div>
+                        </div>
+                        <div class="effect">💊 Reduces fever (antipyretic)</div>
+                        <div class="instruction">Example: <ruby>熱<rt>ねつ</rt></ruby>を<ruby>下<rt>さ</rt></ruby>げる<ruby>薬<rt>くすり</rt></ruby>を<ruby>飲<rt>の</rt></ruby>んでください。</div>
+                    </div>
+
+                    <div class="medicine-card">
+                        <div class="header">
+                            <span class="icon">🤧</span>
+                            <div>
+                                <div class="name">せき／<ruby>鼻水<rt>はなみず</rt></ruby>を<ruby>抑<rt>おさ</rt></ruby>える<ruby>薬<rt>くすり</rt></ruby></div>
+                                <div class="name-reading">cough/runny nose suppressant</div>
+                            </div>
+                        </div>
+                        <div class="effect">💊 Suppresses coughing/runny nose</div>
+                        <div class="instruction">Example: せきを<ruby>抑<rt>おさ</rt></ruby>える<ruby>薬<rt>くすり</rt></ruby>です。</div>
+                    </div>
+
+                    <div class="medicine-card">
+                        <div class="header">
+                            <span class="icon">🫁</span>
+                            <div>
+                                <div class="name"><ruby>胃<rt>い</rt></ruby>を<ruby>守<rt>まも</rt></ruby>る<ruby>薬<rt>くすり</rt></ruby></div>
+                                <div class="name-reading">stomach protector</div>
+                            </div>
+                        </div>
+                        <div class="effect">💊 Protects the stomach</div>
+                        <div class="instruction">Example: <ruby>胃<rt>い</rt></ruby>を<ruby>守<rt>まも</rt></ruby>る<ruby>薬<rt>くすり</rt></ruby>といっしょに<ruby>飲<rt>の</rt></ruby>んでください。</div>
+                    </div>
+
+                    <div class="medicine-card">
+                        <div class="header">
+                            <span class="icon">😴</span>
+                            <div>
+                                <div class="name"><ruby>眠<rt>ねむ</rt></ruby>くなる<ruby>薬<rt>くすり</rt></ruby></div>
+                                <div class="name-reading">medicine that causes drowsiness</div>
+                            </div>
+                        </div>
+                        <div class="effect">⚠️ May cause drowsiness</div>
+                        <div class="instruction">Warning: <ruby>運転<rt>うんてん</rt></ruby>しないでください。</div>
+                    </div>
+                </div>
+
+                <div class="dialogue-box">
+                    <div class="dialogue-header">
+                        <span class="icon">💬</span>
+                        <h4>Example Conversation</h4>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker patient">🤔 A</span>
+                        <div class="dialogue-text">
+                            <div class="jp">これは<ruby>何<rt>なん</rt></ruby>の<ruby>薬<rt>くすり</rt></ruby>ですか？</div>
+                            <div class="en">What is this medicine for?</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">👨‍⚕️ B</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>熱<rt>ねつ</rt></ruby>を<ruby>下<rt>さ</rt></ruby>げる<ruby>薬<rt>くすり</rt></ruby>です。<ruby>胃<rt>い</rt></ruby>を<ruby>守<rt>まも</rt></ruby>る<ruby>薬<rt>くすり</rt></ruby>といっしょに<ruby>飲<rt>の</rt></ruby>んでください。</div>
+                            <div class="en">This medicine is for reducing a fever. Please take it with a medicine to protect your stomach.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Try Mini Quiz →</button>
+            </div>
+        </div>
+
+        <!-- Slide 12: Grammar 3 - Mini Quiz -->
+        <div class="slide" data-slide="12">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 3</span>
+                    <h2>Comprehension Check</h2>
+                    <span class="jp-title">V (plain-form) + N</span>
+                </div>
+
+                <div class="mini-quiz" id="quiz3">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        How do you say "medicine that protects the stomach"?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz3', this, false)">
+                            <span class="marker">A</span>
+                            <span><ruby>胃<rt>い</rt></ruby>を<ruby>守<rt>まも</rt></ruby>ります<ruby>薬<rt>くすり</rt></ruby></span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz3', this, true)">
+                            <span class="marker">B</span>
+                            <span><ruby>胃<rt>い</rt></ruby>を<ruby>守<rt>まも</rt></ruby><strong>る</strong><ruby>薬<rt>くすり</rt></ruby></span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz3', this, false)">
+                            <span class="marker">C</span>
+                            <span><ruby>薬<rt>くすり</rt></ruby>を<ruby>胃<rt>い</rt></ruby>を<ruby>守<rt>まも</rt></ruby>る</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz3-feedback"></div>
+                </div>
+
+                <div class="mini-quiz" id="quiz3b" style="margin-top: 24px;">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check #2!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        Where does the modifying verb phrase go in Japanese?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz3b', this, true)">
+                            <span class="marker">A</span>
+                            <span><strong>Before</strong> the noun it modifies</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz3b', this, false)">
+                            <span class="marker">B</span>
+                            <span>After the noun it modifies</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz3b', this, false)">
+                            <span class="marker">C</span>
+                            <span>At the end of the sentence</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz3b-feedback"></div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 24px;" onclick="nextSlide()">Continue to Grammar 4 →</button>
+            </div>
+        </div>
+
+        <!-- Slide 13: Grammar 4 - V-る前に / V-たあと Introduction -->
+        <div class="slide" data-slide="13">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 4</span>
+                    <h2>V-る<ruby>前<rt>まえ</rt></ruby>に / V-たあと</h2>
+                    <span class="jp-title">Before/After Doing</span>
+                </div>
+
+                <div class="example-box">
+                    <div class="jp">1<ruby>日<rt>にち</rt></ruby>1<ruby>回<rt>かい</rt></ruby>、<ruby>寝<rt>ね</rt></ruby>る<span class="grammar-highlight"><ruby>前<rt>まえ</rt></ruby>に</span><ruby>飲<rt>の</rt></ruby>んでください。</div>
+                    <div class="en">Please take it once daily before bedtime.</div>
+                </div>
+
+                <div class="example-box">
+                    <div class="jp"><ruby>飲<rt>の</rt></ruby>むと、<ruby>眠<rt>ねむ</rt></ruby>くなります。<ruby>飲<rt>の</rt></ruby>んだ<span class="grammar-highlight">あと</span>、<ruby>運転<rt>うんてん</rt></ruby>しないでくださいね。</div>
+                    <div class="en">You will be sleepy after taking this medicine. Please do not drive after taking it.</div>
+                </div>
+
+                <div class="key-point">
+                    <h4>💡 Before & After with Verbs</h4>
+                    <ul>
+                        <li><strong>V-る<ruby>前<rt>まえ</rt></ruby>に</strong> = Before doing V (uses dictionary form)</li>
+                        <li><strong>V-たあと</strong> = After doing V (uses た-form)</li>
+                        <li>Very common for medicine instructions!</li>
+                        <li>Lesson 8 covered N の<ruby>前<rt>まえ</rt></ruby>に/あとで with nouns</li>
+                    </ul>
+                </div>
+
+                <h4 style="color: var(--primary-dark); margin: 24px 0 16px;">⏰ Timeline Visualization</h4>
+                <div class="timeline-container">
+                    <div class="timeline-item action">
+                        <div>🍽️</div>
+                        <div>ご<ruby>飯<rt>はん</rt></ruby></div>
+                        <div class="timeline-label">meal</div>
+                    </div>
+                    <div class="timeline-arrow">→</div>
+                    <div class="timeline-item medicine">
+                        <div>💊</div>
+                        <div><ruby>薬<rt>くすり</rt></ruby></div>
+                        <div class="timeline-label">medicine</div>
+                    </div>
+                    <div style="padding: 8px; text-align: center;">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary);">= ご<ruby>飯<rt>はん</rt></ruby>を<ruby>食<rt>た</rt></ruby>べた<strong>あと</strong>、<ruby>薬<rt>くすり</rt></ruby>を<ruby>飲<rt>の</rt></ruby>む</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">"Take medicine after eating"</div>
+                    </div>
+                </div>
+
+                <div class="timeline-container">
+                    <div class="timeline-item medicine">
+                        <div>💊</div>
+                        <div><ruby>薬<rt>くすり</rt></ruby></div>
+                        <div class="timeline-label">medicine</div>
+                    </div>
+                    <div class="timeline-arrow">→</div>
+                    <div class="timeline-item action">
+                        <div>😴</div>
+                        <div><ruby>寝<rt>ね</rt></ruby>る</div>
+                        <div class="timeline-label">sleep</div>
+                    </div>
+                    <div style="padding: 8px; text-align: center;">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary);">= <ruby>寝<rt>ね</rt></ruby>る<strong><ruby>前<rt>まえ</rt></ruby>に</strong>、<ruby>薬<rt>くすり</rt></ruby>を<ruby>飲<rt>の</rt></ruby>む</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">"Take medicine before sleeping"</div>
+                    </div>
+                </div>
+
+                <button class="mnn-toggle" onclick="toggleMNN(this)">
+                    <span>📖 MNN Connection: みんなの日本語</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="mnn-content">
+                    <div class="mnn-content-inner">
+                        <h4>📚 Related MNN Lessons</h4>
+                        <ul>
+                            <li><strong>Lesson 18:</strong> Dictionary form basics</li>
+                            <li><strong>Lesson 19:</strong> た-form basics</li>
+                            <li><strong>Lesson 17:</strong> V-る<ruby>前<rt>まえ</rt></ruby>に first introduced</li>
+                            <li><strong>Lesson 16:</strong> V-てから (another "after" expression)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">See Examples →</button>
+            </div>
+        </div>
+
+        <!-- Slide 14: Grammar 4 - Formation & Examples -->
+        <div class="slide" data-slide="14">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 4</span>
+                    <h2>Formation & Examples</h2>
+                    <span class="jp-title"><ruby>作<rt>つく</rt></ruby>り<ruby>方<rt>かた</rt></ruby>と<ruby>例<rt>れい</rt></ruby></span>
+                </div>
+
+                <h4 style="color: var(--primary-dark); margin-bottom: 16px;">📊 Verb Form Reference</h4>
+                <table class="formation-table">
+                    <thead>
+                        <tr>
+                            <th>Group</th>
+                            <th>Polite (ます)</th>
+                            <th>Dictionary (る)</th>
+                            <th>た-form</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1グループ</strong></td>
+                            <td><ruby>買<rt>か</rt></ruby>います</td>
+                            <td><ruby>買<rt>か</rt></ruby>う</td>
+                            <td><ruby>買<rt>か</rt></ruby>った</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2グループ</strong></td>
+                            <td><ruby>抑<rt>おさ</rt></ruby>えます</td>
+                            <td><ruby>抑<rt>おさ</rt></ruby>える</td>
+                            <td><ruby>抑<rt>おさ</rt></ruby>えた</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>3グループ</strong></td>
+                            <td>します</td>
+                            <td>する</td>
+                            <td>した</td>
+                        </tr>
+                        <tr>
+                            <td><ruby>来<rt>き</rt></ruby>ます</td>
+                            <td><ruby>来<rt>く</rt></ruby>る</td>
+                            <td><ruby>来<rt>き</rt></ruby>た</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="color: var(--primary-dark); margin: 24px 0 16px;">💬 Pharmacy Dialogue</h4>
+                <div class="dialogue-box">
+                    <div class="dialogue-header">
+                        <span class="icon">💊</span>
+                        <h4>At the Pharmacy</h4>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker patient">🤔 A</span>
+                        <div class="dialogue-text">
+                            <div class="jp">この<ruby>薬<rt>くすり</rt></ruby>は、いつ<ruby>飲<rt>の</rt></ruby>みますか？</div>
+                            <div class="en">When should I take this medicine?</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">👩‍⚕️ B</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>白<rt>しろ</rt></ruby>い<ruby>薬<rt>くすり</rt></ruby>は、ご<ruby>飯<rt>はん</rt></ruby>を<ruby>食<rt>た</rt></ruby>べた<span class="grammar-highlight">あと</span>、<ruby>飲<rt>の</rt></ruby>んでください。</div>
+                            <div class="en">Please take the white pill after meals.</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">👩‍⚕️ B</span>
+                        <div class="dialogue-text">
+                            <div class="jp">カプセルは、<ruby>寝<rt>ね</rt></ruby>る<span class="grammar-highlight"><ruby>前<rt>まえ</rt></ruby>に</span>、<ruby>飲<rt>の</rt></ruby>んでください。</div>
+                            <div class="en">Please take the capsule before bedtime.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Try Mini Quiz →</button>
+            </div>
+        </div>
+
+        <!-- Slide 15: Grammar 4 - Mini Quiz -->
+        <div class="slide" data-slide="15">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 4</span>
+                    <h2>Comprehension Check</h2>
+                    <span class="jp-title">V-る<ruby>前<rt>まえ</rt></ruby>に / V-たあと</span>
+                </div>
+
+                <div class="mini-quiz" id="quiz4">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        How do you say "before sleeping" using <ruby>寝<rt>ね</rt></ruby>る?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz4', this, true)">
+                            <span class="marker">A</span>
+                            <span><ruby>寝<rt>ね</rt></ruby><strong>る</strong><ruby>前<rt>まえ</rt></ruby>に</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz4', this, false)">
+                            <span class="marker">B</span>
+                            <span><ruby>寝<rt>ね</rt></ruby><strong>た</strong><ruby>前<rt>まえ</rt></ruby>に</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz4', this, false)">
+                            <span class="marker">C</span>
+                            <span><ruby>寝<rt>ね</rt></ruby>ます<ruby>前<rt>まえ</rt></ruby>に</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz4-feedback"></div>
+                </div>
+
+                <div class="mini-quiz" id="quiz4b" style="margin-top: 24px;">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check #2!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        How do you say "after eating" using <ruby>食<rt>た</rt></ruby>べる?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz4b', this, false)">
+                            <span class="marker">A</span>
+                            <span><ruby>食<rt>た</rt></ruby>べるあと</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz4b', this, true)">
+                            <span class="marker">B</span>
+                            <span><ruby>食<rt>た</rt></ruby>べ<strong>た</strong>あと</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz4b', this, false)">
+                            <span class="marker">C</span>
+                            <span><ruby>食<rt>た</rt></ruby>べてあと</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz4b-feedback"></div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 24px;" onclick="nextSlide()">Continue to Grammar 5 →</button>
+            </div>
+        </div>
+
+        <!-- Slide 16: Grammar 5 - ～とき Introduction -->
+        <div class="slide" data-slide="16">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 5</span>
+                    <h2>～とき(に)、～</h2>
+                    <span class="jp-title">When (situation/timing)</span>
+                </div>
+
+                <div class="example-box">
+                    <div class="jp">この<ruby>薬<rt>くすり</rt></ruby>は、<ruby>痛<rt>いた</rt></ruby>くてがまんできない<span class="grammar-highlight">ときに</span>、<ruby>飲<rt>の</rt></ruby>んでください。</div>
+                    <div class="en">As for this medicine, please take it when the pain becomes unbearable.</div>
+                </div>
+
+                <div class="key-point">
+                    <h4>💡 What is ～とき?</h4>
+                    <ul>
+                        <li>Indicates a <strong>certain point in time or situation</strong></li>
+                        <li>Used to give advice: "When X happens, do Y"</li>
+                        <li>Perfect for medical advice about when to take medicine</li>
+                        <li>～ときは can introduce a topic: "As for when..."</li>
+                    </ul>
+                </div>
+
+                <h4 style="color: var(--primary-dark); margin: 24px 0 16px;">🔗 Connection to Previous Lessons</h4>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <h4>📘 Lesson 10 (Irodori)</h4>
+                        <p class="jp">N/Adj + とき</p>
+                        <p style="font-size: 0.9rem; margin-top: 8px;"><ruby>高校<rt>こうこう</rt></ruby>のとき = when I was in high school</p>
+                        <p style="font-size: 0.9rem;"><ruby>暇<rt>ひま</rt></ruby>なとき = when I'm free</p>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>📗 Lesson 13 (Irodori)</h4>
+                        <p class="jp">V-たいとき</p>
+                        <p style="font-size: 0.9rem; margin-top: 8px;"><ruby>両面<rt>りょうめん</rt></ruby>コピーをしたいとき = when I want to make double-sided copies</p>
+                    </div>
+                </div>
+
+                <div class="example-box" style="background: white; border: 2px solid var(--accent);">
+                    <h4 style="color: var(--accent-dark); margin-bottom: 12px;">🏥 This Lesson: Medical Advice</h4>
+                    <div class="jp" style="font-size: 1.1rem;"><ruby>高<rt>たか</rt></ruby>い<ruby>熱<rt>ねつ</rt></ruby>が<ruby>出<rt>で</rt></ruby>た<span class="grammar-highlight">とき</span><ruby>飲<rt>の</rt></ruby>んでください。</div>
+                    <div class="en">Please take it when you have a high fever.</div>
+                </div>
+
+                <button class="mnn-toggle" onclick="toggleMNN(this)">
+                    <span>📖 MNN Connection: みんなの日本語</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="mnn-content">
+                    <div class="mnn-content-inner">
+                        <h4>📚 Related MNN Lessons</h4>
+                        <ul>
+                            <li><strong>Lesson 23:</strong> ～とき (main introduction with various forms)</li>
+                            <li><strong>Lesson 25:</strong> ～たら (another conditional "when/if")</li>
+                            <li><strong>Lesson 35:</strong> Conditional forms review</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">See Formation →</button>
+            </div>
+        </div>
+
+        <!-- Slide 17: Grammar 5 - Formation Table -->
+        <div class="slide" data-slide="17">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 5</span>
+                    <h2>～とき Formation</h2>
+                    <span class="jp-title">「～とき」の<ruby>作<rt>つく</rt></ruby>り<ruby>方<rt>かた</rt></ruby></span>
+                </div>
+
+                <table class="formation-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Pattern</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Noun</strong></td>
+                            <td class="pattern">N + <span class="grammar-highlight">のとき</span></td>
+                            <td>
+                                <div class="example-jp"><ruby>風邪<rt>かぜ</rt></ruby><span class="grammar-highlight">のとき</span></div>
+                                <div class="example-en">when you have a cold</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>ナ-adjective</strong></td>
+                            <td class="pattern">ナA + <span class="grammar-highlight">なとき</span></td>
+                            <td>
+                                <div class="example-jp"><ruby>大変<rt>たいへん</rt></ruby><span class="grammar-highlight">なとき</span></div>
+                                <div class="example-en">when you are troubled</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>イ-adjective</strong></td>
+                            <td class="pattern">イA + <span class="grammar-highlight">いとき</span></td>
+                            <td>
+                                <div class="example-jp"><ruby>頭<rt>あたま</rt></ruby>が<ruby>痛<rt>いた</rt></ruby><span class="grammar-highlight">いとき</span></div>
+                                <div class="example-en">when you have a headache</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3"><strong>Verb</strong></td>
+                            <td class="pattern">V-る + <span class="grammar-highlight">とき</span></td>
+                            <td>
+                                <div class="example-jp"><ruby>熱<rt>ねつ</rt></ruby>がある<span class="grammar-highlight">とき</span></div>
+                                <div class="example-en">when you have a fever</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pattern">V-た + <span class="grammar-highlight">とき</span></td>
+                            <td>
+                                <div class="example-jp"><ruby>足<rt>あし</rt></ruby>をくじいた<span class="grammar-highlight">とき</span></div>
+                                <div class="example-en">when you twist your ankle</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pattern">V-ない + <span class="grammar-highlight">とき</span></td>
+                            <td>
+                                <div class="example-jp">がまんできない<span class="grammar-highlight">とき</span></div>
+                                <div class="example-en">when it becomes unbearable</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="color: var(--primary-dark); margin: 24px 0 16px;">💬 Practical Examples</h4>
+                <div class="dialogue-box">
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker patient">🤔 A</span>
+                        <div class="dialogue-text">
+                            <div class="jp">この<ruby>薬<rt>くすり</rt></ruby>は、いつ<ruby>飲<rt>の</rt></ruby>みますか？</div>
+                            <div class="en">When should I take this medicine?</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">👨‍⚕️ B</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>高<rt>たか</rt></ruby>い<ruby>熱<rt>ねつ</rt></ruby>が<ruby>出<rt>で</rt></ruby>た<span class="grammar-highlight">とき</span><ruby>飲<rt>の</rt></ruby>んでください。</div>
+                            <div class="en">Please take it when you have a high fever.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="jp"><ruby>風邪<rt>かぜ</rt></ruby>の<span class="grammar-highlight">ときは</span>、<ruby>温<rt>あたた</rt></ruby>かくして、よく<ruby>休<rt>やす</rt></ruby>んでください。</div>
+                    <div class="en">When you have a cold, keep warm and get plenty of rest.</div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Try Mini Quiz →</button>
+            </div>
+        </div>
+
+        <!-- Slide 18: Grammar 5 - Mini Quiz -->
+        <div class="slide" data-slide="18">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 5</span>
+                    <h2>Comprehension Check</h2>
+                    <span class="jp-title">～とき(に)、～</span>
+                </div>
+
+                <div class="mini-quiz" id="quiz5">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        How do you say "when you have a cold" using the noun <ruby>風邪<rt>かぜ</rt></ruby>?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz5', this, false)">
+                            <span class="marker">A</span>
+                            <span><ruby>風邪<rt>かぜ</rt></ruby>なとき</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz5', this, true)">
+                            <span class="marker">B</span>
+                            <span><ruby>風邪<rt>かぜ</rt></ruby><strong>の</strong>とき</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz5', this, false)">
+                            <span class="marker">C</span>
+                            <span><ruby>風邪<rt>かぜ</rt></ruby>とき</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz5-feedback"></div>
+                </div>
+
+                <div class="mini-quiz" id="quiz5b" style="margin-top: 24px;">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check #2!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        Which form do you use with イ-adjectives before とき?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz5b', this, true)">
+                            <span class="marker">A</span>
+                            <span>Keep the い: <ruby>痛<rt>いた</rt></ruby><strong>い</strong>とき</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz5b', this, false)">
+                            <span class="marker">B</span>
+                            <span>Add な: <ruby>痛<rt>いた</rt></ruby><strong>な</strong>とき</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz5b', this, false)">
+                            <span class="marker">C</span>
+                            <span>Add の: <ruby>痛<rt>いた</rt></ruby><strong>の</strong>とき</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz5b-feedback"></div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 24px;" onclick="nextSlide()">Practice Quiz →</button>
+            </div>
+        </div>
+
+        <!-- Slide 19: Full Practice Quiz 1 -->
+        <div class="slide" data-slide="19">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">🎯 Practice</span>
+                    <h2>Grammar Review Quiz</h2>
+                </div>
+                
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">🏥 At the doctor's office, explaining your symptoms:</div>
+                    <div class="question-text">Complete: "<ruby>昨日<rt>きのう</rt></ruby>から<ruby>頭<rt>あたま</rt></ruby>が<ruby>痛<rt>いた</rt></ruby>___。"</div>
+                    <div class="fill-blank">
+                        <ruby>頭<rt>あたま</rt></ruby>が<ruby>痛<rt>いた</rt></ruby><input type="text" class="blank-input" id="pq1-1" placeholder="?">。
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">👨‍⚕️ The doctor gives you instructions:</div>
+                    <div class="question-text">Complete: "<ruby>今日<rt>きょう</rt></ruby>はお<ruby>風呂<rt>ふろ</rt></ruby>に___。" (Please don't take a bath)</div>
+                    <div class="fill-blank">
+                        お<ruby>風呂<rt>ふろ</rt></ruby>に<input type="text" class="blank-input" id="pq1-2" placeholder="?">。
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 20: Practice Quiz 1 Answers -->
+        <div class="slide" data-slide="20">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Quiz Review</h2>
+                </div>
+                
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text"><ruby>頭<rt>あたま</rt></ruby>が<ruby>痛<rt>いた</rt></ruby><strong>いんです</strong>。</div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> When explaining symptoms with イ-adjectives like <ruby>痛<rt>いた</rt></ruby>い (painful), you keep the い and add んです directly. This creates "The thing is, my head hurts" — a natural way to explain symptoms to a doctor.
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">お<ruby>風呂<rt>ふろ</rt></ruby>に<strong><ruby>入<rt>はい</rt></ruby>らないでください</strong>。</div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> To give a negative instruction "please don't," use V-ないでください. The ない-form of <ruby>入<rt>はい</rt></ruby>る (to enter) is <ruby>入<rt>はい</rt></ruby>らない, so the full expression is <ruby>入<rt>はい</rt></ruby>らないでください (please don't take a bath).
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Continue Practice →</button>
+            </div>
+        </div>
+
+        <!-- Slide 21: Full Practice Quiz 2 -->
+        <div class="slide" data-slide="21">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">🎯 Practice</span>
+                    <h2>Medicine Instructions Quiz</h2>
+                </div>
+                
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">💊 The pharmacist explains when to take medicine:</div>
+                    <div class="question-text">Complete: "ご<ruby>飯<rt>はん</rt></ruby>を<ruby>食<rt>た</rt></ruby>べた___、<ruby>飲<rt>の</rt></ruby>んでください。" (after eating)</div>
+                    <div class="fill-blank">
+                        <ruby>食<rt>た</rt></ruby>べた<input type="text" class="blank-input" id="pq2-1" placeholder="?">、<ruby>飲<rt>の</rt></ruby>んでください。
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">🩹 The doctor explains what the medicine does:</div>
+                    <div class="question-text">Complete: "これは、<ruby>熱<rt>ねつ</rt></ruby>を___<ruby>薬<rt>くすり</rt></ruby>です。" (medicine that reduces fever)</div>
+                    <div class="fill-blank">
+                        <ruby>熱<rt>ねつ</rt></ruby>を<input type="text" class="blank-input" id="pq2-2" placeholder="?"><ruby>薬<rt>くすり</rt></ruby>です。
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 22: Practice Quiz 2 Answers -->
+        <div class="slide" data-slide="22">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Quiz Review</h2>
+                </div>
+                
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text"><ruby>食<rt>た</rt></ruby>べた<strong>あと</strong>、<ruby>飲<rt>の</rt></ruby>んでください。</div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> "After doing V" uses V-たあと. Since <ruby>食<rt>た</rt></ruby>べる's た-form is <ruby>食<rt>た</rt></ruby>べた, we get <ruby>食<rt>た</rt></ruby>べたあと (after eating). Remember: <ruby>前<rt>まえ</rt></ruby>に uses dictionary form, あと uses た-form!
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text"><ruby>熱<rt>ねつ</rt></ruby>を<strong><ruby>下<rt>さ</rt></ruby>げる</strong><ruby>薬<rt>くすり</rt></ruby>です。</div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> To describe what medicine does, use V(plain-form) + N. The verb <ruby>下<rt>さ</rt></ruby>げる means "to lower/reduce," so <ruby>熱<rt>ねつ</rt></ruby>を<ruby>下<rt>さ</rt></ruby>げる<ruby>薬<rt>くすり</rt></ruby> = "medicine that lowers fever." Remember: modifiers come BEFORE the noun in Japanese!
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Final Scenario →</button>
+            </div>
+        </div>
+
+        <!-- Slide 23: Comprehensive Practice -->
+        <div class="slide" data-slide="23">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">🏥 Final Practice</span>
+                    <h2>Hospital Visit Scenario</h2>
+                </div>
+                
+                <div class="quiz-question">
+                    <div class="question-number">Putting It All Together</div>
+                    <div class="question-context">Imagine you're visiting the doctor with a cold. Let's use all 5 grammar points!</div>
+                    
+                    <div style="padding: 16px; background: rgba(255,255,255,0.1); border-radius: 8px; margin: 16px 0;">
+                        <p style="margin-bottom: 16px;"><strong>Scenario:</strong> At the Hospital</p>
+                        
+                        <p style="margin: 16px 0 8px; color: rgba(255,255,255,0.9);"><strong>1. Explain your symptoms (～んです):</strong></p>
+                        <p style="opacity: 0.9;"><ruby>昨日<rt>きのう</rt></ruby>から<ruby>熱<rt>ねつ</rt></ruby>があって、のどが<ruby>痛<rt>いた</rt></ruby><strong>いんです</strong>。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: rgba(255,255,255,0.9);"><strong>2. Doctor's instruction (V-ないでください):</strong></p>
+                        <p style="opacity: 0.9;"><ruby>今日<rt>きょう</rt></ruby>はお<ruby>風呂<rt>ふろ</rt></ruby>に<strong><ruby>入<rt>はい</rt></ruby>らないでください</strong>。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: rgba(255,255,255,0.9);"><strong>3. Medicine description (V plain + N):</strong></p>
+                        <p style="opacity: 0.9;">これは<ruby>熱<rt>ねつ</rt></ruby>を<strong><ruby>下<rt>さ</rt></ruby>げる</strong><ruby>薬<rt>くすり</rt></ruby>です。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: rgba(255,255,255,0.9);"><strong>4. When to take (V-る<ruby>前<rt>まえ</rt></ruby>に / V-たあと):</strong></p>
+                        <p style="opacity: 0.9;">ご<ruby>飯<rt>はん</rt></ruby>を<ruby>食<rt>た</rt></ruby>べた<strong>あと</strong>、<ruby>飲<rt>の</rt></ruby>んでください。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: rgba(255,255,255,0.9);"><strong>5. Conditional advice (～とき):</strong></p>
+                        <p style="opacity: 0.9;"><ruby>高<rt>たか</rt></ruby>い<ruby>熱<rt>ねつ</rt></ruby>が<ruby>出<rt>で</rt></ruby>た<strong>とき</strong>、<ruby>飲<rt>の</rt></ruby>んでください。</p>
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">See Summary →</button>
+            </div>
+        </div>
+
+        <!-- Slide 24: Summary -->
+        <div class="slide" data-slide="24">
+            <div class="summary-card">
+                <h2>🎉 Lesson 15 Complete!</h2>
+                <p>You've mastered 5 essential grammar points for medical situations!</p>
+                
+                <div class="summary-points">
+                    <div class="summary-point">
+                        <h4>1. ～んです②</h4>
+                        <p>Explain symptoms<br>(N/Adj/V forms)</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>2. V-ないでください</h4>
+                        <p>Negative instructions<br>"Please don't..."</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>3. V plain + N</h4>
+                        <p>Describe medicine<br>"medicine that..."</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>4. V-る<ruby>前<rt>まえ</rt></ruby>に/V-たあと</h4>
+                        <p>Before/After<br>taking medicine</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>5. ～とき(に)</h4>
+                        <p>When to take<br>medicine</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 32px; padding: 20px; background: rgba(255,255,255,0.2); border-radius: var(--radius);">
+                    <h3 style="margin-bottom: 12px;">🏥 Now You Can:</h3>
+                    <p style="font-size: 1rem; opacity: 0.95;">
+                        <ruby>熱<rt>ねつ</rt></ruby>があって、のどが<ruby>痛<rt>いた</rt></ruby>いんです。<br>
+                        <ruby>熱<rt>ねつ</rt></ruby>を<ruby>下<rt>さ</rt></ruby>げる<ruby>薬<rt>くすり</rt></ruby>をください。<br>
+                        <ruby>高<rt>たか</rt></ruby>い<ruby>熱<rt>ねつ</rt></ruby>が<ruby>出<rt>で</rt></ruby>たとき、<ruby>飲<rt>の</rt></ruby>みます。
+                    </p>
+                </div>
+
+                <button class="restart-btn" onclick="restartPresentation()">🔄 <ruby>最初<rt>さいしょ</rt></ruby>から Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 24;
+
+        function updateSlide() {
+            document.querySelectorAll('.slide').forEach(slide => slide.classList.remove('active'));
+            const activeSlide = document.querySelector(`[data-slide="${currentSlide}"]`);
+            if (activeSlide) activeSlide.classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = currentSlide;
+            document.getElementById('totalSlides').textContent = totalSlides;
+            
+            const progress = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(slideNum) {
+            currentSlide = slideNum;
+            updateSlide();
+        }
+
+        function restartPresentation() {
+            currentSlide = 1;
+            updateSlide();
+            // Reset all quizzes
+            document.querySelectorAll('.mini-quiz-option').forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+                opt.style.pointerEvents = 'auto';
+            });
+            document.querySelectorAll('.mini-quiz-feedback').forEach(fb => {
+                fb.classList.remove('show', 'correct', 'incorrect');
+                fb.innerHTML = '';
+            });
+        }
+
+        function toggleMNN(button) {
+            const content = button.nextElementSibling;
+            button.classList.toggle('open');
+            content.classList.toggle('open');
+        }
+
+        function checkMiniQuiz(quizId, selectedOption, isCorrect) {
+            const quiz = document.getElementById(quizId);
+            const options = quiz.querySelectorAll('.mini-quiz-option');
+            const feedback = document.getElementById(quizId + '-feedback');
+            
+            // Disable all options
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            
+            // Mark selected
+            selectedOption.classList.add('selected');
+            
+            // Show correct/incorrect
+            if (isCorrect) {
+                selectedOption.classList.add('correct');
+                selectedOption.querySelector('.marker').textContent = '✓';
+                feedback.className = 'mini-quiz-feedback show correct';
+                feedback.innerHTML = '<h5>✓ Correct!</h5><p>Great job! You understood this grammar point.</p>';
+            } else {
+                selectedOption.classList.add('incorrect');
+                selectedOption.querySelector('.marker').textContent = '✗';
+                // Find and highlight correct answer
+                options.forEach(opt => {
+                    if (opt !== selectedOption) {
+                        const marker = opt.querySelector('.marker').textContent;
+                        // Check if this is the correct one based on the onclick
+                        const onclickAttr = opt.getAttribute('onclick');
+                        if (onclickAttr && onclickAttr.includes('true')) {
+                            opt.classList.add('correct');
+                            opt.querySelector('.marker').textContent = '✓';
+                        }
+                    }
+                });
+                feedback.className = 'mini-quiz-feedback show incorrect';
+                feedback.innerHTML = '<h5>✗ Not quite!</h5><p>Check the correct answer highlighted above. Review the grammar explanation if needed.</p>';
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Touch/swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        }
+
+        // Initialize
+        updateSlide();
+    </script>
+</body>
+</html>
