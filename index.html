@@ -1,1398 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adjective Conjugation Practice</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-        }
-        
-        .header h1 {
-            font-size: 36px;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .header p {
-            font-size: 18px;
-            opacity: 0.9;
-        }
-        
-        .score-board {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        
-        .score-item {
-            text-align: center;
-        }
-        
-        .score-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        
-        .score-value {
-            font-size: 28px;
-            font-weight: bold;
-            color: #667eea;
-        }
-        
-        .progress-bar {
-            width: 200px;
-            height: 12px;
-            background: #e0e0e0;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 6px;
-            transition: width 0.3s ease;
-        }
-        
-        .section-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .tab-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s;
-            background: rgba(255,255,255,0.3);
-            color: white;
-            position: relative;
-        }
-        
-        .tab-btn:hover:not(.completed):not(.locked) {
-            background: rgba(255,255,255,0.5);
-            transform: translateY(-2px);
-        }
-        
-        .tab-btn.active {
-            background: white;
-            color: #667eea;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .tab-btn.completed {
-            background: #4caf50;
-            color: white;
-            cursor: default;
-        }
-        
-        .tab-btn.completed::after {
-            content: ' ✓';
-        }
-        
-        .tab-btn.locked {
-            background: rgba(255,255,255,0.15);
-            color: rgba(255,255,255,0.5);
-            cursor: not-allowed;
-        }
-        
-        .practice-section {
-            display: none;
-        }
-        
-        .practice-section.active {
-            display: block;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        
-        .card-title {
-            font-size: 22px;
-            color: #333;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #667eea;
-        }
-        
-        .question-box {
-            background: #f8f9ff;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-        
-        .question-number {
-            font-size: 14px;
-            color: #667eea;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .question-text {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 15px;
-        }
-        
-        .japanese-prompt {
-            font-size: 28px;
-            color: #764ba2;
-            font-weight: bold;
-            margin: 15px 0;
-            text-align: center;
-        }
-        
-        .form-indicator {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            margin: 5px;
-        }
-        
-        .form-indicator.present { background: #e3f2fd; color: #1565c0; }
-        .form-indicator.past { background: #fce4ec; color: #c2185b; }
-        .form-indicator.positive { background: #e8f5e9; color: #2e7d32; }
-        .form-indicator.negative { background: #ffebee; color: #c62828; }
-        .form-indicator.i-adj { background: #f3e5f5; color: #6a1b9a; }
-        .form-indicator.na-adj { background: #e3f2fd; color: #1565c0; }
-        
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        
-        .option-btn {
-            padding: 15px 20px;
-            border: 3px solid #e0e0e0;
-            border-radius: 12px;
-            background: white;
-            cursor: pointer;
-            font-size: 20px;
-            transition: all 0.3s;
-            text-align: center;
-        }
-        
-        .option-btn:hover {
-            border-color: #667eea;
-            background: #f8f9ff;
-            transform: translateY(-2px);
-        }
-        
-        .option-btn.selected {
-            border-color: #667eea;
-            background: #f0f3ff;
-        }
-        
-        .option-btn.correct {
-            border-color: #4caf50;
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-        
-        .option-btn.incorrect {
-            border-color: #f44336;
-            background: #ffebee;
-            color: #c62828;
-        }
-        
-        .option-btn:disabled {
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-        
-        .feedback {
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 15px;
-            display: none;
-            font-size: 16px;
-        }
-        
-        .feedback.correct {
-            display: block;
-            background: #e8f5e9;
-            border-left: 5px solid #4caf50;
-            color: #2e7d32;
-        }
-        
-        .feedback.incorrect {
-            display: block;
-            background: #ffebee;
-            border-left: 5px solid #f44336;
-            color: #c62828;
-        }
-        
-        .feedback .correct-answer {
-            font-size: 22px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        
-        .next-btn {
-            padding: 12px 30px;
-            background: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: all 0.3s;
-        }
-        
-        .next-btn:hover {
-            background: #43a047;
-            transform: translateY(-2px);
-        }
-        
-        /* Section Complete */
-        .section-complete {
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .section-complete-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-        }
-        
-        .section-complete-title {
-            font-size: 28px;
-            color: #4caf50;
-            margin-bottom: 15px;
-        }
-        
-        .section-complete-stats {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 25px;
-        }
-        
-        .continue-btn {
-            padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .continue-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-        
-        /* Conjugation Reference */
-        .reference-toggle {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .reference-btn {
-            padding: 10px 25px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 2px solid white;
-            border-radius: 25px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .reference-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        
-        .reference-card {
-            display: none;
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        
-        .reference-card.show {
-            display: block;
-        }
-        
-        .ref-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        .ref-box {
-            padding: 15px;
-            border-radius: 12px;
-        }
-        
-        .ref-box.i-adj {
-            background: #f3e5f5;
-            border: 2px solid #9c27b0;
-        }
-        
-        .ref-box.na-adj {
-            background: #e3f2fd;
-            border: 2px solid #2196f3;
-        }
-        
-        .ref-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-        
-        .ref-title.i-adj { color: #6a1b9a; }
-        .ref-title.na-adj { color: #1565c0; }
-        
-        .ref-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px;
-            margin: 5px 0;
-            background: white;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        
-        /* Results */
-        .results-card {
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .results-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-        
-        .results-title {
-            font-size: 32px;
-            color: #333;
-            margin-bottom: 15px;
-        }
-        
-        .results-score {
-            font-size: 48px;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 20px;
-        }
-        
-        .results-breakdown {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin: 30px 0;
-        }
-        
-        .breakdown-item {
-            background: #f8f9ff;
-            padding: 15px;
-            border-radius: 12px;
-        }
-        
-        .breakdown-label {
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .breakdown-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #667eea;
-        }
-        
-        .retry-btn {
-            padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 10px;
-        }
-        
-        .retry-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-        
-        /* Matching Section */
-        .matching-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin: 20px 0;
-        }
-        
-        .matching-column h4 {
-            text-align: center;
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        
-        .match-item {
-            padding: 15px;
-            margin: 10px 0;
-            border: 3px solid #e0e0e0;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 20px;
-        }
-        
-        .match-item:hover {
-            border-color: #667eea;
-            background: #f8f9ff;
-        }
-        
-        .match-item.selected {
-            border-color: #667eea;
-            background: #e8eaff;
-        }
-        
-        .match-item.matched {
-            border-color: #4caf50;
-            background: #e8f5e9;
-            cursor: default;
-        }
-        
-        .match-item.wrong {
-            animation: shake 0.5s;
-            border-color: #f44336;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-        
-        /* Sentence Builder */
-        .sentence-context {
-            background: #f0f3ff;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .context-english {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-        
-        .sentence-template {
-            font-size: 26px;
-            color: #333;
-        }
-        
-        .blank {
-            display: inline-block;
-            min-width: 150px;
-            border-bottom: 3px solid #667eea;
-            margin: 0 5px;
-            padding: 5px 10px;
-            color: #667eea;
-            font-weight: bold;
-        }
-        
-        @media (max-width: 768px) {
-            .options-grid, .ref-grid, .matching-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .results-breakdown {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 28px;
-            }
-            
-            .japanese-prompt {
-                font-size: 24px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Japanese Reviewers</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>けいようし れんしゅう</h1>
-            <p>Adjective Conjugation Practice</p>
-        </div>
-        
-        <div class="score-board">
-            <div class="score-item">
-                <div class="score-label">Score</div>
-                <div class="score-value" id="score">0</div>
-            </div>
-            <div class="score-item">
-                <div class="score-label">Progress</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress" style="width: 0%"></div>
-                </div>
-            </div>
-            <div class="score-item">
-                <div class="score-label">Questions</div>
-                <div class="score-value"><span id="answered">0</span>/<span id="total">27</span></div>
-            </div>
-        </div>
-        
-        <div class="reference-toggle">
-            <button class="reference-btn" onclick="toggleReference()">📖 Show Conjugation Chart</button>
-        </div>
-        
-        <div class="reference-card" id="referenceCard">
-            <div class="ref-grid">
-                <div class="ref-box i-adj">
-                    <div class="ref-title i-adj">い-けいようし (たかい)</div>
-                    <div class="ref-item"><span>Present +</span><span>たかい です</span></div>
-                    <div class="ref-item"><span>Present −</span><span>たかくない です</span></div>
-                    <div class="ref-item"><span>Past +</span><span>たかかった です</span></div>
-                    <div class="ref-item"><span>Past −</span><span>たかくなかった です</span></div>
-                </div>
-                <div class="ref-box na-adj">
-                    <div class="ref-title na-adj">な-けいようし (しずか)</div>
-                    <div class="ref-item"><span>Present +</span><span>しずか です</span></div>
-                    <div class="ref-item"><span>Present −</span><span>しずか じゃありません</span></div>
-                    <div class="ref-item"><span>Past +</span><span>しずか でした</span></div>
-                    <div class="ref-item"><span>Past −</span><span>しずか じゃありませんでした</span></div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="section-tabs">
-            <button class="tab-btn active" id="tab-conjugation" onclick="handleTabClick('conjugation')">Part 1: Conjugation</button>
-            <button class="tab-btn locked" id="tab-matching" onclick="handleTabClick('matching')">Part 2: Matching</button>
-            <button class="tab-btn locked" id="tab-sentences" onclick="handleTabClick('sentences')">Part 3: Sentences</button>
-        </div>
-        
-        <!-- Part 1: Conjugation Practice -->
-        <div class="practice-section active" id="conjugation-section">
-            <div class="card">
-                <div class="card-title">Part 1: Conjugate the Adjective (16 Questions)</div>
-                <div id="conjugation-question"></div>
-            </div>
-        </div>
-        
-        <!-- Part 2: Matching -->
-        <div class="practice-section" id="matching-section">
-            <div class="card">
-                <div class="card-title">Part 2: Match the Conjugation (3 Sets)</div>
-                <div id="matching-question"></div>
-            </div>
-        </div>
-        
-        <!-- Part 3: Sentence Practice -->
-        <div class="practice-section" id="sentences-section">
-            <div class="card">
-                <div class="card-title">Part 3: Complete the Sentence (8 Questions)</div>
-                <div id="sentence-question"></div>
-            </div>
-        </div>
-        
-        <!-- Results -->
-        <div class="practice-section" id="results-section">
-            <div class="card results-card">
-                <div class="results-icon" id="results-icon">🎉</div>
-                <div class="results-title" id="results-title">Great Job!</div>
-                <div class="results-score" id="final-score">0%</div>
-                <div class="results-breakdown">
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">い-Adjectives</div>
-                        <div class="breakdown-value" id="i-adj-score">0/0</div>
-                    </div>
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">な-Adjectives</div>
-                        <div class="breakdown-value" id="na-adj-score">0/0</div>
-                    </div>
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">Present Tense</div>
-                        <div class="breakdown-value" id="present-score">0/0</div>
-                    </div>
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">Past Tense</div>
-                        <div class="breakdown-value" id="past-score">0/0</div>
-                    </div>
-                </div>
-                <button class="retry-btn" onclick="restartPractice()">🔄 Practice Again</button>
-            </div>
-        </div>
-    </div>
 
-    <script>
-        // Adjective Data
-        const iAdjectives = [
-            { base: 'たかい', meaning: 'expensive/tall' },
-            { base: 'やすい', meaning: 'cheap' },
-            { base: 'あたらしい', meaning: 'new' },
-            { base: 'ふるい', meaning: 'old (things)' },
-            { base: 'おおきい', meaning: 'big' },
-            { base: 'ちいさい', meaning: 'small' },
-            { base: 'おもしろい', meaning: 'interesting' },
-            { base: 'つまらない', meaning: 'boring' },
-            { base: 'むずかしい', meaning: 'difficult' },
-            { base: 'やさしい', meaning: 'easy/kind' },
-            { base: 'あつい', meaning: 'hot' },
-            { base: 'さむい', meaning: 'cold' },
-            { base: 'いそがしい', meaning: 'busy' },
-            { base: 'いい', meaning: 'good', irregular: true }
-        ];
-        
-        const naAdjectives = [
-            { base: 'しずか', meaning: 'quiet' },
-            { base: 'にぎやか', meaning: 'lively' },
-            { base: 'げんき', meaning: 'energetic' },
-            { base: 'きれい', meaning: 'beautiful/clean' },
-            { base: 'ゆうめい', meaning: 'famous' },
-            { base: 'しんせつ', meaning: 'kind' },
-            { base: 'べんり', meaning: 'convenient' },
-            { base: 'ひま', meaning: 'free (time)' },
-            { base: 'すき', meaning: 'like' },
-            { base: 'きらい', meaning: 'dislike' },
-            { base: 'じょうず', meaning: 'skillful' },
-            { base: 'へた', meaning: 'unskillful' }
-        ];
-        
-        // Conjugation functions
-        function conjugateIAdj(adj, tense, polarity) {
-            const stem = adj.base.slice(0, -1);
-            
-            if (adj.irregular && adj.base === 'いい') {
-                if (tense === 'present' && polarity === 'positive') return 'いい です';
-                if (tense === 'present' && polarity === 'negative') return 'よくない です';
-                if (tense === 'past' && polarity === 'positive') return 'よかった です';
-                if (tense === 'past' && polarity === 'negative') return 'よくなかった です';
-            }
-            
-            if (tense === 'present' && polarity === 'positive') return adj.base + ' です';
-            if (tense === 'present' && polarity === 'negative') return stem + 'くない です';
-            if (tense === 'past' && polarity === 'positive') return stem + 'かった です';
-            if (tense === 'past' && polarity === 'negative') return stem + 'くなかった です';
-        }
-        
-        function conjugateNaAdj(adj, tense, polarity) {
-            if (tense === 'present' && polarity === 'positive') return adj.base + ' です';
-            if (tense === 'present' && polarity === 'negative') return adj.base + ' じゃありません';
-            if (tense === 'past' && polarity === 'positive') return adj.base + ' でした';
-            if (tense === 'past' && polarity === 'negative') return adj.base + ' じゃありませんでした';
-        }
-        
-        // Game State
-        let currentSection = 'conjugation';
-        let currentQuestion = 0;
-        let score = 0;
-        let questionsAnswered = 0;
-        const totalQuestions = 27; // 16 conjugation + 3 matching sets + 8 sentences
-        
-        let sectionStatus = {
-            conjugation: { completed: false, correct: 0, total: 16 },
-            matching: { completed: false, correct: 0, total: 3 },
-            sentences: { completed: false, correct: 0, total: 8 }
-        };
-        
-        let stats = {
-            iAdj: { correct: 0, total: 0 },
-            naAdj: { correct: 0, total: 0 },
-            present: { correct: 0, total: 0 },
-            past: { correct: 0, total: 0 }
-        };
-        
-        // Questions for each section
-        let conjugationQuestions = [];
-        let matchingQuestions = [];
-        let sentenceQuestions = [];
-        
-        // Matching state
-        let selectedMatch = null;
-        let matchedPairs = 0;
-        let currentSetCorrect = 0;
-        
-        // Initialize
-        function init() {
-            generateConjugationQuestions();
-            generateMatchingQuestions();
-            generateSentenceQuestions();
-            document.getElementById('total').textContent = totalQuestions;
-            updateScoreBoard();
-            loadQuestion();
-        }
-        
-        function generateConjugationQuestions() {
-            conjugationQuestions = [];
-            const tenses = ['present', 'past'];
-            const polarities = ['positive', 'negative'];
-            
-            // Generate 8 い-adjective questions
-            for (let i = 0; i < 8; i++) {
-                const adj = iAdjectives[Math.floor(Math.random() * iAdjectives.length)];
-                const tense = tenses[Math.floor(Math.random() * 2)];
-                const polarity = polarities[Math.floor(Math.random() * 2)];
-                conjugationQuestions.push({
-                    type: 'i-adj',
-                    adjective: adj,
-                    tense: tense,
-                    polarity: polarity,
-                    answer: conjugateIAdj(adj, tense, polarity)
-                });
-            }
-            
-            // Generate 8 な-adjective questions
-            for (let i = 0; i < 8; i++) {
-                const adj = naAdjectives[Math.floor(Math.random() * naAdjectives.length)];
-                const tense = tenses[Math.floor(Math.random() * 2)];
-                const polarity = polarities[Math.floor(Math.random() * 2)];
-                conjugationQuestions.push({
-                    type: 'na-adj',
-                    adjective: adj,
-                    tense: tense,
-                    polarity: polarity,
-                    answer: conjugateNaAdj(adj, tense, polarity)
-                });
-            }
-            
-            conjugationQuestions.sort(() => Math.random() - 0.5);
-        }
-        
-        function generateMatchingQuestions() {
-            matchingQuestions = [];
-            
-            for (let set = 0; set < 3; set++) {
-                const pairs = [];
-                const usedAdj = new Set();
-                
-                for (let i = 0; i < 4; i++) {
-                    let adj, isI;
-                    do {
-                        isI = Math.random() > 0.5;
-                        adj = isI ? iAdjectives[Math.floor(Math.random() * iAdjectives.length)] 
-                                  : naAdjectives[Math.floor(Math.random() * naAdjectives.length)];
-                    } while (usedAdj.has(adj.base));
-                    
-                    usedAdj.add(adj.base);
-                    
-                    const tense = Math.random() > 0.5 ? 'present' : 'past';
-                    const polarity = Math.random() > 0.5 ? 'positive' : 'negative';
-                    const conjugated = isI ? conjugateIAdj(adj, tense, polarity) : conjugateNaAdj(adj, tense, polarity);
-                    
-                    pairs.push({
-                        base: adj.base + (isI ? '' : '(な)'),
-                        conjugated: conjugated,
-                        type: isI ? 'i-adj' : 'na-adj',
-                        tense: tense
-                    });
-                }
-                
-                matchingQuestions.push({ pairs: pairs });
-            }
-        }
-        
-        function generateSentenceQuestions() {
-            sentenceQuestions = [
-                {
-                    english: "This town is quiet.",
-                    template: "この まちは ____。",
-                    answer: "しずか です",
-                    type: 'na-adj',
-                    tense: 'present',
-                    options: ["しずか です", "しずかな です", "しずかい です", "しずかでした"]
-                },
-                {
-                    english: "That book was not interesting.",
-                    template: "あの ほんは ____。",
-                    answer: "おもしろくなかった です",
-                    type: 'i-adj',
-                    tense: 'past',
-                    options: ["おもしろくなかった です", "おもしろいじゃありませんでした", "おもしろくない です", "おもしろかった です"]
-                },
-                {
-                    english: "Yamada is not energetic.",
-                    template: "やまださんは ____。",
-                    answer: "げんき じゃありません",
-                    type: 'na-adj',
-                    tense: 'present',
-                    options: ["げんき じゃありません", "げんきくない です", "げんき でした", "げんきない です"]
-                },
-                {
-                    english: "Yesterday was hot.",
-                    template: "きのうは ____。",
-                    answer: "あつかった です",
-                    type: 'i-adj',
-                    tense: 'past',
-                    options: ["あつかった です", "あついでした", "あつい です", "あつくなかった です"]
-                },
-                {
-                    english: "This room was not clean.",
-                    template: "この へやは ____。",
-                    answer: "きれい じゃありませんでした",
-                    type: 'na-adj',
-                    tense: 'past',
-                    options: ["きれい じゃありませんでした", "きれいくなかった です", "きれい でした", "きれい じゃありません"]
-                },
-                {
-                    english: "Japanese is not difficult.",
-                    template: "にほんごは ____。",
-                    answer: "むずかしくない です",
-                    type: 'i-adj',
-                    tense: 'present',
-                    options: ["むずかしくない です", "むずかし じゃありません", "むずかしい です", "むずかしくなかった です"]
-                },
-                {
-                    english: "That person was famous.",
-                    template: "あの ひとは ____。",
-                    answer: "ゆうめい でした",
-                    type: 'na-adj',
-                    tense: 'past',
-                    options: ["ゆうめい でした", "ゆうめいかった です", "ゆうめい です", "ゆうめい じゃありませんでした"]
-                },
-                {
-                    english: "The weather was good.",
-                    template: "てんきは ____。",
-                    answer: "よかった です",
-                    type: 'i-adj',
-                    tense: 'past',
-                    options: ["よかった です", "いいかった です", "いい でした", "よくなかった です"]
-                }
-            ];
-            
-            sentenceQuestions.sort(() => Math.random() - 0.5);
-        }
-        
-        function handleTabClick(section) {
-            // Don't allow clicking completed or locked sections
-            const tab = document.getElementById('tab-' + section);
-            if (tab.classList.contains('completed') || tab.classList.contains('locked')) {
-                return;
-            }
-            
-            // Only allow clicking current active section
-            if (section !== currentSection) {
-                return;
-            }
-        }
-        
-        function switchToSection(section) {
-            // Update tabs
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.getElementById('tab-' + section).classList.add('active');
-            document.getElementById('tab-' + section).classList.remove('locked');
-            
-            // Update sections
-            document.querySelectorAll('.practice-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(section + '-section').classList.add('active');
-            
-            currentSection = section;
-            currentQuestion = 0;
-            loadQuestion();
-        }
-        
-        function loadQuestion() {
-            if (currentSection === 'conjugation') {
-                loadConjugationQuestion();
-            } else if (currentSection === 'matching') {
-                loadMatchingQuestion();
-            } else if (currentSection === 'sentences') {
-                loadSentenceQuestion();
-            }
-        }
-        
-        function loadConjugationQuestion() {
-            if (currentQuestion >= conjugationQuestions.length) {
-                showSectionComplete('conjugation', 'matching');
-                return;
-            }
-            
-            const q = conjugationQuestions[currentQuestion];
-            const tenseLabel = q.tense === 'present' ? 'げんざい (Present)' : 'かこ (Past)';
-            const polarityLabel = q.polarity === 'positive' ? 'Positive (+)' : 'Negative (−)';
-            const typeLabel = q.type === 'i-adj' ? 'い-けいようし' : 'な-けいようし';
-            
-            const options = [q.answer];
-            const wrongAnswers = generateWrongAnswers(q);
-            options.push(...wrongAnswers);
-            options.sort(() => Math.random() - 0.5);
-            
-            document.getElementById('conjugation-question').innerHTML = `
-                <div class="question-box">
-                    <div class="question-number">Question ${currentQuestion + 1} of ${conjugationQuestions.length}</div>
-                    <div class="question-text">Conjugate this adjective:</div>
-                    <div class="japanese-prompt">${q.adjective.base}</div>
-                    <div style="text-align: center; color: #666; margin-bottom: 15px;">(${q.adjective.meaning})</div>
-                    <div style="text-align: center;">
-                        <span class="form-indicator ${q.type}">${typeLabel}</span>
-                        <span class="form-indicator ${q.tense}">${tenseLabel}</span>
-                        <span class="form-indicator ${q.polarity}">${polarityLabel}</span>
-                    </div>
-                    <div class="options-grid" id="conj-options">
-                        ${options.map((opt, i) => `
-                            <button class="option-btn" data-answer="${opt}">${opt}</button>
-                        `).join('')}
-                    </div>
-                    <div class="feedback" id="conj-feedback"></div>
-                </div>
-            `;
-            
-            const answer = q.answer;
-            document.querySelectorAll('#conj-options .option-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    checkConjugation(this, this.dataset.answer, answer);
-                });
-            });
-        }
-        
-        function generateWrongAnswers(q) {
-            const wrong = [];
-            const adj = q.adjective;
-            
-            if (q.type === 'i-adj') {
-                const stem = adj.base.slice(0, -1);
-                const allForms = [
-                    adj.base + ' です',
-                    stem + 'くない です',
-                    stem + 'かった です',
-                    stem + 'くなかった です'
-                ];
-                
-                wrong.push(adj.base + ' でした');
-                wrong.push(stem + ' じゃありません');
-                
-                allForms.forEach(form => {
-                    if (form !== q.answer && wrong.length < 3) {
-                        wrong.push(form);
-                    }
-                });
-            } else {
-                const allForms = [
-                    adj.base + ' です',
-                    adj.base + ' じゃありません',
-                    adj.base + ' でした',
-                    adj.base + ' じゃありませんでした'
-                ];
-                
-                wrong.push(adj.base + 'い です');
-                wrong.push(adj.base + 'くない です');
-                
-                allForms.forEach(form => {
-                    if (form !== q.answer && wrong.length < 3) {
-                        wrong.push(form);
-                    }
-                });
-            }
-            
-            return wrong.slice(0, 3);
-        }
-        
-        function checkConjugation(btn, selected, correct) {
-            const buttons = document.querySelectorAll('#conj-options .option-btn');
-            buttons.forEach(b => b.disabled = true);
-            
-            const q = conjugationQuestions[currentQuestion];
-            const isCorrect = selected === correct;
-            
-            if (isCorrect) {
-                btn.classList.add('correct');
-                score += 10;
-                sectionStatus.conjugation.correct++;
-                updateStats(q.type, q.tense, true);
-            } else {
-                btn.classList.add('incorrect');
-                buttons.forEach(b => {
-                    if (b.dataset.answer === correct) b.classList.add('correct');
-                });
-                updateStats(q.type, q.tense, false);
-            }
-            
-            questionsAnswered++;
-            updateScoreBoard();
-            
-            const feedback = document.getElementById('conj-feedback');
-            if (isCorrect) {
-                feedback.className = 'feedback correct';
-                feedback.innerHTML = `✅ Correct! Well done! <button class="next-btn" onclick="nextConjugationQuestion()">Next →</button>`;
-            } else {
-                feedback.className = 'feedback incorrect';
-                feedback.innerHTML = `❌ Not quite right. <div class="correct-answer">Correct: ${correct}</div> <button class="next-btn" onclick="nextConjugationQuestion()">Next →</button>`;
-            }
-        }
-        
-        function nextConjugationQuestion() {
-            currentQuestion++;
-            loadConjugationQuestion();
-        }
-        
-        // Section Complete Screen
-        function showSectionComplete(completedSection, nextSection) {
-            sectionStatus[completedSection].completed = true;
-            
-            // Mark tab as completed
-            document.getElementById('tab-' + completedSection).classList.remove('active');
-            document.getElementById('tab-' + completedSection).classList.add('completed');
-            
-            const correct = sectionStatus[completedSection].correct;
-            const total = sectionStatus[completedSection].total;
-            const percentage = Math.round((correct / total) * 100);
-            
-            const sectionNames = {
-                conjugation: 'Part 1: Conjugation',
-                matching: 'Part 2: Matching',
-                sentences: 'Part 3: Sentences'
-            };
-            
-            const questionEl = document.getElementById(completedSection + '-question');
-            questionEl.innerHTML = `
-                <div class="section-complete">
-                    <div class="section-complete-icon">✅</div>
-                    <div class="section-complete-title">${sectionNames[completedSection]} Complete!</div>
-                    <div class="section-complete-stats">
-                        You got <strong>${correct}</strong> out of <strong>${total}</strong> correct (${percentage}%)
-                    </div>
-                    <button class="continue-btn" onclick="switchToSection('${nextSection}')">
-                        Continue to ${sectionNames[nextSection]} →
-                    </button>
-                </div>
-            `;
-        }
-        
-        // Matching Section
-        function loadMatchingQuestion() {
-            if (currentQuestion >= matchingQuestions.length) {
-                showSectionComplete('matching', 'sentences');
-                return;
-            }
-            
-            const q = matchingQuestions[currentQuestion];
-            matchedPairs = 0;
-            selectedMatch = null;
-            currentSetCorrect = 0;
-            
-            const bases = q.pairs.map((p, i) => ({ text: p.base, index: i, type: p.type, tense: p.tense }));
-            const conjugated = q.pairs.map((p, i) => ({ text: p.conjugated, index: i }));
-            
-            bases.sort(() => Math.random() - 0.5);
-            conjugated.sort(() => Math.random() - 0.5);
-            
-            document.getElementById('matching-question').innerHTML = `
-                <div class="question-box">
-                    <div class="question-number">Set ${currentQuestion + 1} of ${matchingQuestions.length}</div>
-                    <div class="question-text">Match each adjective with its correct conjugation (4 pairs):</div>
-                    <div class="matching-grid">
-                        <div class="matching-column">
-                            <h4>Base Form</h4>
-                            ${bases.map(b => `
-                                <div class="match-item" data-index="${b.index}" data-side="base" data-type="${b.type}" data-tense="${b.tense}" onclick="selectMatch(this)">${b.text}</div>
-                            `).join('')}
-                        </div>
-                        <div class="matching-column">
-                            <h4>Conjugated Form</h4>
-                            ${conjugated.map(c => `
-                                <div class="match-item" data-index="${c.index}" data-side="conjugated" onclick="selectMatch(this)">${c.text}</div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    <div class="feedback" id="matching-feedback"></div>
-                </div>
-            `;
-        }
-        
-        function selectMatch(item) {
-            if (item.classList.contains('matched')) return;
-            
-            const side = item.dataset.side;
-            const index = item.dataset.index;
-            
-            if (!selectedMatch) {
-                selectedMatch = { element: item, side: side, index: index };
-                item.classList.add('selected');
-            } else {
-                if (selectedMatch.side === side) {
-                    selectedMatch.element.classList.remove('selected');
-                    selectedMatch = { element: item, side: side, index: index };
-                    item.classList.add('selected');
-                } else {
-                    if (selectedMatch.index === index) {
-                        // Correct match
-                        selectedMatch.element.classList.remove('selected');
-                        selectedMatch.element.classList.add('matched');
-                        item.classList.add('matched');
-                        
-                        const baseItem = side === 'base' ? item : selectedMatch.element;
-                        updateStats(baseItem.dataset.type, baseItem.dataset.tense, true);
-                        
-                        score += 10;
-                        matchedPairs++;
-                        currentSetCorrect++;
-                        
-                        if (matchedPairs === 4) {
-                            // Set complete - count as 1 question answered
-                            questionsAnswered++;
-                            if (currentSetCorrect === 4) {
-                                sectionStatus.matching.correct++;
-                            }
-                            updateScoreBoard();
-                            
-                            setTimeout(() => {
-                                currentQuestion++;
-                                loadMatchingQuestion();
-                            }, 800);
-                        }
-                    } else {
-                        // Wrong match
-                        item.classList.add('wrong');
-                        selectedMatch.element.classList.add('wrong');
-                        
-                        const baseItem = side === 'base' ? item : selectedMatch.element;
-                        updateStats(baseItem.dataset.type, baseItem.dataset.tense, false);
-                        
-                        setTimeout(() => {
-                            item.classList.remove('wrong');
-                            selectedMatch.element.classList.remove('wrong', 'selected');
-                            selectedMatch = null;
-                        }, 500);
-                        return;
-                    }
-                    selectedMatch = null;
-                }
-            }
-        }
-        
-        // Sentence Section
-        function loadSentenceQuestion() {
-            if (currentQuestion >= sentenceQuestions.length) {
-                showResults();
-                return;
-            }
-            
-            const q = sentenceQuestions[currentQuestion];
-            const options = [...q.options].sort(() => Math.random() - 0.5);
-            
-            document.getElementById('sentence-question').innerHTML = `
-                <div class="question-box">
-                    <div class="question-number">Question ${currentQuestion + 1} of ${sentenceQuestions.length}</div>
-                    <div class="sentence-context">
-                        <div class="context-english">${q.english}</div>
-                        <div class="sentence-template">${q.template.replace('____', '<span class="blank">?</span>')}</div>
-                    </div>
-                    <div class="options-grid" id="sentence-options">
-                        ${options.map(opt => `
-                            <button class="option-btn" data-answer="${opt}">${opt}</button>
-                        `).join('')}
-                    </div>
-                    <div class="feedback" id="sentence-feedback"></div>
-                </div>
-            `;
-            
-            const answer = q.answer;
-            document.querySelectorAll('#sentence-options .option-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    checkSentence(this, this.dataset.answer, answer);
-                });
-            });
-        }
-        
-        function checkSentence(btn, selected, correct) {
-            const buttons = document.querySelectorAll('#sentence-options .option-btn');
-            buttons.forEach(b => b.disabled = true);
-            
-            const q = sentenceQuestions[currentQuestion];
-            const isCorrect = selected === correct;
-            
-            if (isCorrect) {
-                btn.classList.add('correct');
-                score += 10;
-                sectionStatus.sentences.correct++;
-                updateStats(q.type, q.tense, true);
-            } else {
-                btn.classList.add('incorrect');
-                buttons.forEach(b => {
-                    if (b.dataset.answer === correct) b.classList.add('correct');
-                });
-                updateStats(q.type, q.tense, false);
-            }
-            
-            questionsAnswered++;
-            updateScoreBoard();
-            
-            document.querySelector('.blank').textContent = correct;
-            document.querySelector('.blank').style.borderColor = isCorrect ? '#4caf50' : '#f44336';
-            
-            const feedback = document.getElementById('sentence-feedback');
-            if (isCorrect) {
-                feedback.className = 'feedback correct';
-                feedback.innerHTML = `✅ Correct! Well done! <button class="next-btn" onclick="nextSentenceQuestion()">Next →</button>`;
-            } else {
-                feedback.className = 'feedback incorrect';
-                feedback.innerHTML = `❌ Not quite right. <div class="correct-answer">Correct: ${correct}</div> <button class="next-btn" onclick="nextSentenceQuestion()">Next →</button>`;
-            }
-        }
-        
-        function nextSentenceQuestion() {
-            currentQuestion++;
-            loadSentenceQuestion();
-        }
-        
-        function updateStats(type, tense, isCorrect) {
-            if (type === 'i-adj') {
-                stats.iAdj.total++;
-                if (isCorrect) stats.iAdj.correct++;
-            } else {
-                stats.naAdj.total++;
-                if (isCorrect) stats.naAdj.correct++;
-            }
-            
-            if (tense === 'present') {
-                stats.present.total++;
-                if (isCorrect) stats.present.correct++;
-            } else {
-                stats.past.total++;
-                if (isCorrect) stats.past.correct++;
-            }
-        }
-        
-        function updateScoreBoard() {
-            document.getElementById('score').textContent = score;
-            document.getElementById('answered').textContent = questionsAnswered;
-            
-            const progress = (questionsAnswered / totalQuestions) * 100;
-            document.getElementById('progress').style.width = progress + '%';
-        }
-        
-        function showResults() {
-            sectionStatus.sentences.completed = true;
-            document.getElementById('tab-sentences').classList.remove('active');
-            document.getElementById('tab-sentences').classList.add('completed');
-            
-            document.querySelectorAll('.practice-section').forEach(s => s.classList.remove('active'));
-            document.getElementById('results-section').classList.add('active');
-            
-            const totalCorrect = sectionStatus.conjugation.correct + sectionStatus.matching.correct + sectionStatus.sentences.correct;
-            const percentage = Math.round((totalCorrect / totalQuestions) * 100);
-            
-            document.getElementById('final-score').textContent = percentage + '%';
-            document.getElementById('i-adj-score').textContent = `${stats.iAdj.correct}/${stats.iAdj.total}`;
-            document.getElementById('na-adj-score').textContent = `${stats.naAdj.correct}/${stats.naAdj.total}`;
-            document.getElementById('present-score').textContent = `${stats.present.correct}/${stats.present.total}`;
-            document.getElementById('past-score').textContent = `${stats.past.correct}/${stats.past.total}`;
-            
-            if (percentage >= 80) {
-                document.getElementById('results-icon').textContent = '🎉';
-                document.getElementById('results-title').textContent = 'Excellent Work!';
-            } else if (percentage >= 60) {
-                document.getElementById('results-icon').textContent = '👍';
-                document.getElementById('results-title').textContent = 'Good Job!';
-            } else {
-                document.getElementById('results-icon').textContent = '📚';
-                document.getElementById('results-title').textContent = 'Keep Practicing!';
-            }
-        }
-        
-        function restartPractice() {
-            currentSection = 'conjugation';
-            currentQuestion = 0;
-            score = 0;
-            questionsAnswered = 0;
-            
-            sectionStatus = {
-                conjugation: { completed: false, correct: 0, total: 16 },
-                matching: { completed: false, correct: 0, total: 3 },
-                sentences: { completed: false, correct: 0, total: 8 }
-            };
-            
-            stats = {
-                iAdj: { correct: 0, total: 0 },
-                naAdj: { correct: 0, total: 0 },
-                present: { correct: 0, total: 0 },
-                past: { correct: 0, total: 0 }
-            };
-            
-            generateConjugationQuestions();
-            generateMatchingQuestions();
-            generateSentenceQuestions();
-            
-            // Reset all tabs
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active', 'completed', 'locked');
-            });
-            document.getElementById('tab-conjugation').classList.add('active');
-            document.getElementById('tab-matching').classList.add('locked');
-            document.getElementById('tab-sentences').classList.add('locked');
-            
-            document.querySelectorAll('.practice-section').forEach(s => s.classList.remove('active'));
-            document.getElementById('conjugation-section').classList.add('active');
-            
-            updateScoreBoard();
-            loadQuestion();
-        }
-        
-        function toggleReference() {
-            const card = document.getElementById('referenceCard');
-            card.classList.toggle('show');
-            const btn = document.querySelector('.reference-btn');
-            btn.textContent = card.classList.contains('show') ? '📖 Hide Conjugation Chart' : '📖 Show Conjugation Chart';
-        }
-        
-        // Initialize on load
-        init();
-    </script>
+  <!-- Background image -->
+  <div class="bg-image"></div>
+
+  <!-- Mobile hamburger button -->
+  <button class="hamburger" id="hamburger" aria-label="Open navigation">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- Sidebar overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <a href="#" class="nav-item nav-home active" data-page="home">Home</a>
+    <a href="#" class="nav-item" data-page="n5-lessons">N5 Lessons</a>
+    <a href="#" class="nav-item" data-page="n5-vocabulary">N5 Vocabulary</a>
+    <a href="#" class="nav-item" data-page="n5-kanji">N5 Kanji</a>
+    <a href="#" class="nav-item" data-page="n4-lessons">N4 Lessons</a>
+    <a href="#" class="nav-item" data-page="n4-vocabulary">N4 Vocabulary</a>
+    <a href="#" class="nav-item" data-page="n4-kanji">N4 Kanji</a>
+  </nav>
+
+  <!-- Content area -->
+  <main class="content">
+
+    <!-- Home -->
+    <section class="page active" id="page-home">
+      <!-- Empty home page - background image is the content -->
+    </section>
+
+    <!-- N5 Lessons -->
+    <section class="page" id="page-n5-lessons">
+      <div class="lessons-panel">
+
+        <div class="section-title">Lesson 1-7 (Particles)</div>
+        <div class="lesson-grid cols-3">
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_1">Lesson 1</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_2">Lesson 2</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_3">Lesson 3</a></li>
+          </ul>
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_4">Lesson 4</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_5">Lesson 5</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_6">Lesson 6</a></li>
+          </ul>
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_7">Lesson 7</a></li>
+          </ul>
+        </div>
+
+        <div class="section-title">Lesson 8-13 (Adjectives, Counters, Desires)</div>
+        <div class="lesson-grid cols-2">
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_8">Lesson 8</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_9">Lesson 9</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_10">Lesson 10</a></li>
+          </ul>
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_11">Lesson 11</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_12">Lesson 12</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_13">Lesson 13</a></li>
+          </ul>
+        </div>
+
+        <div class="section-title">Lessons 14-25 (Conjugations and Usage)</div>
+        <div class="lesson-grid cols-3">
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_14">Lesson 14</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_15">Lesson 15</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_16">Lesson 16</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_17">Lesson 17</a></li>
+          </ul>
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_18">Lesson 18</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_19">Lesson 19</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_20">Lesson 20</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_21">Lesson 21</a></li>
+          </ul>
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_22">Lesson 22</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_23">Lesson 23</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_24">Lesson 24</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_25">Lesson 25</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- N5 Vocabulary (placeholder) -->
+    <section class="page" id="page-n5-vocabulary">
+      <div class="placeholder-panel">
+        <p class="placeholder-icon">📖</p>
+        <p class="placeholder-title">N5 Vocabulary</p>
+        <p class="placeholder-text">Coming Soon</p>
+      </div>
+    </section>
+
+    <!-- N5 Kanji (placeholder) -->
+    <section class="page" id="page-n5-kanji">
+      <div class="placeholder-panel">
+        <p class="placeholder-icon">漢</p>
+        <p class="placeholder-title">N5 Kanji</p>
+        <p class="placeholder-text">Coming Soon</p>
+      </div>
+    </section>
+
+    <!-- N4 Lessons -->
+    <section class="page" id="page-n4-lessons">
+      <div class="lessons-panel">
+
+        <div class="section-title">Book 1</div>
+        <div class="lesson-grid cols-3">
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_1">Lesson 1</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_2">Lesson 2</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_3">Lesson 3</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_10">Lesson 10</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_11">Lesson 11</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_12">Lesson 12</a></li>
+          </ul>
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_4">Lesson 4</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_5">Lesson 5</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_6">Lesson 6</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_13">Lesson 13</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_14">Lesson 14</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_15">Lesson 15</a></li>
+          </ul>
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_7">Lesson 7</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_8">Lesson 8</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_9">Lesson 9</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_16">Lesson 16</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_17">Lesson 17</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_18">Lesson 18</a></li>
+          </ul>
+        </div>
+
+        <div class="section-title">Book 2</div>
+        <div class="lesson-grid cols-3">
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_1">Lesson 1</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_2">Lesson 2</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_3">Lesson 3</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_10">Lesson 10</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_11">Lesson 11</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_12">Lesson 12</a></li>
+          </ul>
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_4">Lesson 4</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_5">Lesson 5</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_6">Lesson 6</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_13">Lesson 13</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_14">Lesson 14</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_15">Lesson 15</a></li>
+          </ul>
+          <ul>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_7">Lesson 7</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_8">Lesson 8</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_9">Lesson 9</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_16">Lesson 16</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_17">Lesson 17</a></li>
+            <li><a href="https://vallaguitao.github.io/My-Japanese-Reviewers/Lessons/Lesson_18">Lesson 18</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- N4 Vocabulary (placeholder) -->
+    <section class="page" id="page-n4-vocabulary">
+      <div class="placeholder-panel">
+        <p class="placeholder-icon">📖</p>
+        <p class="placeholder-title">N4 Vocabulary</p>
+        <p class="placeholder-text">Coming Soon</p>
+      </div>
+    </section>
+
+    <!-- N4 Kanji (placeholder) -->
+    <section class="page" id="page-n4-kanji">
+      <div class="placeholder-panel">
+        <p class="placeholder-icon">漢</p>
+        <p class="placeholder-title">N4 Kanji</p>
+        <p class="placeholder-text">Coming Soon</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Navigation switching
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = document.querySelectorAll('.page');
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.getElementById('hamburger');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    navItems.forEach(function(item) {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        var targetPage = this.getAttribute('data-page');
+
+        // Update active nav
+        navItems.forEach(function(nav) { nav.classList.remove('active'); });
+        this.classList.add('active');
+
+        // Show target page
+        pages.forEach(function(page) { page.classList.remove('active'); });
+        document.getElementById('page-' + targetPage).classList.add('active');
+
+        // Close mobile sidebar
+        sidebar.classList.remove('open');
+        hamburger.classList.remove('open');
+        overlay.classList.remove('open');
+      }.bind(item));
+    });
+
+    // Mobile hamburger toggle
+    hamburger.addEventListener('click', function() {
+      sidebar.classList.toggle('open');
+      hamburger.classList.toggle('open');
+      overlay.classList.toggle('open');
+    });
+
+    // Close sidebar when tapping overlay
+    overlay.addEventListener('click', function() {
+      sidebar.classList.remove('open');
+      hamburger.classList.remove('open');
+      overlay.classList.remove('open');
+    });
+  </script>
+
 </body>
 </html>
