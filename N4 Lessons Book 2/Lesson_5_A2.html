@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>いろどり Irodori A2 Book 2 - Lesson 5: 早く予約したほうがいいですよ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e3a8a;
+            --accent: #f59e0b;
+            --accent-light: #fef3c7;
+            --accent-dark: #b45309;
+            --secondary: #0ea5e9;
+            --secondary-light: #e0f2fe;
+            --success: #16a34a;
+            --success-light: #dcfce7;
+            --error: #dc2626;
+            --error-light: #fecaca;
+            --warning: #ea580c;
+            --warning-light: #ffedd5;
+            --bg-light: #eff6ff;
+            --bg-card: #ffffff;
+            --text-primary: #1e3a8a;
+            --text-secondary: #1e40af;
+            --text-muted: #6b7280;
+            --border: #bfdbfe;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, #dbeafe 100%);
+            color: var(--text-primary); line-height: 1.7; min-height: 100vh; overflow-x: hidden;
+        }
+        .progress-container {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: var(--bg-card); box-shadow: var(--shadow); padding: 12px 20px;
+        }
+        .progress-header {
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 1200px; margin: 0 auto; gap: 20px;
+        }
+        .progress-title {
+            font-size: 0.9rem; font-weight: 600; color: var(--primary);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .progress-title .lesson-badge {
+            background: var(--primary); color: white; padding: 2px 10px;
+            border-radius: 20px; font-size: 0.75rem;
+        }
+        .progress-bar-wrapper { flex: 1; max-width: 500px; }
+        .progress-bar { height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 10px; transition: width 0.5s ease; width: 0%;
+        }
+        .progress-text { font-size: 0.8rem; color: var(--text-muted); text-align: right; margin-top: 4px; }
+        .progress-nav { display: flex; gap: 8px; }
+        .nav-btn {
+            background: var(--primary); color: white; border: none; padding: 8px 16px;
+            border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 500;
+            transition: var(--transition); display: flex; align-items: center; gap: 6px;
+        }
+        .nav-btn:hover { background: var(--primary-light); transform: translateY(-1px); }
+        .nav-btn:disabled { background: #d1d5db; color: #9ca3af; cursor: not-allowed; transform: none; }
+        .presentation { padding-top: 80px; min-height: 100vh; }
+        .slide {
+            display: none; max-width: 1000px; margin: 0 auto;
+            padding: 40px 20px; animation: fadeIn 0.5s ease;
+        }
+        .slide.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .title-slide { text-align: center; padding: 50px 20px; }
+        .title-slide .book-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white; padding: 8px 24px; border-radius: 30px;
+            font-size: 0.9rem; font-weight: 500; margin-bottom: 24px; letter-spacing: 1px;
+        }
+        .title-slide h1 {
+            font-size: clamp(2.5rem, 6vw, 3.8rem); font-weight: 700;
+            color: var(--primary-dark); margin-bottom: 12px; line-height: 1.2;
+        }
+        .title-slide .lesson-title-jp { font-size: clamp(1.2rem, 3.5vw, 2rem); color: var(--accent-dark); margin-bottom: 8px; }
+        .title-slide .lesson-subtitle { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 36px; }
+        .title-card {
+            background: var(--bg-card); border-radius: var(--radius-lg); padding: 36px;
+            box-shadow: var(--shadow-lg); max-width: 720px; margin: 0 auto 36px;
+        }
+        .title-card h2 { color: var(--primary); font-size: 1.2rem; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .grammar-list { display: grid; gap: 10px; }
+        .grammar-item {
+            display: flex; align-items: center; gap: 12px; padding: 11px 16px;
+            background: var(--bg-light); border-radius: var(--radius);
+            border-left: 4px solid var(--accent); transition: var(--transition);
+        }
+        .grammar-item:hover { transform: translateX(8px); background: var(--accent-light); }
+        .grammar-number {
+            width: 26px; height: 26px; background: var(--primary); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: 600; flex-shrink: 0;
+        }
+        .start-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white; border: none; padding: 16px 48px; border-radius: 30px;
+            font-size: 1.1rem; font-weight: 600; cursor: pointer;
+            transition: var(--transition); box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+        }
+        .start-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+
+        .content-card {
+            background: var(--bg-card); border-radius: var(--radius-lg); padding: 36px;
+            box-shadow: var(--shadow-lg); margin-bottom: 24px;
+        }
+        .slide-header {
+            display: flex; align-items: center; gap: 16px; margin-bottom: 28px;
+            padding-bottom: 18px; border-bottom: 2px solid var(--border);
+        }
+        .grammar-badge {
+            background: var(--primary); color: white; padding: 8px 16px;
+            border-radius: 8px; font-size: 0.85rem; font-weight: 600; white-space: nowrap;
+        }
+        .slide-header h2 { font-size: 1.7rem; color: var(--primary-dark); flex: 1; }
+        .slide-header .jp-title { font-size: 1.2rem; color: var(--accent-dark); font-weight: 500; }
+        ruby { ruby-position: over; }
+        ruby rt { font-size: 0.6em; color: var(--text-muted); }
+
+        .example-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: var(--radius); padding: 22px; margin: 18px 0;
+            border-left: 4px solid var(--primary);
+        }
+        .example-label {
+            font-size: 0.8rem; font-weight: 600; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .example-japanese { font-size: 1.3rem; color: var(--text-primary); margin-bottom: 6px; line-height: 2.2; }
+        .example-english { font-size: 0.95rem; color: var(--text-secondary); font-style: italic; }
+
+        .example-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 18px 0; }
+        .polite-box, .plain-box { padding: 18px; border-radius: var(--radius); }
+        .polite-box { background: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%); border-left: 4px solid var(--primary); }
+        .plain-box { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid var(--accent); }
+        .style-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .polite-box .style-label { color: var(--primary-dark); }
+        .plain-box .style-label { color: var(--accent-dark); }
+
+        .structure-box {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border-radius: var(--radius); padding: 18px; margin: 18px 0;
+            border-left: 4px solid var(--secondary);
+        }
+        .structure-box .label { font-size: 0.8rem; font-weight: 600; color: var(--secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .structure-formula {
+            font-size: 1.1rem; font-family: 'Outfit', monospace;
+            color: var(--primary-dark); background: white;
+            padding: 10px 18px; border-radius: 8px; display: inline-block; margin: 6px 0;
+        }
+        .structure-formula .highlight { color: var(--primary); font-weight: 600; }
+        .structure-formula .accent { color: var(--accent-dark); font-weight: 600; }
+
+        .explanation { margin: 22px 0; }
+        .explanation h3 { font-size: 1.05rem; color: var(--primary-dark); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .explanation p { color: var(--text-secondary); margin-bottom: 10px; line-height: 1.8; }
+
+        .key-point {
+            background: var(--accent-light); padding: 14px 18px; border-radius: var(--radius);
+            margin: 14px 0; border-left: 4px solid var(--accent);
+        }
+        .key-point strong { color: var(--primary-dark); }
+
+        .conversation-box {
+            background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+            border-radius: var(--radius); padding: 22px; margin: 18px 0;
+            border-left: 4px solid var(--accent);
+        }
+        .conversation-box .example-label { color: #92400e; }
+        .conversation-line { margin-bottom: 10px; font-size: 1.15rem; line-height: 2; }
+        .conversation-line:last-child { margin-bottom: 0; }
+        .speaker { font-weight: 700; color: var(--primary-dark); min-width: 28px; display: inline-block; }
+        .speaker.b { color: var(--accent-dark); }
+        .conversation-translation { font-size: 0.85rem; color: var(--text-muted); font-style: italic; margin-left: 32px; margin-top: -6px; margin-bottom: 8px; }
+
+        .ref-connection { margin: 22px 0; }
+        .ref-toggle {
+            width: 100%; background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            border: none; padding: 14px 18px; border-radius: var(--radius); cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 0.95rem; font-weight: 500; color: #b91c1c; transition: var(--transition);
+        }
+        .ref-toggle:hover { background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); }
+        .ref-toggle .icon { transition: transform 0.3s ease; }
+        .ref-toggle.open .icon { transform: rotate(180deg); }
+        .ref-content {
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease;
+            background: #fffbfb; border-radius: 0 0 var(--radius) var(--radius);
+        }
+        .ref-content.open { max-height: 800px; padding: 18px; border: 1px solid #fecaca; border-top: none; }
+        .ref-content h4 { color: #b91c1c; font-size: 0.9rem; margin-bottom: 10px; }
+        .ref-content p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px; line-height: 1.7; }
+        .ref-badge { display: inline-block; background: #b91c1c; color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; margin-right: 6px; }
+
+        .table-container { overflow-x: auto; margin: 22px 0; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .data-table th { background: var(--primary); color: white; padding: 12px 14px; text-align: left; font-weight: 500; }
+        .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+        .data-table tr:nth-child(even) { background: var(--bg-light); }
+        .data-table tr:hover { background: #bfdbfe; }
+
+        .quiz-card {
+            background: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%);
+            border-radius: var(--radius-lg); padding: 36px; box-shadow: var(--shadow-lg); margin-bottom: 24px;
+        }
+        .quiz-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+        .quiz-badge { background: var(--accent); color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        .quiz-header h2 { font-size: 1.4rem; color: var(--primary-dark); }
+        .quiz-question {
+            background: white; padding: 22px; border-radius: var(--radius);
+            margin-bottom: 18px; box-shadow: var(--shadow);
+        }
+        .question-number { font-size: 0.8rem; font-weight: 600; color: var(--accent-dark); margin-bottom: 10px; }
+        .question-context {
+            font-size: 0.9rem; color: var(--text-secondary); font-style: italic;
+            margin-bottom: 14px; padding: 10px; background: var(--bg-light); border-radius: 8px;
+        }
+        .question-text { font-size: 1.1rem; color: var(--text-primary); margin-bottom: 14px; line-height: 1.9; }
+
+        .fill-blank { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 1.15rem; margin: 14px 0; }
+        .blank-input {
+            border: 2px dashed var(--primary); background: #eff6ff;
+            padding: 8px 14px; border-radius: 8px; min-width: 120px;
+            font-size: 1rem; font-family: inherit; text-align: center; transition: var(--transition);
+        }
+        .blank-input:focus { outline: none; border-color: var(--accent); background: white; box-shadow: 0 0 0 3px rgba(245,158,11,0.2); }
+        .blank-input.correct-input { border-color: var(--success); background: var(--success-light); }
+        .blank-input.incorrect-input { border-color: var(--error); background: var(--error-light); }
+
+        .mc-options { display: grid; gap: 10px; margin: 14px 0; }
+        .mc-option {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            border-radius: var(--radius); border: 2px solid #e2e8f0; background: white;
+            cursor: pointer; transition: var(--transition); font-size: 1rem;
+        }
+        .mc-option:hover { border-color: var(--primary-light); background: #eff6ff; transform: translateX(4px); }
+        .mc-option.selected { border-color: var(--primary); background: #dbeafe; }
+        .mc-option.correct-option { border-color: var(--success); background: var(--success-light); }
+        .mc-option.incorrect-option { border-color: var(--error); background: var(--error-light); }
+        .mc-option.disabled { pointer-events: none; opacity: 0.85; }
+        .mc-radio {
+            width: 20px; height: 20px; border: 2px solid #e2e8f0; border-radius: 50%;
+            flex-shrink: 0; transition: var(--transition);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mc-option.selected .mc-radio { border-color: var(--primary); background: var(--primary); }
+        .mc-option.selected .mc-radio::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: white; }
+        .mc-option.correct-option .mc-radio { border-color: var(--success); background: var(--success); }
+        .mc-option.correct-option .mc-radio::after { content: '✓'; color: white; font-size: 12px; font-weight: 700; }
+        .mc-option.incorrect-option .mc-radio { border-color: var(--error); background: var(--error); }
+        .mc-option.incorrect-option .mc-radio::after { content: '✗'; color: white; font-size: 12px; font-weight: 700; }
+
+        .feedback {
+            display: none; padding: 12px 16px; border-radius: var(--radius);
+            margin-top: 10px; font-size: 0.9rem; line-height: 1.7; animation: fadeIn 0.3s ease;
+        }
+        .feedback.show { display: block; }
+        .feedback.correct { background: var(--success-light); border-left: 4px solid var(--success); color: #14532d; }
+        .feedback.incorrect { background: var(--error-light); border-left: 4px solid var(--error); color: #7f1d1d; }
+        .feedback strong { display: block; margin-bottom: 4px; }
+
+        .check-btn {
+            background: var(--primary); color: white; border: none; padding: 12px 32px;
+            border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer;
+            transition: var(--transition); margin-top: 10px;
+        }
+        .check-btn:hover { background: var(--primary-light); transform: translateY(-2px); }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            border-radius: var(--radius-lg); padding: 40px; color: white; text-align: center;
+        }
+        .summary-card h2 { font-size: 2rem; margin-bottom: 20px; }
+        .summary-card > p { font-size: 1.05rem; opacity: 0.9; margin-bottom: 10px; }
+        .summary-points {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 16px; margin: 28px 0;
+        }
+        .summary-point {
+            background: rgba(255,255,255,0.15); padding: 18px;
+            border-radius: var(--radius); backdrop-filter: blur(10px);
+        }
+        .summary-point h4 { font-size: 1rem; margin-bottom: 6px; }
+        .summary-point p { font-size: 0.85rem; opacity: 0.9; }
+        .restart-btn {
+            background: white; color: var(--primary-dark); border: none; padding: 16px 48px;
+            border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer;
+            transition: var(--transition); margin-top: 20px;
+        }
+        .restart-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .pulse { animation: pulse 2s infinite; }
+
+        @media (max-width: 768px) {
+            .progress-header { flex-direction: column; gap: 12px; }
+            .progress-bar-wrapper { width: 100%; max-width: none; }
+            .progress-nav { width: 100%; justify-content: space-between; }
+            .content-card, .quiz-card { padding: 22px; }
+            .slide-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .example-japanese { font-size: 1.1rem; }
+            .example-comparison { grid-template-columns: 1fr; }
+            .summary-points { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 480px) {
+            .progress-title { font-size: 0.8rem; }
+            .nav-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .nav-btn .btn-text { display: none; }
+            .title-slide h1 { font-size: 2rem; }
+            .summary-points { grid-template-columns: 1fr; }
+            .title-card { padding: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title">
+                <span class="lesson-badge">L5</span>
+                ✈️ <ruby>早<rt>はや</rt></ruby>く<ruby>予約<rt>よやく</rt></ruby>したほうがいいですよ
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <div class="progress-text"><span id="currentSlide">1</span> / <span id="totalSlides">17</span></div>
+            </div>
+            <div class="progress-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()">◀ <span class="btn-text">Back</span></button>
+                <button class="nav-btn" id="nextBtn" onclick="nextSlide()"><span class="btn-text">Next</span> ▶</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="presentation">
+
+        <!-- ==================== SLIDE 1: Title ==================== -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <div class="book-badge">いろどり IRODORI — <ruby>初級<rt>しょきゅう</rt></ruby>2 (A2)</div>
+                <h1>Lesson 5</h1>
+                <div class="lesson-title-jp"><ruby>早<rt>はや</rt></ruby>く<ruby>予約<rt>よやく</rt></ruby>したほうがいいですよ</div>
+                <div class="lesson-subtitle">You Should Book Early — <ruby>旅行<rt>りょこう</rt></ruby>に<ruby>行<rt>い</rt></ruby>こう (Let's Go on a Trip!)</div>
+
+                <div class="title-card">
+                    <h2>📚 Grammar Points in This Lesson</h2>
+                    <div class="grammar-list">
+                        <div class="grammar-item">
+                            <span class="grammar-number">1</span>
+                            <span><strong>V-(られ)ます</strong> — Potential Form ("can do ~")</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">2</span>
+                            <span><strong>～ところ</strong> — Describing Places ("a place where ~")</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">3</span>
+                            <span><strong>S って<ruby>聞<rt>き</rt></ruby>きました</strong> — Hearsay ("I heard that ~")</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">4</span>
+                            <span><strong>V-たらいいですか？</strong> — Seeking Advice ("What should I ~?")</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">5</span>
+                            <span><strong>V-た/ないほうがいいです</strong> — Giving Advice ("You should/shouldn't ~")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="start-btn pulse" onclick="nextSlide()">🗾 Let's Begin!</button>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 2: Grammar 1 — Potential Form ==================== -->
+        <div class="slide" data-slide="2">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 1</span>
+                    <div>
+                        <h2>V-(られ)ます</h2>
+                        <span class="jp-title"><ruby>可能形<rt>かのうけい</rt></ruby> — Potential Form</span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>🔍 What does it mean?</h3>
+                    <p>The potential form expresses <strong>ability or possibility</strong> — "can do ~." In travel contexts, it's used to talk about what you <strong>can see, eat, do, or experience</strong> at a destination. It replaces the longer pattern V + ことができます that you learned earlier.</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Group</th><th><ruby>辞書形<rt>じしょけい</rt></ruby></th><th><ruby>可能形<rt>かのうけい</rt></ruby></th><th>Examples</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1 グループ</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">-u → -e + る</span></td>
+                                <td>-u ending</td>
+                                <td>-e + る</td>
+                                <td>
+                                    <ruby>作<rt>つく</rt></ruby>る → <ruby>作<rt>つく</rt></ruby><strong>れる</strong><br>
+                                    <ruby>飲<rt>の</rt></ruby>む → <ruby>飲<rt>の</rt></ruby><strong>める</strong><br>
+                                    <ruby>泳<rt>およ</rt></ruby>ぐ → <ruby>泳<rt>およ</rt></ruby><strong>げる</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>2 グループ</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">-る → -られる</span></td>
+                                <td>-る</td>
+                                <td>-られる</td>
+                                <td>
+                                    <ruby>見<rt>み</rt></ruby>る → <ruby>見<rt>み</rt></ruby><strong>られる</strong> (<ruby>見<rt>み</rt></ruby>れる*)<br>
+                                    <ruby>食<rt>た</rt></ruby>べる → <ruby>食<rt>た</rt></ruby>べ<strong>られる</strong> (<ruby>食<rt>た</rt></ruby>べれる*)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>3 グループ</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">Irregular</span></td>
+                                <td>する / <ruby>来<rt>く</rt></ruby>る</td>
+                                <td>できる / <ruby>来<rt>こ</rt></ruby>られる</td>
+                                <td>
+                                    する → <strong>できる</strong><br>
+                                    <ruby>来<rt>く</rt></ruby>る → <ruby>来<rt>こ</rt></ruby><strong>られる</strong> (<ruby>来<rt>こ</rt></ruby>れる*)
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">* Group 2 and 来る can drop ら in casual speech: 見れる, 食べれる, 来れる. This is common but technically informal.</p>
+
+                <div class="explanation">
+                    <h3>⚠️ Important Particle Change: を → が</h3>
+                    <p>When a transitive verb becomes potential, the object particle changes from <strong>を</strong> to <strong>が</strong>:</p>
+                </div>
+
+                <div class="example-comparison">
+                    <div class="polite-box">
+                        <div class="style-label">📝 Normal Verb</div>
+                        <p style="font-size: 1rem;">カニ<strong>を</strong><ruby>食<rt>た</rt></ruby>べる</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">I eat crab</p>
+                    </div>
+                    <div class="plain-box">
+                        <div class="style-label">✨ Potential Form</div>
+                        <p style="font-size: 1rem;">カニ<strong>が</strong><ruby>食<rt>た</rt></ruby>べられる</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">I can eat crab</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Travel Example 1</div>
+                    <div class="example-japanese"><ruby>新鮮<rt>しんせん</rt></ruby>なカニとかウニとか<ruby>食<rt>た</rt></ruby>べられますよ。</div>
+                    <div class="example-english">You can eat fresh crab and sea urchins, you know.</div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Travel Example 2</div>
+                    <div class="example-japanese"><ruby>京都<rt>きょうと</rt></ruby>は<ruby>古<rt>ふる</rt></ruby>い<ruby>町<rt>まち</rt></ruby>で、お<ruby>寺<rt>てら</rt></ruby>とか<ruby>神社<rt>じんじゃ</rt></ruby>がたくさん<ruby>見<rt>み</rt></ruby>られるよ。</div>
+                    <div class="example-english">Kyoto is an old city where you can see many temples and shrines.</div>
+                </div>
+
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">
+                        📖 Minna no Nihongo Connection (N5 Review)
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="ref-content">
+                        <h4><span class="ref-badge">MNN L18</span> V ことができます (ability)</h4>
+                        <p>In MNN L18, you learned ピアノを<ruby>弾<rt>ひ</rt></ruby>くことができます ("I can play piano"). The potential form is a <strong>shorter, more natural alternative</strong>: ピアノが弾ける. Both mean the same thing, but the potential form sounds more native and is used far more often in daily conversation.</p>
+                        <h4><span class="ref-badge">Irodori L5 初級1</span> V + ことができます in context</h4>
+                        <p>初級1 L5 also used この<ruby>店<rt>みせ</rt></ruby>では、おいしいそばを食べることができます. Now you can say: この店では、おいしいそばが<strong>食べられます</strong> — same meaning, much more natural!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 3: Quiz 1 ==================== -->
+        <div class="slide" data-slide="3">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Check</span><h2>V-(られ)ます — Potential Form</h2></div>
+
+                <div class="quiz-question" id="q1-block">
+                    <div class="question-number">Q1 — Fill in the Blank</div>
+                    <div class="question-context">Convert to potential: <ruby>泳<rt>およ</rt></ruby>ぐ (Group 1) → ？</div>
+                    <div class="fill-blank">
+                        <ruby>沖縄<rt>おきなわ</rt></ruby>では、<ruby>春<rt>はる</rt></ruby>から<ruby>秋<rt>あき</rt></ruby>まで<input type="text" class="blank-input" id="q1-input" placeholder="？" style="min-width:100px;">よ。
+                    </div>
+                    <div class="feedback" id="q1-feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q2-block">
+                    <div class="question-number">Q2 — Multiple Choice</div>
+                    <div class="question-context">What happens to the particle when a transitive verb becomes potential?</div>
+                    <div class="mc-options" id="q2-options">
+                        <div class="mc-option" onclick="selectMC('q2',0,this)"><div class="mc-radio"></div><span>を stays the same</span></div>
+                        <div class="mc-option" onclick="selectMC('q2',1,this)"><div class="mc-radio"></div><span>を changes to が</span></div>
+                        <div class="mc-option" onclick="selectMC('q2',2,this)"><div class="mc-radio"></div><span>を changes to に</span></div>
+                    </div>
+                    <div class="feedback" id="q2-feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q3-block">
+                    <div class="question-number">Q3 — Multiple Choice</div>
+                    <div class="question-context">What is the potential form of <ruby>見<rt>み</rt></ruby>る (Group 2)?</div>
+                    <div class="mc-options" id="q3-options">
+                        <div class="mc-option" onclick="selectMC('q3',0,this)"><div class="mc-radio"></div><span><ruby>見<rt>み</rt></ruby>える</span></div>
+                        <div class="mc-option" onclick="selectMC('q3',1,this)"><div class="mc-radio"></div><span><ruby>見<rt>み</rt></ruby>られる</span></div>
+                        <div class="mc-option" onclick="selectMC('q3',2,this)"><div class="mc-radio"></div><span><ruby>見<rt>み</rt></ruby>せる</span></div>
+                    </div>
+                    <div class="feedback" id="q3-feedback"></div>
+                </div>
+
+                <button class="check-btn" onclick="checkQuiz1()">Check Answers ✓</button>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 4: Grammar 2 — ～ところ ==================== -->
+        <div class="slide" data-slide="4">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 2</span>
+                    <div>
+                        <h2>～ところ</h2>
+                        <span class="jp-title">Describing Places</span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>🔍 What does it mean?</h3>
+                    <p>ところ means "place." By adding descriptive words <strong>before</strong> ところ, you can describe <strong>what kind of place</strong> somewhere is. This is incredibly useful for travel conversations — describing destinations, recommending locations, and asking about places to visit.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Formation</div>
+                    <div class="structure-formula"><span class="highlight">V (plain)</span> + <span class="accent">ところ</span> = "a place where you can V"</div><br>
+                    <div class="structure-formula"><span class="highlight">Adj</span> + <span class="accent">ところ</span> = "a place that is Adj"</div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example 1</div>
+                    <div class="example-japanese"><ruby>遊<rt>あそ</rt></ruby>べる<strong>ところ</strong>はありますか？</div>
+                    <div class="example-english">Is there a place where we can play/have fun?</div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example 2</div>
+                    <div class="example-japanese"><ruby>一日<rt>いちにち</rt></ruby>、ゆっくりできる<strong>ところ</strong>に<ruby>行<rt>い</rt></ruby>きたいです。</div>
+                    <div class="example-english">I want to go to a place where I can relax all day.</div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Describing a City</div>
+                    <div class="conversation-line"><span class="speaker">A：</span><ruby>大阪<rt>おおさか</rt></ruby>はどんな<strong>ところ</strong>ですか？</div>
+                    <div class="conversation-translation">What kind of place is Osaka?</div>
+                    <div class="conversation-line"><span class="speaker b">B：</span>にぎやかで、<ruby>食<rt>た</rt></ruby>べ<ruby>物<rt>もの</rt></ruby>がおいしい<strong>ところ</strong>です。</div>
+                    <div class="conversation-translation">It's a lively place with delicious food.</div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Insight:</strong> ところ works like a "place characterizer." Any verb or adjective before it describes <strong>what you can do or experience</strong> there: <ruby>買<rt>か</rt></ruby>い<ruby>物<rt>もの</rt></ruby>ができるところ ("a place where you can shop"), <ruby>景色<rt>けしき</rt></ruby>がきれいなところ ("a place with beautiful scenery"), <ruby>食<rt>た</rt></ruby>べ<ruby>物<rt>もの</rt></ruby>がおいしいところ ("a place with delicious food").
+                </div>
+
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">
+                        📖 Minna no Nihongo Connection (N5 Review)
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="ref-content">
+                        <h4><span class="ref-badge">MNN L22</span> Noun modification (plain form + noun)</h4>
+                        <p>In MNN L22, you learned to modify nouns: おいしい<ruby>料理<rt>りょうり</rt></ruby> ("delicious food"), <ruby>友達<rt>ともだち</rt></ruby>がくれた<ruby>本<rt>ほん</rt></ruby> ("a book my friend gave me"). ～ところ follows the same pattern — ところ is the noun being modified: 遊べるところ = "a place [that you can play at]."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 5: Quiz 2 ==================== -->
+        <div class="slide" data-slide="5">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Check</span><h2>～ところ</h2></div>
+
+                <div class="quiz-question" id="q4-block">
+                    <div class="question-number">Q1 — Fill in the Blank</div>
+                    <div class="question-context">"What kind of place is Kyoto?" Use ところ.</div>
+                    <div class="fill-blank">
+                        <ruby>京都<rt>きょうと</rt></ruby>はどんな<input type="text" class="blank-input" id="q4-input" placeholder="？" style="min-width:90px;">ですか？
+                    </div>
+                    <div class="feedback" id="q4-feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q5-block">
+                    <div class="question-number">Q2 — Multiple Choice</div>
+                    <div class="question-context">"I want to go to a place with beautiful views." Which is correct?</div>
+                    <div class="mc-options" id="q5-options">
+                        <div class="mc-option" onclick="selectMC('q5',0,this)"><div class="mc-radio"></div><span><ruby>景色<rt>けしき</rt></ruby>がきれい<strong>なところ</strong>に<ruby>行<rt>い</rt></ruby>きたいです。</span></div>
+                        <div class="mc-option" onclick="selectMC('q5',1,this)"><div class="mc-radio"></div><span><ruby>景色<rt>けしき</rt></ruby>がきれい<strong>ところ</strong>に<ruby>行<rt>い</rt></ruby>きたいです。</span></div>
+                        <div class="mc-option" onclick="selectMC('q5',2,this)"><div class="mc-radio"></div><span><ruby>景色<rt>けしき</rt></ruby>がきれい<strong>のところ</strong>に<ruby>行<rt>い</rt></ruby>きたいです。</span></div>
+                    </div>
+                    <div class="feedback" id="q5-feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q6-block">
+                    <div class="question-number">Q3 — Multiple Choice</div>
+                    <div class="question-context">How would you say "a place where you can shop"?</div>
+                    <div class="mc-options" id="q6-options">
+                        <div class="mc-option" onclick="selectMC('q6',0,this)"><div class="mc-radio"></div><span><ruby>買<rt>か</rt></ruby>い<ruby>物<rt>もの</rt></ruby>するところ</span></div>
+                        <div class="mc-option" onclick="selectMC('q6',1,this)"><div class="mc-radio"></div><span><ruby>買<rt>か</rt></ruby>い<ruby>物<rt>もの</rt></ruby>ができるところ</span></div>
+                        <div class="mc-option" onclick="selectMC('q6',2,this)"><div class="mc-radio"></div><span>Both are natural</span></div>
+                    </div>
+                    <div class="feedback" id="q6-feedback"></div>
+                </div>
+
+                <button class="check-btn" onclick="checkQuiz2()">Check Answers ✓</button>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 6: Grammar 3 — って聞きました ==================== -->
+        <div class="slide" data-slide="6">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 3</span>
+                    <div>
+                        <h2>S って<ruby>聞<rt>き</rt></ruby>きました</h2>
+                        <span class="jp-title">Hearsay — "I heard that ~"</span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>🔍 What does it mean?</h3>
+                    <p>These expressions are used to <strong>share information you've heard from others</strong> — reputations, rumors, news, or someone's words. って is the casual spoken form of と (quotation marker). You'll use this a lot when talking about travel destinations!</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Formation</div>
+                    <div class="structure-formula"><span class="highlight">S (plain form)</span> + <span class="accent">って<ruby>聞<rt>き</rt></ruby>きました</span> = "I heard that S"</div><br>
+                    <div class="structure-formula"><span class="highlight">S (plain form)</span> + <span class="accent">って<ruby>言<rt>い</rt></ruby>っていました</span> = "Someone said that S"</div>
+                    <p style="margin-top: 10px; color: var(--text-secondary);">って can also end a sentence alone: うどんがおいしいって。("I heard udon is delicious.")</p>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example 1 — Reputation</div>
+                    <div class="example-japanese">うどんがおいしい<strong>って<ruby>聞<rt>き</rt></ruby>きました</strong>。</div>
+                    <div class="example-english">I heard that the udon is delicious.</div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example 2 — Quoting Someone</div>
+                    <div class="example-japanese"><ruby>友達<rt>ともだち</rt></ruby>が、<ruby>秋<rt>あき</rt></ruby>の<ruby>日光<rt>にっこう</rt></ruby>は<ruby>渋滞<rt>じゅうたい</rt></ruby>して<ruby>大変<rt>たいへん</rt></ruby>だ<strong>って<ruby>言<rt>い</rt></ruby>ってました</strong>。</div>
+                    <div class="example-english">My friend said Nikko in autumn is terribly crowded with traffic.</div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example 3 — Casual Ending</div>
+                    <div class="example-japanese"><ruby>田中<rt>たなか</rt></ruby>さんも<ruby>一緒<rt>いっしょ</rt></ruby>に<ruby>旅行<rt>りょこう</rt></ruby>、<ruby>行<rt>い</rt></ruby>きたい<strong>って</strong>。</div>
+                    <div class="example-english">Tanaka said he wants to come on the trip too.</div>
+                </div>
+
+                <div class="example-comparison">
+                    <div class="polite-box">
+                        <div class="style-label">📖 と — Formal Quotation</div>
+                        <p style="font-size: 0.95rem;">おいしい<strong>と</strong><ruby>聞<rt>き</rt></ruby>きました</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Formal/written</p>
+                    </div>
+                    <div class="plain-box">
+                        <div class="style-label">💬 って — Casual Quotation</div>
+                        <p style="font-size: 0.95rem;">おいしい<strong>って</strong><ruby>聞<rt>き</rt></ruby>きました</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Casual/spoken (most common)</p>
+                    </div>
+                </div>
+
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">
+                        📖 Minna no Nihongo Connection (N5 Review)
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="ref-content">
+                        <h4><span class="ref-badge">MNN L18</span> S (plain form) と<ruby>言<rt>い</rt></ruby>っていました (quoting)</h4>
+                        <p>MNN L18 taught the formal quotation: 「おいしい」と<ruby>言<rt>い</rt></ruby>っていました. って is the <strong>casual spoken contraction</strong> of と. In daily conversation, って is overwhelmingly more common than と for reporting what someone said or what you heard.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 7: Quiz 3 ==================== -->
+        <div class="slide" data-slide="7">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Check</span><h2>って<ruby>聞<rt>き</rt></ruby>きました</h2></div>
+
+                <div class="quiz-question" id="q7-block">
+                    <div class="question-number">Q1 — Fill in the Blank</div>
+                    <div class="question-context">"I heard that Kyoto's tofu dishes are famous."</div>
+                    <div class="fill-blank">
+                        <ruby>京都<rt>きょうと</rt></ruby>は<ruby>豆腐<rt>とうふ</rt></ruby><ruby>料理<rt>りょうり</rt></ruby>が<ruby>有名<rt>ゆうめい</rt></ruby>だ<input type="text" class="blank-input" id="q7-input" placeholder="？" style="min-width:120px;">。
+                    </div>
+                    <div class="feedback" id="q7-feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q8-block">
+                    <div class="question-number">Q2 — Multiple Choice</div>
+                    <div class="question-context">What is って in って聞きました?</div>
+                    <div class="mc-options" id="q8-options">
+                        <div class="mc-option" onclick="selectMC('q8',0,this)"><div class="mc-radio"></div><span>The casual spoken form of the quotation particle と</span></div>
+                        <div class="mc-option" onclick="selectMC('q8',1,this)"><div class="mc-radio"></div><span>A contraction of ている</span></div>
+                        <div class="mc-option" onclick="selectMC('q8',2,this)"><div class="mc-radio"></div><span>A polite sentence ending</span></div>
+                    </div>
+                    <div class="feedback" id="q8-feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q9-block">
+                    <div class="question-number">Q3 — Multiple Choice</div>
+                    <div class="question-context">"My senpai said the bus was cheap and convenient." Which is correct?</div>
+                    <div class="mc-options" id="q9-options">
+                        <div class="mc-option" onclick="selectMC('q9',0,this)"><div class="mc-radio"></div><span>バスが<ruby>安<rt>やす</rt></ruby>くて<ruby>便利<rt>べんり</rt></ruby>だって<ruby>先輩<rt>せんぱい</rt></ruby>が<ruby>言<rt>い</rt></ruby>ってました。</span></div>
+                        <div class="mc-option" onclick="selectMC('q9',1,this)"><div class="mc-radio"></div><span>バスが<ruby>安<rt>やす</rt></ruby>くて<ruby>便利<rt>べんり</rt></ruby>だから<ruby>先輩<rt>せんぱい</rt></ruby>が<ruby>言<rt>い</rt></ruby>ってました。</span></div>
+                        <div class="mc-option" onclick="selectMC('q9',2,this)"><div class="mc-radio"></div><span>バスが<ruby>安<rt>やす</rt></ruby>くて<ruby>便利<rt>べんり</rt></ruby>だのに<ruby>先輩<rt>せんぱい</rt></ruby>が<ruby>言<rt>い</rt></ruby>ってました。</span></div>
+                    </div>
+                    <div class="feedback" id="q9-feedback"></div>
+                </div>
+
+                <button class="check-btn" onclick="checkQuiz3()">Check Answers ✓</button>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 8: Grammar 4 — V-たらいいですか ==================== -->
+        <div class="slide" data-slide="8">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 4</span>
+                    <div>
+                        <h2>[<ruby>疑問詞<rt>ぎもんし</rt></ruby>] V-たらいいですか？</h2>
+                        <span class="jp-title">Seeking Advice</span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>🔍 What does it mean?</h3>
+                    <p>This pattern is used to <strong>ask for advice</strong> about means, methods, or ways to handle a situation. In travel, you'll use it to ask about transportation, lodging, souvenirs, and what to do. It pairs with interrogative words: <ruby>何<rt>なに</rt></ruby>で (by what), いつ (when), どこに/で (where), どうやって (how).</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Formation</div>
+                    <div class="structure-formula">
+                        <span class="highlight">[Interrogative]</span> + V-<span class="accent">たらいいですか？</span>
+                    </div>
+                    <p style="margin-top: 10px; color: var(--text-secondary);">V-たら = the verb's タ-form + ら. (V-たら will be covered in detail in Lesson 7.)</p>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Transportation</div>
+                    <div class="example-japanese"><ruby>日光<rt>にっこう</rt></ruby>に<ruby>行<rt>い</rt></ruby>くんですけど、<ruby>何<rt>なに</rt></ruby>で<ruby>行<rt>い</rt></ruby>っ<strong>たらいいですか</strong>？</div>
+                    <div class="example-english">I'm going to Nikko — how should I get there?</div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Lodging</div>
+                    <div class="example-japanese">どんなところに<ruby>泊<rt>と</rt></ruby>まっ<strong>たらいいですか</strong>？</div>
+                    <div class="example-english">What type of place should I stay at?</div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Souvenirs</div>
+                    <div class="example-japanese">お<ruby>土産<rt>みやげ</rt></ruby>は、どこで<ruby>買<rt>か</rt></ruby>っ<strong>たらいいですか</strong>？</div>
+                    <div class="example-english">Where should I buy souvenirs?</div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Insight:</strong> V-たらいいですか is your "travel advice request" toolkit. Combine it with different question words: <ruby>何<rt>なに</rt></ruby>を (what), <ruby>何<rt>なに</rt></ruby>で (by what means), いつ (when), どこで (where), どうやって (how). You can ask about anything — transport, food, accommodation, activities!
+                </div>
+
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">
+                        📖 Minna no Nihongo Connection (N5 Review)
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="ref-content">
+                        <h4><span class="ref-badge">MNN L25</span> ～たら (conditional)</h4>
+                        <p>MNN L25 introduced ～たら for conditionals: <ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>ったら ("if it rains"). V-たらいいですか uses the same たら form but adds いいですか to ask "what would be good?" — turning it into an advice-seeking question.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 9: Quiz 4 ==================== -->
+        <div class="slide" data-slide="9">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Check</span><h2>V-たらいいですか？</h2></div>
+
+                <div class="quiz-question" id="q10-block">
+                    <div class="question-number">Q1 — Fill in the Blank</div>
+                    <div class="question-context">"Where should I buy souvenirs?" (<ruby>買<rt>か</rt></ruby>う)</div>
+                    <div class="fill-blank">
+                        お<ruby>土産<rt>みやげ</rt></ruby>は、どこで<ruby>買<rt>か</rt></ruby>っ<input type="text" class="blank-input" id="q10-input" placeholder="？" style="min-width:120px;">？
+                    </div>
+                    <div class="feedback" id="q10-feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q11-block">
+                    <div class="question-number">Q2 — Multiple Choice</div>
+                    <div class="question-context">"How should I get to Osaka?" Which is correct?</div>
+                    <div class="mc-options" id="q11-options">
+                        <div class="mc-option" onclick="selectMC('q11',0,this)"><div class="mc-radio"></div><span><ruby>大阪<rt>おおさか</rt></ruby>に<ruby>何<rt>なに</rt></ruby>で<ruby>行<rt>い</rt></ruby>ったらいいですか？</span></div>
+                        <div class="mc-option" onclick="selectMC('q11',1,this)"><div class="mc-radio"></div><span><ruby>大阪<rt>おおさか</rt></ruby>に<ruby>何<rt>なに</rt></ruby>で<ruby>行<rt>い</rt></ruby>くたらいいですか？</span></div>
+                        <div class="mc-option" onclick="selectMC('q11',2,this)"><div class="mc-radio"></div><span><ruby>大阪<rt>おおさか</rt></ruby>に<ruby>何<rt>なに</rt></ruby>で<ruby>行<rt>い</rt></ruby>きたらいいですか？</span></div>
+                    </div>
+                    <div class="feedback" id="q11-feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q12-block">
+                    <div class="question-number">Q3 — Multiple Choice</div>
+                    <div class="question-context">Which question word would you use to ask about LODGING type?</div>
+                    <div class="mc-options" id="q12-options">
+                        <div class="mc-option" onclick="selectMC('q12',0,this)"><div class="mc-radio"></div><span><ruby>何<rt>なに</rt></ruby>で<ruby>泊<rt>と</rt></ruby>まったらいいですか？</span></div>
+                        <div class="mc-option" onclick="selectMC('q12',1,this)"><div class="mc-radio"></div><span>どんなところに<ruby>泊<rt>と</rt></ruby>まったらいいですか？</span></div>
+                        <div class="mc-option" onclick="selectMC('q12',2,this)"><div class="mc-radio"></div><span>いつ<ruby>泊<rt>と</rt></ruby>まったらいいですか？</span></div>
+                    </div>
+                    <div class="feedback" id="q12-feedback"></div>
+                </div>
+
+                <button class="check-btn" onclick="checkQuiz4()">Check Answers ✓</button>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 10: Grammar 5 — ほうがいいです ==================== -->
+        <div class="slide" data-slide="10">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 5</span>
+                    <div>
+                        <h2>V-た / V-ない ほうがいいです</h2>
+                        <span class="jp-title">Giving Advice</span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>🔍 What does it mean?</h3>
+                    <p>This pattern is used to <strong>give advice</strong> about what someone should or shouldn't do. V-たほうがいい = "you should do V." V-ないほうがいい = "you shouldn't do V." Compared to V-るといい (casual advice), ほうがいい carries a <strong>slightly stronger nuance</strong> — suggesting that not following the advice could lead to inconvenience or trouble.</p>
+                </div>
+
+                <div class="example-comparison">
+                    <div class="polite-box">
+                        <div class="style-label">✅ V-たほうがいいです (Should do ~)</div>
+                        <p style="font-size: 1.05rem; margin-bottom: 4px;"><ruby>厚<rt>あつ</rt></ruby>い<ruby>上着<rt>うわぎ</rt></ruby>を<ruby>持<rt>も</rt></ruby>って<ruby>行<rt>い</rt></ruby>った<strong>ほうがいい</strong>ですよ。</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">You should bring a heavy jacket.</p>
+                        <p style="font-size: 1.05rem; margin-top: 10px; margin-bottom: 4px;"><ruby>早<rt>はや</rt></ruby>く<ruby>予約<rt>よやく</rt></ruby>した<strong>ほうがいい</strong>ですよ。</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">You should book early.</p>
+                    </div>
+                    <div class="plain-box">
+                        <div class="style-label">❌ V-ないほうがいいです (Shouldn't do ~)</div>
+                        <p style="font-size: 1.05rem; margin-bottom: 4px;"><ruby>日曜日<rt>にちようび</rt></ruby>は<ruby>行<rt>い</rt></ruby>かない<strong>ほうがいい</strong>ですよ。</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">You shouldn't go on Sunday.</p>
+                        <p style="font-size: 1.05rem; margin-top: 10px; margin-bottom: 4px;">お<ruby>土産<rt>みやげ</rt></ruby>は、ここで<ruby>買<rt>か</rt></ruby>わない<strong>ほうがいい</strong>ですよ。</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">You shouldn't buy souvenirs here.</p>
+                    </div>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Formation</div>
+                    <div class="structure-formula"><span class="highlight">V-た (past plain)</span> + <span class="accent">ほうがいいです</span> = "should do V"</div><br>
+                    <div class="structure-formula"><span class="highlight">V-ない (negative plain)</span> + <span class="accent">ほうがいいです</span> = "shouldn't do V"</div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Travel Advice</div>
+                    <div class="example-japanese">あのレストランは<ruby>人気<rt>にんき</rt></ruby>なので、<ruby>予約<rt>よやく</rt></ruby>して<ruby>行<rt>い</rt></ruby>った<strong>ほうがいい</strong>ですよ。</div>
+                    <div class="example-english">That restaurant is popular, so you should make a reservation before going.</div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 ほうがいい vs. るといい:</strong> MNN L16 taught V-るといい for <strong>casual, light suggestions</strong>: 「<ruby>早<rt>はや</rt></ruby>く<ruby>寝<rt>ね</rt></ruby>るといいですよ」("You might want to go to bed early"). ほうがいい is a <strong>stronger recommendation</strong> — implying there could be negative consequences if you don't follow it: 「<ruby>早<rt>はや</rt></ruby>く<ruby>予約<rt>よやく</rt></ruby>したほうがいいですよ」("You really should book early" — or you might miss out).
+                </div>
+
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">
+                        📖 Minna no Nihongo Connection (N5 Review)
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="ref-content">
+                        <h4><span class="ref-badge">MNN L16</span> V-るといいです (light suggestion)</h4>
+                        <p>MNN L16 taught V-るといい for mild suggestions. V-たほうがいい is the <strong>stronger version</strong>: it implies "you should do this, or there might be inconvenience." るといい is neutral advice; ほうがいい carries more urgency.</p>
+                        <h4><span class="ref-badge">MNN L20</span> Plain form (タ形 / ナイ形)</h4>
+                        <p>ほうがいい connects to: <strong>タ形</strong> (past) for positive advice (行った) and <strong>ナイ形</strong> (negative) for negative advice (行かない). Both plain forms you learned in MNN L20.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 11: Quiz 5 ==================== -->
+        <div class="slide" data-slide="11">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Check</span><h2>ほうがいいです</h2></div>
+
+                <div class="quiz-question" id="q13-block">
+                    <div class="question-number">Q1 — Fill in the Blank</div>
+                    <div class="question-context">"You should book early." (<ruby>予約<rt>よやく</rt></ruby>する → <ruby>予約<rt>よやく</rt></ruby>した)</div>
+                    <div class="fill-blank">
+                        <ruby>早<rt>はや</rt></ruby>く<ruby>予約<rt>よやく</rt></ruby>した<input type="text" class="blank-input" id="q13-input" placeholder="？" style="min-width:130px;">ですよ。
+                    </div>
+                    <div class="feedback" id="q13-feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q14-block">
+                    <div class="question-number">Q2 — Multiple Choice</div>
+                    <div class="question-context">"You shouldn't go on Sunday." Which form is correct?</div>
+                    <div class="mc-options" id="q14-options">
+                        <div class="mc-option" onclick="selectMC('q14',0,this)"><div class="mc-radio"></div><span><ruby>日曜日<rt>にちようび</rt></ruby>は<ruby>行<rt>い</rt></ruby>かないほうがいいですよ。</span></div>
+                        <div class="mc-option" onclick="selectMC('q14',1,this)"><div class="mc-radio"></div><span><ruby>日曜日<rt>にちようび</rt></ruby>は<ruby>行<rt>い</rt></ruby>かなかったほうがいいですよ。</span></div>
+                        <div class="mc-option" onclick="selectMC('q14',2,this)"><div class="mc-radio"></div><span><ruby>日曜日<rt>にちようび</rt></ruby>は<ruby>行<rt>い</rt></ruby>くないほうがいいですよ。</span></div>
+                    </div>
+                    <div class="feedback" id="q14-feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q15-block">
+                    <div class="question-number">Q3 — Multiple Choice</div>
+                    <div class="question-context">What's the difference between V-るといい and V-たほうがいい?</div>
+                    <div class="mc-options" id="q15-options">
+                        <div class="mc-option" onclick="selectMC('q15',0,this)"><div class="mc-radio"></div><span>るといい is a light suggestion; たほうがいい is a stronger recommendation (implying consequences)</span></div>
+                        <div class="mc-option" onclick="selectMC('q15',1,this)"><div class="mc-radio"></div><span>They mean exactly the same thing</span></div>
+                        <div class="mc-option" onclick="selectMC('q15',2,this)"><div class="mc-radio"></div><span>るといい is more formal than たほうがいい</span></div>
+                    </div>
+                    <div class="feedback" id="q15-feedback"></div>
+                </div>
+
+                <button class="check-btn" onclick="checkQuiz5()">Check Answers ✓</button>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 12: Integrated Practice ==================== -->
+        <div class="slide" data-slide="12">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Practice</span>
+                    <div>
+                        <h2>🎯 Putting It All Together</h2>
+                        <span class="jp-title"><ruby>総合<rt>そうごう</rt></ruby><ruby>練習<rt>れんしゅう</rt></ruby></span>
+                    </div>
+                </div>
+
+                <div class="conversation-box" style="border-left-color: var(--primary);">
+                    <div class="example-label" style="color: var(--primary-dark);">🌟 Model Conversation — Planning a Trip to Okinawa</div>
+
+                    <div class="conversation-line"><span class="speaker">A：</span><ruby>沖縄<rt>おきなわ</rt></ruby>ってどんな<strong>ところ</strong>？<span style="color:var(--text-muted);font-size:0.8rem;"> ← ところ</span></div>
+                    <div class="conversation-translation">What kind of place is Okinawa?</div>
+
+                    <div class="conversation-line"><span class="speaker b">B：</span><ruby>暖<rt>あたた</rt></ruby>かくて、きれいな<ruby>海<rt>うみ</rt></ruby>で<ruby>泳<rt>およ</rt></ruby><strong>げる</strong>し、シュノーケリングも<strong>できる</strong>よ。<span style="color:var(--text-muted);font-size:0.8rem;"> ← 可能形</span></div>
+                    <div class="conversation-translation">It's warm, and you can swim in the beautiful ocean and go snorkeling too.</div>
+
+                    <div class="conversation-line"><span class="speaker">A：</span>いいね！ご<ruby>飯<rt>はん</rt></ruby>もおいしい<strong>って<ruby>聞<rt>き</rt></ruby>いた</strong>よ。<span style="color:var(--text-muted);font-size:0.8rem;"> ← って聞いた</span></div>
+                    <div class="conversation-translation">Nice! I heard the food is delicious too.</div>
+
+                    <div class="conversation-line"><span class="speaker">A：</span>ホテルは、どこに<ruby>泊<rt>と</rt></ruby>まっ<strong>たらいい</strong>？<span style="color:var(--text-muted);font-size:0.8rem;"> ← たらいい</span></div>
+                    <div class="conversation-translation">Where should I stay for the hotel?</div>
+
+                    <div class="conversation-line"><span class="speaker b">B：</span><ruby>那覇<rt>なは</rt></ruby>がいいよ。でも<ruby>夏<rt>なつ</rt></ruby>は<ruby>混<rt>こ</rt></ruby>むから、<ruby>早<rt>はや</rt></ruby>く<ruby>予約<rt>よやく</rt></ruby>した<strong>ほうがいい</strong>よ。<span style="color:var(--text-muted);font-size:0.8rem;"> ← ほうがいい</span></div>
+                    <div class="conversation-translation">Naha is good. But summer gets crowded, so you should book early.</div>
+                </div>
+
+                <div class="key-point">
+                    <strong>✨ Challenge:</strong> Plan a trip to your dream destination in Japan! Describe the place (ところ), what you can do there (可能形), share what you've heard (って), ask for advice (たらいい), and give recommendations (ほうがいい).
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 13: Final Quiz ==================== -->
+        <div class="slide" data-slide="13">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">🏆 Final Challenge</span><h2>Comprehensive Quiz</h2></div>
+
+                <div class="quiz-question" id="q16-block">
+                    <div class="question-number">Q1 — Fill in the Blank</div>
+                    <div class="question-context">"I heard that Nikko in autumn is beautiful." (きれい → plain = きれいだ)</div>
+                    <div class="fill-blank">
+                        <ruby>秋<rt>あき</rt></ruby>の<ruby>日光<rt>にっこう</rt></ruby>はきれいだ<input type="text" class="blank-input" id="q16-input" placeholder="？" style="min-width:120px;">。
+                    </div>
+                    <div class="feedback" id="q16-feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q17-block">
+                    <div class="question-number">Q2 — Multiple Choice</div>
+                    <div class="question-context">"In Okinawa, you can eat fresh seafood." Which uses potential form correctly?</div>
+                    <div class="mc-options" id="q17-options">
+                        <div class="mc-option" onclick="selectMC('q17',0,this)"><div class="mc-radio"></div><span><ruby>沖縄<rt>おきなわ</rt></ruby>では、<ruby>新鮮<rt>しんせん</rt></ruby>な<ruby>海<rt>かい</rt></ruby><ruby>鮮<rt>せん</rt></ruby><strong>が</strong><ruby>食<rt>た</rt></ruby>べ<strong>られます</strong>。</span></div>
+                        <div class="mc-option" onclick="selectMC('q17',1,this)"><div class="mc-radio"></div><span><ruby>沖縄<rt>おきなわ</rt></ruby>では、<ruby>新鮮<rt>しんせん</rt></ruby>な<ruby>海<rt>かい</rt></ruby><ruby>鮮<rt>せん</rt></ruby><strong>を</strong><ruby>食<rt>た</rt></ruby>べ<strong>られます</strong>。</span></div>
+                        <div class="mc-option" onclick="selectMC('q17',2,this)"><div class="mc-radio"></div><span><ruby>沖縄<rt>おきなわ</rt></ruby>では、<ruby>新鮮<rt>しんせん</rt></ruby>な<ruby>海<rt>かい</rt></ruby><ruby>鮮<rt>せん</rt></ruby><strong>が</strong><ruby>食<rt>た</rt></ruby>べ<strong>ります</strong>。</span></div>
+                    </div>
+                    <div class="feedback" id="q17-feedback"></div>
+                </div>
+
+                <div class="quiz-question" id="q18-block">
+                    <div class="question-number">Q3 — Fill in the Blank</div>
+                    <div class="question-context">"You should bring an umbrella." (<ruby>持<rt>も</rt></ruby>って<ruby>行<rt>い</rt></ruby>く → <ruby>持<rt>も</rt></ruby>って<ruby>行<rt>い</rt></ruby>った)</div>
+                    <div class="fill-blank">
+                        <ruby>傘<rt>かさ</rt></ruby>を<ruby>持<rt>も</rt></ruby>って<ruby>行<rt>い</rt></ruby>った<input type="text" class="blank-input" id="q18-input" placeholder="？" style="min-width:130px;">ですよ。
+                    </div>
+                    <div class="feedback" id="q18-feedback"></div>
+                </div>
+
+                <button class="check-btn" onclick="checkQuizFinal()">Check Answers ✓</button>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 14: Vocabulary ==================== -->
+        <div class="slide" data-slide="14">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Reference</span>
+                    <div>
+                        <h2>📖 Key Vocabulary</h2>
+                        <span class="jp-title"><ruby>重要<rt>じゅうよう</rt></ruby>な<ruby>語彙<rt>ごい</rt></ruby></span>
+                    </div>
+                </div>
+
+                <div class="explanation"><h3>🗾 Travel & Places</h3></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Japanese</th><th>Reading</th><th>Meaning</th></tr></thead>
+                        <tbody>
+                            <tr><td><ruby>旅行<rt>りょこう</rt></ruby></td><td>りょこう</td><td>travel, trip</td></tr>
+                            <tr><td><ruby>予約<rt>よやく</rt></ruby></td><td>よやく</td><td>reservation, booking</td></tr>
+                            <tr><td><ruby>民宿<rt>みんしゅく</rt></ruby></td><td>みんしゅく</td><td>private lodging, guesthouse</td></tr>
+                            <tr><td>お<ruby>土産<rt>みやげ</rt></ruby></td><td>おみやげ</td><td>souvenir</td></tr>
+                            <tr><td><ruby>景色<rt>けしき</rt></ruby></td><td>けしき</td><td>scenery, view</td></tr>
+                            <tr><td><ruby>渋滞<rt>じゅうたい</rt></ruby></td><td>じゅうたい</td><td>traffic jam</td></tr>
+                            <tr><td><ruby>神社<rt>じんじゃ</rt></ruby></td><td>じんじゃ</td><td>Shinto shrine</td></tr>
+                            <tr><td>お<ruby>寺<rt>てら</rt></ruby></td><td>おてら</td><td>Buddhist temple</td></tr>
+                            <tr><td><ruby>上着<rt>うわぎ</rt></ruby></td><td>うわぎ</td><td>jacket, outerwear</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="explanation"><h3>🌊 Activities & Nature</h3></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Japanese</th><th>Reading</th><th>Meaning</th></tr></thead>
+                        <tbody>
+                            <tr><td><ruby>泳<rt>およ</rt></ruby>ぐ</td><td>およぐ</td><td>to swim</td></tr>
+                            <tr><td>シュノーケリング</td><td>しゅのーけりんぐ</td><td>snorkeling</td></tr>
+                            <tr><td><ruby>遊<rt>あそ</rt></ruby>ぶ</td><td>あそぶ</td><td>to play, to have fun</td></tr>
+                            <tr><td><ruby>泊<rt>と</rt></ruby>まる</td><td>とまる</td><td>to stay (overnight)</td></tr>
+                            <tr><td><ruby>新鮮<rt>しんせん</rt></ruby></td><td>しんせん</td><td>fresh</td></tr>
+                            <tr><td>にぎやか</td><td>にぎやか</td><td>lively, bustling</td></tr>
+                            <tr><td><ruby>有名<rt>ゆうめい</rt></ruby></td><td>ゆうめい</td><td>famous</td></tr>
+                            <tr><td><ruby>便利<rt>べんり</rt></ruby></td><td>べんり</td><td>convenient</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 15: Bonus — Potential Form Quick Ref ==================== -->
+        <div class="slide" data-slide="15">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Bonus</span>
+                    <div>
+                        <h2>🔑 Potential Form Quick Reference</h2>
+                        <span class="jp-title"><ruby>可能形<rt>かのうけい</rt></ruby>まとめ</span>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Dictionary</th><th>Potential</th><th>Group</th><th>Travel Example</th></tr></thead>
+                        <tbody>
+                            <tr><td><ruby>行<rt>い</rt></ruby>く</td><td><ruby>行<rt>い</rt></ruby>ける</td><td>G1</td><td><ruby>電車<rt>でんしゃ</rt></ruby>で行ける</td></tr>
+                            <tr><td><ruby>泳<rt>およ</rt></ruby>ぐ</td><td><ruby>泳<rt>およ</rt></ruby>げる</td><td>G1</td><td><ruby>海<rt>うみ</rt></ruby>で泳げる</td></tr>
+                            <tr><td><ruby>飲<rt>の</rt></ruby>む</td><td><ruby>飲<rt>の</rt></ruby>める</td><td>G1</td><td>おいしいお<ruby>酒<rt>さけ</rt></ruby>が飲める</td></tr>
+                            <tr><td><ruby>買<rt>か</rt></ruby>う</td><td><ruby>買<rt>か</rt></ruby>える</td><td>G1</td><td>お土産が買える</td></tr>
+                            <tr><td><ruby>見<rt>み</rt></ruby>る</td><td><ruby>見<rt>み</rt></ruby>られる</td><td>G2</td><td><ruby>桜<rt>さくら</rt></ruby>が見られる</td></tr>
+                            <tr><td><ruby>食<rt>た</rt></ruby>べる</td><td><ruby>食<rt>た</rt></ruby>べられる</td><td>G2</td><td><ruby>新鮮<rt>しんせん</rt></ruby>な<ruby>魚<rt>さかな</rt></ruby>が食べられる</td></tr>
+                            <tr><td>する</td><td>できる</td><td>G3</td><td>シュノーケリングができる</td></tr>
+                            <tr><td><ruby>来<rt>く</rt></ruby>る</td><td><ruby>来<rt>こ</rt></ruby>られる</td><td>G3</td><td><ruby>車<rt>くるま</rt></ruby>で来られる</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Memory Trick for Group 1:</strong> The u-sound at the end changes to an e-sound + る: く→ける, ぐ→げる, む→める, ぶ→べる, う→える, つ→てる, る→れる, す→せる. Just swap the vowel from /u/ to /e/ and add る!
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 16: Bonus — Advice Comparison ==================== -->
+        <div class="slide" data-slide="16">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Bonus</span>
+                    <div>
+                        <h2>⚖️ Advice Expressions Compared</h2>
+                        <span class="jp-title">アドバイスの<ruby>表現<rt>ひょうげん</rt></ruby></span>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Expression</th><th>Strength</th><th>Nuance</th><th>Example</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight:600;">V-るといい</td>
+                                <td>💚 Light</td>
+                                <td>Gentle suggestion, no pressure</td>
+                                <td><ruby>早<rt>はや</rt></ruby>く<ruby>寝<rt>ね</rt></ruby>るといいですよ<br><em>"It'd be good to sleep early"</em></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:600;">V-たほうがいい</td>
+                                <td>🟡 Medium</td>
+                                <td>Stronger advice — implies negative consequences otherwise</td>
+                                <td><ruby>予約<rt>よやく</rt></ruby>したほうがいいですよ<br><em>"You should book" (or you'll miss out)</em></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:600;">V-ないほうがいい</td>
+                                <td>🔴 Strong warning</td>
+                                <td>Warning against doing something</td>
+                                <td><ruby>日曜日<rt>にちようび</rt></ruby>は行かないほうがいい<br><em>"You shouldn't go on Sunday"</em></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Context Matters:</strong> In travel conversations, ほうがいい is very common because travel advice often involves real consequences (missing reservations, getting stuck in traffic, bad weather). Use るといい for lighter suggestions like food recommendations, and ほうがいい for logistics and planning.
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SLIDE 17: Summary ==================== -->
+        <div class="slide" data-slide="17">
+            <div class="summary-card">
+                <h2>🎉 Lesson 5 Complete!</h2>
+                <p>✈️ <ruby>旅行<rt>りょこう</rt></ruby>に<ruby>行<rt>い</rt></ruby>こう — Let's Go on a Trip!</p>
+                <p>You've mastered 5 grammar points for planning travel in Japanese!</p>
+
+                <div class="summary-points">
+                    <div class="summary-point">
+                        <h4>❶ V-(られ)ます</h4>
+                        <p>Potential: "You can swim in Okinawa"</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>❷ ～ところ</h4>
+                        <p>Describe places: "A lively place"</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>❸ って聞きました</h4>
+                        <p>Hearsay: "I heard the udon is great"</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>❹ V-たらいいですか</h4>
+                        <p>Seek advice: "How should I get there?"</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>❺ ほうがいいです</h4>
+                        <p>Give advice: "You should book early"</p>
+                    </div>
+                </div>
+
+                <button class="restart-btn" onclick="restartPresentation()">🔄 Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide=1; const totalSlides=17;
+        function updateSlide(){document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));const a=document.querySelector(`[data-slide="${currentSlide}"]`);if(a)a.classList.add('active');document.getElementById('currentSlide').textContent=currentSlide;document.getElementById('totalSlides').textContent=totalSlides;document.getElementById('progressFill').style.width=((currentSlide-1)/(totalSlides-1)*100)+'%';document.getElementById('prevBtn').disabled=currentSlide===1;document.getElementById('nextBtn').disabled=currentSlide===totalSlides;window.scrollTo({top:0,behavior:'smooth'});}
+        function nextSlide(){if(currentSlide<totalSlides){currentSlide++;updateSlide();}}
+        function prevSlide(){if(currentSlide>1){currentSlide--;updateSlide();}}
+        function goToSlide(n){currentSlide=n;updateSlide();}
+        function restartPresentation(){currentSlide=1;updateSlide();}
+        function toggleRef(btn){btn.classList.toggle('open');btn.nextElementSibling.classList.toggle('open');}
+
+        const mc={};
+        function selectMC(q,i,el){if(el.classList.contains('disabled'))return;document.querySelectorAll(`#${q}-options .mc-option`).forEach(o=>o.classList.remove('selected'));el.classList.add('selected');mc[q]=i;}
+        function fb(id,ok,msg){const f=document.getElementById(id);f.className='feedback show '+(ok?'correct':'incorrect');f.innerHTML=`<strong>${ok?'✅ Correct!':'❌ Not quite.'}</strong> ${msg}`;}
+        function dis(q){document.querySelectorAll(`#${q}-options .mc-option`).forEach(o=>o.classList.add('disabled'));}
+        function mark(q,ci){document.querySelectorAll(`#${q}-options .mc-option`).forEach((o,i)=>{if(i===ci)o.classList.add('correct-option');else if(o.classList.contains('selected'))o.classList.add('incorrect-option');});}
+        function chkInput(id,ans,fbId,okMsg,badMsg){const v=document.getElementById(id).value.trim();if(!v)return;const ok=v===ans;document.getElementById(id).classList.add(ok?'correct-input':'incorrect-input');fb(fbId,ok,ok?okMsg:badMsg);}
+        function chkMC(q,ans,fbId,okMsg,badMsg){if(mc[q]===undefined)return;const ok=mc[q]===ans;fb(fbId,ok,ok?okMsg:badMsg);mark(q,ans);dis(q);}
+
+        function checkQuiz1(){
+            chkInput('q1-input','泳げる','q1-feedback','泳ぐ (Group 1: -gu → -ge + ru) → <strong>泳げる</strong>. In Okinawa, you can swim from spring to fall!','The answer is <strong>泳げる</strong>. 泳ぐ is a Group 1 verb: ぐ → げる. The u-sound changes to e-sound + る.');
+            chkMC('q2',1,'q2-feedback','カニ<strong>を</strong>食べる → カニ<strong>が</strong>食べられる. When a transitive verb becomes potential, を changes to が. This is a critical rule!','The particle changes from <strong>を to が</strong>. カニを食べる → カニが食べられる. This を→が change is specific to the potential form.');
+            chkMC('q3',1,'q3-feedback','見る (Group 2) → 見<strong>られる</strong>. Group 2 drops る and adds られる. (見える means "is visible" — a different verb!)','The answer is <strong>見られる</strong>. 見る is Group 2: drop る → add られる. Note: 見える is a different verb meaning "to be visible" (intransitive), while 見られる is the potential "can see/watch."');
+        }
+        function checkQuiz2(){
+            chkInput('q4-input','ところ','q4-feedback','京都はどんな<strong>ところ</strong>ですか？ — "What kind of place is Kyoto?" ところ is the noun meaning "place."','The answer is <strong>ところ</strong>. どんなところ = "what kind of place." ところ is modified by どんな to ask about the characteristics of a location.');
+            chkMC('q5',0,'q5-feedback','景色がきれい<strong>な</strong>ところ — since きれい is a ナ-adjective, it needs な before the noun ところ. Just like ナ-adj + な + ので (Lesson 3)!','The answer uses <strong>な</strong> before ところ: きれいなところ. きれい is a ナ-adjective, so it requires な when modifying a noun. This is the same rule as with ので and のは.');
+            chkMC('q6',2,'q6-feedback','Both are natural! 買い物するところ ("a place where one shops") and 買い物ができるところ ("a place where one can shop") are both correct ways to describe a shopping area.','<strong>Both are natural.</strong> 買い物するところ describes a place where shopping happens; 買い物ができるところ emphasizes the ability/possibility of shopping there. Both work perfectly.');
+        }
+        function checkQuiz3(){
+            chkInput('q7-input','って聞きました','q7-feedback','有名だ<strong>って聞きました</strong> — "I heard that [it\'s] famous." って is the casual quotation particle, and 聞きました means "I heard."','The answer is <strong>って聞きました</strong>. The plain form 有名だ + って聞きました = "I heard that it\'s famous." って replaces the formal quotation particle と in casual speech.');
+            chkMC('q8',0,'q8-feedback','って is the casual spoken contraction of the quotation particle と. と聞きました (formal) → って聞きました (casual). It\'s used everywhere in daily Japanese!','って is the <strong>casual spoken form of と</strong> (quotation particle). と言っていました → って言ってました. It\'s not related to ている or politeness.');
+            chkMC('q9',0,'q9-feedback','バスが安くて便利だ<strong>って</strong>先輩が言ってました — って marks the quotation ("my senpai said that ~"). から means "because" and のに means "despite" — different grammar!','The answer uses <strong>って</strong> for quotation: "My senpai said that the bus was cheap and convenient." から (because) and のに (despite) have completely different functions.');
+        }
+        function checkQuiz4(){
+            chkInput('q10-input','たらいいですか','q10-feedback','どこで買っ<strong>たらいいですか</strong>？ — "Where should I buy [souvenirs]?" たらいいですか asks for advice about the best option.','The answer is <strong>たらいいですか</strong>. 買う → 買った → 買ったらいいですか = "would it be good if I buy → where should I buy?"');
+            chkMC('q11',0,'q11-feedback','何で行っ<strong>たらいいですか</strong>？ — 行く → 行った → 行ったら. Group 1 verb: く → った (irregular). Note the small っ before た!','The answer is 行っ<strong>たらいいですか</strong>. 行く → 行った (past plain) → 行ったら + いいですか. Option B uses dictionary form (行くたら — incorrect). Option C has wrong conjugation.');
+            chkMC('q12',1,'q12-feedback','<strong>どんなところに</strong>泊まったらいいですか — asking about "what kind of place" to stay. 何で asks about means/transportation; いつ asks about timing.','To ask about lodging <strong>type</strong>, use どんなところに ("what kind of place"). 何で asks about transportation means; いつ asks about timing — both are valid questions but for different information.');
+        }
+        function checkQuiz5(){
+            chkInput('q13-input','ほうがいい','q13-feedback','予約した<strong>ほうがいい</strong>ですよ — V-た + ほうがいい = "you should V." The タ-form connects to ほうがいい for positive advice.','The answer is <strong>ほうがいい</strong>. V-た (past plain) + ほうがいい = "you should do V." 予約した + ほうがいい = "you should book."');
+            chkMC('q14',0,'q14-feedback','行か<strong>ない</strong>ほうがいい — for negative advice ("shouldn\'t"), use V-ない (present negative plain) + ほうがいい. NOT V-なかった (past negative)!','Negative advice uses V-<strong>ない</strong> (present negative) + ほうがいい: 行かないほうがいい. Option B uses past negative (なかった) — wrong. Option C has incorrect conjugation (行くない doesn\'t exist).');
+            chkMC('q15',0,'q15-feedback','るといい is a <strong>gentle suggestion</strong> (no pressure). たほうがいい is a <strong>stronger recommendation</strong> implying negative consequences if not followed. Both give advice, but with different weight.','V-るといい is <strong>light advice</strong>; V-たほうがいい is <strong>stronger</strong>, suggesting something inconvenient will happen if you don\'t follow it. They\'re not the same strength or formality.');
+        }
+        function checkQuizFinal(){
+            chkInput('q16-input','って聞きました','q16-feedback','きれいだ<strong>って聞きました</strong> — "I heard that Nikko in autumn is beautiful." Plain form + って聞きました for hearsay.','The answer is <strong>って聞きました</strong>. きれいだ (plain form of きれいです) + って聞きました = "I heard it\'s beautiful."');
+            chkMC('q17',0,'q17-feedback','新鮮な海鮮<strong>が</strong>食べ<strong>られます</strong> — potential form with が particle (を→が change). 食べる (G2) → 食べられる → 食べられます. Perfect!','The answer uses <strong>が</strong> (not を) with potential form: 海鮮が食べられます. を→が change is required. Option C uses 食べります which is not a valid conjugation.');
+            chkInput('q18-input','ほうがいい','q18-feedback','持って行った<strong>ほうがいい</strong>ですよ — "You should bring [an umbrella]." V-た + ほうがいい for strong travel advice.','The answer is <strong>ほうがいい</strong>. 持って行った (past plain of 持って行く) + ほうがいい = "you should bring."');
+        }
+
+        document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nextSlide();}else if(e.key==='ArrowLeft'){e.preventDefault();prevSlide();}});
+        let tsX=0,teX=0;
+        document.addEventListener('touchstart',e=>{tsX=e.changedTouches[0].screenX;});
+        document.addEventListener('touchend',e=>{teX=e.changedTouches[0].screenX;const d=tsX-teX;if(Math.abs(d)>50){d>0?nextSlide():prevSlide();}});
+        updateSlide();
+    </script>
+</body>
+</html>
