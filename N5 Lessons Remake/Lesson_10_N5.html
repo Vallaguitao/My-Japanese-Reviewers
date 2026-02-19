@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 10 — Existence &amp; Location | Minna no Nihongo N5</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ========== CSS Variables — Ocean Blue (Location, Space, Existence) ========== */
+        :root {
+            --primary: #1d4ed8;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e3a8a;
+            --accent: #f59e0b;
+            --accent-light: #fef3c7;
+            --accent-dark: #d97706;
+            --success: #38a169;
+            --success-light: #c6f6d5;
+            --error: #e53e3e;
+            --error-light: #fed7d7;
+            --warning: #f59e0b;
+            --warning-light: #fde68a;
+            --bg-light: #eff6ff;
+            --bg-card: #ffffff;
+            --text-primary: #1e3a8a;
+            --text-secondary: #1e40af;
+            --text-muted: #718096;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        html{scroll-behavior:smooth;}
+        body{font-family:'Noto Sans JP','Outfit',sans-serif;background:linear-gradient(135deg,var(--bg-light) 0%,#dbeafe 100%);color:var(--text-primary);line-height:1.7;min-height:100vh;overflow-x:hidden;}
+
+        .progress-container{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--bg-card);box-shadow:var(--shadow);padding:12px 20px;}
+        .progress-header{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;gap:20px;}
+        .progress-title{font-size:0.9rem;font-weight:600;color:var(--primary);display:flex;align-items:center;gap:8px;}
+        .progress-title .lesson-badge{background:var(--primary);color:white;padding:2px 10px;border-radius:20px;font-size:0.75rem;}
+        .progress-bar-wrapper{flex:1;max-width:500px;}
+        .progress-bar{height:8px;background:var(--border);border-radius:10px;overflow:hidden;}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--primary) 0%,var(--accent) 100%);border-radius:10px;transition:width 0.5s ease;width:0%;}
+        .progress-text{font-size:0.8rem;color:var(--text-muted);text-align:right;margin-top:4px;}
+        .progress-nav{display:flex;gap:8px;}
+        .nav-btn{background:var(--primary);color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.85rem;font-weight:500;transition:var(--transition);display:flex;align-items:center;gap:6px;}
+        .nav-btn:hover{background:var(--primary-light);transform:translateY(-1px);}
+        .nav-btn:disabled{background:var(--border);color:var(--text-muted);cursor:not-allowed;transform:none;}
+
+        .presentation{padding-top:80px;min-height:100vh;}
+        .slide{display:none;max-width:1000px;margin:0 auto;padding:40px 20px;animation:fadeIn 0.5s ease;}
+        .slide.active{display:block;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+        .title-slide{text-align:center;padding:60px 20px;}
+        .title-slide .book-badge{display:inline-block;background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);color:white;padding:8px 24px;border-radius:30px;font-size:0.9rem;font-weight:500;margin-bottom:24px;letter-spacing:1px;}
+        .title-slide h1{font-size:clamp(2.5rem,6vw,4rem);font-weight:700;color:var(--primary);margin-bottom:16px;line-height:1.2;}
+        .title-slide .lesson-title-jp{font-size:clamp(1.5rem,4vw,2.5rem);color:var(--accent-dark);margin-bottom:8px;}
+        .title-slide .lesson-subtitle{font-size:1.2rem;color:var(--text-secondary);margin-bottom:40px;}
+        .title-card{background:var(--bg-card);border-radius:var(--radius-lg);padding:40px;box-shadow:var(--shadow-lg);max-width:700px;margin:0 auto 40px;}
+        .title-card h2{color:var(--primary);font-size:1.3rem;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px;}
+        .grammar-list{display:grid;gap:12px;}
+        .grammar-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg-light);border-radius:var(--radius);border-left:4px solid var(--accent);transition:var(--transition);}
+        .grammar-item:hover{transform:translateX(8px);background:var(--accent-light);}
+        .grammar-number{width:28px;height:28px;background:var(--primary);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:600;flex-shrink:0;}
+        .start-btn{background:linear-gradient(135deg,var(--accent) 0%,var(--primary) 100%);color:white;border:none;padding:16px 48px;border-radius:30px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:var(--transition);box-shadow:0 4px 14px rgba(0,0,0,0.2);}
+        .start-btn:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,0.3);}
+
+        .content-card{background:var(--bg-card);border-radius:var(--radius-lg);padding:40px;box-shadow:var(--shadow-lg);margin-bottom:24px;}
+        .slide-header{display:flex;align-items:center;gap:16px;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid var(--border);}
+        .grammar-badge{background:var(--primary);color:white;padding:8px 16px;border-radius:8px;font-size:0.85rem;font-weight:600;white-space:nowrap;}
+        .slide-header h2{font-size:1.8rem;color:var(--primary);flex:1;}
+        .slide-header .jp-title{font-size:1.3rem;color:var(--accent-dark);font-weight:500;}
+        ruby{ruby-position:over;}ruby rt{font-size:0.6em;color:var(--text-muted);}
+
+        .example-box{background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%);border-radius:var(--radius);padding:24px;margin:20px 0;border-left:4px solid var(--primary);}
+        .example-label{font-size:0.8rem;font-weight:600;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+        .example-japanese{font-size:1.4rem;color:var(--text-primary);margin-bottom:8px;line-height:2;}
+        .example-english{font-size:1rem;color:var(--text-secondary);font-style:italic;}
+
+        .example-comparison{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}
+        .ari-box,.iru-box{padding:20px;border-radius:var(--radius);}
+        .ari-box{background:linear-gradient(135deg,#dbeafe 0%,#bfdbfe 100%);border-left:4px solid #2563eb;}
+        .iru-box{background:linear-gradient(135deg,#fce7f3 0%,#fbcfe8 100%);border-left:4px solid #ec4899;}
+        .style-label{font-size:0.85rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+        .ari-box .style-label{color:#1e40af;}.iru-box .style-label{color:#9d174d;}
+
+        .structure-box{background:linear-gradient(135deg,#eff6ff 0%,#93c5fd 100%);border-radius:var(--radius);padding:20px;margin:20px 0;border-left:4px solid var(--accent);}
+        .structure-box .label{font-size:0.8rem;font-weight:600;color:var(--accent-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+        .structure-formula{font-size:1.15rem;font-family:'Outfit',monospace;color:var(--primary-dark);background:white;padding:12px 20px;border-radius:8px;display:inline-block;margin:8px 4px;}
+        .structure-formula .highlight{color:var(--primary);font-weight:600;}
+        .structure-formula .accent{color:var(--accent-dark);font-weight:600;}
+
+        .explanation{margin:24px 0;}
+        .explanation h3{font-size:1.1rem;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+        .explanation p{color:var(--text-secondary);margin-bottom:12px;}
+        .key-point{background:var(--accent-light);padding:16px 20px;border-radius:var(--radius);margin:16px 0;border-left:4px solid var(--accent);}
+        .key-point strong{color:var(--primary-dark);}
+
+        .conversation-box{background:linear-gradient(135deg,#fefce8 0%,#fef08a 100%);border-radius:var(--radius);padding:24px;margin:20px 0;border-left:4px solid var(--warning);}
+        .conversation-box .example-label{color:#92400e;}
+        .conversation-line{margin-bottom:12px;font-size:1.2rem;line-height:2;}
+        .conversation-line:last-child{margin-bottom:0;}
+        .speaker{font-weight:600;color:var(--primary-dark);min-width:24px;display:inline-block;}
+        .speaker.b{color:var(--accent-dark);}
+        .conversation-translation{font-size:0.9rem;color:var(--text-muted);margin-top:4px;font-style:italic;}
+
+        /* ========== Position Diagram ========== */
+        .position-diagram{margin:24px 0;padding:30px;background:white;border-radius:var(--radius);border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:8px;}
+        .pos-row{display:flex;align-items:center;justify-content:center;gap:12px;}
+        .pos-item{padding:10px 16px;border-radius:8px;font-size:0.95rem;font-weight:600;text-align:center;min-width:80px;transition:var(--transition);}
+        .pos-item:hover{transform:scale(1.05);}
+        .pos-top{background:#bfdbfe;color:#1e40af;}
+        .pos-center{background:#fef3c7;color:#92400e;font-size:1.3rem;padding:20px 30px;border:3px solid var(--accent);min-width:100px;}
+        .pos-side{background:#d1fae5;color:#065f46;}
+        .pos-bottom{background:#e9d5ff;color:#6d28d9;}
+        .pos-between{background:#fce7f3;color:#9d174d;}
+        .pos-near{background:#fee2e2;color:#991b1b;}
+
+        .ref-connection{margin:24px 0;}
+        .ref-toggle{width:100%;background:linear-gradient(135deg,#fff5f5 0%,#fed7d7 100%);border:none;padding:16px 20px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:1rem;font-weight:500;color:#c53030;transition:var(--transition);}
+        .ref-toggle:hover{background:linear-gradient(135deg,#fed7d7 0%,#feb2b2 100%);}
+        .ref-toggle .icon{transition:transform 0.3s ease;}.ref-toggle.open .icon{transform:rotate(180deg);}
+        .ref-content{max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.4s ease;background:#fffafa;border-radius:0 0 var(--radius) var(--radius);}
+        .ref-content.open{max-height:800px;padding:20px;border:1px solid #fed7d7;border-top:none;}
+        .ref-content h4{color:#c53030;font-size:0.95rem;margin-bottom:12px;}
+        .ref-content p{color:var(--text-secondary);font-size:0.95rem;margin-bottom:10px;}
+        .ref-badge{display:inline-block;background:#c53030;color:white;padding:2px 10px;border-radius:20px;font-size:0.8rem;margin-right:8px;}
+
+        .table-container{overflow-x:auto;margin:24px 0;}
+        .data-table{width:100%;border-collapse:collapse;font-size:0.95rem;}
+        .data-table th{background:var(--primary);color:white;padding:14px 16px;text-align:left;font-weight:500;}
+        .data-table td{padding:12px 16px;border-bottom:1px solid var(--border);}
+        .data-table tr:nth-child(even){background:var(--bg-light);}
+        .data-table tr:hover{background:#dbeafe;}
+
+        .quiz-card{background:linear-gradient(135deg,#eff6ff 0%,#93c5fd 100%);border-radius:var(--radius-lg);padding:40px;box-shadow:var(--shadow-lg);margin-bottom:24px;}
+        .quiz-header{display:flex;align-items:center;gap:16px;margin-bottom:32px;}
+        .quiz-badge{background:var(--accent);color:white;padding:8px 16px;border-radius:8px;font-size:0.85rem;font-weight:600;}
+        .quiz-header h2{font-size:1.5rem;color:var(--primary);}
+        .quiz-question{background:white;padding:24px;border-radius:var(--radius);margin-bottom:20px;box-shadow:var(--shadow);}
+        .question-number{font-size:0.85rem;font-weight:600;color:var(--accent-dark);margin-bottom:12px;}
+        .question-context{font-size:0.95rem;color:var(--text-secondary);font-style:italic;margin-bottom:16px;padding:12px;background:var(--bg-light);border-radius:8px;}
+        .question-text{font-size:1.2rem;color:var(--text-primary);margin-bottom:16px;}
+        .fill-blank{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:1.3rem;margin:20px 0;}
+        .blank-input{border:2px dashed var(--primary);background:#eff6ff;padding:8px 16px;border-radius:8px;min-width:100px;font-size:1.1rem;font-family:inherit;text-align:center;transition:var(--transition);}
+        .blank-input:focus{outline:none;border-color:var(--accent);background:white;box-shadow:0 0 0 3px rgba(245,158,11,0.2);}
+        .check-btn{background:var(--success);color:white;border:none;padding:12px 32px;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:var(--transition);margin-top:20px;}
+        .check-btn:hover{background:#2f855a;transform:translateY(-2px);}
+
+        .feedback-area{margin-top:16px;padding:16px 20px;border-radius:var(--radius);display:none;font-size:1rem;line-height:1.6;}
+        .feedback-area.show{display:block;animation:fadeIn 0.3s ease;}
+        .feedback-area.correct-feedback{background:var(--success-light);border-left:4px solid var(--success);color:#22543d;}
+        .feedback-area.incorrect-feedback{background:var(--error-light);border-left:4px solid var(--error);color:#742a2a;}
+        .feedback-area .fb-icon{font-size:1.3rem;margin-right:8px;}
+        .feedback-area .fb-answer{font-weight:700;}
+        .feedback-area .fb-explain{margin-top:8px;font-size:0.95rem;opacity:0.9;}
+
+        .mc-options{display:grid;gap:12px;margin:16px 0;}
+        .mc-option{display:flex;align-items:center;gap:12px;padding:14px 20px;border-radius:var(--radius);border:2px solid var(--border);background:white;cursor:pointer;transition:var(--transition);font-size:1.1rem;}
+        .mc-option:hover{border-color:var(--primary);background:#eff6ff;transform:translateX(4px);}
+        .mc-option.correct-choice{border-color:var(--success);background:var(--success-light);}
+        .mc-option.incorrect-choice{border-color:var(--error);background:var(--error-light);}
+        .mc-option.disabled{pointer-events:none;opacity:0.7;}
+        .mc-option .option-letter{width:32px;height:32px;border-radius:50%;background:var(--bg-light);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;color:var(--primary);flex-shrink:0;}
+        .mc-option.correct-choice .option-letter{background:var(--success);color:white;}
+        .mc-option.incorrect-choice .option-letter{background:var(--error);color:white;}
+
+        .summary-card{background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 100%);border-radius:var(--radius-lg);padding:40px;color:white;text-align:center;}
+        .summary-card h2{font-size:2rem;margin-bottom:24px;}
+        .summary-card>p{font-size:1.1rem;opacity:0.9;margin-bottom:12px;}
+        .summary-points{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin:32px 0;}
+        .summary-point{background:rgba(255,255,255,0.15);padding:20px;border-radius:var(--radius);backdrop-filter:blur(10px);}
+        .summary-point h4{font-size:1.1rem;margin-bottom:8px;}
+        .summary-point p{font-size:0.9rem;opacity:0.9;}
+        .restart-btn{background:white;color:var(--primary);border:none;padding:16px 48px;border-radius:30px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:var(--transition);margin-top:24px;}
+        .restart-btn:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,0.2);}
+
+        @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+        .pulse{animation:pulse 2s infinite;}
+
+        @media(max-width:768px){
+            .progress-header{flex-direction:column;gap:12px;}.progress-bar-wrapper{width:100%;max-width:none;}.progress-nav{width:100%;justify-content:space-between;}
+            .content-card,.quiz-card{padding:24px;}.slide-header{flex-direction:column;align-items:flex-start;gap:12px;}
+            .example-japanese{font-size:1.2rem;}.example-comparison{grid-template-columns:1fr;}
+            .position-diagram{padding:20px;}.pos-item{min-width:60px;font-size:0.8rem;padding:8px 10px;}.pos-center{font-size:1rem;padding:14px 20px;}
+            .fill-blank{font-size:1.1rem;}.data-table{font-size:0.85rem;}.data-table th,.data-table td{padding:10px 12px;}
+            .conversation-line{font-size:1.05rem;}.title-card{padding:24px;}.summary-points{grid-template-columns:1fr 1fr;}
+        }
+        @media(max-width:480px){
+            .progress-title{font-size:0.8rem;}.nav-btn{padding:6px 12px;font-size:0.8rem;}.title-slide h1{font-size:2rem;}
+            .grammar-item{padding:10px 12px;font-size:0.9rem;}.summary-points{grid-template-columns:1fr;}.mc-option{padding:12px 16px;font-size:1rem;}
+            .pos-row{gap:6px;}.pos-item{min-width:50px;font-size:0.75rem;}
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title"><span class="lesson-badge">L10</span> MNN Lesson 10 — あります / います</div>
+            <div class="progress-bar-wrapper"><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div><div class="progress-text"><span id="currentSlide">1</span> / <span id="totalSlides">24</span></div></div>
+            <div class="progress-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()">◀ <span class="btn-text">Back</span></button>
+                <button class="nav-btn" id="nextBtn" onclick="nextSlide()"><span class="btn-text">Next</span> ▶</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="presentation">
+
+        <!-- ======================== SLIDE 1: Title ======================== -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <div class="book-badge">みんなの<ruby>日本語<rt>にほんご</rt></ruby> <ruby>初級<rt>しょきゅう</rt></ruby> I — <ruby>第<rt>だい</rt></ruby>2<ruby>版<rt>はん</rt></ruby></div>
+                <h1>Lesson 10</h1>
+                <div class="lesson-title-jp">📍 あります / います — <ruby>存在<rt>そんざい</rt></ruby>と<ruby>場所<rt>ばしょ</rt></ruby></div>
+                <div class="lesson-subtitle">Describe what exists where, and master position words!</div>
+                <div class="title-card">
+                    <h2>📚 Grammar Points</h2>
+                    <div class="grammar-list">
+                        <div class="grammar-item"><span class="grammar-number">1</span><span><strong>N が あります / います</strong> — "There is ~" (existence)</span></div>
+                        <div class="grammar-item"><span class="grammar-number">2</span><span><strong>Place に N が あります / います</strong> — What's at a place</span></div>
+                        <div class="grammar-item"><span class="grammar-number">3</span><span><strong>N は Place に あります / います</strong> — Where something is</span></div>
+                        <div class="grammar-item"><span class="grammar-number">4</span><span><strong>N₁ の N₂ (position words)</strong> — <ruby>上<rt>うえ</rt></ruby>, <ruby>下<rt>した</rt></ruby>, <ruby>前<rt>まえ</rt></ruby>, <ruby>後<rt>うし</rt></ruby>ろ, etc.</span></div>
+                        <div class="grammar-item"><span class="grammar-number">5</span><span><strong>N₁ や N₂</strong> — Listing representative items</span></div>
+                        <div class="grammar-item"><span class="grammar-number">6</span><span><strong>Confirmation echo</strong> — アジアストアですか</span></div>
+                    </div>
+                </div>
+                <button class="start-btn pulse" onclick="nextSlide()">🎯 Let's Begin!</button>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 2: あります vs います ======================== -->
+        <div class="slide" data-slide="2">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Grammar 1</span><div><h2>N が あります / います</h2><span class="jp-title">"There is ~" — Existence</span></div></div>
+                <div class="explanation">
+                    <h3>🎉 Two Verbs for "Exist"!</h3>
+                    <p>Japanese uses <strong>two different verbs</strong> for existence, depending on whether the subject is animate (living, self-moving) or inanimate (non-living, stationary). This distinction doesn't exist in English — "there is" works for everything — but in Japanese, you must choose correctly every time.</p>
+                </div>
+                <div class="example-comparison">
+                    <div class="ari-box">
+                        <div class="style-label">🪑 あります — Inanimate</div>
+                        <p style="color:#1e40af;margin-bottom:12px;">Objects, plants, buildings — things that <strong>cannot move by themselves</strong>.</p>
+                        <div class="example-japanese" style="font-size:1.15rem;">コンピューター<strong>が</strong> <strong>あります</strong>。 ①</div>
+                        <div class="example-english">There's a computer.</div>
+                        <div class="example-japanese" style="font-size:1.15rem;margin-top:8px;"><ruby>桜<rt>さくら</rt></ruby><strong>が</strong> <strong>あります</strong>。 ②</div>
+                        <div class="example-english">There are cherry trees.</div>
+                        <div class="example-japanese" style="font-size:1.15rem;margin-top:8px;"><ruby>公園<rt>こうえん</rt></ruby><strong>が</strong> <strong>あります</strong>。 ③</div>
+                        <div class="example-english">There's a park.</div>
+                    </div>
+                    <div class="iru-box">
+                        <div class="style-label">🐕 います — Animate</div>
+                        <p style="color:#9d174d;margin-bottom:12px;">People, animals — things that <strong>can move by themselves</strong>.</p>
+                        <div class="example-japanese" style="font-size:1.15rem;"><ruby>男<rt>おとこ</rt></ruby>の <ruby>人<rt>ひと</rt></ruby><strong>が</strong> <strong>います</strong>。 ④</div>
+                        <div class="example-english">There's a man.</div>
+                        <div class="example-japanese" style="font-size:1.15rem;margin-top:8px;"><ruby>犬<rt>いぬ</rt></ruby><strong>が</strong> <strong>います</strong>。 ⑤</div>
+                        <div class="example-english">There's a dog.</div>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <strong>💡 The Rule:</strong> Can it move by itself? → <strong>います</strong> (people, animals, insects, fish). Can't move by itself? → <strong>あります</strong> (books, trees, buildings, mountains). Plants use あります even though they're alive — they can't walk!
+                </div>
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">📘 Minna no Nihongo Connections (Lessons 1–25) <span class="icon">▼</span></button>
+                    <div class="ref-content">
+                        <h4>あります has multiple meanings across lessons:</h4>
+                        <p><span class="ref-badge">L9</span> N が あります = "I HAVE ~" (possession).</p>
+                        <p><span class="ref-badge">L10</span> N が あります = "There IS ~" (existence at a place).</p>
+                        <p><span class="ref-badge">L21</span> V と <ruby>思<rt>おも</rt></ruby>います = "I think that ~" — different grammar but same verb pool.</p>
+                        <p><span class="ref-badge">L6</span> で for action location vs <span class="ref-badge">L10</span> に for existence location — critical distinction!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 3: Quiz 1 ======================== -->
+        <div class="slide" data-slide="3">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Quick Check</span><h2>あります vs います</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">"There's a cat." — Choose the correct verb:</div>
+                    <div class="mc-options" id="q1-options">
+                        <div class="mc-option" onclick="checkMC('q1',this,'B')"><span class="option-letter">A</span><span><ruby>猫<rt>ねこ</rt></ruby>が <strong>あります</strong>。</span></div>
+                        <div class="mc-option" onclick="checkMC('q1',this,'B')"><span class="option-letter">B</span><span><ruby>猫<rt>ねこ</rt></ruby>が <strong>います</strong>。</span></div>
+                    </div>
+                    <div class="feedback-area" id="q1-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">"There are cherry trees." — Choose the correct verb:</div>
+                    <div class="mc-options" id="q2-options">
+                        <div class="mc-option" onclick="checkMC('q2',this,'A')"><span class="option-letter">A</span><span><ruby>桜<rt>さくら</rt></ruby>が <strong>あります</strong>。</span></div>
+                        <div class="mc-option" onclick="checkMC('q2',this,'A')"><span class="option-letter">B</span><span><ruby>桜<rt>さくら</rt></ruby>が <strong>います</strong>。</span></div>
+                    </div>
+                    <div class="feedback-area" id="q2-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 4: Place に N が あります/います ======================== -->
+        <div class="slide" data-slide="4">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Grammar 2</span><div><h2>Place に N が あります / います</h2><span class="jp-title">"At [place], there is ~"</span></div></div>
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula"><span class="highlight">Place</span> + <span class="accent">に</span> + <span class="highlight">N</span> + <span class="accent">が</span> + あります / います</div>
+                </div>
+                <div class="explanation">
+                    <h3>📖 How it works</h3>
+                    <p>This pattern tells the listener <strong>what exists at a particular place</strong>. The particle に marks the <strong>location of existence</strong> — this is different from で which marks where an <strong>action</strong> happens (L6). Think of it this way: に is for static existence, で is for dynamic action.</p>
+                </div>
+                <div class="example-box">
+                    <div class="example-label">📝 Example ⑥</div>
+                    <div class="example-japanese">わたしの <ruby>部屋<rt>へや</rt></ruby><strong>に</strong> <ruby>机<rt>つくえ</rt></ruby><strong>が</strong> あります。</div>
+                    <div class="example-english">There's a desk in my room.</div>
+                </div>
+                <div class="example-box">
+                    <div class="example-label">📝 Example ⑦</div>
+                    <div class="example-japanese"><ruby>事務所<rt>じむしょ</rt></ruby><strong>に</strong> ミラーさん<strong>が</strong> います。</div>
+                    <div class="example-english">Mr. Miller is in the office.</div>
+                </div>
+                <div class="conversation-box">
+                    <div class="example-label">💬 Example ⑧ — Asking what's there</div>
+                    <div class="conversation-line"><span class="speaker">A:</span> <ruby>地下<rt>ちか</rt></ruby><strong>に</strong> <ruby>何<rt>なに</rt></ruby><strong>が</strong> ありますか。</div>
+                    <div class="conversation-translation" style="margin-bottom:12px;margin-left:28px;">What's in the basement?</div>
+                    <div class="conversation-line"><span class="speaker b">B:</span> レストラン<strong>が</strong> あります。</div>
+                    <div class="conversation-translation" style="margin-left:28px;">There's a restaurant.</div>
+                </div>
+                <div class="conversation-box">
+                    <div class="example-label">💬 Example ⑨ — Asking who's there</div>
+                    <div class="conversation-line"><span class="speaker">A:</span> <ruby>受付<rt>うけつけ</rt></ruby><strong>に</strong> <ruby>だれ<rt></rt></ruby><strong>が</strong> いますか。</div>
+                    <div class="conversation-translation" style="margin-bottom:12px;margin-left:28px;">Who's at the reception?</div>
+                    <div class="conversation-line"><span class="speaker b">B:</span> <ruby>木村<rt>きむら</rt></ruby>さん<strong>が</strong> います。</div>
+                    <div class="conversation-translation" style="margin-left:28px;">Ms. Kimura is.</div>
+                </div>
+                <div class="key-point">
+                    <strong>⚠️ Critical Note from textbook:</strong> After an interrogative (question word), the particle is <strong>always が</strong> (× なにはありますか, × だれはいますか). Use <ruby>何<rt>なに</rt></ruby><strong>が</strong> and だれ<strong>が</strong>. Never use は after question words in this pattern!
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 5: N は Place に あります/います ======================== -->
+        <div class="slide" data-slide="5">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Grammar 3</span><div><h2>N は Place に あります / います</h2><span class="jp-title">"N is at [place]"</span></div></div>
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula"><span class="highlight">N</span> + <span class="accent">は</span> + <span class="highlight">Place</span> + <span class="accent">に</span> + あります / います</div>
+                </div>
+                <div class="explanation">
+                    <h3>📖 How it works</h3>
+                    <p>This pattern flips the word order! Instead of saying what's at a place (Grammar 2), you take a <strong>specific, known thing</strong> and say <strong>where it is</strong>. The thing uses は (topic marker) because both speaker and listener already know what it is. This is one of the most practical patterns in daily life — answering "Where is ~?"</p>
+                </div>
+                <div class="example-box">
+                    <div class="example-label">📝 Example ⑩</div>
+                    <div class="example-japanese"><ruby>東京<rt>とうきょう</rt></ruby>ディズニーランド<strong>は</strong> <ruby>千葉県<rt>ちばけん</rt></ruby><strong>に</strong> あります。</div>
+                    <div class="example-english">Tokyo Disneyland is in Chiba prefecture.</div>
+                </div>
+                <div class="example-box">
+                    <div class="example-label">📝 Example ⑪</div>
+                    <div class="example-japanese">ミラーさん<strong>は</strong> <ruby>事務所<rt>じむしょ</rt></ruby><strong>に</strong> います。</div>
+                    <div class="example-english">Mr. Miller is in the office.</div>
+                </div>
+                <div class="conversation-box">
+                    <div class="example-label">💬 Example ⑫ — Where is ~?</div>
+                    <div class="conversation-line"><span class="speaker">A:</span> <ruby>東京<rt>とうきょう</rt></ruby>ディズニーランド<strong>は</strong> どこ<strong>に</strong> ありますか。</div>
+                    <div class="conversation-translation" style="margin-bottom:12px;margin-left:28px;">Where's Tokyo Disneyland?</div>
+                    <div class="conversation-line"><span class="speaker b">B:</span> <ruby>千葉県<rt>ちばけん</rt></ruby><strong>に</strong> あります。</div>
+                    <div class="conversation-translation" style="margin-left:28px;">It's in Chiba prefecture.</div>
+                </div>
+                <div class="key-point"><strong>💡 Grammar 2 vs Grammar 3:</strong> Grammar 2 (Place に N が) answers "What's there?" — introduces <em>new</em> info with が. Grammar 3 (N は Place に) answers "Where is it?" — tells the <em>location</em> of something known. The thing in Grammar 3 uses は because it's the topic (already known to both parties).</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 6: Two Pattern Comparison ======================== -->
+        <div class="slide" data-slide="6">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Compare</span><div><h2>Grammar 2 vs Grammar 3</h2><span class="jp-title">Two Existence Patterns</span></div></div>
+                <div class="example-comparison">
+                    <div class="ari-box">
+                        <div class="style-label">❓ What's there? (Grammar 2)</div>
+                        <div style="font-size:0.95rem;color:#1e40af;margin-bottom:12px;"><strong>Place に N が あります/います</strong></div>
+                        <div class="example-japanese" style="font-size:1.1rem;"><ruby>部屋<rt>へや</rt></ruby><strong>に</strong> <ruby>猫<rt>ねこ</rt></ruby><strong>が</strong> います。</div>
+                        <div class="example-english">There's a cat in the room.</div>
+                        <div style="margin-top:12px;font-size:0.85rem;">が introduces <strong>new info</strong> — listener didn't know</div>
+                    </div>
+                    <div class="iru-box">
+                        <div class="style-label">❓ Where is it? (Grammar 3)</div>
+                        <div style="font-size:0.95rem;color:#9d174d;margin-bottom:12px;"><strong>N は Place に あります/います</strong></div>
+                        <div class="example-japanese" style="font-size:1.1rem;"><ruby>猫<rt>ねこ</rt></ruby><strong>は</strong> <ruby>部屋<rt>へや</rt></ruby><strong>に</strong> います。</div>
+                        <div class="example-english">The cat is in the room.</div>
+                        <div style="margin-top:12px;font-size:0.85rem;">は marks <strong>known topic</strong> — both know the cat</div>
+                    </div>
+                </div>
+                <div class="key-point"><strong>⚠️ で (action) vs に (existence) — THE Critical Distinction:</strong> <ruby>公園<rt>こうえん</rt></ruby><strong>で</strong> <ruby>遊<rt>あそ</rt></ruby>びます = "play IN the park" (action, L6). <ruby>公園<rt>こうえん</rt></ruby><strong>に</strong> <ruby>木<rt>き</rt></ruby>が あります = "there are trees IN the park" (existence, L10). Same place, different particles — because one is action and the other is existence!</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 7: Quiz 2 ======================== -->
+        <div class="slide" data-slide="7">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Quick Check</span><h2>Existence Patterns</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">"What's in the bag?" — Fill in the particles:</div>
+                    <div class="fill-blank">かばんの <ruby>中<rt>なか</rt></ruby><input type="text" class="blank-input" id="q3-input" placeholder="？" style="min-width:35px;"> <ruby>何<rt>なに</rt></ruby><input type="text" class="blank-input" id="q3b-input" placeholder="？" style="min-width:35px;"> ありますか。</div>
+                    <button class="check-btn" onclick="checkDoubleBlank('q3','q3b',['に'],['が'],'に ～ が','Place に marks the location; 何が uses が because the thing is unknown (question word). Remember: after interrogatives, always use が, never は!')">Check →</button>
+                    <div class="feedback-area" id="q3-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">"Ms. Tanaka is in the office." — Choose the correct particle order:</div>
+                    <div class="mc-options" id="q4-options">
+                        <div class="mc-option" onclick="checkMC('q4',this,'A')"><span class="option-letter">A</span><span><ruby>田中<rt>たなか</rt></ruby>さん<strong>は</strong> <ruby>事務所<rt>じむしょ</rt></ruby><strong>に</strong> います。</span></div>
+                        <div class="mc-option" onclick="checkMC('q4',this,'A')"><span class="option-letter">B</span><span><ruby>田中<rt>たなか</rt></ruby>さん<strong>に</strong> <ruby>事務所<rt>じむしょ</rt></ruby><strong>は</strong> います。</span></div>
+                    </div>
+                    <div class="feedback-area" id="q4-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 8: Position Words ======================== -->
+        <div class="slide" data-slide="8">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Grammar 4</span><div><h2>N₁ の N₂ — Position Words</h2><span class="jp-title"><ruby>位置<rt>いち</rt></ruby>の<ruby>言葉<rt>ことば</rt></ruby></span></div></div>
+                <div class="explanation">
+                    <h3>📖 How it works</h3>
+                    <p>When N₂ is a position word (<ruby>上<rt>うえ</rt></ruby>, <ruby>下<rt>した</rt></ruby>, <ruby>前<rt>まえ</rt></ruby>, etc.), the phrase N₁ の N₂ shows a <strong>positional relationship</strong>. These position words work like nouns in Japanese — they connect to N₁ with の, and then take に to mark the location.</p>
+                </div>
+                <div class="position-diagram">
+                    <div style="font-weight:600;color:var(--primary);margin-bottom:12px;font-size:1.1rem;">📍 Position Word Map</div>
+                    <div class="pos-row"><div class="pos-item pos-top"><ruby>上<rt>うえ</rt></ruby><br>on / above</div></div>
+                    <div class="pos-row">
+                        <div class="pos-item pos-side"><ruby>左<rt>ひだり</rt></ruby><br>left</div>
+                        <div class="pos-item pos-side"><ruby>前<rt>まえ</rt></ruby><br>front</div>
+                        <div class="pos-item pos-center">📦 N₁</div>
+                        <div class="pos-item pos-side"><ruby>後<rt>うし</rt></ruby>ろ<br>back</div>
+                        <div class="pos-item pos-side"><ruby>右<rt>みぎ</rt></ruby><br>right</div>
+                    </div>
+                    <div class="pos-row"><div class="pos-item pos-bottom"><ruby>下<rt>した</rt></ruby><br>under</div></div>
+                    <div class="pos-row" style="margin-top:12px;">
+                        <div class="pos-item pos-between"><ruby>間<rt>あいだ</rt></ruby><br>between</div>
+                        <div class="pos-item pos-near"><ruby>隣<rt>となり</rt></ruby><br>next to</div>
+                        <div class="pos-item pos-near"><ruby>近<rt>ちか</rt></ruby>く<br>near</div>
+                        <div class="pos-item pos-bottom"><ruby>中<rt>なか</rt></ruby><br>inside</div>
+                    </div>
+                </div>
+                <div class="example-box">
+                    <div class="example-label">📝 Example ⑮</div>
+                    <div class="example-japanese"><ruby>机<rt>つくえ</rt></ruby><strong>の</strong> <ruby>上<rt>うえ</rt></ruby><strong>に</strong> <ruby>写真<rt>しゃしん</rt></ruby>が あります。</div>
+                    <div class="example-english">There's a photograph on the desk.</div>
+                </div>
+                <div class="example-box">
+                    <div class="example-label">📝 Example ⑯</div>
+                    <div class="example-japanese"><ruby>郵便局<rt>ゆうびんきょく</rt></ruby>は <ruby>銀行<rt>ぎんこう</rt></ruby><strong>の</strong> <ruby>隣<rt>となり</rt></ruby><strong>に</strong> あります。</div>
+                    <div class="example-english">The post office is next to the bank.</div>
+                </div>
+                <div class="example-box">
+                    <div class="example-label">📝 Example ⑰</div>
+                    <div class="example-japanese"><ruby>本屋<rt>ほんや</rt></ruby>は <ruby>花屋<rt>はなや</rt></ruby>と スーパー<strong>の</strong> <ruby>間<rt>あいだ</rt></ruby><strong>に</strong> あります。</div>
+                    <div class="example-english">The bookshop is between the florist and the supermarket.</div>
+                </div>
+                <div class="key-point"><strong>💡 Formula:</strong> [Reference Object] <strong>の</strong> [Position Word] <strong>に</strong> あります/います. Example: <ruby>机<rt>つくえ</rt></ruby>の <ruby>上<rt>うえ</rt></ruby>に = "on the desk" (literally: "at the desk's above").</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 9: Position Words as Location で ======================== -->
+        <div class="slide" data-slide="9">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Grammar 4b</span><div><h2>Position Words + で (Action)</h2><span class="jp-title"><ruby>位置<rt>いち</rt></ruby> + で</span></div></div>
+                <div class="explanation">
+                    <h3>📖 Extended Usage</h3>
+                    <p>The textbook notes that these position words can also be used with <strong>で</strong> to mark the location of an <strong>action</strong> (not existence). This directly connects to the で you learned in L6 — the same position words work with both に and で, depending on whether you're describing existence or action.</p>
+                </div>
+                <div class="example-box">
+                    <div class="example-label">📝 Example ⑱</div>
+                    <div class="example-japanese"><ruby>駅<rt>えき</rt></ruby>の <ruby>近<rt>ちか</rt></ruby>く<strong>で</strong> <ruby>友達<rt>ともだち</rt></ruby>に <ruby>会<rt>あ</rt></ruby>いました。</div>
+                    <div class="example-english">I met a friend near the station.</div>
+                </div>
+                <div class="example-comparison">
+                    <div class="ari-box">
+                        <div class="style-label">📍 に — Existence</div>
+                        <div class="example-japanese" style="font-size:1.1rem;"><ruby>駅<rt>えき</rt></ruby>の <ruby>近<rt>ちか</rt></ruby>く<strong>に</strong> コンビニが あります。</div>
+                        <div class="example-english">There's a convenience store near the station.</div>
+                    </div>
+                    <div class="iru-box">
+                        <div class="style-label">🏃 で — Action</div>
+                        <div class="example-japanese" style="font-size:1.1rem;"><ruby>駅<rt>えき</rt></ruby>の <ruby>近<rt>ちか</rt></ruby>く<strong>で</strong> <ruby>友達<rt>ともだち</rt></ruby>に <ruby>会<rt>あ</rt></ruby>いました。</div>
+                        <div class="example-english">I met a friend near the station.</div>
+                    </div>
+                </div>
+                <div class="key-point"><strong>💡 Same place, different particles:</strong> に = something IS there (static). で = you DO something there (dynamic). This is the L6 vs L10 distinction applied to position words!</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 10: Quiz 3 ======================== -->
+        <div class="slide" data-slide="10">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Quick Check</span><h2>Position Words</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">"There's a cat under the table." — Fill in:</div>
+                    <div class="fill-blank">テーブル<input type="text" class="blank-input" id="q5-input" placeholder="？" style="min-width:35px;"> <ruby>下<rt>した</rt></ruby><input type="text" class="blank-input" id="q5b-input" placeholder="？" style="min-width:35px;"> <ruby>猫<rt>ねこ</rt></ruby>が います。</div>
+                    <button class="check-btn" onclick="checkDoubleBlank('q5','q5b',['の'],['に'],'の ～ に','テーブルの 下に = \"at the under of the table\" = under the table. の connects the reference object to the position word; に marks the location of existence.')">Check →</button>
+                    <div class="feedback-area" id="q5-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">"The post office is next to the bank." — Choose correct sentence:</div>
+                    <div class="mc-options" id="q6-options">
+                        <div class="mc-option" onclick="checkMC('q6',this,'B')"><span class="option-letter">A</span><span><ruby>郵便局<rt>ゆうびんきょく</rt></ruby>は <ruby>銀行<rt>ぎんこう</rt></ruby>の <ruby>隣<rt>となり</rt></ruby><strong>で</strong> あります。</span></div>
+                        <div class="mc-option" onclick="checkMC('q6',this,'B')"><span class="option-letter">B</span><span><ruby>郵便局<rt>ゆうびんきょく</rt></ruby>は <ruby>銀行<rt>ぎんこう</rt></ruby>の <ruby>隣<rt>となり</rt></ruby><strong>に</strong> あります。</span></div>
+                    </div>
+                    <div class="feedback-area" id="q6-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 11: N₁ や N₂ ======================== -->
+        <div class="slide" data-slide="11">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Grammar 5</span><div><h2>N₁ や N₂</h2><span class="jp-title">Listing Representative Items</span></div></div>
+                <div class="explanation">
+                    <h3>📖 How it works</h3>
+                    <p>You learned と in L4 for making <strong>complete lists</strong> (A と B = A and B, that's all). The particle <strong>や</strong> creates <strong>incomplete lists</strong> — it lists a few representative items and implies there are more. The optional <strong>など</strong> at the end makes this "and so on" meaning even clearer.</p>
+                </div>
+                <div class="example-comparison">
+                    <div class="ari-box">
+                        <div class="style-label">📋 と — Complete list (L4)</div>
+                        <div class="example-japanese" style="font-size:1.1rem;"><ruby>本<rt>ほん</rt></ruby><strong>と</strong> ノートが あります。</div>
+                        <div class="example-english">There are books and notebooks. (only those two)</div>
+                    </div>
+                    <div class="iru-box">
+                        <div class="style-label">📋 や — Partial list (L10)</div>
+                        <div class="example-japanese" style="font-size:1.1rem;"><ruby>本<rt>ほん</rt></ruby><strong>や</strong> ノートが あります。</div>
+                        <div class="example-english">There are books, notebooks, and other things.</div>
+                    </div>
+                </div>
+                <div class="example-box">
+                    <div class="example-label">📝 Example ⑲ — や</div>
+                    <div class="example-japanese"><ruby>箱<rt>はこ</rt></ruby>の <ruby>中<rt>なか</rt></ruby>に <ruby>手紙<rt>てがみ</rt></ruby><strong>や</strong> <ruby>写真<rt>しゃしん</rt></ruby>が あります。</div>
+                    <div class="example-english">There are letters, photographs, and other things in the box.</div>
+                </div>
+                <div class="example-box">
+                    <div class="example-label">📝 Example ⑳ — や + など</div>
+                    <div class="example-japanese"><ruby>箱<rt>はこ</rt></ruby>の <ruby>中<rt>なか</rt></ruby>に <ruby>手紙<rt>てがみ</rt></ruby><strong>や</strong> <ruby>写真<rt>しゃしん</rt></ruby><strong>など</strong>が あります。</div>
+                    <div class="example-english">There are things like letters and photographs in the box.</div>
+                </div>
+                <div class="key-point"><strong>💡 Key Difference:</strong> <strong>と</strong> = exhaustive list (A and B and nothing else). <strong>や</strong> = representative list (A and B, among others). <strong>や...など</strong> = "things like A and B" (even more explicitly open-ended). Use や when you're giving examples, not a complete inventory.</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 12: Confirmation Echo ======================== -->
+        <div class="slide" data-slide="12">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Grammar 6</span><div><h2>Confirmation Echo</h2><span class="jp-title">アジアストアですか</span></div></div>
+                <div class="explanation">
+                    <h3>📖 How it works</h3>
+                    <p>In natural conversation, when someone asks a question, the listener often <strong>echoes the key word back</strong> as a confirmation before answering. This shows they've understood the question correctly and buys time to formulate a good answer. It's a very Japanese conversational habit!</p>
+                </div>
+                <div class="conversation-box">
+                    <div class="example-label">💬 Example ㉑</div>
+                    <div class="conversation-line"><span class="speaker">A:</span> すみません。アジアストアは どこですか。</div>
+                    <div class="conversation-translation" style="margin-bottom:12px;margin-left:28px;">Excuse me, where is Asia Store?</div>
+                    <div class="conversation-line"><span class="speaker b">B:</span> <strong>アジアストアですか</strong>。（<ruby>中略<rt>ちゅうりゃく</rt></ruby>）あの ビルの <ruby>中<rt>なか</rt></ruby>です。</div>
+                    <div class="conversation-translation" style="margin-left:28px;">Asia Store? (confirming) ...It's in that building over there.</div>
+                </div>
+                <div class="key-point"><strong>💡 Conversation Skill:</strong> This echo technique (repeating the key word + ですか) is used across many Japanese conversations. It's similar to the そうですか (L2) and そうですね (L5/L8) patterns — all are listener responses that show engagement before giving your answer.</div>
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">📘 Minna no Nihongo Connections — Listener Responses (L1–10) <span class="icon">▼</span></button>
+                    <div class="ref-content">
+                        <h4>Complete listener response chart:</h4>
+                        <p><span class="ref-badge">L2</span> そうですか — acknowledging new info ("I see").</p>
+                        <p><span class="ref-badge">L5</span> そうですね — agreeing ("Indeed").</p>
+                        <p><span class="ref-badge">L6</span> ～ですか — echoing with interest.</p>
+                        <p><span class="ref-badge">L8</span> そうですね... — thinking/hedging ("Well...").</p>
+                        <p><span class="ref-badge">L10</span> [Key word] ですか — confirming before answering.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 13: Quiz 4 ======================== -->
+        <div class="slide" data-slide="13">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Quick Check</span><h2>や &amp; Confirmation</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">You want to say there are apples, oranges, AND OTHER THINGS on the table. Which particle?</div>
+                    <div class="mc-options" id="q7-options">
+                        <div class="mc-option" onclick="checkMC('q7',this,'B')"><span class="option-letter">A</span><span>りんご<strong>と</strong> みかんが あります。 (= only those two)</span></div>
+                        <div class="mc-option" onclick="checkMC('q7',this,'B')"><span class="option-letter">B</span><span>りんご<strong>や</strong> みかんが あります。 (= plus others)</span></div>
+                    </div>
+                    <div class="feedback-area" id="q7-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">The key difference between に and で with location is:</div>
+                    <div class="mc-options" id="q8-options">
+                        <div class="mc-option" onclick="checkMC('q8',this,'A')"><span class="option-letter">A</span><span><strong>に</strong> = existence (there is), <strong>で</strong> = action (do something)</span></div>
+                        <div class="mc-option" onclick="checkMC('q8',this,'A')"><span class="option-letter">B</span><span><strong>に</strong> = action (do something), <strong>で</strong> = existence (there is)</span></div>
+                    </div>
+                    <div class="feedback-area" id="q8-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 14: に vs で Master Chart ======================== -->
+        <div class="slide" data-slide="14">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Master</span><div><h2>に vs で — Location Particles</h2><span class="jp-title"><ruby>場所<rt>ばしょ</rt></ruby>の<ruby>助詞<rt>じょし</rt></ruby></span></div></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Particle</th><th>Usage</th><th>Example</th><th>Lesson</th></tr></thead>
+                        <tbody>
+                            <tr><td rowspan="2"><strong>で</strong></td><td>Location of <strong>action</strong></td><td><ruby>公園<rt>こうえん</rt></ruby><strong>で</strong> <ruby>遊<rt>あそ</rt></ruby>びます</td><td>L6</td></tr>
+                            <tr><td>Tool / means</td><td>はし<strong>で</strong> <ruby>食<rt>た</rt></ruby>べます</td><td>L7</td></tr>
+                            <tr style="background:#eff6ff;"><td rowspan="2"><strong>に</strong></td><td><strong>Location of existence</strong></td><td><ruby>公園<rt>こうえん</rt></ruby><strong>に</strong> <ruby>木<rt>き</rt></ruby>が あります</td><td><strong>L10</strong></td></tr>
+                            <tr style="background:#eff6ff;"><td><strong>Destination / recipient</strong></td><td><ruby>日本<rt>にほん</rt></ruby><strong>に</strong> <ruby>行<rt>い</rt></ruby>きます / <ruby>友達<rt>ともだち</rt></ruby><strong>に</strong> あげます</td><td>L5/L7</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="key-point"><strong>⚠️ Test Trap:</strong> <ruby>公園<rt>こうえん</rt></ruby><strong>で</strong> サッカーを します (play soccer IN the park — action) vs. <ruby>公園<rt>こうえん</rt></ruby><strong>に</strong> <ruby>木<rt>き</rt></ruby>が あります (trees ARE in the park — existence). Same place, different particles! This is one of the most common mistakes and one of the most tested points.</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 15: Practice Conversation ======================== -->
+        <div class="slide" data-slide="15">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Practice</span><div><h2>Model Conversation</h2><span class="jp-title"><ruby>会話<rt>かいわ</rt></ruby>れんしゅう</span></div></div>
+                <div class="conversation-box">
+                    <div class="example-label">💬 Asking for Directions</div>
+                    <div class="conversation-line"><span class="speaker">ミラー:</span> すみません。ATMは どこ<strong>に</strong> ありますか。</div>
+                    <div class="conversation-translation" style="margin-bottom:14px;margin-left:50px;">Excuse me. Where is an ATM?</div>
+                    <div class="conversation-line"><span class="speaker b"><ruby>店員<rt>てんいん</rt></ruby>:</span> <strong>ATMですか</strong>。2<ruby>階<rt>かい</rt></ruby><strong>に</strong> あります。</div>
+                    <div class="conversation-translation" style="margin-bottom:14px;margin-left:50px;">An ATM? It's on the 2nd floor.</div>
+                    <div class="conversation-line"><span class="speaker">ミラー:</span> 2<ruby>階<rt>かい</rt></ruby>の どこですか。</div>
+                    <div class="conversation-translation" style="margin-bottom:14px;margin-left:50px;">Where on the 2nd floor?</div>
+                    <div class="conversation-line"><span class="speaker b"><ruby>店員<rt>てんいん</rt></ruby>:</span> エレベーター<strong>の</strong> <ruby>隣<rt>となり</rt></ruby><strong>に</strong> あります。</div>
+                    <div class="conversation-translation" style="margin-bottom:14px;margin-left:50px;">It's next to the elevator.</div>
+                    <div class="conversation-line"><span class="speaker">ミラー:</span> <ruby>近<rt>ちか</rt></ruby>く<strong>に</strong> トイレ<strong>も</strong> ありますか。</div>
+                    <div class="conversation-translation" style="margin-bottom:14px;margin-left:50px;">Is there also a toilet nearby?</div>
+                    <div class="conversation-line"><span class="speaker b"><ruby>店員<rt>てんいん</rt></ruby>:</span> はい、エレベーター<strong>の</strong> <ruby>前<rt>まえ</rt></ruby><strong>に</strong> あります。</div>
+                    <div class="conversation-translation" style="margin-left:50px;">Yes, it's in front of the elevator.</div>
+                </div>
+                <div class="key-point"><strong>🔍 Spot the grammar!</strong> This uses: N は どこに ありますか (Grammar 3), confirmation echo (ATMですか), position words の 隣に / の 前に (Grammar 4), も for "also" (L2), 近くに (Grammar 4b).</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 16: Comprehensive Final Quiz ======================== -->
+        <div class="slide" data-slide="16">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">🏆 Final Quiz</span><h2>Lesson 10 — Comprehensive Check</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 3</div>
+                    <div class="question-context">"There are children in the park." — Choose:</div>
+                    <div class="mc-options" id="q9-options">
+                        <div class="mc-option" onclick="checkMC('q9',this,'B')"><span class="option-letter">A</span><span><ruby>公園<rt>こうえん</rt></ruby>に <ruby>子<rt>こ</rt></ruby>どもが <strong>あります</strong>。</span></div>
+                        <div class="mc-option" onclick="checkMC('q9',this,'B')"><span class="option-letter">B</span><span><ruby>公園<rt>こうえん</rt></ruby>に <ruby>子<rt>こ</rt></ruby>どもが <strong>います</strong>。</span></div>
+                    </div>
+                    <div class="feedback-area" id="q9-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 3</div>
+                    <div class="question-context">"The bookshop is between the bank and the post office." — Fill in:</div>
+                    <div class="fill-blank"><ruby>本屋<rt>ほんや</rt></ruby>は <ruby>銀行<rt>ぎんこう</rt></ruby>と <ruby>郵便局<rt>ゆうびんきょく</rt></ruby><input type="text" class="blank-input" id="q10-input" placeholder="？" style="min-width:40px;"> <ruby>間<rt>あいだ</rt></ruby><input type="text" class="blank-input" id="q10b-input" placeholder="？" style="min-width:40px;"> あります。</div>
+                    <button class="check-btn" onclick="checkDoubleBlank('q10','q10b',['の'],['に'],'の ～ に','AとBの 間に = between A and B. の connects the reference to the position word; に marks the location of existence.')">Check →</button>
+                    <div class="feedback-area" id="q10-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 3 of 3</div>
+                    <div class="question-context">"I play soccer in the park." vs "There are trees in the park." — Which uses で?</div>
+                    <div class="mc-options" id="q11-options">
+                        <div class="mc-option" onclick="checkMC('q11',this,'A')"><span class="option-letter">A</span><span><ruby>公園<rt>こうえん</rt></ruby><strong>で</strong> サッカーを します。（action → で）</span></div>
+                        <div class="mc-option" onclick="checkMC('q11',this,'A')"><span class="option-letter">B</span><span><ruby>公園<rt>こうえん</rt></ruby><strong>で</strong> <ruby>木<rt>き</rt></ruby>が あります。（existence → で）</span></div>
+                    </div>
+                    <div class="feedback-area" id="q11-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 17: Position Words Table ======================== -->
+        <div class="slide" data-slide="17">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Reference</span><div><h2>Complete Position Words</h2><span class="jp-title"><ruby>位置<rt>いち</rt></ruby>の<ruby>言葉<rt>ことば</rt></ruby></span></div></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Position</th><th>Japanese</th><th>Example</th></tr></thead>
+                        <tbody>
+                            <tr><td>on / above</td><td><ruby>上<rt>うえ</rt></ruby></td><td><ruby>机<rt>つくえ</rt></ruby>の<ruby>上<rt>うえ</rt></ruby>に</td></tr>
+                            <tr><td>under / below</td><td><ruby>下<rt>した</rt></ruby></td><td>テーブルの<ruby>下<rt>した</rt></ruby>に</td></tr>
+                            <tr><td>in front of</td><td><ruby>前<rt>まえ</rt></ruby></td><td><ruby>駅<rt>えき</rt></ruby>の<ruby>前<rt>まえ</rt></ruby>に</td></tr>
+                            <tr><td>behind</td><td><ruby>後<rt>うし</rt></ruby>ろ</td><td>ビルの<ruby>後<rt>うし</rt></ruby>ろに</td></tr>
+                            <tr><td>right</td><td><ruby>右<rt>みぎ</rt></ruby></td><td><ruby>銀行<rt>ぎんこう</rt></ruby>の<ruby>右<rt>みぎ</rt></ruby>に</td></tr>
+                            <tr><td>left</td><td><ruby>左<rt>ひだり</rt></ruby></td><td>コンビニの<ruby>左<rt>ひだり</rt></ruby>に</td></tr>
+                            <tr><td>inside</td><td><ruby>中<rt>なか</rt></ruby></td><td><ruby>箱<rt>はこ</rt></ruby>の<ruby>中<rt>なか</rt></ruby>に</td></tr>
+                            <tr><td>outside</td><td><ruby>外<rt>そと</rt></ruby></td><td><ruby>家<rt>いえ</rt></ruby>の<ruby>外<rt>そと</rt></ruby>に</td></tr>
+                            <tr><td>next to</td><td><ruby>隣<rt>となり</rt></ruby></td><td><ruby>郵便局<rt>ゆうびんきょく</rt></ruby>の<ruby>隣<rt>となり</rt></ruby>に</td></tr>
+                            <tr><td>near</td><td><ruby>近<rt>ちか</rt></ruby>く</td><td><ruby>駅<rt>えき</rt></ruby>の<ruby>近<rt>ちか</rt></ruby>くに</td></tr>
+                            <tr><td>between</td><td><ruby>間<rt>あいだ</rt></ruby></td><td>AとBの<ruby>間<rt>あいだ</rt></ruby>に</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 18: と vs や ======================== -->
+        <div class="slide" data-slide="18">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Compare</span><div><h2>と vs や — Listing Particles</h2><span class="jp-title"><ruby>列挙<rt>れっきょ</rt></ruby>の<ruby>助詞<rt>じょし</rt></ruby></span></div></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Particle</th><th>Type</th><th>Meaning</th><th>Lesson</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>と</strong></td><td>Complete list</td><td>A <strong>and</strong> B (= only these)</td><td>L4</td></tr>
+                            <tr style="background:#eff6ff;"><td><strong>や</strong></td><td>Partial list</td><td>A, B, <strong>and others</strong></td><td><strong>L10</strong></td></tr>
+                            <tr style="background:#eff6ff;"><td><strong>や...など</strong></td><td>Partial + "etc."</td><td><strong>things like</strong> A and B</td><td><strong>L10</strong></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 19: あります Two Meanings ======================== -->
+        <div class="slide" data-slide="19">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Evolution</span><div><h2>あります — Two Meanings</h2><span class="jp-title">あります の<ruby>意味<rt>いみ</rt></ruby></span></div></div>
+                <div class="example-comparison">
+                    <div class="ari-box">
+                        <div class="style-label">💰 L9: Possession ("have")</div>
+                        <div class="example-japanese" style="font-size:1.1rem;"><ruby>車<rt>くるま</rt></ruby>が あります。</div>
+                        <div class="example-english">I have a car.</div>
+                        <div style="font-size:0.85rem;color:#1e40af;margin-top:8px;">No location marker — about what you possess</div>
+                    </div>
+                    <div class="iru-box">
+                        <div class="style-label">📍 L10: Existence ("there is")</div>
+                        <div class="example-japanese" style="font-size:1.1rem;"><ruby>部屋<rt>へや</rt></ruby><strong>に</strong> <ruby>机<rt>つくえ</rt></ruby>が あります。</div>
+                        <div class="example-english">There's a desk in the room.</div>
+                        <div style="font-size:0.85rem;color:#9d174d;margin-top:8px;">Location に present — about where something exists</div>
+                    </div>
+                </div>
+                <div class="key-point"><strong>💡 Context Clue:</strong> If there's a <strong>Place に</strong> in the sentence, あります means "exists at." If there's no location marker, it means "I have." The presence of に is the giveaway!</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 20: What's Next ======================== -->
+        <div class="slide" data-slide="20">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Preview</span><div><h2>What's Coming Next?</h2><span class="jp-title"><ruby>次<rt>つぎ</rt></ruby>のレッスン</span></div></div>
+                <div class="explanation"><h3>🔮 Lesson 11 Preview</h3><p>Lesson 11 introduces <strong>counting</strong> — one of the most complex aspects of Japanese! You'll learn various counter words (<ruby>枚<rt>まい</rt></ruby>, <ruby>台<rt>だい</rt></ruby>, <ruby>人<rt>にん</rt></ruby>, etc.), how to express quantities, and durations of time.</p></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Lesson 11 Topic</th><th>What You'll Learn</th></tr></thead>
+                        <tbody>
+                            <tr><td>Counter words</td><td><ruby>枚<rt>まい</rt></ruby> (flat), <ruby>台<rt>だい</rt></ruby> (machines), <ruby>人<rt>にん</rt></ruby> (people)...</td></tr>
+                            <tr><td>Quantity expressions</td><td>N を [number + counter] V ます</td></tr>
+                            <tr><td>Duration</td><td>[period] V ます (how long)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="key-point"><strong>🎯 Study Tip:</strong> Before L11, make sure you're confident with に (existence) vs で (action) and can use all the position words fluently. Practice describing your room or desk using あります/います + position words!</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 21: L1-10 Cumulative ======================== -->
+        <div class="slide" data-slide="21">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">L1–L10</span><div><h2>Cumulative Skills</h2><span class="jp-title">レッスン1〜10 まとめ</span></div></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Skill</th><th>Source</th></tr></thead>
+                        <tbody>
+                            <tr><td>Introduce yourself, identify things/places</td><td>L1–L3</td></tr>
+                            <tr><td>Daily routines, time, verbs</td><td>L4</td></tr>
+                            <tr><td>Travel, transport, companions</td><td>L5</td></tr>
+                            <tr><td>Actions with objects, invitations</td><td>L6</td></tr>
+                            <tr><td>Give, receive, use tools</td><td>L7</td></tr>
+                            <tr><td>Describe with adjectives</td><td>L8</td></tr>
+                            <tr><td>Express preferences, abilities, reasons</td><td>L9</td></tr>
+                            <tr style="background:#eff6ff;"><td><strong>Describe existence &amp; location</strong></td><td><strong>L10</strong></td></tr>
+                            <tr style="background:#eff6ff;"><td><strong>Use 11 position words</strong></td><td><strong>L10</strong></td></tr>
+                            <tr style="background:#eff6ff;"><td><strong>List items with や</strong></td><td><strong>L10</strong></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="key-point"><strong>🎉 Milestone:</strong> With Lesson 10 complete, you've finished the first 10 lessons of Minna no Nihongo! You can now form noun, verb, and adjective sentences; describe actions, feelings, locations, and existence; give and receive; express preferences and reasons. That's an incredible foundation!</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 22: Particle Master Chart (L1-10) ======================== -->
+        <div class="slide" data-slide="22">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Master</span><div><h2>Particle Master Chart (L1–10)</h2><span class="jp-title"><ruby>助詞<rt>じょし</rt></ruby>マスターチャート</span></div></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Particle</th><th>Function</th><th>Lesson</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>は</strong></td><td>Topic marker</td><td>L1</td></tr>
+                            <tr><td><strong>も</strong></td><td>"Also"</td><td>L1</td></tr>
+                            <tr><td><strong>の</strong></td><td>Possession / connection</td><td>L1</td></tr>
+                            <tr><td><strong>か</strong></td><td>Question marker</td><td>L1</td></tr>
+                            <tr><td><strong>に</strong></td><td>Time / destination / recipient / existence location</td><td>L4–10</td></tr>
+                            <tr><td><strong>から・まで</strong></td><td>"From" / "until" + "because"</td><td>L4–9</td></tr>
+                            <tr><td><strong>と</strong></td><td>"With" / complete list "and"</td><td>L4</td></tr>
+                            <tr><td><strong>へ</strong></td><td>Direction</td><td>L5</td></tr>
+                            <tr><td><strong>で</strong></td><td>Transport / action location / tool</td><td>L5–7</td></tr>
+                            <tr><td><strong>を</strong></td><td>Object (action verbs)</td><td>L6</td></tr>
+                            <tr><td><strong>が</strong></td><td>"But" / state objects / existence subject</td><td>L8–10</td></tr>
+                            <tr style="background:#eff6ff;"><td><strong>や</strong></td><td>Partial list "and (others)"</td><td><strong>L10</strong></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 23: に Evolution ======================== -->
+        <div class="slide" data-slide="23">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Evolution</span><div><h2>に — Five Roles by L10!</h2><span class="jp-title">に の<ruby>使<rt>つか</rt></ruby>い<ruby>方<rt>かた</rt></ruby></span></div></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>に Usage</th><th>Meaning</th><th>Example</th><th>Lesson</th></tr></thead>
+                        <tbody>
+                            <tr><td>Time</td><td>"at" (specific time)</td><td>6<ruby>時<rt>じ</rt></ruby><strong>に</strong></td><td>L4</td></tr>
+                            <tr><td>Destination</td><td>"to" (direction)</td><td><ruby>日本<rt>にほん</rt></ruby><strong>に</strong> <ruby>来<rt>き</rt></ruby>ました</td><td>L5</td></tr>
+                            <tr><td>Recipient / Source</td><td>"to/from" (person)</td><td><ruby>友達<rt>ともだち</rt></ruby><strong>に</strong> あげます</td><td>L7</td></tr>
+                            <tr style="background:#eff6ff;"><td><strong>Existence location</strong></td><td><strong>"at/in" (where things exist)</strong></td><td><strong><ruby>部屋<rt>へや</rt></ruby>に <ruby>机<rt>つくえ</rt></ruby>が あります</strong></td><td><strong>L10</strong></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="key-point"><strong>💡 Core principle:</strong> に always points to a <strong>fixed anchor point</strong> — a moment in time, a destination, a recipient, or a location where something exists. This unified concept makes に predictable despite its many uses!</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 24: Summary ======================== -->
+        <div class="slide" data-slide="24">
+            <div class="summary-card">
+                <h2>🎉 Lesson 10 Complete!</h2>
+                <p>おめでとうございます！ You can now describe what exists where and give directions!</p>
+                <div class="summary-points">
+                    <div class="summary-point"><h4>🪑 あります</h4><p>Inanimate things exist (objects, plants, places)</p></div>
+                    <div class="summary-point"><h4>🐕 います</h4><p>Animate things exist (people, animals)</p></div>
+                    <div class="summary-point"><h4>📍 に vs で</h4><p>Existence (に) vs Action (で)</p></div>
+                    <div class="summary-point"><h4>🗺️ Position Words</h4><p>上/下/前/後ろ/隣/間 + 11 total</p></div>
+                    <div class="summary-point"><h4>📋 や — Partial List</h4><p>A や B (and others) vs A と B (complete)</p></div>
+                    <div class="summary-point"><h4>🔄 Echo Confirm</h4><p>[Key word] ですか — before answering</p></div>
+                </div>
+                <button class="restart-btn" onclick="restartPresentation()">🔄 Start Over</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide=1;const totalSlides=24;
+        function updateSlide(){document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));const a=document.querySelector(`[data-slide="${currentSlide}"]`);if(a)a.classList.add('active');document.getElementById('currentSlide').textContent=currentSlide;document.getElementById('totalSlides').textContent=totalSlides;document.getElementById('progressFill').style.width=((currentSlide-1)/(totalSlides-1))*100+'%';document.getElementById('prevBtn').disabled=currentSlide===1;document.getElementById('nextBtn').disabled=currentSlide===totalSlides;window.scrollTo({top:0,behavior:'smooth'});}
+        function nextSlide(){if(currentSlide<totalSlides){currentSlide++;updateSlide();}}
+        function prevSlide(){if(currentSlide>1){currentSlide--;updateSlide();}}
+        function goToSlide(n){currentSlide=n;updateSlide();}
+        function restartPresentation(){currentSlide=1;updateSlide();}
+        function toggleRef(b){const c=b.nextElementSibling;b.classList.toggle('open');c.classList.toggle('open');}
+
+        const mcAnswers={
+            q1:{correct:'B',explanation:'✅ A cat is animate (can move by itself), so use います. 猫が います = There\'s a cat. あります is for inanimate things that can\'t move on their own.'},
+            q2:{correct:'A',explanation:'✅ Cherry trees (桜) are plants — they can\'t move by themselves, so use あります even though they\'re alive! Plants always use あります in Japanese.'},
+            q4:{correct:'A',explanation:'✅ Grammar 3: N は Place に います. 田中さん (known person) は marks the topic; 事務所 (office) に marks the location of existence. The person is known → は. The location → に.'},
+            q6:{correct:'B',explanation:'✅ Existence uses に, not で! 郵便局は 銀行の 隣に あります. に marks WHERE something EXISTS. で would be for WHERE you DO something (action). This is the critical L6 vs L10 distinction!'},
+            q7:{correct:'B',explanation:'✅ や creates a partial/representative list — りんごや みかんが あります implies there are OTHER fruits too. と would mean ONLY apples and oranges, nothing else.'},
+            q8:{correct:'A',explanation:'✅ に = existence (static: something IS there). で = action (dynamic: you DO something there). 公園に 木が あります (trees exist) vs 公園で 遊びます (play there). This is one of the most fundamental particle distinctions in Japanese!'},
+            q9:{correct:'B',explanation:'✅ Children (子ども) are animate — they can move by themselves — so use います. あります is only for inanimate things. 公園に 子どもが います = There are children in the park.'},
+            q11:{correct:'A',explanation:'✅ Action (playing soccer) → で. Existence (trees being there) → に. 公園で サッカーを します (action at park). 公園に 木が あります (trees exist at park). Same place, different particles because of the verb type!'}
+        };
+
+        function checkMC(qId,clicked,correctLetter){
+            const fb=document.getElementById(qId+'-feedback');const opts=document.getElementById(qId+'-options').querySelectorAll('.mc-option');const ans=mcAnswers[qId];const cl=clicked.querySelector('.option-letter').textContent;
+            opts.forEach(o=>{o.classList.add('disabled');const l=o.querySelector('.option-letter').textContent;if(l===ans.correct)o.classList.add('correct-choice');else if(o===clicked&&cl!==ans.correct)o.classList.add('incorrect-choice');});
+            const ok=cl===ans.correct;fb.className='feedback-area show '+(ok?'correct-feedback':'incorrect-feedback');
+            fb.innerHTML=`<span class="fb-icon">${ok?'🎉':'😅'}</span><span class="fb-answer">${ok?'Correct!':'Not quite!'}</span><div class="fb-explain">${ans.explanation}</div>`;
+        }
+        function checkFillBlank(qId,accepted,display,explanation){
+            const input=document.getElementById(qId+'-input');const fb=document.getElementById(qId+'-feedback');const ans=input.value.trim();
+            if(!ans){fb.className='feedback-area show incorrect-feedback';fb.innerHTML='<span class="fb-icon">✍️</span> <span class="fb-answer">Please type your answer first!</span>';return;}
+            const ok=accepted.includes(ans);input.style.borderColor=ok?'var(--success)':'var(--error)';input.style.background=ok?'var(--success-light)':'var(--error-light)';
+            fb.className='feedback-area show '+(ok?'correct-feedback':'incorrect-feedback');
+            fb.innerHTML=`<span class="fb-icon">${ok?'🎉':'😅'}</span><span class="fb-answer">${ok?'Correct!':'Not quite!'} Answer: <strong>${display}</strong></span><div class="fb-explain">${explanation}</div>`;
+        }
+        function checkDoubleBlank(q1,q2,acc1,acc2,display,explanation){
+            const i1=document.getElementById(q1+'-input'),i2=document.getElementById(q2+'-input');const fb=document.getElementById(q1+'-feedback');
+            const a1=i1.value.trim(),a2=i2.value.trim();
+            if(!a1||!a2){fb.className='feedback-area show incorrect-feedback';fb.innerHTML='<span class="fb-icon">✍️</span> <span class="fb-answer">Please fill in both blanks!</span>';return;}
+            const c1=acc1.includes(a1),c2=acc2.includes(a2),ok=c1&&c2;
+            i1.style.borderColor=c1?'var(--success)':'var(--error)';i1.style.background=c1?'var(--success-light)':'var(--error-light)';
+            i2.style.borderColor=c2?'var(--success)':'var(--error)';i2.style.background=c2?'var(--success-light)':'var(--error-light)';
+            fb.className='feedback-area show '+(ok?'correct-feedback':'incorrect-feedback');
+            fb.innerHTML=`<span class="fb-icon">${ok?'🎉':'😅'}</span><span class="fb-answer">${ok?'Correct!':'Not quite!'} Answer: <strong>${display}</strong></span><div class="fb-explain">${explanation}</div>`;
+        }
+
+        document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nextSlide();}else if(e.key==='ArrowLeft'){e.preventDefault();prevSlide();}});
+        let touchStartX=0;document.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].screenX;});document.addEventListener('touchend',e=>{const d=touchStartX-e.changedTouches[0].screenX;if(Math.abs(d)>50){d>0?nextSlide():prevSlide();}});
+        updateSlide();
+    </script>
+</body>
+</html>
