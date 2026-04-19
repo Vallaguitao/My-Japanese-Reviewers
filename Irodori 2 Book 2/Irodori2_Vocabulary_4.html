@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Irodori Book 2 — Lesson 4 Vocabulary Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-light: #f5f3eb;
+  --bg-warm: #ebe7d9;
+  --primary: #7a8a3e;
+  --primary-deep: #5c6b2a;
+  --primary-soft: #c8d1a4;
+  --primary-pale: #eef1e0;
+  --text-primary: #2c2e1f;
+  --text-secondary: #565840;
+  --text-muted: #8a8c6e;
+  --accent: #667a2a;
+  --correct: #4caf7a;
+  --correct-bg: #e8f5ee;
+  --wrong: #e05555;
+  --wrong-bg: #fdeaea;
+  --card-bg: #ffffff;
+  --shadow-sm: 0 2px 8px rgba(44,46,31,0.06);
+  --shadow-md: 0 4px 20px rgba(44,46,31,0.1);
+  --shadow-lg: 0 8px 32px rgba(44,46,31,0.14);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Outfit', 'Noto Sans JP', sans-serif;
+  background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-warm) 100%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before, body::after {
+  content: '🥢';
+  position: fixed;
+  font-size: 2rem;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 0;
+}
+body::before { top: 10%; left: 5%; transform: rotate(-15deg); }
+body::after { bottom: 10%; right: 5%; transform: rotate(20deg); }
+
+.top-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--primary-soft);
+  z-index: 100; padding: 12px 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.top-bar .badge {
+  background: linear-gradient(135deg, var(--primary-deep), var(--accent));
+  color: #fff; font-size: 0.7rem; font-weight: 600;
+  padding: 4px 10px; border-radius: 20px;
+  letter-spacing: 0.5px; white-space: nowrap;
+}
+.progress-wrap {
+  flex: 1; height: 8px;
+  background: var(--primary-pale);
+  border-radius: 4px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-deep));
+  border-radius: 4px; transition: width 0.4s ease; width: 0%;
+}
+.top-bar .counter {
+  font-size: 0.8rem; font-weight: 500;
+  color: var(--text-secondary); white-space: nowrap;
+}
+
+.container {
+  max-width: 640px; margin: 0 auto;
+  padding: 80px 20px 40px;
+  position: relative; z-index: 1;
+}
+
+.screen { display: none; }
+.screen.active { display: block; animation: fadeUp 0.4s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.start-card {
+  background: var(--card-bg); border-radius: var(--radius);
+  box-shadow: var(--shadow-lg); padding: 48px 36px; text-align: center;
+}
+.start-card .icon { font-size: 3rem; margin-bottom: 16px; }
+.start-card h1 {
+  font-family: 'Outfit', sans-serif; font-size: 1.6rem;
+  font-weight: 700; color: var(--text-primary); margin-bottom: 4px;
+}
+.start-card .jp-title {
+  font-family: 'Noto Sans JP', sans-serif; font-size: 1.05rem;
+  color: var(--primary-deep); font-weight: 500;
+  margin-bottom: 20px; display: block;
+}
+.start-card .meta {
+  display: flex; justify-content: center;
+  gap: 20px; margin-bottom: 28px; flex-wrap: wrap;
+}
+.start-card .meta-item {
+  background: var(--primary-pale); padding: 8px 16px;
+  border-radius: var(--radius-sm); font-size: 0.82rem;
+  color: var(--text-secondary); font-weight: 500;
+}
+.start-card .meta-item strong { color: var(--accent); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 36px; border: none; border-radius: 50px;
+  font-family: 'Outfit', sans-serif; font-size: 1rem;
+  font-weight: 600; cursor: pointer; transition: all 0.25s ease;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-deep), var(--accent));
+  color: #fff; box-shadow: 0 4px 16px rgba(92,107,42,0.35);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(92,107,42,0.45);
+}
+.btn-secondary {
+  background: var(--card-bg); color: var(--accent);
+  border: 2px solid var(--primary-soft);
+}
+.btn-secondary:hover {
+  border-color: var(--primary); background: var(--primary-pale);
+}
+
+.quiz-card {
+  background: var(--card-bg); border-radius: var(--radius);
+  box-shadow: var(--shadow-md); padding: 32px 28px;
+  position: relative; overflow: hidden;
+}
+.quiz-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-deep), var(--accent));
+}
+.q-number {
+  font-size: 0.75rem; font-weight: 600; color: var(--primary-deep);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+}
+.q-prompt {
+  font-size: 1.25rem; font-weight: 600;
+  color: var(--text-primary); margin-bottom: 6px; line-height: 1.4;
+}
+.q-instruction {
+  font-size: 0.82rem; color: var(--text-muted); margin-bottom: 24px;
+}
+
+.choices { display: flex; flex-direction: column; gap: 10px; }
+.choice-btn {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; padding: 16px 20px;
+  background: var(--bg-light); border: 2px solid transparent;
+  border-radius: var(--radius-sm); cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 1.15rem; font-weight: 400;
+  color: var(--text-primary); transition: all 0.2s ease; text-align: left;
+}
+.choice-btn .letter {
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--primary-pale); border-radius: 8px;
+  font-family: 'Outfit', sans-serif; font-size: 0.8rem;
+  font-weight: 600; color: var(--primary-deep);
+  flex-shrink: 0; transition: all 0.2s ease;
+}
+.choice-btn:hover:not(.disabled) {
+  border-color: var(--primary); background: var(--primary-pale);
+  transform: translateX(4px);
+}
+.choice-btn.selected { border-color: var(--primary-deep); background: var(--primary-pale); }
+.choice-btn.selected .letter { background: var(--primary-deep); color: #fff; }
+.choice-btn.correct { border-color: var(--correct); background: var(--correct-bg); }
+.choice-btn.correct .letter { background: var(--correct); color: #fff; }
+.choice-btn.wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+.choice-btn.wrong .letter { background: var(--wrong); color: #fff; }
+.choice-btn.disabled { cursor: default; opacity: 0.7; }
+.choice-btn.disabled:hover { transform: none; }
+.choice-btn.correct.disabled, .choice-btn.wrong.disabled { opacity: 1; }
+
+.feedback {
+  margin-top: 20px; padding: 14px 18px;
+  border-radius: var(--radius-sm); font-size: 0.9rem;
+  font-weight: 500; display: none;
+}
+.feedback.correct-fb {
+  background: var(--correct-bg); color: #2e7d4f;
+  border-left: 4px solid var(--correct); display: block;
+}
+.feedback.wrong-fb {
+  background: var(--wrong-bg); color: #b83030;
+  border-left: 4px solid var(--wrong); display: block;
+}
+
+.next-wrap { display: none; justify-content: flex-end; margin-top: 20px; }
+.next-wrap.show { display: flex; }
+
+.results-card {
+  background: var(--card-bg); border-radius: var(--radius);
+  box-shadow: var(--shadow-lg); padding: 40px 32px; text-align: center;
+}
+.results-card .score-circle {
+  width: 140px; height: 140px; border-radius: 50%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  margin: 0 auto 24px;
+  border: 6px solid var(--primary-soft); background: var(--primary-pale);
+}
+.score-circle .score-num {
+  font-family: 'Outfit', sans-serif; font-size: 2.4rem;
+  font-weight: 700; color: var(--primary-deep); line-height: 1;
+}
+.score-circle .score-label {
+  font-size: 0.75rem; color: var(--text-muted);
+  font-weight: 500; margin-top: 2px;
+}
+.results-card h2 { font-size: 1.4rem; margin-bottom: 8px; }
+.results-card .results-msg {
+  color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 28px;
+}
+.results-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+.review-section { margin-top: 28px; text-align: left; }
+.review-section h3 {
+  font-size: 1rem; color: var(--accent); margin-bottom: 14px;
+  padding-bottom: 8px; border-bottom: 2px solid var(--primary-soft);
+}
+.review-item {
+  background: var(--wrong-bg); border-radius: var(--radius-sm);
+  padding: 14px 18px; margin-bottom: 10px;
+  border-left: 4px solid var(--wrong);
+}
+.review-item .ri-eng { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
+.review-item .ri-answers { font-size: 0.85rem; color: var(--text-secondary); }
+.review-item .ri-answers .yours {
+  color: var(--wrong); text-decoration: line-through;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.review-item .ri-answers .right {
+  color: var(--correct); font-weight: 600;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+@media (max-width: 480px) {
+  .start-card { padding: 32px 20px; }
+  .quiz-card { padding: 24px 18px; }
+  .q-prompt { font-size: 1.1rem; }
+  .choice-btn { padding: 14px 16px; font-size: 1.05rem; }
+  .results-card { padding: 28px 20px; }
+  .start-card h1 { font-size: 1.35rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar" id="topBar" style="display:none;">
+  <span class="badge">初級2 L4</span>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="counter" id="counter">1 / 50</span>
+</div>
+
+<div class="container">
+
+  <div class="screen active" id="startScreen">
+    <div class="start-card">
+      <div class="icon">🥢</div>
+      <h1>Vocabulary Quiz — Lesson 4</h1>
+      <span class="jp-title">しょうゆをつけないで食べてください（ことばリスト）</span>
+      <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:20px;">
+        Irodori: Japanese for Life in Japan — Book 2
+      </p>
+      <div class="meta">
+        <div class="meta-item"><strong>50</strong> Questions</div>
+        <div class="meta-item">Multiple Choice</div>
+        <div class="meta-item">English → ひらがな</div>
+      </div>
+      <button class="btn btn-primary" onclick="startQuiz()">Start Quiz ✦</button>
+    </div>
+  </div>
+
+  <div class="screen" id="quizScreen">
+    <div class="quiz-card">
+      <div class="q-number" id="qNumber">Question 1 of 50</div>
+      <div class="q-prompt" id="qPrompt"></div>
+      <div class="q-instruction">Choose the correct hiragana.</div>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="next-wrap" id="nextWrap">
+        <button class="btn btn-primary" onclick="nextQuestion()" id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="resultsScreen">
+    <div class="results-card">
+      <div class="score-circle">
+        <span class="score-num" id="scoreNum">0%</span>
+        <span class="score-label">Score</span>
+      </div>
+      <h2 id="resultsTitle">Great job!</h2>
+      <p class="results-msg" id="resultsMsg"></p>
+      <div class="results-btns">
+        <button class="btn btn-primary" onclick="restartQuiz()">Try Again 🔄</button>
+        <button class="btn btn-secondary" onclick="reviewMistakes()" id="reviewBtn">Review Mistakes</button>
+      </div>
+      <div class="review-section" id="reviewSection" style="display:none;"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ALL_VOCAB = [
+  // Section 1: どこかいい店、ありませんか？
+  ["authentic", "ほんもの"],
+  ["amount", "りょう"],
+  ["chicken", "とり"],
+  ["girlfriend", "かのじょ"],
+  ["meal / eating", "しょくじ"],
+  ["Vietnamese cuisine", "べとなむりょうり"],
+  ["local", "とち"],
+  ["I (male, casual)", "おれ"],
+  ["sign (shop)", "かんばん"],
+  ["around here", "このへん"],
+  ["newly", "あたらしく"],
+  ["to be newly opened", "できる"],
+  ["map", "ちず"],
+  ["to send", "おくる"],
+  ["near here", "このあたり"],
+  ["married couple", "ふうふ"],
+  ["I did not know.", "しりませんでした"],
+
+  // Section 2: よく混ぜて食べてください
+  ["how to eat", "たべかた"],
+  ["to dip (in sauce)", "つける"],
+  ["to mix", "まぜる"],
+  ["to pour over / to sprinkle", "かける"],
+  ["to put in / to add", "いれる"],
+  ["to roll", "まく"],
+  ["to put on top", "のせる"],
+  ["to peel", "むく"],
+  ["mixed soba", "まぜそば"],
+  ["shumai (meat dumpling)", "しゅうまい"],
+  ["tempura", "てんぷら"],
+  ["tomato", "とまと"],
+  ["temaki-zushi (hand-rolled sushi)", "てまきずし"],
+  ["baked sweet potato", "やきいも"],
+  ["seasoned", "あじがついている"],
+  ["soy sauce", "しょうゆ"],
+  ["dipping sauce", "つゆ"],
+  ["as is", "そのまま"],
+  ["seaweed", "のり"],
+  ["skin (e.g. tomato skin)", "かわ"],
+  ["Thank you for waiting. (polite)", "おまたせしました"],
+
+  // Section 3: どうやって食べるんですか？
+  ["at once", "いちどに"],
+  ["so much", "そんなに"],
+  ["shabu shabu (hot pot)", "しゃぶしゃぶ"],
+  ["like this", "こうやって"],
+  ["tasteless", "あじがない"],
+  ["ponzu vinegar", "ぽんず"],
+  ["sesame sauce", "ごまだれ"],
+  ["Chinese cabbage", "はくさい"],
+
+  // Section 4: 餃子に似ています
+  ["seasoning", "ちょうみりょう"],
+  ["sugar", "さとう"],
+  ["pepper", "こしょう"],
+  ["spice", "すぱいす"],
+  ["sauce", "そーす"],
+  ["tare (dipping sauce)", "たれ"],
+  ["oil", "あぶら"],
+  ["cooking instructions", "ちょうりほうほう"],
+  ["to cut", "きる"],
+  ["to grill / to cook", "やく"],
+  ["to simmer / to stew", "にる"],
+  ["to boil", "ゆでる"],
+  ["to steam", "むす"],
+  ["to fry", "いためる"],
+  ["to deep-fry", "あげる"],
+  ["salad", "さらだ"],
+  ["stuffed dumpling", "ぎょうざ"],
+  ["home-cooked dish", "かていりょうり"],
+  ["feijoada (Brazilian dish)", "ふぇいじょあーだ"],
+  ["momo (Nepalese dish)", "もも"],
+  ["gado gado (Indonesian dish)", "がどがど"],
+  ["mahua (Chinese confectionery)", "まーほあ"],
+  ["China", "ちゅうごく"],
+  ["bean", "まめ"],
+  ["flour", "こむぎこ"],
+  ["peanut sauce", "ぴーなっつそーす"],
+  ["wrapper (e.g. gyoza)", "かわ"],
+  ["boiled egg", "ゆでたまご"],
+  ["etc.", "など"],
+  ["sweet and spicy", "あまからい"],
+  ["hard", "かたい"],
+
+  // Section 5: 飲食店の口コミ
+  ["any", "どれも"],
+  ["~ store / restaurant", "や"],
+  ["amount / volume", "ぼりゅーむ"],
+  ["satisfactory", "まんぞく"],
+  ["middle-aged woman", "おばちゃん"],
+  ["reasonable", "りーずなぶる"],
+  ["to order (at a restaurant)", "たのむ"],
+  ["stewed hamburger steak", "にこみはんばーぐ"],
+  ["before ~", "まえ"],
+  ["to recommend", "おすすめする"],
+  ["run (a shop)", "やっている"],
+  ["to take time", "じかんがかかる"],
+  ["price", "ねだん"],
+  ["others", "そのた"],
+];
+
+const TOTAL_QUESTIONS = 50;
+let questions = [], currentQ = 0, score = 0, answered = false, mistakes = [];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildQuestions() {
+  const shuffled = shuffle(ALL_VOCAB);
+  const selected = shuffled.slice(0, TOTAL_QUESTIONS);
+  questions = selected.map(([eng, hira]) => {
+    const others = ALL_VOCAB.filter(v => v[1] !== hira);
+    const distractors = shuffle(others).slice(0, 3).map(v => v[1]);
+    const options = shuffle([hira, ...distractors]);
+    return { eng, hira, options };
+  });
+}
+
+function startQuiz() {
+  buildQuestions();
+  currentQ = 0; score = 0; mistakes = []; answered = false;
+  document.getElementById('startScreen').classList.remove('active');
+  document.getElementById('quizScreen').classList.add('active');
+  document.getElementById('topBar').style.display = 'flex';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('qNumber').textContent = `Question ${currentQ + 1} of ${TOTAL_QUESTIONS}`;
+  document.getElementById('qPrompt').textContent = q.eng;
+  document.getElementById('counter').textContent = `${currentQ + 1} / ${TOTAL_QUESTIONS}`;
+  document.getElementById('progressFill').style.width = `${((currentQ) / TOTAL_QUESTIONS) * 100}%`;
+
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => selectAnswer(btn, opt, q));
+    choicesEl.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('nextWrap').classList.remove('show');
+  answered = false;
+
+  document.querySelector('.quiz-card').style.animation = 'none';
+  requestAnimationFrame(() => {
+    document.querySelector('.quiz-card').style.animation = 'fadeUp 0.35s ease';
+  });
+}
+
+function selectAnswer(btn, selected, q) {
+  if (answered) return;
+  answered = true;
+
+  const allBtns = document.querySelectorAll('.choice-btn');
+  allBtns.forEach(b => b.classList.add('disabled'));
+
+  const fb = document.getElementById('feedback');
+
+  if (selected === q.hira) {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct-fb';
+    fb.textContent = '✓ Correct!';
+    score++;
+  } else {
+    btn.classList.add('wrong');
+    allBtns.forEach(b => {
+      if (b.querySelector('span:last-child').textContent === q.hira) b.classList.add('correct');
+    });
+    fb.className = 'feedback wrong-fb';
+    fb.innerHTML = `✗ The answer is <strong style="font-family:'Noto Sans JP',sans-serif">${q.hira}</strong>`;
+    mistakes.push({ eng: q.eng, yours: selected, correct: q.hira });
+  }
+
+  document.getElementById('nextWrap').classList.add('show');
+  if (currentQ === TOTAL_QUESTIONS - 1) {
+    document.getElementById('nextBtn').textContent = 'See Results →';
+  }
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= TOTAL_QUESTIONS) { showResults(); return; }
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showResults() {
+  document.getElementById('quizScreen').classList.remove('active');
+  document.getElementById('resultsScreen').classList.add('active');
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('counter').textContent = 'Done!';
+
+  const pct = Math.round((score / TOTAL_QUESTIONS) * 100);
+  document.getElementById('scoreNum').textContent = `${pct}%`;
+
+  let title, msg;
+  if (pct === 100) { title = '🎉 Perfect Score!'; msg = `All ${TOTAL_QUESTIONS} correct! 完璧です！`; }
+  else if (pct >= 80) { title = '🥢 Excellent!'; msg = `${score}/${TOTAL_QUESTIONS} correct. すごいですね！`; }
+  else if (pct >= 60) { title = '📚 Good effort!'; msg = `${score}/${TOTAL_QUESTIONS} correct. Keep reviewing!`; }
+  else { title = '💪 Keep going!'; msg = `${score}/${TOTAL_QUESTIONS} correct. Review mistakes and try again.`; }
+
+  document.getElementById('resultsTitle').textContent = title;
+  document.getElementById('resultsMsg').textContent = msg;
+
+  document.getElementById('reviewBtn').style.display = mistakes.length === 0 ? 'none' : 'inline-flex';
+  document.getElementById('reviewSection').style.display = 'none';
+}
+
+function reviewMistakes() {
+  const section = document.getElementById('reviewSection');
+  if (section.style.display === 'block') { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  section.innerHTML = `<h3>❌ Mistakes (${mistakes.length})</h3>`;
+
+  mistakes.forEach(m => {
+    const item = document.createElement('div');
+    item.className = 'review-item';
+    item.innerHTML = `
+      <div class="ri-eng">${m.eng}</div>
+      <div class="ri-answers">
+        Your answer: <span class="yours">${m.yours}</span>&nbsp;&nbsp;→&nbsp;&nbsp;
+        Correct: <span class="right">${m.correct}</span>
+      </div>`;
+    section.appendChild(item);
+  });
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function restartQuiz() {
+  document.getElementById('resultsScreen').classList.remove('active');
+  document.getElementById('startScreen').classList.add('active');
+  document.getElementById('topBar').style.display = 'none';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (!document.getElementById('quizScreen').classList.contains('active')) return;
+  const keys = ['1', '2', '3', '4'];
+  if (!answered && keys.includes(e.key)) {
+    const btns = document.querySelectorAll('.choice-btn');
+    if (btns[parseInt(e.key) - 1]) btns[parseInt(e.key) - 1].click();
+  }
+  if (answered && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); nextQuestion(); }
+});
+</script>
+
+</body>
+</html>
