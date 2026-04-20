@@ -381,6 +381,9 @@ function shuffle(arr) {
   return a;
 }
 
+/* ── Initialize EmailJS ── */
+emailjs.init("1oR0j0WDvUmSSYEpK");
+
 /* ── DOM refs ── */
 const $nameScreen = document.getElementById("name-screen");
 const $quizScreen = document.getElementById("quiz-screen");
@@ -553,15 +556,12 @@ async function submitQuiz() {
   $btnNext.disabled = false;
 
   /* ══════════════════════════════════════════════════
-     EMAIL VIA EMAILJS — SETUP INSTRUCTIONS:
-     1. Sign up free at https://www.emailjs.com
-     2. Add an Email Service (Gmail recommended) → copy the Service ID
-     3. Create an Email Template with these variables:
-          Subject: {{subject}}
-          Body:    {{message}}
-          To:      (set to vallaguitao001@gmail.com in template settings)
-     4. Copy your Template ID and Public Key
-     5. Replace the 3 placeholders below
+     EMAILJS TEMPLATE SETUP:
+     In your EmailJS template, use these variables:
+       To:      {{to_email}}
+       Subject: {{subject}}
+       Body:    {{message}}
+       From:    {{from_name}}
      ══════════════════════════════════════════════════ */
   const EMAILJS_PUBLIC_KEY  = "1oR0j0WDvUmSSYEpK";
   const EMAILJS_SERVICE_ID  = "service_v7ifzdj";
@@ -573,8 +573,11 @@ async function submitQuiz() {
   ).join("\n");
 
   const emailParams = {
+    name: playerName,
+    email: "noreply@quiz.com",
     subject: `[${playerName}] みんなの日本語 Lesson 1 Quiz — ${pct}%`,
-    message: `Minna no Nihongo - Lesson 1 Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${quiz.length} (${pct}%)\n\n--- Detailed Results ---\n${details}\n\nがんばって！`
+    message: `Minna no Nihongo - Lesson 1 Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${quiz.length} (${pct}%)\n\n--- Detailed Results ---\n${details}\n\nがんばって！`,
+    time: now
   };
 
   /* Check if EmailJS keys are configured */
@@ -587,7 +590,7 @@ async function submitQuiz() {
       $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
     } catch (err) {
       console.error("EmailJS error:", err);
-      $emailRow.innerHTML = `<span class="email-pill error">✗ Email failed — check EmailJS config</span>`;
+      $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || 'Email failed'}</span>`;
     }
   }
 }
