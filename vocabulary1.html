@@ -551,38 +551,18 @@ async function submitQuiz() {
   $btnNext.classList.remove("hidden");
   $btnNext.disabled = false;
 
-  /* ── Send email ── */
-  $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
-
+  /* ── Send results to Claude via sendPrompt ── */
   const now = new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", dateStyle: "full", timeStyle: "short" });
   const details = quiz.map((q, i) =>
-    `${i+1}. ${q.english} → Your answer: ${answers[i] || "—"} | Correct: ${q.answer} ${answers[i] === q.answer ? "✓" : "✗"}`
-  ).join("\n");
+    `${i+1}. ${q.english} → Answer: ${answers[i] || "—"} | Correct: ${q.answer} ${answers[i] === q.answer ? "✓" : "✗"}`
+  ).join(" | ");
 
-  const emailBody = `Minna no Nihongo - Lesson 1 Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${quiz.length} (${pct}%)\n\n--- Detailed Results ---\n${details}\n\nKeep studying! がんばって！`;
-
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        messages: [
-          { role: "user", content: `Send an email to vallaguitao001@gmail.com with the subject "[${playerName}] みんなの日本語 Lesson 1 Quiz — ${pct}%" and the following body:\n\n${emailBody}` }
-        ],
-        mcp_servers: [
-          { type: "url", url: "https://gmailmcp.googleapis.com/mcp/v1", name: "gmail-mcp" }
-        ]
-      })
-    });
-    if (res.ok) {
-      $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
-    } else {
-      $emailRow.innerHTML = `<span class="email-pill error">✗ Email failed — check connection</span>`;
-    }
-  } catch {
-    $emailRow.innerHTML = `<span class="email-pill error">✗ Email failed — check connection</span>`;
+  if (typeof sendPrompt === "function") {
+    $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
+    sendPrompt(`EMAIL_QUIZ_RESULTS: Student=${playerName}, Score=${s}/${quiz.length} (${pct}%), Date=${now}, Details: ${details}`);
+    $emailRow.innerHTML = `<span class="email-pill sent">✓ Results sent to Claude for emailing!</span>`;
+  } else {
+    $emailRow.innerHTML = `<span class="email-pill error">⚠ Open this quiz inside Claude.ai to enable email</span>`;
   }
 }
 
