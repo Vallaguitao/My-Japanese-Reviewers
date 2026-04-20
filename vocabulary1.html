@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>みんなの日本語 Lesson 1 — Vocabulary Exam</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -551,18 +552,43 @@ async function submitQuiz() {
   $btnNext.classList.remove("hidden");
   $btnNext.disabled = false;
 
-  /* ── Send results to Claude via sendPrompt ── */
+  /* ══════════════════════════════════════════════════
+     EMAIL VIA EMAILJS — SETUP INSTRUCTIONS:
+     1. Sign up free at https://www.emailjs.com
+     2. Add an Email Service (Gmail recommended) → copy the Service ID
+     3. Create an Email Template with these variables:
+          Subject: {{subject}}
+          Body:    {{message}}
+          To:      (set to vallaguitao001@gmail.com in template settings)
+     4. Copy your Template ID and Public Key
+     5. Replace the 3 placeholders below
+     ══════════════════════════════════════════════════ */
+  const EMAILJS_PUBLIC_KEY  = "1oR0j0WDvUmSSYEpK";
+  const EMAILJS_SERVICE_ID  = "service_v7ifzdj";
+  const EMAILJS_TEMPLATE_ID = "template_wqvtk0d";
+
   const now = new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", dateStyle: "full", timeStyle: "short" });
   const details = quiz.map((q, i) =>
     `${i+1}. ${q.english} → Answer: ${answers[i] || "—"} | Correct: ${q.answer} ${answers[i] === q.answer ? "✓" : "✗"}`
-  ).join(" | ");
+  ).join("\n");
 
-  if (typeof sendPrompt === "function") {
-    $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
-    sendPrompt(`EMAIL_QUIZ_RESULTS: Student=${playerName}, Score=${s}/${quiz.length} (${pct}%), Date=${now}, Details: ${details}`);
-    $emailRow.innerHTML = `<span class="email-pill sent">✓ Results sent to Claude for emailing!</span>`;
+  const emailParams = {
+    subject: `[${playerName}] みんなの日本語 Lesson 1 Quiz — ${pct}%`,
+    message: `Minna no Nihongo - Lesson 1 Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${quiz.length} (${pct}%)\n\n--- Detailed Results ---\n${details}\n\nがんばって！`
+  };
+
+  /* Check if EmailJS keys are configured */
+  if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
+    $emailRow.innerHTML = `<span class="email-pill error">⚠ EmailJS not configured — see setup instructions in source code</span>`;
   } else {
-    $emailRow.innerHTML = `<span class="email-pill error">⚠ Open this quiz inside Claude.ai to enable email</span>`;
+    $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams, EMAILJS_PUBLIC_KEY);
+      $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      $emailRow.innerHTML = `<span class="email-pill error">✗ Email failed — check EmailJS config</span>`;
+    }
   }
 }
 
