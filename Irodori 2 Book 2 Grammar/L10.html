@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Irodori Practice 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sakura-50: #fef7f8;
+    --sakura-100: #fdeef0;
+    --sakura-200: #fbdae0;
+    --sakura-300: #f7b8c4;
+    --sakura-400: #f291a5;
+    --sakura-500: #e86b8a;
+    --sakura-600: #d44a6e;
+    --sakura-700: #b83359;
+    --sakura-800: #9a2d4e;
+    --correct: #4caf7a;
+    --correct-bg: #eaf7ef;
+    --wrong: #d94f5c;
+    --wrong-bg: #fdeef0;
+    --text-primary: #3d2533;
+    --text-secondary: #6b4a5a;
+    --text-light: #9a7a8a;
+    --bg-main: #fef7f8;
+    --bg-card: #ffffff;
+    --shadow-sm: 0 2px 8px rgba(184, 51, 89, 0.08);
+    --shadow-md: 0 4px 20px rgba(184, 51, 89, 0.12);
+    --shadow-lg: 0 8px 32px rgba(184, 51, 89, 0.16);
+    --radius: 16px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg-main);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(247, 184, 196, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(242, 145, 165, 0.10) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(253, 238, 240, 0.3) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+    animation: fadeDown 0.6s ease;
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, var(--sakura-400), var(--sakura-500));
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+  .header h1 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--sakura-700);
+    margin-bottom: 4px;
+  }
+  .header p {
+    color: var(--text-light);
+    font-size: 0.875rem;
+  }
+  .progress-area {
+    margin-bottom: 24px;
+    animation: fadeDown 0.6s ease 0.1s both;
+  }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+  .progress-info .score { font-weight: 500; color: var(--sakura-600); }
+  .progress-bar {
+    height: 8px;
+    background: var(--sakura-100);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sakura-400), var(--sakura-500));
+    border-radius: 4px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--sakura-100);
+    color: var(--sakura-700);
+    padding: 5px 14px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  /* Question card */
+  .question-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    padding: 28px 24px;
+    margin-bottom: 20px;
+    animation: slideUp 0.5s ease;
+    border: 1px solid rgba(247, 184, 196, 0.2);
+  }
+  .question-number {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .question-number::before { content: '🌸'; font-size: 0.85rem; }
+  .sentence {
+    font-size: 1.2rem;
+    line-height: 2.4;
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+  .sentence .blank {
+    display: inline-block;
+    min-width: 90px;
+    border-bottom: 2.5px dashed var(--sakura-400);
+    text-align: center;
+    padding: 0 4px;
+    margin: 0 2px;
+    color: var(--sakura-600);
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  .sentence .blank.filled {
+    border-bottom-style: solid;
+    border-color: var(--correct);
+    color: var(--correct);
+  }
+  .sentence .blank.wrong {
+    border-bottom-style: solid;
+    border-color: var(--wrong);
+    color: var(--wrong);
+    text-decoration: line-through;
+  }
+  .sentence-b {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 2.2;
+    margin-top: 8px;
+  }
+  /* Kanji display for reading questions */
+  .kanji-display {
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 16px 0 24px;
+    font-family: 'Noto Sans JP', serif;
+    letter-spacing: 0.1em;
+  }
+  .reading-answer {
+    text-align: center;
+    font-size: 1.3rem;
+    color: var(--sakura-600);
+    font-weight: 500;
+    margin-bottom: 20px;
+    min-height: 2em;
+    padding: 8px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+  .reading-answer.correct-bg { background: var(--correct-bg); color: var(--correct); }
+  .reading-answer.wrong-bg { background: var(--wrong-bg); color: var(--wrong); }
+  /* Options */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .option-btn {
+    display: block;
+    width: 100%;
+    padding: 14px 20px 12px;
+    border: 2px solid var(--sakura-200);
+    border-radius: 12px;
+    background: var(--sakura-50);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 1.1rem;
+    line-height: 2;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+    font-weight: 400;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--sakura-400);
+    background: var(--sakura-100);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+  .option-btn:active:not(:disabled) { transform: translateY(0); }
+  .option-btn:disabled { cursor: default; }
+  .option-btn.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); font-weight: 500; }
+  .option-btn.correct::after { content: ' ✓'; font-weight: 700; }
+  .option-btn.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); opacity: 0.8; }
+  .option-btn.wrong::after { content: ' ✗'; font-weight: 700; }
+  .option-btn.dimmed { opacity: 0.45; border-color: var(--sakura-100); }
+  .explanation {
+    margin-top: 18px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #fef9f0, #fdf5e6);
+    border-radius: 12px;
+    border-left: 4px solid var(--sakura-400);
+    animation: fadeIn 0.4s ease;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+  }
+  .explanation strong { color: var(--sakura-700); font-weight: 700; }
+  .explanation .grammar-point {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    color: var(--sakura-600);
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    display: block;
+  }
+  .next-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--sakura-500), var(--sakura-600));
+    color: white;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: fadeIn 0.4s ease;
+    margin-top: 16px;
+    box-shadow: 0 4px 15px rgba(212, 74, 110, 0.3);
+  }
+  .next-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 74, 110, 0.4); }
+  .next-btn:active { transform: translateY(0); }
+  /* Section transition */
+  .section-break {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    padding: 40px 24px;
+    text-align: center;
+    animation: slideUp 0.6s ease;
+    border: 1px solid rgba(247, 184, 196, 0.2);
+    margin-bottom: 20px;
+  }
+  .section-break h2 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 1.3rem;
+    color: var(--sakura-700);
+    margin-bottom: 8px;
+  }
+  .section-break p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    line-height: 1.7;
+  }
+  .section-score {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--sakura-600);
+    font-family: 'Zen Maru Gothic', sans-serif;
+    margin-bottom: 16px;
+  }
+  .section-score span { font-size: 1rem; color: var(--text-light); font-weight: 400; }
+  /* Results */
+  .results-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 40px 24px;
+    text-align: center;
+    animation: slideUp 0.6s ease;
+    border: 1px solid rgba(247, 184, 196, 0.2);
+  }
+  .results-emoji { font-size: 3rem; margin-bottom: 16px; display: block; }
+  .results-card h2 { font-family: 'Zen Maru Gothic', sans-serif; font-size: 1.5rem; color: var(--sakura-700); margin-bottom: 8px; }
+  .results-score { font-size: 3rem; font-weight: 700; color: var(--sakura-600); margin: 16px 0; font-family: 'Zen Maru Gothic', sans-serif; }
+  .results-score span { font-size: 1.2rem; color: var(--text-light); font-weight: 400; }
+  .results-message { color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7; font-size: 0.95rem; }
+  .results-breakdown {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  .breakdown-item {
+    background: var(--sakura-50);
+    border-radius: 12px;
+    padding: 12px 20px;
+    text-align: center;
+  }
+  .breakdown-item .label { font-size: 0.7rem; color: var(--text-light); margin-bottom: 4px; }
+  .breakdown-item .value { font-size: 1.3rem; font-weight: 700; color: var(--sakura-600); font-family: 'Zen Maru Gothic'; }
+  .retry-btn {
+    display: inline-block;
+    padding: 14px 40px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--sakura-500), var(--sakura-600));
+    color: white;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(212, 74, 110, 0.3);
+    margin-top: 8px;
+  }
+  .retry-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 74, 110, 0.4); }
+  .review-section { margin-top: 32px; text-align: left; }
+  .review-section h3 { font-family: 'Zen Maru Gothic', sans-serif; color: var(--sakura-700); font-size: 1.1rem; margin-bottom: 16px; text-align: center; }
+  .review-item {
+    background: var(--sakura-50);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--correct);
+    font-size: 0.9rem;
+    line-height: 1.8;
+  }
+  .review-item.missed { border-left-color: var(--wrong); background: var(--wrong-bg); }
+  .review-item .q-label { font-size: 0.7rem; color: var(--text-light); font-weight: 500; margin-bottom: 4px; }
+  .review-item .answer-line { font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; }
+  /* Furigana */
+  ruby { ruby-align: center; }
+  rt { font-size: 0.5em; color: var(--text-light); font-weight: 300; letter-spacing: 0.02em; }
+  .option-btn rt { font-size: 0.5em; color: inherit; }
+  .explanation rt { font-size: 0.55em; }
+  .review-item rt { font-size: 0.55em; }
+  .hidden { display: none !important; }
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .petal {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--sakura-300); border-radius: 50% 0 50% 50%;
+    opacity: 0.2; pointer-events: none; z-index: 0;
+    animation: float linear infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.2; } 90% { opacity: 0.2; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="header-badge">IRODORI • <ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby> 2</div>
+    <h1>Practice Quiz 2</h1>
+    <p><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby> (11) ＋ <ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby><ruby>読<rt>よ</rt></ruby>み (5)</p>
+  </div>
+
+  <div class="progress-area">
+    <div class="progress-info">
+      <span id="progress-text">Question 1 / 16</span>
+      <span class="score" id="score-text">Score: 0</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <div id="quiz-area"></div>
+  <div id="results-area" class="hidden"></div>
+</div>
+
+<script>
+const R = (k, r) => `<ruby>${k}<rt>${r}</rt></ruby>`;
+const TOTAL = 16;
+const GRAMMAR_COUNT = 11;
+
+const grammarQuestions = [
+  {
+    id: 1,
+    type: 'grammar',
+    display: [`お${R('見','み')}${R('舞','まい')}いは、${R('何','なに')}を`, '___', 'いいですか？'],
+    sentenceB: null,
+    options: [`${R('持','も')}って${R('行','い')}けば`, `${R('持','も')}って${R('行','い')}くのは`, `${R('持','も')}って${R('行','い')}くなら`],
+    answer: `${R('持','も')}って${R('行','い')}けば`,
+    explanation: {
+      point: '〜ば（if ~）',
+      text: '「〜ばいいですか」は「何をすればよいか」とアドバイスを求める表現です。「持って行けば」は「持って行く」の条件形（ば形）で、「何を持って行ったらいいか」を尋ねています。「のは」は名詞化、「なら」は仮定ですが「いいですか」との組み合わせが不自然です。'
+    }
+  },
+  {
+    id: 2,
+    type: 'grammar',
+    display: [`${R('昨','き')}${R('日','のう')}、${R('遅','ち')}${R('刻','こく')}して${R('店','てん')}${R('長','ちょう')}に`, '___', '。'],
+    sentenceB: null,
+    options: [`${R('怒','おこ')}られました`, `${R('怒','おこ')}りました`, `${R('怒','おこ')}れました`],
+    answer: `${R('怒','おこ')}られました`,
+    explanation: {
+      point: '〜られました（passive: was ~ed）',
+      text: '「怒られました」は受身形（passive）で、「店長に怒られた」＝自分が怒られる側です。「怒りました」は自分が怒った（active）、「怒れました」は可能形（was able to get angry）で文脈に合いません。「〜に＋受身形」は日本語の受身の典型パターンです。'
+    }
+  },
+  {
+    id: 3,
+    type: 'grammar',
+    display: [`まだ${R('横','おう')}${R('断','だん')}${R('歩','ほ')}${R('道','どう')}を`, '___', 'だめですよ。'],
+    sentenceB: null,
+    options: [`${R('渡','わた')}っちゃ`, `${R('渡','わた')}っても`, `${R('渡','わた')}ったし`],
+    answer: `${R('渡','わた')}っちゃ`,
+    explanation: {
+      point: '〜ちゃだめ（must not ~）',
+      text: '「〜ちゃだめ」は「〜てはだめ」の口語形で、禁止を表します。「渡っちゃだめ」＝渡ってはいけない。「渡っても」は譲歩（even if you cross）、「渡ったし」は理由の列挙で、禁止の文脈に合いません。'
+    }
+  },
+  {
+    id: 4,
+    type: 'grammar',
+    display: [`お${R('葬','そう')}${R('式','しき')}の${R('日','ひ')}は、どんな${R('服','ふく')}を`, '___', 'いいですか？'],
+    sentenceB: null,
+    options: [`${R('着','き')}れば`, `${R('着','き')}てみても`, `${R('着','き')}るのは`],
+    answer: `${R('着','き')}れば`,
+    explanation: {
+      point: '〜ばいいですか（what should I ~?）',
+      text: 'Q1と同じ「〜ばいいですか」のパターンです。「着れば」は「着る」の条件形で、「どんな服を着たらいいか」を尋ねています。「着てみても」は「試しに着てもいい？」、「着るのは」は名詞化なので、この質問には合いません。'
+    }
+  },
+  {
+    id: 5,
+    type: 'grammar',
+    display: [`A：${R('食','しょっ')}${R('器','き')}は${R('自','じ')}${R('分','ぶん')}で`, '___', '。'],
+    sentenceB: 'B：あ、はい…。',
+    options: [`${R('片','かた')}${R('付','づ')}けるし`, `${R('片','かた')}${R('付','づ')}けなくちゃ`, `${R('片','かた')}${R('付','づ')}けるでしょう`],
+    answer: `${R('片','かた')}${R('付','づ')}けなくちゃ`,
+    explanation: {
+      point: '〜なくちゃ（have to ~）',
+      text: '「〜なくちゃ」は「〜なくてはいけない」の口語形で、義務・必要を表します。Bが「あ、はい…」と少し気まずそうに返しているので、Aが注意している場面です。「〜るし」は理由の列挙、「〜るでしょう」は推量なので文脈に合いません。'
+    }
+  },
+  {
+    id: 6,
+    type: 'grammar',
+    display: [`トイレットペーパーは、ごみ${R('箱','ばこ')}に`, '___', 'いけません。'],
+    sentenceB: null,
+    options: [`${R('捨','す')}てても`, `${R('捨','す')}てないで`, `${R('捨','す')}てては`],
+    answer: `${R('捨','す')}てては`,
+    explanation: {
+      point: '〜てはいけません（must not ~）',
+      text: '「〜てはいけません」は丁寧な禁止表現です。「捨ててはいけません」＝捨ててはだめです。「捨てても」は譲歩（even if you throw away）、「捨てないで」は否定の依頼（please don\'t）で、「いけません」との接続が不自然です。'
+    }
+  },
+  {
+    id: 7,
+    type: 'grammar',
+    display: [`${R('駅','えき')}の${R('人','ひと')}に、「スマホを${R('見','み')}ながら${R('歩','ある')}いちゃだめ」と`, '___', '。'],
+    sentenceB: null,
+    options: [`${R('注','ちゅう')}${R('意','い')}されました`, `${R('注','ちゅう')}${R('意','い')}しました`, `${R('注','ちゅう')}${R('意','い')}できました`],
+    answer: `${R('注','ちゅう')}${R('意','い')}されました`,
+    explanation: {
+      point: '〜されました（passive: was warned）',
+      text: '「注意されました」は受身形で、「駅の人に注意された」＝自分が注意を受けた側です。「注意しました」だと自分が誰かに注意したことになり、「駅の人に」との組み合わせが不自然です。「注意できました」は可能形で文脈に合いません。'
+    }
+  },
+  {
+    id: 8,
+    type: 'grammar',
+    display: [`${R('次','つぎ')}の${R('人','ひと')}が`, '___', `ように、テーブルを${R('片','かた')}${R('付','づ')}けましょう。`],
+    sentenceB: null,
+    options: [`${R('座','すわ')}る`, `${R('座','すわ')}られる`, `${R('座','すわ')}れる`],
+    answer: `${R('座','すわ')}れる`,
+    explanation: {
+      point: '〜れるように（so that ~ can）',
+      text: '「座れるように」は「座ることができるように」の意味で、目的を表します。「座れる」は可能形（ra-dropping: 座られる→座れる）。「座る」は辞書形で可能の意味がなく、「座られる」はフォーマルな可能形ですが口語では「座れる」が自然です。'
+    }
+  },
+  {
+    id: 9,
+    type: 'grammar',
+    display: [`A：${R('信','しん')}${R('号','ごう')}が${R('青','あお')}になってから、${R('横','おう')}${R('断','だん')}${R('歩','ほ')}${R('道','どう')}を`, '___', '。'],
+    sentenceB: 'B：あ…、はい。',
+    options: [`${R('渡','わた')}るけど`, `${R('渡','わた')}らなきゃ`, `${R('渡','わた')}るし`],
+    answer: `${R('渡','わた')}らなきゃ`,
+    explanation: {
+      point: '〜なきゃ（have to ~）',
+      text: '「〜なきゃ」は「〜なければならない」の口語形で、義務を表します。Bが「あ…、はい」と反省している様子なので、Aが注意・指示をしている場面です。「渡るけど」は逆接、「渡るし」は理由の列挙で、注意の文脈に合いません。'
+    }
+  },
+  {
+    id: 10,
+    type: 'grammar',
+    display: [`A：お${R('金','かね')}を${R('払','はら')}う${R('前','まえ')}に、バナナを${R('食','た')}べちゃった`, '___', '？'],
+    sentenceB: 'B：はい。だめですか？',
+    options: ['の', 'か', 'し'],
+    answer: 'の',
+    explanation: {
+      point: '〜の？（seeking explanation）',
+      text: '「〜の？」は「〜のですか？」の口語形で、驚きや確認・説明を求めるニュアンスがあります。「食べちゃったの？」＝本当に食べてしまったの？と驚いて確認しています。「か」は普通の疑問、「し」は理由の列挙で、ここでは不自然です。'
+    }
+  },
+  {
+    id: 11,
+    type: 'grammar',
+    display: [`${R('子','こ')}どもがまねを`, '___', `、ルールは${R('守','まも')}りましょう。`],
+    sentenceB: null,
+    options: ['しないで', 'しなかったら', 'しないように'],
+    answer: 'しないように',
+    explanation: {
+      point: '〜ないように（so that ~ won\'t）',
+      text: '「〜ないように」は「〜しないために」という目的を表します。「子どもがまねをしないように、ルールを守りましょう」＝子どもが悪いまねをしないために、大人がルールを守ろう。「しないで」は否定の依頼、「しなかったら」は仮定で、目的の表現には合いません。'
+    }
+  }
+];
+
+const kanjiQuestions = [
+  {
+    id: 12,
+    type: 'kanji',
+    kanji: `${R('習','しゅう')}${R('慣','かん')}`,
+    kanjiPlain: '習慣',
+    options: ['しょうかん', 'しゅうかん', 'しうかん'],
+    answer: 'しゅうかん',
+    explanation: {
+      point: '習慣（しゅうかん）',
+      text: '「習」は「しゅう」（習う＝ならう）、「慣」は「かん」（慣れる＝なれる）。「習慣」は英語の "habit" や "custom" の意味です。「しょうかん」や「しうかん」は存在しない読みです。'
+    }
+  },
+  {
+    id: 13,
+    type: 'kanji',
+    kanji: `${R('全','ぜん')}${R('員','いん')}`,
+    kanjiPlain: '全員',
+    options: ['ぜんいん', 'ぜんい', 'ぜいん'],
+    answer: 'ぜんいん',
+    explanation: {
+      point: '全員（ぜんいん）',
+      text: '「全」は「ぜん」（全部＝ぜんぶ）、「員」は「いん」（会員＝かいいん）。「全員」は英語の "everyone / all members" の意味です。「ぜんい」は「員」の読みが足りず、「ぜいん」は「全」の読みが不完全です。'
+    }
+  },
+  {
+    id: 14,
+    type: 'kanji',
+    kanji: `${R('黒','くろ')}い`,
+    kanjiPlain: '黒い',
+    options: ['くらい', 'くろい', 'くるい'],
+    answer: 'くろい',
+    explanation: {
+      point: '黒い（くろい）',
+      text: '「黒」の訓読みは「くろ」で、い形容詞として「黒い」（black）になります。「くらい」は「暗い」（dark）、「くるい」は「狂い」（madness）で、別の漢字・意味です。'
+    }
+  },
+  {
+    id: 15,
+    type: 'kanji',
+    kanji: `${R('袋','ふくろ')}`,
+    kanjiPlain: '袋',
+    options: ['ふぐろ', 'ふくろ', 'ぶくろ'],
+    answer: 'ふくろ',
+    explanation: {
+      point: '袋（ふくろ）',
+      text: '「袋」の訓読みは「ふくろ」で、英語の "bag" の意味です。「ぶくろ」は複合語で使われる連濁形（例：手袋＝てぶくろ、紙袋＝かみぶくろ）ですが、単独では「ふくろ」が正しい読みです。「ふぐろ」は存在しない読みです。'
+    }
+  },
+  {
+    id: 16,
+    type: 'kanji',
+    kanji: `${R('店','てん')}${R('長','ちょう')}`,
+    kanjiPlain: '店長',
+    options: ['てんちょう', 'てんちょ', 'てんちよう'],
+    answer: 'てんちょう',
+    explanation: {
+      point: '店長（てんちょう）',
+      text: '「店」は「てん」（店＝みせ）、「長」は「ちょう」（長い＝ながい）。「店長」は英語の "store manager" の意味です。「てんちょ」は長音が足りず、「てんちよう」は拗音「ちょ」を直音「ちよ」と誤った読みです。'
+    }
+  }
+];
+
+const allQuestions = [...grammarQuestions, ...kanjiQuestions];
+
+let currentQ = 0;
+let score = 0;
+let grammarScore = 0;
+let kanjiScore = 0;
+let answered = [];
+
+function init() {
+  currentQ = 0;
+  score = 0;
+  grammarScore = 0;
+  kanjiScore = 0;
+  answered = [];
+  document.getElementById('results-area').classList.add('hidden');
+  renderQuestion();
+  updateProgress();
+  createPetals();
+}
+
+function renderQuestion() {
+  const q = allQuestions[currentQ];
+  const area = document.getElementById('quiz-area');
+
+  // Show section transition between grammar and kanji
+  if (currentQ === GRAMMAR_COUNT && !document.querySelector('.section-shown')) {
+    area.innerHTML = `
+      <div class="section-break">
+        <span style="font-size:2rem;display:block;margin-bottom:12px">📖</span>
+        <h2><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby>セクション<ruby>完<rt>かん</rt></ruby><ruby>了<rt>りょう</rt></ruby>！</h2>
+        <div class="section-score">${grammarScore} <span>/ ${GRAMMAR_COUNT}</span></div>
+        <p><ruby>次<rt>つぎ</rt></ruby>は<ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>の<ruby>読<rt>よ</rt></ruby>みセクションです。<br><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>を<ruby>見<rt>み</rt></ruby>て<ruby>正<rt>ただ</rt></ruby>しい<ruby>読<rt>よ</rt></ruby>みを<ruby>選<rt>えら</rt></ruby>びましょう。</p>
+        <button class="next-btn" onclick="document.querySelector('.section-break').classList.add('section-shown'); renderQuestionContent()"><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby><ruby>読<rt>よ</rt></ruby>みへ →</button>
+      </div>
+    `;
+    return;
+  }
+
+  renderQuestionContent();
+}
+
+function renderQuestionContent() {
+  const q = allQuestions[currentQ];
+  const area = document.getElementById('quiz-area');
+
+  if (q.type === 'grammar') {
+    const sentenceParts = q.display.map(part => {
+      if (part === '___') return '<span class="blank" id="blank-slot">　？　</span>';
+      return part;
+    }).join('');
+
+    area.innerHTML = `
+      <div class="question-card">
+        <div class="section-label"><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby></div>
+        <div class="question-number"><ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${currentQ + 1} / ${TOTAL}</div>
+        <div class="sentence">${sentenceParts}</div>
+        ${q.sentenceB ? `<div class="sentence-b">${q.sentenceB}</div>` : ''}
+        <div class="options" id="options-area">
+          ${q.options.map((opt, i) => `
+            <button class="option-btn" onclick="selectAnswer(${i})" data-option="${opt}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation-area"></div>
+        <div id="next-area"></div>
+      </div>
+    `;
+  } else {
+    area.innerHTML = `
+      <div class="question-card">
+        <div class="section-label"><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby><ruby>読<rt>よ</rt></ruby>み</div>
+        <div class="question-number"><ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${currentQ + 1} / ${TOTAL}</div>
+        <div class="kanji-display">${q.kanjiPlain}</div>
+        <div class="reading-answer" id="reading-slot"></div>
+        <div class="options" id="options-area">
+          ${q.options.map((opt, i) => `
+            <button class="option-btn" onclick="selectAnswer(${i})">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation-area"></div>
+        <div id="next-area"></div>
+      </div>
+    `;
+  }
+}
+
+function selectAnswer(idx) {
+  const q = allQuestions[currentQ];
+  const selected = q.options[idx];
+  const isCorrect = selected === q.answer;
+  const buttons = document.querySelectorAll('.option-btn');
+
+  if (isCorrect) {
+    score++;
+    if (q.type === 'grammar') grammarScore++;
+    else kanjiScore++;
+  }
+
+  if (q.type === 'grammar') {
+    const blank = document.getElementById('blank-slot');
+    if (isCorrect) {
+      blank.innerHTML = q.answer;
+      blank.classList.add('filled');
+    } else {
+      blank.innerHTML = selected;
+      blank.classList.add('wrong');
+      setTimeout(() => {
+        blank.innerHTML = q.answer;
+        blank.classList.remove('wrong');
+        blank.classList.add('filled');
+      }, 800);
+    }
+  } else {
+    const slot = document.getElementById('reading-slot');
+    slot.textContent = isCorrect ? q.answer : selected;
+    slot.classList.add(isCorrect ? 'correct-bg' : 'wrong-bg');
+    if (!isCorrect) {
+      setTimeout(() => {
+        slot.textContent = q.answer;
+        slot.classList.remove('wrong-bg');
+        slot.classList.add('correct-bg');
+      }, 800);
+    }
+  }
+
+  answered.push({ id: q.id, type: q.type, correct: isCorrect, selected, answer: q.answer, answerRuby: q.answer });
+
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (q.options[i] === q.answer) btn.classList.add('correct');
+    else if (i === idx && !isCorrect) btn.classList.add('wrong');
+    else btn.classList.add('dimmed');
+  });
+
+  document.getElementById('explanation-area').innerHTML = `
+    <div class="explanation">
+      <span class="grammar-point">${q.explanation.point}</span>
+      ${q.explanation.text}
+    </div>
+  `;
+
+  const isLast = currentQ >= allQuestions.length - 1;
+  document.getElementById('next-area').innerHTML = `
+    <button class="next-btn" onclick="${isLast ? 'showResults()' : 'nextQuestion()'}">
+      ${isLast ? `<ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby>を<ruby>見<rt>み</rt></ruby>る →` : `<ruby>次<rt>つぎ</rt></ruby>の<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> →`}
+    </button>
+  `;
+
+  updateProgress();
+}
+
+function nextQuestion() {
+  currentQ++;
+  renderQuestion();
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+  document.getElementById('progress-text').textContent = `Question ${currentQ + 1} / ${TOTAL}`;
+  document.getElementById('score-text').textContent = `Score: ${score}`;
+  document.getElementById('progress-fill').style.width = `${(answered.length / TOTAL) * 100}%`;
+}
+
+function showResults() {
+  document.getElementById('quiz-area').innerHTML = '';
+  document.getElementById('progress-fill').style.width = '100%';
+
+  const pct = Math.round((score / TOTAL) * 100);
+  let emoji, msg;
+  if (pct === 100) { emoji = '🌸✨'; msg = `<ruby>満<rt>まん</rt></ruby><ruby>点<rt>てん</rt></ruby>！パーフェクト！`; }
+  else if (pct >= 80) { emoji = '🌸'; msg = 'よくできました！あと<ruby>少<rt>すこ</rt></ruby>しで<ruby>完<rt>かん</rt></ruby><ruby>璧<rt>ぺき</rt></ruby>です。'; }
+  else if (pct >= 60) { emoji = '🌱'; msg = 'まあまあです。<ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>えた<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>を<ruby>復<rt>ふく</rt></ruby><ruby>習<rt>しゅう</rt></ruby>しましょう。'; }
+  else { emoji = '📖'; msg = 'もう<ruby>少<rt>すこ</rt></ruby>し<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>しましょう。'; }
+
+  const missed = answered.filter(a => !a.correct);
+
+  let reviewHTML = '';
+  if (missed.length > 0) {
+    reviewHTML = `
+      <div class="review-section">
+        <h3><ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>えた<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby></h3>
+        ${missed.map(m => {
+          const q = allQuestions.find(qq => qq.id === m.id);
+          const displayText = q.type === 'grammar'
+            ? q.display.join('').replace('___', `<strong>${q.answer}</strong>`)
+            : `<strong>${q.kanjiPlain}</strong> → ${q.answer}`;
+          return `
+            <div class="review-item missed">
+              <div class="q-label">${q.type === 'grammar' ? '<ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby>' : '<ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>'} — <ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${m.id}</div>
+              <div>${displayText}</div>
+              <div class="answer-line">あなたの<ruby>答<rt>こた</rt></ruby>え：${m.selected}　→　<ruby>正<rt>せい</rt></ruby><ruby>解<rt>かい</rt></ruby>：${m.answer}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  const resultsArea = document.getElementById('results-area');
+  resultsArea.classList.remove('hidden');
+  resultsArea.innerHTML = `
+    <div class="results-card">
+      <span class="results-emoji">${emoji}</span>
+      <h2>クイズ<ruby>完<rt>かん</rt></ruby><ruby>了<rt>りょう</rt></ruby>！</h2>
+      <div class="results-score">${score} <span>/ ${TOTAL}</span></div>
+      <div class="results-breakdown">
+        <div class="breakdown-item">
+          <div class="label"><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby></div>
+          <div class="value">${grammarScore}/${GRAMMAR_COUNT}</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="label"><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby></div>
+          <div class="value">${kanjiScore}/5</div>
+        </div>
+      </div>
+      <div class="results-message">${msg}</div>
+      <button class="retry-btn" onclick="init()">もう<ruby>一<rt>いち</rt></ruby><ruby>度<rt>ど</rt></ruby>チャレンジ →</button>
+      ${reviewHTML}
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function createPetals() {
+  document.querySelectorAll('.petal').forEach(p => p.remove());
+  for (let i = 0; i < 6; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (8 + Math.random() * 12) + 's';
+    p.style.animationDelay = Math.random() * 10 + 's';
+    p.style.width = (8 + Math.random() * 8) + 'px';
+    p.style.height = p.style.width;
+    document.body.appendChild(p);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
