@@ -163,7 +163,7 @@
 
   .sentence {
     font-size: 1.2rem;
-    line-height: 2;
+    line-height: 2.4;
     margin-bottom: 8px;
     font-weight: 400;
   }
@@ -202,7 +202,7 @@
   .sentence-b {
     font-size: 1.05rem;
     color: var(--text-secondary);
-    line-height: 1.9;
+    line-height: 2.2;
     margin-top: 8px;
   }
 
@@ -224,12 +224,13 @@
   .option-btn {
     display: block;
     width: 100%;
-    padding: 14px 20px;
+    padding: 14px 20px 12px;
     border: 2px solid var(--sakura-200);
     border-radius: 12px;
     background: var(--sakura-50);
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 1.1rem;
+    line-height: 2;
     color: var(--text-primary);
     cursor: pointer;
     transition: all 0.25s ease;
@@ -443,6 +444,18 @@
     margin-top: 4px;
   }
 
+  /* Furigana */
+  ruby { ruby-align: center; }
+  rt {
+    font-size: 0.5em;
+    color: var(--text-light);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+  .option-btn rt { font-size: 0.5em; color: inherit; }
+  .explanation rt { font-size: 0.55em; }
+  .review-item rt { font-size: 0.55em; }
+
   .hidden { display: none !important; }
 
   /* Animations */
@@ -492,7 +505,7 @@
 
 <div class="container">
   <div class="header">
-    <div class="header-badge">IRODORI • 文法れんしゅう</div>
+    <div class="header-badge">IRODORI • <ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby>れんしゅう</div>
     <h1>Grammar Practice</h1>
     <p>Read each sentence and choose the best answer</p>
   </div>
@@ -512,14 +525,16 @@
 </div>
 
 <script>
+const R = (kanji, reading) => `<ruby>${kanji}<rt>${reading}</rt></ruby>`;
+
 const questions = [
   {
     id: 1,
-    sentenceA: '旧暦（きゅうれき）のお正月（しょうがつ）の日（ひ）は、年（とし）によって違（ちが）います。',
-    display: ['旧暦のお正月の日は、年', '___', '違います。'],
+    display: [`${R('旧','きゅう')}${R('暦','れき')}のお${R('正','しょう')}${R('月','がつ')}の${R('日','ひ')}は、${R('年','とし')}`, '___', `${R('違','ちが')}います。`],
     sentenceB: null,
     options: ['によって', 'において', 'になって'],
     answer: 'によって',
+    answerRuby: 'によって',
     explanation: {
       point: '〜によって（depending on）',
       text: '「によって」は「〜に応じて・〜次第で」という意味です。旧暦の正月は年ごとに日付が変わるので、「年によって違います」が正しいです。「において」は場所・場面（in/at）、「になって」は変化（become）を表します。'
@@ -527,11 +542,11 @@ const questions = [
   },
   {
     id: 2,
-    sentenceA: 'A：アナさんはお祭（まつ）りに来（こ）れません。',
-    display: ['A：アナさんはお祭りに', '___', '。'],
-    sentenceB: 'B：そうですか。残念（ざんねん）ですね。',
-    options: ['来たりしています', '来れません', '来たばかりです'],
-    answer: '来れません',
+    display: [`A：アナさんはお${R('祭','まつ')}りに`, '___', '。'],
+    sentenceB: `B：そうですか。${R('残','ざん')}${R('念','ねん')}ですね。`,
+    options: [`${R('来','き')}たりしています`, `${R('来','こ')}れません`, `${R('来','き')}たばかりです`],
+    answer: `${R('来','こ')}れません`,
+    answerRuby: `${R('来','こ')}れません`,
     explanation: {
       point: '〜れません（can\'t ~）',
       text: '「来れません」は可能形の否定で「来ることができない」という意味です。Bが「残念ですね」と返しているので、来られないことが分かります。「来たりしています」は繰り返しの動作、「来たばかりです」は直後を表すので文脈に合いません。'
@@ -539,11 +554,11 @@ const questions = [
   },
   {
     id: 3,
-    sentenceA: '今年（ことし）は、クリスマスも会社（かいしゃ）に行（い）かなくちゃならないんです。',
-    display: ['今年は、クリスマスも会社に', '___', 'なくちゃならないんです。'],
+    display: [`${R('今','こ')}${R('年','とし')}は、クリスマスも${R('会','かい')}${R('社','しゃ')}に`, '___', 'なくちゃならないんです。'],
     sentenceB: null,
-    options: ['行か', '行く', '行け'],
-    answer: '行か',
+    options: [`${R('行','い')}か`, `${R('行','い')}く`, `${R('行','い')}け`],
+    answer: `${R('行','い')}か`,
+    answerRuby: `${R('行','い')}か`,
     explanation: {
       point: '〜なくちゃならない（have to ~）',
       text: '「〜なくちゃならない」は義務を表す表現で、動詞の「ない形」の語幹に接続します。行く → 行か + なくちゃならない。「行く」は辞書形、「行け」は命令形・可能形なので、この文型には接続できません。'
@@ -551,11 +566,11 @@ const questions = [
   },
   {
     id: 4,
-    sentenceA: 'お正月（しょうがつ）は、親戚（しんせき）が来（き）たりして、忙（いそが）しかったです。',
-    display: ['お正月は、親戚が', '___', '、忙しかったです。'],
+    display: [`お${R('正','しょう')}${R('月','がつ')}は、${R('親','しん')}${R('戚','せき')}が`, '___', `、${R('忙','いそが')}しかったです。`],
     sentenceB: null,
-    options: ['来ながら', '来ないで', '来たりして'],
-    answer: '来たりして',
+    options: [`${R('来','き')}ながら`, `${R('来','こ')}ないで`, `${R('来','き')}たりして`],
+    answer: `${R('来','き')}たりして`,
+    answerRuby: `${R('来','き')}たりして`,
     explanation: {
       point: '〜たりして（doing things like ~）',
       text: '「〜たりして」は、複数の動作や状態の例を挙げるときに使います。親戚が来るなど色々あって忙しかった、という意味です。「来ながら」は同時進行、「来ないで」は否定の依頼で文脈に合いません。'
@@ -563,11 +578,11 @@ const questions = [
   },
   {
     id: 5,
-    sentenceA: '今度（こんど）の休（やす）み、１日（にち）だけ実家（じっか）に帰（かえ）ります。',
-    display: ['今度の休み、１日', '___', '実家に帰ります。'],
+    display: [`${R('今','こん')}${R('度','ど')}の${R('休','やす')}み、１${R('日','にち')}`, '___', `${R('実','じっ')}${R('家','か')}に${R('帰','かえ')}ります。`],
     sentenceB: null,
     options: ['しか', 'とか', 'だけ'],
     answer: 'だけ',
+    answerRuby: 'だけ',
     explanation: {
       point: '〜だけ（only ~）',
       text: '「だけ」は「only」の意味で、肯定文で使います。「しか」も「only」ですが、必ず否定形（〜ません）とセットになります。ここは「帰ります」と肯定文なので「だけ」が正解です。「とか」は例示（〜など）に使います。'
@@ -575,11 +590,11 @@ const questions = [
   },
   {
     id: 6,
-    sentenceA: 'A：お祭（まつ）りのときは特別（とくべつ）な料理（りょうり）をたくさん作（つく）らなくちゃならないんです。',
-    display: ['A：お祭りのときは特別な料理をたくさん', '___', 'んです。'],
-    sentenceB: 'B：そうなんですか。大変（たいへん）ですね。',
-    options: ['作らなくてもいい', '作らない', '作らなくちゃならない'],
-    answer: '作らなくちゃならない',
+    display: [`A：お${R('祭','まつ')}りのときは${R('特','とく')}${R('別','べつ')}な${R('料','りょう')}${R('理','り')}をたくさん`, '___', 'んです。'],
+    sentenceB: `B：そうなんですか。${R('大','たい')}${R('変','へん')}ですね。`,
+    options: [`${R('作','つく')}らなくてもいい`, `${R('作','つく')}らない`, `${R('作','つく')}らなくちゃならない`],
+    answer: `${R('作','つく')}らなくちゃならない`,
+    answerRuby: `${R('作','つく')}らなくちゃならない`,
     explanation: {
       point: '〜なくちゃならない（have to ~）',
       text: 'Bが「大変ですね」と共感しているので、Aは「たくさん作らなければならない」と義務・負担を述べています。「作らなくてもいい」は「作らなくても大丈夫」（don\'t have to）、「作らない」は単純な否定なので文脈に合いません。'
@@ -587,11 +602,11 @@ const questions = [
   },
   {
     id: 7,
-    sentenceA: '休（やす）みは友（とも）だちと遊（あそ）んだりして、楽（たの）しかったです。',
-    display: ['休みは友だちと', '___', '、楽しかったです。'],
+    display: [`${R('休','やす')}みは${R('友','とも')}だちと`, '___', `、${R('楽','たの')}しかったです。`],
     sentenceB: null,
-    options: ['遊んだりして', '遊んだあと', '遊んだほうが'],
-    answer: '遊んだりして',
+    options: [`${R('遊','あそ')}んだりして`, `${R('遊','あそ')}んだあと`, `${R('遊','あそ')}んだほうが`],
+    answer: `${R('遊','あそ')}んだりして`,
+    answerRuby: `${R('遊','あそ')}んだりして`,
     explanation: {
       point: '〜たりして（doing things like ~）',
       text: '友達と遊ぶなどして楽しかった、という例示の表現です。「遊んだあと」は時間関係（after playing）、「遊んだほうが」は比較・アドバイス（better to play）で、この文脈には合いません。'
@@ -599,11 +614,11 @@ const questions = [
   },
   {
     id: 8,
-    sentenceA: 'A：実家（じっか）で、ゆっくりテレビを見（み）れました。',
-    display: ['A：実家で、ゆっくりテレビを', '___', '。'],
+    display: [`A：${R('実','じっ')}${R('家','か')}で、ゆっくりテレビを`, '___', '。'],
     sentenceB: 'B：よかったですね。',
-    options: ['見ることです', '見れました', '見てください'],
-    answer: '見れました',
+    options: [`${R('見','み')}ることです`, `${R('見','み')}れました`, `${R('見','み')}てください`],
+    answer: `${R('見','み')}れました`,
+    answerRuby: `${R('見','み')}れました`,
     explanation: {
       point: '〜れました（was able to ~）',
       text: '「見れました」は可能形の過去で「見ることができた」という意味です。Bが「よかったですね」と返しているので、実現できたことへの感想だと分かります。「見ることです」は定義、「見てください」は依頼なので合いません。'
@@ -611,11 +626,11 @@ const questions = [
   },
   {
     id: 9,
-    sentenceA: 'A：成人式（せいじんしき）は、何（なに）をするんですか？',
-    display: ['A：成人式は、何を', '___', '？'],
-    sentenceB: 'B：市長（しちょう）さんの話（はなし）を聞（き）いたり、写真（しゃしん）を撮（と）ったりします。',
+    display: [`A：${R('成','せい')}${R('人','じん')}${R('式','しき')}は、${R('何','なに')}を`, '___', '？'],
+    sentenceB: `B：${R('市','し')}${R('長','ちょう')}さんの${R('話','はなし')}を${R('聞','き')}いたり、${R('写','しゃ')}${R('真','しん')}を${R('撮','と')}ったりします。`,
     options: ['したばかりですか', 'するんですか', 'してみますか'],
     answer: 'するんですか',
+    answerRuby: 'するんですか',
     explanation: {
       point: '〜するんですか（what do you do ~?）',
       text: '「するんですか」は「〜のですか」の口語形で、説明を求める質問です。Bが具体的に活動を説明しているので、「何をするんですか」（what do people do?）が自然です。「したばかり」は直後、「してみますか」は提案・試みの意味です。'
@@ -623,11 +638,11 @@ const questions = [
   },
   {
     id: 10,
-    sentenceA: '今年（ことし）のお正月（しょうがつ）は１日（にち）しか休（やす）めませんでした。',
-    display: ['今年のお正月は１日', '___', '休めませんでした。'],
+    display: [`${R('今','こ')}${R('年','とし')}のお${R('正','しょう')}${R('月','がつ')}は１${R('日','にち')}`, '___', `${R('休','やす')}めませんでした。`],
     sentenceB: null,
     options: ['だけ', 'ごろ', 'しか'],
     answer: 'しか',
+    answerRuby: 'しか',
     explanation: {
       point: '〜しか＋否定（only ~ / nothing but ~）',
       text: '「しか」は否定形とセットで「〜だけしかない」という限定を強調します。「休めませんでした」と否定形なので「しか」が正解。「だけ」は肯定文で使います。「ごろ」は時間の概算（〜頃）で意味が違います。'
@@ -635,11 +650,11 @@ const questions = [
   },
   {
     id: 11,
-    sentenceA: 'A：「ナーダム」では、何（なに）をするんですか？',
-    display: ['A：「ナーダム」では、何を', '___', '？'],
-    sentenceB: 'B：パレードを見（み）たり、「ホーショール」という特別（とくべつ）な料理（りょうり）を食（た）べたりします。',
+    display: [`A：「ナーダム」では、${R('何','なに')}を`, '___', '？'],
+    sentenceB: `B：パレードを${R('見','み')}たり、「ホーショール」という${R('特','とく')}${R('別','べつ')}な${R('料','りょう')}${R('理','り')}を${R('食','た')}べたりします。`,
     options: ['するんですか', 'してくれますか', 'したらいいですか'],
     answer: 'するんですか',
+    answerRuby: 'するんですか',
     explanation: {
       point: '〜するんですか（what do you do ~?）',
       text: 'Q9と同じ文型です。イベントの内容を尋ねる質問で、「するんですか」が最も自然です。「してくれますか」は依頼（will you do for me?）、「したらいいですか」はアドバイス求め（what should I do?）なので合いません。'
@@ -647,11 +662,11 @@ const questions = [
   },
   {
     id: 12,
-    sentenceA: 'お年玉（としだま）は、500円（えん）しかもらえませんでした。',
-    display: ['お年玉は、500円', '___', 'もらえませんでした。'],
+    display: [`お${R('年','とし')}${R('玉','だま')}は、500${R('円','えん')}`, '___', 'もらえませんでした。'],
     sentenceB: null,
     options: ['しか', 'だけ', 'は'],
     answer: 'しか',
+    answerRuby: 'しか',
     explanation: {
       point: '〜しか＋否定（only ~ / nothing but ~）',
       text: '「もらえませんでした」が否定形なので「しか」が正解です。500円しかもらえなかった＝少ないことを強調しています。「だけ」は肯定文、「は」は主題マーカーで、この文脈の限定表現には合いません。'
@@ -684,7 +699,7 @@ function renderQuestion() {
 
   let html = `
     <div class="question-card" id="q-card">
-      <div class="question-number">問題 ${q.id} / 12</div>
+      <div class="question-number"><ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${q.id} / 12</div>
       <div class="sentence">${sentenceParts}</div>
       ${q.sentenceB ? `<div class="sentence-b">${q.sentenceB}</div>` : ''}
       <div class="options" id="options-area">
@@ -708,19 +723,19 @@ function selectAnswer(idx) {
 
   if (isCorrect) {
     score++;
-    blank.textContent = q.answer;
+    blank.innerHTML = q.answerRuby;
     blank.classList.add('filled');
   } else {
-    blank.textContent = selected;
+    blank.innerHTML = selected;
     blank.classList.add('wrong');
     setTimeout(() => {
-      blank.textContent = q.answer;
+      blank.innerHTML = q.answerRuby;
       blank.classList.remove('wrong');
       blank.classList.add('filled');
     }, 800);
   }
 
-  answered.push({ id: q.id, correct: isCorrect, selected, answer: q.answer });
+  answered.push({ id: q.id, correct: isCorrect, selected, answer: q.answer, answerRuby: q.answerRuby });
 
   buttons.forEach((btn, i) => {
     btn.disabled = true;
@@ -747,7 +762,7 @@ function selectAnswer(idx) {
   const isLast = currentQ >= questions.length - 1;
   nextArea.innerHTML = `
     <button class="next-btn" onclick="${isLast ? 'showResults()' : 'nextQuestion()'}">
-      ${isLast ? '結果を見る →' : '次の問題 →'}
+      ${isLast ? '<ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby>を<ruby>見<rt>み</rt></ruby>る →' : '<ruby>次<rt>つぎ</rt></ruby>の<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> →'}
     </button>
   `;
 
@@ -774,10 +789,10 @@ function showResults() {
 
   const pct = Math.round((score / 12) * 100);
   let emoji, msg;
-  if (pct === 100) { emoji = '🌸✨'; msg = '満点！パーフェクト！文法の理解が素晴らしいです。'; }
-  else if (pct >= 80) { emoji = '🌸'; msg = 'よくできました！あと少しで完璧です。'; }
-  else if (pct >= 60) { emoji = '🌱'; msg = 'まあまあです。間違えた問題を復習しましょう。'; }
-  else { emoji = '📖'; msg = 'もう少し練習しましょう。文法のポイントを確認してみてください。'; }
+  if (pct === 100) { emoji = '🌸✨'; msg = '<ruby>満<rt>まん</rt></ruby><ruby>点<rt>てん</rt></ruby>！パーフェクト！<ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby>の<ruby>理<rt>り</rt></ruby><ruby>解<rt>かい</rt></ruby>が<ruby>素<rt>す</rt></ruby><ruby>晴<rt>ば</rt></ruby>らしいです。'; }
+  else if (pct >= 80) { emoji = '🌸'; msg = 'よくできました！あと<ruby>少<rt>すこ</rt></ruby>しで<ruby>完<rt>かん</rt></ruby><ruby>璧<rt>ぺき</rt></ruby>です。'; }
+  else if (pct >= 60) { emoji = '🌱'; msg = 'まあまあです。<ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>えた<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>を<ruby>復<rt>ふく</rt></ruby><ruby>習<rt>しゅう</rt></ruby>しましょう。'; }
+  else { emoji = '📖'; msg = 'もう<ruby>少<rt>すこ</rt></ruby>し<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>しましょう。<ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby>のポイントを<ruby>確<rt>かく</rt></ruby><ruby>認<rt>にん</rt></ruby>してみてください。'; }
 
   const missed = answered.filter(a => !a.correct);
 
@@ -785,14 +800,14 @@ function showResults() {
   if (missed.length > 0) {
     reviewHTML = `
       <div class="review-section">
-        <h3>間違えた問題</h3>
+        <h3><ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>えた<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby></h3>
         ${missed.map(m => {
           const q = questions.find(qq => qq.id === m.id);
           return `
             <div class="review-item missed">
-              <div class="q-label">問題 ${m.id}</div>
-              <div>${q.display.join('').replace('___', `<strong>${q.answer}</strong>`)}</div>
-              <div class="answer-line">あなたの答え：${m.selected}　→　正解：${m.answer}</div>
+              <div class="q-label"><ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${m.id}</div>
+              <div>${q.display.join('').replace('___', `<strong>${q.answerRuby}</strong>`)}</div>
+              <div class="answer-line">あなたの<ruby>答<rt>こた</rt></ruby>え：${m.selected}　→　<ruby>正<rt>せい</rt></ruby><ruby>解<rt>かい</rt></ruby>：${m.answerRuby}</div>
               <div style="margin-top:6px;font-size:0.8rem;color:var(--text-light)">${q.explanation.point}：${q.explanation.text.substring(0, 80)}…</div>
             </div>
           `;
@@ -806,10 +821,10 @@ function showResults() {
   resultsArea.innerHTML = `
     <div class="results-card">
       <span class="results-emoji">${emoji}</span>
-      <h2>クイズ完了！</h2>
+      <h2>クイズ<ruby>完<rt>かん</rt></ruby><ruby>了<rt>りょう</rt></ruby>！</h2>
       <div class="results-score">${score} <span>/ 12</span></div>
       <div class="results-message">${msg}</div>
-      <button class="retry-btn" onclick="init()">もう一度チャレンジ →</button>
+      <button class="retry-btn" onclick="init()">もう<ruby>一<rt>いち</rt></ruby><ruby>度<rt>ど</rt></ruby>チャレンジ →</button>
       ${reviewHTML}
     </div>
   `;
