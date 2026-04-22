@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Irodori Practice 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sakura-50: #fef7f8; --sakura-100: #fdeef0; --sakura-200: #fbdae0;
+    --sakura-300: #f7b8c4; --sakura-400: #f291a5; --sakura-500: #e86b8a;
+    --sakura-600: #d44a6e; --sakura-700: #b83359; --sakura-800: #9a2d4e;
+    --correct: #4caf7a; --correct-bg: #eaf7ef;
+    --wrong: #d94f5c; --wrong-bg: #fdeef0;
+    --text-primary: #3d2533; --text-secondary: #6b4a5a; --text-light: #9a7a8a;
+    --bg-main: #fef7f8; --bg-card: #ffffff;
+    --shadow-sm: 0 2px 8px rgba(184,51,89,0.08);
+    --shadow-md: 0 4px 20px rgba(184,51,89,0.12);
+    --shadow-lg: 0 8px 32px rgba(184,51,89,0.16);
+    --radius: 16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg-main);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 20% 20%,rgba(247,184,196,.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(242,145,165,.10) 0%,transparent 50%),radial-gradient(ellipse at 50% 50%,rgba(253,238,240,.3) 0%,transparent 70%);pointer-events:none;z-index:0}
+  .container{max-width:640px;margin:0 auto;padding:24px 16px 60px;position:relative;z-index:1}
+  .header{text-align:center;margin-bottom:32px;animation:fadeDown .6s ease}
+  .header-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--sakura-400),var(--sakura-500));color:#fff;padding:6px 16px;border-radius:20px;font-size:.75rem;font-weight:500;letter-spacing:.05em;margin-bottom:12px}
+  .header h1{font-family:'Zen Maru Gothic',sans-serif;font-size:1.75rem;font-weight:700;color:var(--sakura-700);margin-bottom:4px}
+  .header p{color:var(--text-light);font-size:.875rem}
+  .progress-area{margin-bottom:24px;animation:fadeDown .6s ease .1s both}
+  .progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:.8rem;color:var(--text-secondary)}
+  .progress-info .score{font-weight:500;color:var(--sakura-600)}
+  .progress-bar{height:8px;background:var(--sakura-100);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--sakura-400),var(--sakura-500));border-radius:4px;transition:width .5s cubic-bezier(.4,0,.2,1);width:0%}
+  .section-label{display:inline-flex;align-items:center;gap:6px;background:var(--sakura-100);color:var(--sakura-700);padding:5px 14px;border-radius:16px;font-size:.75rem;font-weight:500;margin-bottom:16px}
+  .question-card{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:28px 24px;margin-bottom:20px;animation:slideUp .5s ease;border:1px solid rgba(247,184,196,.2)}
+  .question-number{font-size:.75rem;color:var(--text-light);font-weight:500;margin-bottom:16px;display:flex;align-items:center;gap:6px}
+  .question-number::before{content:'🌸';font-size:.85rem}
+  .sentence{font-size:1.2rem;line-height:2.4;margin-bottom:8px;font-weight:400}
+  .sentence .blank{display:inline-block;min-width:90px;border-bottom:2.5px dashed var(--sakura-400);text-align:center;padding:0 4px;margin:0 2px;color:var(--sakura-600);font-weight:500;transition:all .3s ease}
+  .sentence .blank.filled{border-bottom-style:solid;border-color:var(--correct);color:var(--correct)}
+  .sentence .blank.wrong{border-bottom-style:solid;border-color:var(--wrong);color:var(--wrong);text-decoration:line-through}
+  .sentence-b{font-size:1.05rem;color:var(--text-secondary);line-height:2.2;margin-top:8px}
+  .kanji-display{text-align:center;font-size:3rem;font-weight:700;color:var(--text-primary);margin:16px 0 24px;font-family:'Noto Sans JP',serif;letter-spacing:.1em}
+  .reading-answer{text-align:center;font-size:1.3rem;color:var(--sakura-600);font-weight:500;margin-bottom:20px;min-height:2em;padding:8px;border-radius:10px;transition:all .3s ease}
+  .reading-answer.correct-bg{background:var(--correct-bg);color:var(--correct)}
+  .reading-answer.wrong-bg{background:var(--wrong-bg);color:var(--wrong)}
+  .options{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+  .option-btn{display:block;width:100%;padding:14px 20px 12px;border:2px solid var(--sakura-200);border-radius:12px;background:var(--sakura-50);font-family:'Noto Sans JP',sans-serif;font-size:1.1rem;line-height:2;color:var(--text-primary);cursor:pointer;transition:all .25s ease;text-align:center;font-weight:400}
+  .option-btn:hover:not(:disabled){border-color:var(--sakura-400);background:var(--sakura-100);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+  .option-btn:active:not(:disabled){transform:translateY(0)}
+  .option-btn:disabled{cursor:default}
+  .option-btn.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--correct);font-weight:500}
+  .option-btn.correct::after{content:' ✓';font-weight:700}
+  .option-btn.wrong{border-color:var(--wrong);background:var(--wrong-bg);color:var(--wrong);opacity:.8}
+  .option-btn.wrong::after{content:' ✗';font-weight:700}
+  .option-btn.dimmed{opacity:.45;border-color:var(--sakura-100)}
+  .explanation{margin-top:18px;padding:16px 20px;background:linear-gradient(135deg,#fef9f0,#fdf5e6);border-radius:12px;border-left:4px solid var(--sakura-400);animation:fadeIn .4s ease;font-size:.9rem;line-height:1.8;color:var(--text-secondary)}
+  .explanation strong{color:var(--sakura-700);font-weight:700}
+  .explanation .grammar-point{font-family:'Zen Maru Gothic',sans-serif;font-weight:700;color:var(--sakura-600);font-size:.95rem;margin-bottom:4px;display:block}
+  .next-btn{display:block;width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--sakura-500),var(--sakura-600));color:#fff;font-family:'Noto Sans JP',sans-serif;font-size:1rem;font-weight:500;cursor:pointer;transition:all .3s ease;animation:fadeIn .4s ease;margin-top:16px;box-shadow:0 4px 15px rgba(212,74,110,.3)}
+  .next-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,74,110,.4)}
+  .next-btn:active{transform:translateY(0)}
+  .section-break{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:40px 24px;text-align:center;animation:slideUp .6s ease;border:1px solid rgba(247,184,196,.2);margin-bottom:20px}
+  .section-break h2{font-family:'Zen Maru Gothic',sans-serif;font-size:1.3rem;color:var(--sakura-700);margin-bottom:8px}
+  .section-break p{color:var(--text-secondary);font-size:.9rem;margin-bottom:20px;line-height:1.7}
+  .section-score{font-size:2rem;font-weight:700;color:var(--sakura-600);font-family:'Zen Maru Gothic',sans-serif;margin-bottom:16px}
+  .section-score span{font-size:1rem;color:var(--text-light);font-weight:400}
+  .results-card{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:40px 24px;text-align:center;animation:slideUp .6s ease;border:1px solid rgba(247,184,196,.2)}
+  .results-emoji{font-size:3rem;margin-bottom:16px;display:block}
+  .results-card h2{font-family:'Zen Maru Gothic',sans-serif;font-size:1.5rem;color:var(--sakura-700);margin-bottom:8px}
+  .results-score{font-size:3rem;font-weight:700;color:var(--sakura-600);margin:16px 0;font-family:'Zen Maru Gothic',sans-serif}
+  .results-score span{font-size:1.2rem;color:var(--text-light);font-weight:400}
+  .results-message{color:var(--text-secondary);margin-bottom:24px;line-height:1.7;font-size:.95rem}
+  .results-breakdown{display:flex;justify-content:center;gap:24px;margin-bottom:24px}
+  .breakdown-item{background:var(--sakura-50);border-radius:12px;padding:12px 20px;text-align:center}
+  .breakdown-item .label{font-size:.7rem;color:var(--text-light);margin-bottom:4px}
+  .breakdown-item .value{font-size:1.3rem;font-weight:700;color:var(--sakura-600);font-family:'Zen Maru Gothic'}
+  .retry-btn{display:inline-block;padding:14px 40px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--sakura-500),var(--sakura-600));color:#fff;font-family:'Noto Sans JP',sans-serif;font-size:1rem;font-weight:500;cursor:pointer;transition:all .3s ease;box-shadow:0 4px 15px rgba(212,74,110,.3);margin-top:8px}
+  .retry-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,74,110,.4)}
+  .review-section{margin-top:32px;text-align:left}
+  .review-section h3{font-family:'Zen Maru Gothic',sans-serif;color:var(--sakura-700);font-size:1.1rem;margin-bottom:16px;text-align:center}
+  .review-item{background:var(--sakura-50);border-radius:12px;padding:14px 18px;margin-bottom:10px;border-left:4px solid var(--correct);font-size:.9rem;line-height:1.8}
+  .review-item.missed{border-left-color:var(--wrong);background:var(--wrong-bg)}
+  .review-item .q-label{font-size:.7rem;color:var(--text-light);font-weight:500;margin-bottom:4px}
+  .review-item .answer-line{font-size:.8rem;color:var(--text-secondary);margin-top:4px}
+  ruby{ruby-align:center}
+  rt{font-size:.5em;color:var(--text-light);font-weight:300;letter-spacing:.02em}
+  .option-btn rt{font-size:.5em;color:inherit}
+  .explanation rt{font-size:.55em}
+  .review-item rt{font-size:.55em}
+  .hidden{display:none!important}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .petal{position:fixed;width:12px;height:12px;background:var(--sakura-300);border-radius:50% 0 50% 50%;opacity:.2;pointer-events:none;z-index:0;animation:float linear infinite}
+  @keyframes float{0%{transform:translateY(-20px) rotate(0deg);opacity:0}10%{opacity:.2}90%{opacity:.2}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="header-badge">IRODORI • <ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby> 3</div>
+    <h1>Practice Quiz 3</h1>
+    <p><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby> (10) ＋ <ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby><ruby>読<rt>よ</rt></ruby>み (5)</p>
+  </div>
+  <div class="progress-area">
+    <div class="progress-info">
+      <span id="progress-text">Question 1 / 15</span>
+      <span class="score" id="score-text">Score: 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+  <div id="quiz-area"></div>
+  <div id="results-area" class="hidden"></div>
+</div>
+
+<script>
+const R = (k, r) => `<ruby>${k}<rt>${r}</rt></ruby>`;
+const TOTAL = 15;
+const GRAMMAR_COUNT = 10;
+
+const grammarQuestions = [
+  {
+    id: 1, type: 'grammar',
+    display: [`フードコートに${R('傘','かさ')}を`, '___', 'しまいました。'],
+    sentenceB: null,
+    options: [`${R('忘','わす')}れる`, `${R('忘','わす')}れた`, `${R('忘','わす')}れて`],
+    answer: `${R('忘','わす')}れて`,
+    explanation: {
+      point: '〜てしまいました（ended up ~ing）',
+      text: '「〜てしまいました」は、意図しない結果や後悔を表す表現です。「忘れて」はて形で「しまいました」に接続します。「忘れる」は辞書形、「忘れた」は過去形で、「しまいました」との接続が不自然です。'
+    }
+  },
+  {
+    id: 2, type: 'grammar',
+    display: [`A：このジャケット、`, '___', 'いいですか？'],
+    sentenceB: 'B：かしこまりました。',
+    options: [`${R('着','き')}てみたら`, `${R('着','き')}てみても`, `${R('着','き')}てみると`],
+    answer: `${R('着','き')}てみても`,
+    explanation: {
+      point: '〜てみてもいいですか（may I try ~ing?）',
+      text: '「〜てみてもいいですか」は許可を求める表現で、「試しに〜してもいいですか」の意味です。Bが「かしこまりました」（かしこまった承諾）と返しているので、許可を求めている場面です。「〜てみたら」は条件、「〜てみると」は発見を表し、許可の文脈に合いません。'
+    }
+  },
+  {
+    id: 3, type: 'grammar',
+    display: [`A：${R('昨','き')}${R('日','のう')}、バッグを`, '___', '。'],
+    sentenceB: `B：${R('大','たい')}${R('変','へん')}でしたね。だいじょうぶですか？`,
+    options: [`${R('盗','ぬす')}みました`, `${R('盗','ぬす')}まれました`, `${R('盗','ぬす')}んでました`],
+    answer: `${R('盗','ぬす')}まれました`,
+    explanation: {
+      point: '〜まれました（passive: was stolen）',
+      text: '「盗まれました」は受身形で、自分のバッグが誰かに盗まれたことを表します。Bが「大変でしたね」と同情しているので、被害を受けた場面です。「盗みました」だと自分が盗んだ意味になり、「盗んでました」は進行形で文脈に合いません。'
+    }
+  },
+  {
+    id: 4, type: 'grammar',
+    display: [`このくつ、${R('白','しろ')}い`, '___', '、ありますか？'],
+    sentenceB: null,
+    options: ['もの', 'の', 'こと'],
+    answer: 'の',
+    explanation: {
+      point: '〜の（pronoun replacement）',
+      text: '「の」は名詞の代わりに使う代名詞的用法です。「白いの」＝「白いくつ」のこと。お店で「白いの、ありますか？」は自然な会話です。「もの」も使えますが、やや硬い表現で、口語では「の」が自然です。「こと」は抽象的な事柄を指し、具体的な物には使いません。'
+    }
+  },
+  {
+    id: 5, type: 'grammar',
+    display: [`このバッグは、ちょっと`, '___', 'すぎます。'],
+    sentenceB: null,
+    options: [`${R('小','ちい')}さく`, `${R('小','ちい')}さ`, `${R('小','ちい')}さい`],
+    answer: `${R('小','ちい')}さ`,
+    explanation: {
+      point: '〜すぎます（too ~）',
+      text: '「〜すぎます」はい形容詞の語幹に接続します。「小さい」→語幹「小さ」＋すぎます。「小さく」は副詞形（adverb）、「小さい」は辞書形で、「すぎます」に直接接続できません。同様に「高い→高すぎる」「大きい→大きすぎる」となります。'
+    }
+  },
+  {
+    id: 6, type: 'grammar',
+    display: [`あれ？${R('財','さい')}${R('布','ふ')}がない！もしかしたら、`, '___', 'かもしれません。'],
+    sentenceB: null,
+    options: ['とれた', 'とった', 'とられた'],
+    answer: 'とられた',
+    explanation: {
+      point: '〜られた（passive: was taken）',
+      text: '「とられた」は「とる」の受身形の過去で、「誰かに取られた」＝盗まれた可能性を表します。「もしかしたら〜かもしれません」は推量の表現です。「とれた」は可能形（was able to take）、「とった」は自分が取った意味で、被害の文脈に合いません。'
+    }
+  },
+  {
+    id: 7, type: 'grammar',
+    display: ['A：このズボン、', '___', 'いいですか？'],
+    sentenceB: `B：ご${R('試','し')}${R('着','ちゃく')}ですね。こちらへどうぞ。`,
+    options: ['はいたら', 'はいてみても', 'はけば'],
+    answer: 'はいてみても',
+    explanation: {
+      point: '〜てみてもいいですか（may I try ~ing?）',
+      text: 'Q2と同じ「〜てみてもいいですか」のパターンです。Bが「ご試着ですね」と応じているので、試着の許可を求めている場面です。「はいたら」は条件形、「はけば」も条件形で、許可を求める表現には合いません。'
+    }
+  },
+  {
+    id: 8, type: 'grammar',
+    display: [`この${R('色','いろ')}は、`, '___', `すぎると${R('思','おも')}います。`],
+    sentenceB: null,
+    options: [`${R('派','は')}${R('手','で')}な`, `${R('派','は')}${R('手','で')}だ`, `${R('派','は')}${R('手','で')}`],
+    answer: `${R('派','は')}${R('手','で')}`,
+    explanation: {
+      point: 'な形容詞＋すぎる（too ~）',
+      text: '「すぎる」はな形容詞の語幹に直接接続します。「派手」＋すぎる＝派手すぎる。「派手な」は連体形（名詞修飾用）、「派手だ」は終止形で、「すぎる」には接続できません。同様に「静か→静かすぎる」「きれい→きれいすぎる」となります。'
+    }
+  },
+  {
+    id: 9, type: 'grammar',
+    display: ['もしかしたら、カードをなくした', '___', '。'],
+    sentenceB: null,
+    options: ['でしょう', 'かもしれません', 'つもりです'],
+    answer: 'かもしれません',
+    explanation: {
+      point: '〜かもしれません（might ~）',
+      text: '「かもしれません」は不確かな推量を表し、「もしかしたら」と一緒に使うのが自然です。「でしょう」はやや確信度が高い推量、「つもりです」は意志・計画を表すので、「なくした」という意図しない出来事とは合いません。'
+    }
+  },
+  {
+    id: 10, type: 'grammar',
+    display: [`デパートで${R('財','さい')}${R('布','ふ')}を`, '___', 'しまいました。'],
+    sentenceB: null,
+    options: [`${R('落','お')}として`, `${R('落','お')}とした`, `${R('落','お')}とす`],
+    answer: `${R('落','お')}として`,
+    explanation: {
+      point: '〜てしまいました（ended up ~ing）',
+      text: 'Q1と同じ「〜てしまいました」のパターンです。「落として」はて形で「しまいました」に接続し、うっかり落としてしまった後悔を表します。「落とした」は過去形、「落とす」は辞書形で、「しまいました」との接続が不自然です。'
+    }
+  }
+];
+
+const kanjiQuestions = [
+  {
+    id: 11, type: 'kanji',
+    kanjiPlain: '営業する',
+    options: ['えぎょうする', 'えいぎょする', 'えいぎょうする'],
+    answer: 'えいぎょうする',
+    explanation: {
+      point: '営業する（えいぎょうする）',
+      text: '「営」は「えい」（経営＝けいえい）、「業」は「ぎょう」（授業＝じゅぎょう）。「営業する」は英語の "to do business / to operate" の意味です。「えぎょう」は「営」の長音が足りず、「えいぎょ」は「業」の長音が足りません。'
+    }
+  },
+  {
+    id: 12, type: 'kanji',
+    kanjiPlain: '案内する',
+    options: ['あいないする', 'あないする', 'あんないする'],
+    answer: 'あんないする',
+    explanation: {
+      point: '案内する（あんないする）',
+      text: '「案」は「あん」（提案＝ていあん）、「内」は「ない」（国内＝こくない）。「案内する」は英語の "to guide / to show around" の意味です。「あいない」は「案」の読みが間違い、「あない」は撥音「ん」が抜けています。'
+    }
+  },
+  {
+    id: 13, type: 'kanji',
+    kanjiPlain: '男性',
+    options: ['たんせい', 'だんせい', 'だんぜい'],
+    answer: 'だんせい',
+    explanation: {
+      point: '男性（だんせい）',
+      text: '「男」は「だん」（男子＝だんし）、「性」は「せい」（女性＝じょせい）。「男性」は英語の "male / man" の意味です。「たんせい」は「男」の読みが間違い（濁音なし）、「だんぜい」は「性」の読みが間違い（「ぜい」ではなく「せい」）です。'
+    }
+  },
+  {
+    id: 14, type: 'kanji',
+    kanjiPlain: '白',
+    options: ['ちろ', 'しろ', 'じろ'],
+    answer: 'しろ',
+    explanation: {
+      point: '白（しろ）',
+      text: '「白」の訓読みは「しろ」で、英語の "white" の意味です。名詞として「白」、形容詞として「白い（しろい）」と使います。「ちろ」「じろ」は存在しない読みです。'
+    }
+  },
+  {
+    id: 15, type: 'kanji',
+    kanjiPlain: '急に',
+    options: ['きゅうに', 'きゆに', 'きゅに'],
+    answer: 'きゅうに',
+    explanation: {
+      point: '急に（きゅうに）',
+      text: '「急」は「きゅう」（急行＝きゅうこう）。「急に」は英語の "suddenly" の意味で、副詞として使います。「きゆに」は拗音「きゅ」を直音「きゆ」と誤った読み、「きゅに」は長音「う」が抜けています。'
+    }
+  }
+];
+
+const allQuestions = [...grammarQuestions, ...kanjiQuestions];
+let currentQ = 0, score = 0, grammarScore = 0, kanjiScore = 0, answered = [];
+
+function init() {
+  currentQ = 0; score = 0; grammarScore = 0; kanjiScore = 0; answered = [];
+  document.getElementById('results-area').classList.add('hidden');
+  renderQuestion(); updateProgress(); createPetals();
+}
+
+function renderQuestion() {
+  const q = allQuestions[currentQ];
+  const area = document.getElementById('quiz-area');
+  if (currentQ === GRAMMAR_COUNT && !document.querySelector('.section-shown')) {
+    area.innerHTML = `
+      <div class="section-break">
+        <span style="font-size:2rem;display:block;margin-bottom:12px">📖</span>
+        <h2><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby>セクション<ruby>完<rt>かん</rt></ruby><ruby>了<rt>りょう</rt></ruby>！</h2>
+        <div class="section-score">${grammarScore} <span>/ ${GRAMMAR_COUNT}</span></div>
+        <p><ruby>次<rt>つぎ</rt></ruby>は<ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>の<ruby>読<rt>よ</rt></ruby>みセクションです。<br><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>を<ruby>見<rt>み</rt></ruby>て<ruby>正<rt>ただ</rt></ruby>しい<ruby>読<rt>よ</rt></ruby>みを<ruby>選<rt>えら</rt></ruby>びましょう。</p>
+        <button class="next-btn" onclick="document.querySelector('.section-break').classList.add('section-shown');renderQuestionContent()"><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby><ruby>読<rt>よ</rt></ruby>みへ →</button>
+      </div>`;
+    return;
+  }
+  renderQuestionContent();
+}
+
+function renderQuestionContent() {
+  const q = allQuestions[currentQ];
+  const area = document.getElementById('quiz-area');
+  if (q.type === 'grammar') {
+    const parts = q.display.map(p => p === '___' ? '<span class="blank" id="blank-slot">　？　</span>' : p).join('');
+    area.innerHTML = `
+      <div class="question-card">
+        <div class="section-label"><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby></div>
+        <div class="question-number"><ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${currentQ+1} / ${TOTAL}</div>
+        <div class="sentence">${parts}</div>
+        ${q.sentenceB ? `<div class="sentence-b">${q.sentenceB}</div>` : ''}
+        <div class="options" id="options-area">
+          ${q.options.map((o,i)=>`<button class="option-btn" onclick="selectAnswer(${i})">${o}</button>`).join('')}
+        </div>
+        <div id="explanation-area"></div><div id="next-area"></div>
+      </div>`;
+  } else {
+    area.innerHTML = `
+      <div class="question-card">
+        <div class="section-label"><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby><ruby>読<rt>よ</rt></ruby>み</div>
+        <div class="question-number"><ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${currentQ+1} / ${TOTAL}</div>
+        <div class="kanji-display">${q.kanjiPlain}</div>
+        <div class="reading-answer" id="reading-slot"></div>
+        <div class="options" id="options-area">
+          ${q.options.map((o,i)=>`<button class="option-btn" onclick="selectAnswer(${i})">${o}</button>`).join('')}
+        </div>
+        <div id="explanation-area"></div><div id="next-area"></div>
+      </div>`;
+  }
+}
+
+function selectAnswer(idx) {
+  const q = allQuestions[currentQ];
+  const selected = q.options[idx];
+  const isCorrect = selected === q.answer;
+  const buttons = document.querySelectorAll('.option-btn');
+  if (isCorrect) { score++; if (q.type==='grammar') grammarScore++; else kanjiScore++; }
+
+  if (q.type === 'grammar') {
+    const blank = document.getElementById('blank-slot');
+    if (isCorrect) { blank.innerHTML = q.answer; blank.classList.add('filled'); }
+    else { blank.innerHTML = selected; blank.classList.add('wrong');
+      setTimeout(()=>{ blank.innerHTML = q.answer; blank.classList.remove('wrong'); blank.classList.add('filled'); }, 800); }
+  } else {
+    const slot = document.getElementById('reading-slot');
+    slot.textContent = isCorrect ? q.answer : selected;
+    slot.classList.add(isCorrect ? 'correct-bg' : 'wrong-bg');
+    if (!isCorrect) setTimeout(()=>{ slot.textContent = q.answer; slot.classList.remove('wrong-bg'); slot.classList.add('correct-bg'); }, 800);
+  }
+
+  answered.push({ id: q.id, type: q.type, correct: isCorrect, selected, answer: q.answer });
+  buttons.forEach((btn,i)=>{ btn.disabled = true;
+    if (q.options[i]===q.answer) btn.classList.add('correct');
+    else if (i===idx && !isCorrect) btn.classList.add('wrong');
+    else btn.classList.add('dimmed');
+  });
+
+  document.getElementById('explanation-area').innerHTML = `
+    <div class="explanation"><span class="grammar-point">${q.explanation.point}</span>${q.explanation.text}</div>`;
+  const isLast = currentQ >= allQuestions.length - 1;
+  document.getElementById('next-area').innerHTML = `
+    <button class="next-btn" onclick="${isLast?'showResults()':'nextQuestion()'}">
+      ${isLast ? `<ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby>を<ruby>見<rt>み</rt></ruby>る →` : `<ruby>次<rt>つぎ</rt></ruby>の<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> →`}
+    </button>`;
+  updateProgress();
+}
+
+function nextQuestion() { currentQ++; renderQuestion(); updateProgress(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+function updateProgress() {
+  document.getElementById('progress-text').textContent = `Question ${currentQ+1} / ${TOTAL}`;
+  document.getElementById('score-text').textContent = `Score: ${score}`;
+  document.getElementById('progress-fill').style.width = `${(answered.length/TOTAL)*100}%`;
+}
+
+function showResults() {
+  document.getElementById('quiz-area').innerHTML = '';
+  document.getElementById('progress-fill').style.width = '100%';
+  const pct = Math.round((score/TOTAL)*100);
+  let emoji, msg;
+  if (pct===100) { emoji='🌸✨'; msg=`<ruby>満<rt>まん</rt></ruby><ruby>点<rt>てん</rt></ruby>！パーフェクト！`; }
+  else if (pct>=80) { emoji='🌸'; msg='よくできました！あと<ruby>少<rt>すこ</rt></ruby>しで<ruby>完<rt>かん</rt></ruby><ruby>璧<rt>ぺき</rt></ruby>です。'; }
+  else if (pct>=60) { emoji='🌱'; msg='まあまあです。<ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>えた<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>を<ruby>復<rt>ふく</rt></ruby><ruby>習<rt>しゅう</rt></ruby>しましょう。'; }
+  else { emoji='📖'; msg='もう<ruby>少<rt>すこ</rt></ruby>し<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>しましょう。'; }
+
+  const missed = answered.filter(a=>!a.correct);
+  let reviewHTML = '';
+  if (missed.length > 0) {
+    reviewHTML = `<div class="review-section">
+      <h3><ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>えた<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby></h3>
+      ${missed.map(m=>{
+        const q = allQuestions.find(qq=>qq.id===m.id);
+        const displayText = q.type==='grammar'
+          ? q.display.join('').replace('___',`<strong>${q.answer}</strong>`)
+          : `<strong>${q.kanjiPlain}</strong> → ${q.answer}`;
+        return `<div class="review-item missed">
+          <div class="q-label">${q.type==='grammar'?'<ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby>':'<ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>'} — <ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${m.id}</div>
+          <div>${displayText}</div>
+          <div class="answer-line">あなたの<ruby>答<rt>こた</rt></ruby>え：${m.selected}　→　<ruby>正<rt>せい</rt></ruby><ruby>解<rt>かい</rt></ruby>：${m.answer}</div>
+        </div>`;
+      }).join('')}</div>`;
+  }
+
+  const ra = document.getElementById('results-area');
+  ra.classList.remove('hidden');
+  ra.innerHTML = `<div class="results-card">
+    <span class="results-emoji">${emoji}</span>
+    <h2>クイズ<ruby>完<rt>かん</rt></ruby><ruby>了<rt>りょう</rt></ruby>！</h2>
+    <div class="results-score">${score} <span>/ ${TOTAL}</span></div>
+    <div class="results-breakdown">
+      <div class="breakdown-item"><div class="label"><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby></div><div class="value">${grammarScore}/${GRAMMAR_COUNT}</div></div>
+      <div class="breakdown-item"><div class="label"><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby></div><div class="value">${kanjiScore}/5</div></div>
+    </div>
+    <div class="results-message">${msg}</div>
+    <button class="retry-btn" onclick="init()">もう<ruby>一<rt>いち</rt></ruby><ruby>度<rt>ど</rt></ruby>チャレンジ →</button>
+    ${reviewHTML}
+  </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function createPetals() {
+  document.querySelectorAll('.petal').forEach(p=>p.remove());
+  for (let i=0;i<6;i++) {
+    const p=document.createElement('div'); p.className='petal';
+    p.style.left=Math.random()*100+'%'; p.style.animationDuration=(8+Math.random()*12)+'s';
+    p.style.animationDelay=Math.random()*10+'s'; p.style.width=(8+Math.random()*8)+'px'; p.style.height=p.style.width;
+    document.body.appendChild(p);
+  }
+}
+init();
+</script>
+</body>
+</html>
