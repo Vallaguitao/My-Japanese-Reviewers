@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>みんなの日本語 Lesson 11 — Vocabulary Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { min-height: 100vh; background: #1a1525; color: #e8e0f0; font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 20% 30%, rgba(232,180,200,0.07) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(120,100,180,0.07) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+  .container { max-width: 540px; margin: 0 auto; padding: 24px 16px 60px; position: relative; z-index: 1; }
+  #name-screen { margin-top: 50px; }
+  .card { background: #221d2e; border-radius: 16px; padding: 28px 20px; border: 1px solid #3d3650; }
+  .badge { display: inline-block; background: linear-gradient(135deg, #e8b4c8, #c89db7); color: #1a1525; font-weight: 700; font-size: 12px; padding: 4px 14px; border-radius: 20px; letter-spacing: 1px; }
+  .title { font-size: 22px; font-weight: 800; margin: 14px 0 4px; letter-spacing: -0.5px; }
+  .subtitle { font-size: 13px; color: #9e93b0; }
+  .name-label { display: block; font-size: 13px; color: #9e93b0; margin: 24px 0 8px; text-align: left; }
+  .name-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; font-size: 16px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+  .name-input:focus { border-color: #e8b4c8; }
+  .btn-primary { width: 100%; margin-top: 16px; padding: 14px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+  .btn-primary:disabled { opacity: 0.35; cursor: default; }
+  #quiz-screen { display: none; }
+  .header { text-align: center; margin-bottom: 22px; }
+  .header .subtitle { margin-top: 2px; }
+  .score-banner { display: none; border-radius: 16px; padding: 22px 16px; text-align: center; margin-bottom: 20px; animation: slideDown 0.4s ease; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+  .score-number { font-size: 44px; font-weight: 800; letter-spacing: -1px; }
+  .score-label { font-size: 16px; font-weight: 600; margin-top: 4px; }
+  .email-row { margin-top: 10px; }
+  .email-pill { display: inline-block; background: #3d3650; font-size: 12px; padding: 4px 14px; border-radius: 12px; }
+  .email-pill.sent { background: #2d6a4f; }
+  .email-pill.error { background: #9b2226; }
+  .btn-retake { margin-top: 12px; background: rgba(255,255,255,0.15); color: #fff; border: none; padding: 8px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  .progress-row { margin-bottom: 14px; }
+  .progress-text { font-size: 12px; color: #9e93b0; display: block; margin-bottom: 6px; }
+  .progress-bar { height: 4px; background: #2a2535; border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #e8b4c8, #c89db7); border-radius: 4px; width: 0%; transition: width 0.3s ease; }
+  .nav-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-bottom: 20px; }
+  .nav-dot { aspect-ratio: 1; border-radius: 8px; background: #2a2535; color: #e8e0f0; font-size: 11px; font-weight: 600; border: 2px solid transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .nav-dot.answered { background: #4a4458; }
+  .nav-dot.active { border-color: #e8b4c8; }
+  .nav-dot.correct { background: #2d6a4f; }
+  .nav-dot.wrong { background: #9b2226; }
+  .q-card { background: #221d2e; border-radius: 16px; padding: 24px 18px; border: 1px solid #3d3650; margin-bottom: 16px; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .q-number { font-size: 11px; color: #9e93b0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .q-english { font-size: 20px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; }
+  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .choice-btn { padding: 14px 10px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; text-align: center; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; font-size: 18px; font-weight: 600; position: relative; transition: all 0.15s; }
+  .choice-btn:hover:not(.locked) { border-color: #5c4d7a; background: #302844; }
+  .choice-btn.selected { background: #5c4d7a; border-color: #e8b4c8; }
+  .choice-btn.correct-reveal { background: #2d6a4f; border-color: #40916c; }
+  .choice-btn.wrong-reveal { background: #9b2226; border-color: #ca6702; }
+  .choice-btn .mark { position: absolute; top: 6px; right: 8px; font-size: 14px; }
+  .choice-btn .mark.ok { color: #a7f3d0; }
+  .choice-btn .mark.no { color: #fca5a5; }
+  .arrow-row { display: flex; justify-content: space-between; gap: 12px; }
+  .btn-nav { flex: 1; padding: 12px 0; border-radius: 12px; background: #2a2535; border: 1px solid #3d3650; color: #e8e0f0; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
+  .btn-nav:disabled { opacity: 0.3; cursor: default; }
+  .btn-submit { flex: 1; padding: 12px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+  .btn-submit:disabled { opacity: 0.35; cursor: default; }
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div id="name-screen">
+    <div class="card text-center">
+      <span class="badge">みんなの日本語</span>
+      <h1 class="title">Lesson 11 — Vocabulary Exam</h1>
+      <p class="subtitle">60 multiple-choice questions · hiragana &amp; katakana</p>
+      <label class="name-label">おなまえは？ Enter your name</label>
+      <input class="name-input" id="name-input" type="text" placeholder="Your name..." autofocus>
+      <button class="btn-primary" id="btn-start" disabled>Start Exam →</button>
+    </div>
+  </div>
+
+  <div id="quiz-screen">
+    <header class="header">
+      <span class="badge">みんなの日本語</span>
+      <h1 class="title">Lesson 11 — Vocabulary Exam</h1>
+      <p class="subtitle" id="quiz-subtitle"></p>
+    </header>
+    <div class="score-banner" id="score-banner">
+      <div class="score-number" id="score-number"></div>
+      <div class="score-label" id="score-label"></div>
+      <div class="email-row" id="email-row"></div>
+      <button class="btn-retake" id="btn-retake">Retake Quiz</button>
+    </div>
+    <div class="progress-row">
+      <span class="progress-text" id="progress-text">0 / 60 answered</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <div class="nav-grid" id="nav-grid"></div>
+    <div class="q-card" id="q-card">
+      <div class="q-number" id="q-number"></div>
+      <div class="q-english" id="q-english"></div>
+      <div class="choices-grid" id="choices-grid"></div>
+    </div>
+    <div class="arrow-row">
+      <button class="btn-nav" id="btn-prev">← Previous</button>
+      <button class="btn-nav" id="btn-next">Next →</button>
+      <button class="btn-submit hidden" id="btn-submit" disabled>Submit Exam</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  /* ── Verbs ── */
+  { english: "take, cost (time or money)", answer: "かかります", choices: ["かかります","やすみます","います","あります"] },
+
+  /* ── General counters (ひとつ〜とお) ── */
+  { english: "one (counter for things)", answer: "ひとつ", choices: ["ひとつ","ふたつ","みっつ","よっつ"] },
+  { english: "two (counter for things)", answer: "ふたつ", choices: ["ひとつ","ふたつ","みっつ","いつつ"] },
+  { english: "three (counter for things)", answer: "みっつ", choices: ["ふたつ","みっつ","よっつ","むっつ"] },
+  { english: "four (counter for things)", answer: "よっつ", choices: ["みっつ","よっつ","いつつ","ななつ"] },
+  { english: "five (counter for things)", answer: "いつつ", choices: ["よっつ","いつつ","むっつ","やっつ"] },
+  { english: "six (counter for things)", answer: "むっつ", choices: ["いつつ","むっつ","ななつ","やっつ"] },
+  { english: "seven (counter for things)", answer: "ななつ", choices: ["むっつ","ななつ","やっつ","ここのつ"] },
+  { english: "eight (counter for things)", answer: "やっつ", choices: ["ななつ","やっつ","ここのつ","とお"] },
+  { english: "nine (counter for things)", answer: "ここのつ", choices: ["やっつ","ここのつ","とお","ひとつ"] },
+  { english: "ten (counter for things)", answer: "とお", choices: ["ここのつ","とお","ひとつ","いくつ"] },
+  { english: "how many (counter)", answer: "いくつ", choices: ["いくつ","とお","ひとつ","ふたつ"] },
+
+  /* ── People counters ── */
+  { english: "one person", answer: "ひとり", choices: ["ひとり","ふたり","ひとつ","ふたつ"] },
+  { english: "two people", answer: "ふたり", choices: ["ひとり","ふたり","みっつ","ふたつ"] },
+
+  /* ── Mail items ── */
+  { english: "postage stamp", answer: "きって", choices: ["きって","はがき","ふうとう","きっぷ"] },
+  { english: "postcard", answer: "はがき", choices: ["きって","はがき","ふうとう","てがみ"] },
+  { english: "envelope", answer: "ふうとう", choices: ["ふうとう","きって","はがき","てがみ"] },
+
+  /* ── Family ── */
+  { english: "parents", answer: "りょうしん", choices: ["りょうしん","きょうだい","あに","あね"] },
+  { english: "brothers and sisters", answer: "きょうだい", choices: ["りょうしん","きょうだい","あに","いもうと"] },
+  { english: "foreign country", answer: "がいこく", choices: ["がいこく","りゅうがくせい","クラス","けん"] },
+  { english: "foreign student", answer: "りゅうがくせい", choices: ["りゅうがくせい","がいこく","がくせい","クラス"] },
+  { english: "class", answer: "クラス", choices: ["クラス","がいこく","りゅうがくせい","きょうだい"] },
+
+  /* ── Duration ── */
+  { english: "— hour(s)", answer: "じかん", choices: ["じかん","しゅうかん","かげつ","ねん"] },
+  { english: "— week(s)", answer: "しゅうかん", choices: ["じかん","しゅうかん","かげつ","ねん"] },
+  { english: "— month(s)", answer: "かげつ", choices: ["じかん","しゅうかん","かげつ","ねん"] },
+  { english: "— year(s)", answer: "ねん", choices: ["じかん","しゅうかん","かげつ","ねん"] },
+  { english: "how long", answer: "どのくらい", choices: ["どのくらい","いくつ","いくら","なんじ"] },
+
+  /* ── Misc ── */
+  { english: "in total", answer: "ぜんぶで", choices: ["ぜんぶで","みんな","だけ","ぐらい"] },
+  { english: "all, everything, everyone", answer: "みんな", choices: ["みんな","ぜんぶで","だけ","ぐらい"] },
+  { english: "only ~", answer: "だけ", choices: ["だけ","ぐらい","ぜんぶで","みんな"] },
+
+  /* ── Menu: Japanese dishes ── */
+  { english: "set meal", answer: "ていしょく", choices: ["ていしょく","ランチ","てんどん","おやこどん"] },
+  { english: "western-style set meal", answer: "ランチ", choices: ["ランチ","ていしょく","カレーライス","ハンバーグ"] },
+  { english: "a bowl of rice with fried seafood and vegetables", answer: "てんどん", choices: ["てんどん","おやこどん","ぎゅうどん","カレーライス"] },
+  { english: "a bowl of rice with chicken and egg", answer: "おやこどん", choices: ["おやこどん","てんどん","ぎゅうどん","ていしょく"] },
+  { english: "a bowl of rice with beef", answer: "ぎゅうどん", choices: ["ぎゅうどん","てんどん","おやこどん","やきにく"] },
+  { english: "grilled meat", answer: "やきにく", choices: ["やきにく","やさいいため","てんぷら","すし"] },
+  { english: "sautéed vegetables", answer: "やさいいため", choices: ["やさいいため","やきにく","つけもの","みそしる"] },
+  { english: "pickles", answer: "つけもの", choices: ["つけもの","みそしる","おにぎり","やさいいため"] },
+  { english: "miso soup", answer: "みそしる", choices: ["みそしる","つけもの","スープ","おにぎり"] },
+  { english: "rice ball", answer: "おにぎり", choices: ["おにぎり","すし","みそしる","サンドイッチ"] },
+  { english: "fried seafood and vegetables (tempura)", answer: "てんぷら", choices: ["てんぷら","すし","やきにく","コロッケ"] },
+  { english: "vinegared rice with raw fish (sushi)", answer: "すし", choices: ["すし","てんぷら","おにぎり","そば"] },
+
+  /* ── Menu: Noodles ── */
+  { english: "Japanese noodles (wheat flour)", answer: "うどん", choices: ["うどん","そば","ラーメン","やきそば"] },
+  { english: "Japanese noodles (buckwheat flour)", answer: "そば", choices: ["うどん","そば","ラーメン","やきそば"] },
+  { english: "Chinese noodles in soup", answer: "ラーメン", choices: ["ラーメン","うどん","そば","やきそば"] },
+  { english: "Chinese stir-fried noodles", answer: "やきそば", choices: ["やきそば","ラーメン","うどん","そば"] },
+
+  /* ── Menu: Western dishes ── */
+  { english: "curry with rice", answer: "カレーライス", choices: ["カレーライス","ハンバーグ","コロッケ","フライドチキン"] },
+  { english: "hamburg steak", answer: "ハンバーグ", choices: ["ハンバーグ","ハンバーガー","カレーライス","コロッケ"] },
+  { english: "croquette", answer: "コロッケ", choices: ["コロッケ","えびフライ","フライドチキン","ハンバーグ"] },
+  { english: "fried shrimp", answer: "えびフライ", choices: ["えびフライ","コロッケ","フライドチキン","てんぷら"] },
+  { english: "fried chicken", answer: "フライドチキン", choices: ["フライドチキン","えびフライ","コロッケ","ハンバーグ"] },
+  { english: "salad", answer: "サラダ", choices: ["サラダ","スープ","ピザ","トースト"] },
+  { english: "soup", answer: "スープ", choices: ["スープ","サラダ","みそしる","ピザ"] },
+  { english: "spaghetti", answer: "スパゲッティ", choices: ["スパゲッティ","ピザ","サラダ","トースト"] },
+  { english: "pizza", answer: "ピザ", choices: ["ピザ","スパゲッティ","ハンバーガー","トースト"] },
+  { english: "hamburger", answer: "ハンバーガー", choices: ["ハンバーガー","ハンバーグ","サンドイッチ","トースト"] },
+  { english: "sandwich", answer: "サンドイッチ", choices: ["サンドイッチ","ハンバーガー","トースト","ピザ"] },
+  { english: "toast", answer: "トースト", choices: ["トースト","サンドイッチ","パン","ピザ"] },
+
+  /* ── Menu: Drinks ── */
+  { english: "cocoa", answer: "ココア", choices: ["ココア","コーラ","コーヒー","こうちゃ"] },
+  { english: "cola", answer: "コーラ", choices: ["コーラ","ココア","ジュース","コーヒー"] },
+  { english: "ice cream", answer: "アイスクリーム", choices: ["アイスクリーム","ココア","ジュース","コーラ"] },
+];
+
+let playerName = "";
+let quiz = [];
+let answers = {};
+let currentQ = 0;
+let submitted = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+emailjs.init("1oR0j0WDvUmSSYEpK");
+
+const $nameScreen = document.getElementById("name-screen");
+const $quizScreen = document.getElementById("quiz-screen");
+const $nameInput  = document.getElementById("name-input");
+const $btnStart   = document.getElementById("btn-start");
+const $subtitle   = document.getElementById("quiz-subtitle");
+const $scoreBanner= document.getElementById("score-banner");
+const $scoreNum   = document.getElementById("score-number");
+const $scoreLbl   = document.getElementById("score-label");
+const $emailRow   = document.getElementById("email-row");
+const $btnRetake  = document.getElementById("btn-retake");
+const $progText   = document.getElementById("progress-text");
+const $progFill   = document.getElementById("progress-fill");
+const $navGrid    = document.getElementById("nav-grid");
+const $qNumber    = document.getElementById("q-number");
+const $qEnglish   = document.getElementById("q-english");
+const $choicesGrid= document.getElementById("choices-grid");
+const $btnPrev    = document.getElementById("btn-prev");
+const $btnNext    = document.getElementById("btn-next");
+const $btnSubmit  = document.getElementById("btn-submit");
+
+$nameInput.addEventListener("input", () => { $btnStart.disabled = !$nameInput.value.trim(); });
+$nameInput.addEventListener("keydown", (e) => { if (e.key === "Enter" && $nameInput.value.trim()) startQuiz(); });
+$btnStart.addEventListener("click", startQuiz);
+
+function startQuiz() {
+  playerName = $nameInput.value.trim();
+  quiz = shuffle(QUESTIONS).map(q => ({ ...q, choices: shuffle(q.choices) }));
+  answers = {}; currentQ = 0; submitted = false;
+  $nameScreen.style.display = "none";
+  $quizScreen.style.display = "block";
+  $scoreBanner.style.display = "none";
+  $subtitle.textContent = `${playerName}さん — choose the correct hiragana or katakana`;
+  buildNavGrid(); renderQuestion(); updateProgress();
+}
+
+function buildNavGrid() {
+  $navGrid.innerHTML = "";
+  quiz.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.className = "nav-dot"; btn.textContent = i + 1;
+    btn.addEventListener("click", () => { currentQ = i; renderQuestion(); });
+    $navGrid.appendChild(btn);
+  });
+}
+
+function updateNavGrid() {
+  const dots = $navGrid.querySelectorAll(".nav-dot");
+  dots.forEach((dot, i) => {
+    dot.className = "nav-dot";
+    if (i === currentQ) dot.classList.add("active");
+    if (!submitted && answers[i] !== undefined) dot.classList.add("answered");
+    if (submitted && answers[i] === quiz[i].answer) dot.classList.add("correct");
+    if (submitted && answers[i] !== undefined && answers[i] !== quiz[i].answer) dot.classList.add("wrong");
+  });
+}
+
+function updateProgress() {
+  const count = Object.keys(answers).length;
+  $progText.textContent = `${count} / ${quiz.length} answered`;
+  $progFill.style.width = `${(count / quiz.length) * 100}%`;
+  $btnSubmit.disabled = count < quiz.length;
+}
+
+function renderQuestion() {
+  const q = quiz[currentQ];
+  $qNumber.textContent = `Question ${currentQ + 1}`;
+  $qEnglish.textContent = q.english;
+  $choicesGrid.innerHTML = "";
+  q.choices.forEach(c => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    if (submitted) btn.classList.add("locked");
+    btn.innerHTML = `<span>${c}</span>`;
+    const selected = answers[currentQ] === c;
+    const isCorrectChoice = c === q.answer;
+    if (!submitted) {
+      if (selected) btn.classList.add("selected");
+      btn.addEventListener("click", () => { if (submitted) return; answers[currentQ] = c; renderQuestion(); updateNavGrid(); updateProgress(); });
+    } else {
+      if (isCorrectChoice) { btn.classList.add("correct-reveal"); btn.innerHTML += `<span class="mark ok">✓</span>`; }
+      if (selected && !isCorrectChoice) { btn.classList.add("wrong-reveal"); btn.innerHTML += `<span class="mark no">✗</span>`; }
+    }
+    $choicesGrid.appendChild(btn);
+  });
+  updateNavGrid();
+  const isLast = currentQ === quiz.length - 1;
+  $btnPrev.disabled = currentQ === 0;
+  if (isLast && !submitted) { $btnNext.classList.add("hidden"); $btnSubmit.classList.remove("hidden"); }
+  else { $btnNext.classList.remove("hidden"); $btnSubmit.classList.add("hidden"); $btnNext.disabled = isLast; }
+}
+
+$btnPrev.addEventListener("click", () => { if (currentQ > 0) { currentQ--; renderQuestion(); } });
+$btnNext.addEventListener("click", () => { if (currentQ < quiz.length - 1) { currentQ++; renderQuestion(); } });
+$btnSubmit.addEventListener("click", submitQuiz);
+
+async function submitQuiz() {
+  let s = 0;
+  quiz.forEach((q, i) => { if (answers[i] === q.answer) s++; });
+  submitted = true;
+  const total = quiz.length;
+  const pct = Math.round((s / total) * 100);
+  $scoreNum.textContent = `${s}/${total}`;
+  if (s === total) $scoreLbl.textContent = "完璧！ Perfect!";
+  else if (s >= 54) $scoreLbl.textContent = "すごい！ Excellent!";
+  else if (s >= 42) $scoreLbl.textContent = "いいですね！ Good job!";
+  else $scoreLbl.textContent = "もう一度！ Try again!";
+  const gradient = s >= 54 ? "linear-gradient(135deg,#2d6a4f,#40916c)" : s >= 42 ? "linear-gradient(135deg,#b08d37,#d4a843)" : "linear-gradient(135deg,#9b2226,#ca6702)";
+  $scoreBanner.style.background = gradient;
+  $scoreBanner.style.display = "block";
+  currentQ = 0; renderQuestion(); updateNavGrid();
+  $btnSubmit.classList.add("hidden"); $btnNext.classList.remove("hidden"); $btnNext.disabled = false;
+
+  const EMAILJS_SERVICE_ID  = "service_v7ifzdj";
+  const EMAILJS_TEMPLATE_ID = "template_lb9c879";
+  const now = new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", dateStyle: "full", timeStyle: "short" });
+  const details = quiz.map((q, i) => `${i+1}. ${q.english} → Answer: ${answers[i] || "—"} | Correct: ${q.answer} ${answers[i] === q.answer ? "✓" : "✗"}`).join("\n");
+  const emailParams = {
+    name: playerName, email: "noreply@quiz.com",
+    subject: `[${playerName}] みんなの日本語 Lesson 11 Quiz — ${pct}%`,
+    message: `Minna no Nihongo - Lesson 11 Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${total} (${pct}%)\n\n--- Detailed Results ---\n${details}\n\nがんばって！`,
+    time: now
+  };
+  $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams);
+    $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
+  } catch (err) {
+    console.error("EmailJS error:", err);
+    $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || 'Email failed'}</span>`;
+  }
+}
+
+$btnRetake.addEventListener("click", () => {
+  quiz = shuffle(QUESTIONS).map(q => ({ ...q, choices: shuffle(q.choices) }));
+  answers = {}; currentQ = 0; submitted = false;
+  $scoreBanner.style.display = "none";
+  buildNavGrid(); renderQuestion(); updateProgress();
+});
+</script>
+</body>
+</html>
