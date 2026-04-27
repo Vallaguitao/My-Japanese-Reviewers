@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<!-- EmailJS Library -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   /* ═══════════════════════════════════════════════════════════════
      FIGMA TOKENS (Theme: Yellow Book Amber 📒)
@@ -69,6 +71,42 @@
     gap: 20px;
   }
 
+  /* ── Card Base ── */
+  .card {
+    background: var(--surface-card);
+    border-radius: 20px;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 8px 24px rgba(217, 119, 6, 0.08);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ── Name Screen ── */
+  #name-screen { text-align: center; padding: 40px 24px; }
+  .name-label {
+    display: block; font-size: 14px; color: var(--text-muted);
+    font-weight: 700; margin: 16px 0 8px; text-align: left;
+  }
+  .name-input {
+    width: 100%; padding: 14px 16px; border-radius: 12px;
+    border: 2px solid var(--border-light); background: var(--surface-hover);
+    color: var(--text-primary); font-size: 16px; font-family: inherit;
+    outline: none; transition: border-color 0.2s; font-weight: 600;
+  }
+  .name-input:focus { border-color: var(--border-active); background: var(--surface-card); }
+  
+  .btn-start {
+    width: 100%; margin-top: 16px; padding: 16px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent-main), #b45309);
+    border: none; color: white; font-size: 16px; font-weight: 800;
+    cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+  }
+  .btn-start:disabled { opacity: 0.5; cursor: default; transform: none; box-shadow: none; }
+  .btn-start:active:not(:disabled) { transform: scale(0.98); }
+
   /* ── Header ── */
   header { text-align: center; }
   .badge {
@@ -80,17 +118,8 @@
   h1 { font-size: 22px; font-weight: 800; }
   .progress { font-size: 14px; color: var(--text-muted); font-weight: 600; margin-top: 4px; }
 
-  /* ── Question Card (Figma: Auto Layout Vertical) ── */
-  .card {
-    background: var(--surface-card);
-    border-radius: 20px;
-    border: 1px solid var(--border-light);
-    box-shadow: 0 8px 24px rgba(217, 119, 6, 0.08);
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+  /* ── Quiz Wrapper ── */
+  #quiz-wrapper { display: none; flex-direction: column; gap: 20px; }
 
   .meta-row { display: flex; gap: 8px; align-items: center; }
   .tag {
@@ -124,230 +153,195 @@
   ruby { font-family: 'Noto Sans JP', sans-serif; }
   rt { font-size: 0.6em; color: var(--text-muted); font-weight: 600; transform: translateY(-2px); }
 
-  /* ── Choices List (Figma: Vertical List, gap 12px) ── */
-  .choices-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+  /* ── Choices List ── */
+  .choices-list { display: flex; flex-direction: column; gap: 12px; }
 
   .choice-btn {
-    background: var(--surface-card);
-    border: 2px solid var(--border-light);
-    border-radius: 12px;
-    padding: 16px;
-    text-align: left;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    background: var(--surface-card); border: 2px solid var(--border-light);
+    border-radius: 12px; padding: 16px; text-align: left;
+    font-size: 16px; font-weight: 600; color: var(--text-primary);
+    cursor: pointer; transition: all 0.2s ease;
+    display: flex; align-items: center; gap: 12px;
   }
+  .choice-btn:hover:not(:disabled) { background: var(--surface-hover); border-color: var(--border-active); }
+  .choice-letter { font-weight: 800; color: var(--accent-main); width: 24px; }
 
-  .choice-btn:hover:not(:disabled) {
-    background: var(--surface-hover);
-    border-color: var(--border-active);
-  }
-
-  .choice-letter {
-    font-weight: 800;
-    color: var(--accent-main);
-    width: 24px;
-  }
-
-  /* ── Interaction States ── */
-  .choice-btn.correct {
-    background: var(--status-correct-bg);
-    border-color: var(--status-correct-border);
-    color: var(--status-correct-text);
-  }
-  .choice-btn.wrong {
-    background: var(--status-wrong-bg);
-    border-color: var(--status-wrong-border);
-    color: var(--status-wrong-text);
-  }
+  .choice-btn.correct { background: var(--status-correct-bg); border-color: var(--status-correct-border); color: var(--status-correct-text); }
+  .choice-btn.wrong { background: var(--status-wrong-bg); border-color: var(--status-wrong-border); color: var(--status-wrong-text); }
   .choice-btn:disabled { cursor: default; opacity: 0.8; }
   
   /* ── Feedback Panel ── */
   .feedback-panel {
-    display: none;
-    margin-top: 8px;
-    padding-top: 20px;
-    border-top: 1px dashed var(--border-light);
-    animation: fadeIn 0.4s ease;
+    display: none; margin-top: 8px; padding-top: 20px;
+    border-top: 1px dashed var(--border-light); animation: fadeIn 0.4s ease;
   }
-  
   @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
   .fb-header { font-weight: 800; font-size: 15px; margin-bottom: 12px; }
   .fb-header.correct-text { color: var(--status-correct-border); }
   .fb-header.wrong-text { color: var(--status-wrong-border); }
-
   .fb-blocks { display: flex; flex-direction: column; gap: 12px; font-size: 14.5px; }
   .fb-note { font-weight: 600; }
   .fb-explain { color: var(--text-primary); }
-  .fb-connect { color: var(--text-muted); font-style: italic; border-left: 3px solid var(--accent-main); padding-left: 12px; }
   .fb-warn { color: #9c4221; background: #fef3c7; padding: 12px; border-radius: 8px; }
 
   /* ── Controls ── */
   .btn-next {
-    width: 100%;
-    padding: 16px;
-    border-radius: 12px;
-    border: none;
+    width: 100%; padding: 16px; border-radius: 12px; border: none;
     background: linear-gradient(135deg, var(--accent-main), #b45309);
-    color: white;
-    font-size: 16px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
-    display: none;
-    transition: transform 0.1s;
+    color: white; font-size: 16px; font-weight: 800;
+    cursor: pointer; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+    display: none; transition: transform 0.1s;
   }
   .btn-next:active { transform: scale(0.98); }
 
-  /* Final Screen */
+  /* ── Final Screen & Email Pill ── */
   .final-screen { display: none; text-align: center; padding: 40px 20px; }
   .score-text { font-size: 48px; font-weight: 800; color: var(--accent-main); margin: 20px 0; }
+  
+  .email-row { margin: 24px 0; min-height: 30px; }
+  .email-pill {
+    display: inline-block; padding: 8px 16px; border-radius: 20px;
+    font-size: 13px; font-weight: 700; background: var(--surface-hover);
+    color: var(--text-primary); border: 1px solid var(--border-active);
+  }
+  .email-pill.sent { background: var(--status-correct-bg); color: var(--status-correct-text); border-color: var(--status-correct-border); }
+  .email-pill.error { background: var(--status-wrong-bg); color: var(--status-wrong-text); border-color: var(--status-wrong-border); }
 </style>
 </head>
 <body>
 
 <div class="app-container">
+  
   <header>
     <span class="badge">📒 Yellow Book Mid Quiz</span>
     <h1>Interactive Grammar Reviewer</h1>
-    <div class="progress" id="progress-text">Question 1 of 50</div>
+    <div class="progress" id="progress-text">Enter your details to begin</div>
   </header>
 
-  <!-- Reviewer UI -->
-  <div class="card" id="quiz-container">
-    <div class="meta-row">
-      <span class="tag" id="q-lesson">📘 Part 1</span>
-      <span class="tag type" id="q-type">Vocabulary</span>
-    </div>
-
-    <!-- Figma Component: Expandable Reading Passage -->
-    <details class="passage-box" id="reading-passage-container">
-      <summary>📖 読解 (Reading Passage) — Click to Toggle</summary>
-      <div class="passage-text" id="reading-text"></div>
-      
-      <!-- New Feature: Deep Reading Analysis -->
-      <button onclick="toggleAnalysis()" style="margin-top: 16px; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-active); background: var(--surface-card); color: var(--accent-main); font-weight: 700; cursor: pointer; font-size: 13.5px; width: 100%; transition: all 0.2s;">
-        🔍 Toggle English Translation & Grammar Analysis
-      </button>
-      <div id="reading-analysis" style="display: none; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border-light); font-size: 14px; color: var(--text-muted); line-height: 1.6;">
-        <strong style="color: var(--text-primary);">[Paragraph 1]</strong><br>
-        "I came to Japan last September. I am currently working as a Japanese teacher in Manila, but before that, I studied in Japan for half a year. Life in Japan is very convenient, but it was a little tough at first. In particular, how to take out the trash (<span style="color: var(--accent-main); font-weight: 600;">出し方</span>) and how to ride the trains (<span style="color: var(--accent-main); font-weight: 600;">乗り方</span>) were difficult. However, because my Japanese friends kindly taught me, I was able to get used to it right away (<span style="color: var(--accent-main); font-weight: 600;">慣れることができました</span>)."<br><br>
-        <strong style="color: var(--text-primary);">[Paragraph 2]</strong><br>
-        "There is a lot of beautiful scenery in Japan. In spring, cherry blossoms bloom, and in autumn, the autumn leaves are very beautiful. I have been to Kyoto in the autumn (<span style="color: var(--accent-main); font-weight: 600;">行ったことがあります</span>), and I was very moved to be able to see the temples and autumn leaves together (<span style="color: var(--accent-main); font-weight: 600;">見られて</span> - potential form). In the future, I want to go to Japan again and see different places like Hokkaido next time (<span style="color: var(--accent-main); font-weight: 600;">見てみたい</span>)."<br><br>
-        <strong style="color: var(--text-primary);">[Paragraph 3]</strong><br>
-        "Also, I love Japanese food. I especially like sushi and tempura, but recently I am also interested in the food you eat at food stalls (屋台). The food stalls that appear during Japanese festivals are lively and very fun. I want to continue studying Japanese and learn more about Japanese culture."
-      </div>
-    </details>
-
-    <div class="question-stem" id="q-stem">Loading...</div>
-
-    <div class="choices-list" id="choices-list">
-      <!-- Buttons generated by JS -->
-    </div>
-
-    <div class="feedback-panel" id="feedback-panel">
-      <div class="fb-header" id="fb-header"></div>
-      <div class="fb-blocks">
-        <div class="fb-note" id="fb-note"></div>
-        <div class="fb-explain" id="fb-explain"></div>
-        <div class="fb-connect" id="fb-connect"></div>
-        <div class="fb-warn" id="fb-warn"></div>
-      </div>
-    </div>
+  <!-- ════ NAME SCREEN ════ -->
+  <div class="card" id="name-screen">
+    <h2 style="font-size: 20px; font-weight: 800;">Welcome to the Exam</h2>
+    <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">30 multiple-choice questions · Results will be emailed to your instructor automatically.</p>
+    
+    <label class="name-label">おなまえは？ Enter your name</label>
+    <input class="name-input" id="name-input" type="text" placeholder="e.g. John Doe" autofocus>
+    <button class="btn-start" id="btn-start" disabled>Start Exam →</button>
   </div>
 
-  <button class="btn-next" id="btn-next" onclick="nextQuestion()">Next Question →</button>
+  <!-- ════ QUIZ WRAPPER ════ -->
+  <div id="quiz-wrapper">
+    <div class="card" id="quiz-container">
+      <div class="meta-row">
+        <span class="tag" id="q-lesson">📘 Part 1</span>
+        <span class="tag type" id="q-type">Vocabulary</span>
+      </div>
 
-  <!-- Final Screen UI -->
+      <details class="passage-box" id="reading-passage-container">
+        <summary>📖 読解 (Reading Passage) — Click to Toggle</summary>
+        <div class="passage-text" id="reading-text"></div>
+        <button onclick="toggleAnalysis()" style="margin-top: 16px; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-active); background: var(--surface-card); color: var(--accent-main); font-weight: 700; cursor: pointer; font-size: 13.5px; width: 100%; transition: all 0.2s;">
+          🔍 Toggle English Translation & Grammar Analysis
+        </button>
+        <div id="reading-analysis" style="display: none; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border-light); font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+          <strong style="color: var(--text-primary);">[Paragraph 1]</strong><br>
+          "I came to Japan last September. I am currently working as a Japanese teacher in Manila, but before that, I studied in Japan for half a year. Life in Japan is very convenient, but it was a little tough at first. In particular, how to take out the trash (<span style="color: var(--accent-main); font-weight: 600;">出し方</span>) and how to ride the trains (<span style="color: var(--accent-main); font-weight: 600;">乗り方</span>) were difficult. However, because my Japanese friends kindly taught me, I was able to get used to it right away (<span style="color: var(--accent-main); font-weight: 600;">慣れることができました</span>)."<br><br>
+          <strong style="color: var(--text-primary);">[Paragraph 2]</strong><br>
+          "There is a lot of beautiful scenery in Japan. In spring, cherry blossoms bloom, and in autumn, the autumn leaves are very beautiful. I have been to Kyoto in the autumn (<span style="color: var(--accent-main); font-weight: 600;">行ったことがあります</span>), and I was very moved to be able to see the temples and autumn leaves together (<span style="color: var(--accent-main); font-weight: 600;">見られて</span> - potential form). In the future, I want to go to Japan again and see different places like Hokkaido next time (<span style="color: var(--accent-main); font-weight: 600;">見てみたい</span>)."<br><br>
+          <strong style="color: var(--text-primary);">[Paragraph 3]</strong><br>
+          "Also, I love Japanese food. I especially like sushi and tempura, but recently I am also interested in the food you eat at food stalls (屋台). The food stalls that appear during Japanese festivals are lively and very fun. I want to continue studying Japanese and learn more about Japanese culture."
+        </div>
+      </details>
+
+      <div class="question-stem" id="q-stem">Loading...</div>
+
+      <div class="choices-list" id="choices-list"></div>
+
+      <div class="feedback-panel" id="feedback-panel">
+        <div class="fb-header" id="fb-header"></div>
+        <div class="fb-blocks">
+          <div class="fb-note" id="fb-note"></div>
+          <div class="fb-explain" id="fb-explain"></div>
+          <div class="fb-warn" id="fb-warn"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Next Question →</button>
+  </div>
+
+  <!-- ════ FINAL SCREEN UI ════ -->
   <div class="card final-screen" id="final-screen">
     <h2>Review Complete! 📒</h2>
-    <div class="score-text" id="final-score">0 / 50</div>
-    <p style="color: var(--text-muted); margin-bottom: 24px;">Great job completing the Yellow Book Mid Quiz! Keep pushing towards N3.</p>
+    <div class="score-text" id="final-score">0 / 30</div>
+    <p style="color: var(--text-muted);">Great job completing the Yellow Book Mid Quiz! Keep pushing towards N3.</p>
+    
+    <!-- Email Status Injector -->
+    <div class="email-row" id="email-row"></div>
+    
     <button class="btn-next" style="display: block;" onclick="location.reload()">🔄 Start Another Set</button>
   </div>
+
 </div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   DATA & PARSER UTILITIES (Extracted from Yellow Book PDF)
+   INIT EMAILJS
    ═══════════════════════════════════════════════════════════════ */
+emailjs.init("1oR0j0WDvUmSSYEpK");
 
+/* ═══════════════════════════════════════════════════════════════
+   DATA & PARSER UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
 const READING_PASSAGE_JP = `私(わたし)は 去年(きょねん)の 九月(くがつ)に 日本(にほん)に 来(き)ました。今(いま)は マニラで 日本語(にほんご)の 先生(せんせい)を していますが、以前(いぜん)は 日本(にほん)で 半年間(はんとしかん) 勉強(べんきょう)していました。日本(にほん)の 生活(せいかつ)は とても 便利(べんり)ですが、最初(さいしょ)は 少(すこ)し 大変(たいへん)でした。特(とく)に、ゴミの 出(だ)し方(かた)や 電車(でんしゃ)の 乗(の)り方(かた)が 難(むずか)しかったです。でも、日本(にほん)の 友達(ともだち)が 親切(しんせつ)に 教(おし)えてくれたので、すぐに 慣(な)れる ことが できました。<br><br>日本(にほん)には たくさんの 美(うつく)しい 景色(けしき)が あります。春(はる)には 桜(さくら)が 咲(さ)き、秋(あき)には 紅葉(こうよう)が とても きれいです。私(わたし)は 秋(あき)の 京都(きょうと)に 行(い)った ことが ありますが、お寺(てら)と 紅葉(こうよう)が 一緒(いっしょ)に 見(み)られて、とても 感動(かんどう)しました。将来(しょうらい)、また 日本(にほん)に 行(い)って、今度(こんど)は 北海道(ほっかいどう)などの 違(ちが)う 場所(ばしょ)も 見(み)てみたいと 思(おも)っています。<br><br>また、日本(にほん)の 食(た)べ物(もの)も 大好(だいす)きです。特(とく)に お寿司(すし)や 天(てん)ぷらが 好(す)きですが、最近(さいきん)は 屋台(やたい)で 食(た)べる 料理(りょうり)にも 興味(きょうみ)が あります。日本(にほん)の 祭(まつ)りの 時(とき)に 出(で)る 屋台(やたい)は、活気(かっき)が あって とても 楽(たの)しいです。これからも 日本語(にほんご)の 勉強(べんきょう)を 続(つづ)けて、もっと 日本(にほん)の 文化(ぶんか)に ついて 知(し)りたいです。`;
 
 const MASTER_DB = [
-  // ── Part 1: Vocabulary & Grammar (1-20) ──
-  { section: "Part 1", type: "Grammar", stem: '日本(にほん)に 来(き)た_____です。', answer: "ばかり", choices: ["はじめ", "ばかり", "ところ", "うち"], correctNote: 'V-た + ばかり = "just did V"', explain: 'Focuses on the speaker\'s subjective feeling that the action happened recently.' },
-  { section: "Part 1", type: "Vocabulary", stem: 'あの 人(ひと)は とても_____そうですね。', answer: "まじめ", choices: ["まじめ", "まじな", "まじめて", "まじめる"], correctNote: 'Na-adjective stem + そう = "looks ~"', explain: 'まじめ is a Na-adjective. Drop the な to connect to そう.', warn: '⚠️ Do not add verbs or て-forms here.' },
-  { section: "Part 1", type: "Vocabulary", stem: 'レストランで「_____」と 言(い)って、注文(ちゅうもん)を します。', answer: "すみません", choices: ["すみません", "ごめん", "お願(ねが)い", "はい"], correctNote: '"Excuse me" in a service setting.', explain: 'This is the standard phrase to call a waiter in a Japanese restaurant.' },
-  { section: "Part 1", type: "Vocabulary", stem: '_____を つけないで 食(た)べて ください。', answer: "しょうゆ", choices: ["さとう", "しお", "しょうゆ", "おさけ"], correctNote: 'しょうゆをつける = To dip in soy sauce.', explain: 'Liquid condiments use the verb つける.' },
-  { section: "Part 1", type: "Vocabulary", stem: '早(はや)く_____した ほうが いいですよ。', answer: "予約(よやく)", choices: ["予約(よやく)", "予定(よてい)", "約束(やくそく)", "予習(よしゅう)"], correctNote: '予約(よやく) = Reservation / Booking.', explain: 'It makes sense to say "You had better make a reservation early."' },
-  { section: "Part 1", type: "Vocabulary", stem: '山(やま)に 登(のぼ)って、きれいな_____が 見(み)えました。', answer: "景色(けしき)", choices: ["景色(けしき)", "理由(りゆう)", "道具(どうぐ)", "意味(いみ)"], correctNote: '景色(けしき) = Scenery / View.', explain: 'When you climb a mountain, you see beautiful scenery.' },
-  { section: "Part 1", type: "Vocabulary", stem: '雨(あめ)が 降(ふ)ったら、_____で やります。', answer: "ホール", choices: ["外(そと)", "ホール", "庭(にわ)", "道(みち)"], correctNote: 'ホール = Hall (Indoors).', explain: 'If it rains, an event must be moved from outside to an indoor hall.' },
-  { section: "Part 1", type: "Vocabulary", stem: '_____が どこか わかりますか。', answer: "屋台(やたい)", choices: ["屋台(やたい)", "店(みせ)", "部屋(へや)", "窓(まど)"], correctNote: '屋台(やたい) = Food stall.', explain: 'Common in Japanese festivals, connecting to the reading passage.' },
-  { section: "Part 1", type: "Vocabulary", stem: '荷物(にもつ)が 多(おお)いので、_____を 呼(よ)びましょう。', answer: "タクシー", choices: ["バス", "タクシー", "電車(でんしゃ)", "飛行機(ひこうき)"], correctNote: 'タクシーを呼(よ)ぶ = to call a taxi.', explain: 'You cannot "call" a bus, train, or airplane to your location.' },
-  { section: "Part 1", type: "Grammar", stem: '会社(かいしゃ)を_____、日本(にほん)に 来(き)ました。', answer: "やめて", choices: ["やめて", "やって", "休(やす)んで", "呼(よ)んで"], correctNote: '会社をやめる = To quit one\'s company.', explain: 'The te-form connects the actions: "I quit my company, and came to Japan."' },
-  { section: "Part 1", type: "Vocabulary", stem: 'この 料理(りょうり)は_____が 強(つよ)すぎます。', answer: "味(あじ)", choices: ["味(あじ)", "音(おと)", "風(かぜ)", "色(いろ)"], correctNote: '味(あじ) = Taste / Flavor.', explain: '味(あじ)が強(つよ)い means the flavor is too strong.' },
-  { section: "Part 1", type: "Vocabulary", stem: '友達(ともだち)と_____で 会(あ)う 約束(やくそく)を しました。', answer: "玄関(げんかん)", choices: ["受付(うけつけ)", "玄関(げんかん)", "廊下(ろうか)", "広場(ひろば)"], correctNote: '玄関(げんかん) = Entrance.', explain: 'A very common meeting spot.' },
-  { section: "Part 1", type: "Vocabulary", stem: '彼(かれ)は_____が 上手(じょうず)ですね。', answer: "運転(うんてん)", choices: ["運転(うんてん)", "運動(うんどう)", "運搬(うんぱん)", "運用(うんよう)"], correctNote: '運転(うんてん) = Driving.', explain: '上手(じょうず) often describes skills like driving.' },
-  { section: "Part 1", type: "Vocabulary", stem: '毎日(まいにち)、日本語(にほんご)を_____しています。', answer: "勉強(べんきょう)", choices: ["勉強(べんきょう)", "練習(れんしゅう)", "復習(ふくしゅう)", "学習(がくしゅう)"], correctNote: '勉強(べんきょう) = Study.', explain: 'The most common verb paired with learning a language daily in N5/N4.' },
-  { section: "Part 1", type: "Vocabulary", stem: '明日(あした)の_____を 知(し)っていますか。', answer: "天気(てんき)", choices: ["天気(てんき)", "気温(きおん)", "湿度(しつど)", "風速(ふうそく)"], correctNote: '天気(てんき) = Weather.', explain: 'The most natural daily conversation question about tomorrow.' },
-  { section: "Part 1", type: "Vocabulary", stem: '週末(しゅうまつ)は 家族(かぞく)と_____に 行(い)きます。', answer: "買(か)い物(もの)", choices: ["買(か)い物(もの)", "散歩(さんぽ)", "旅行(りょこう)", "食事(しょくじ)"], correctNote: '買(か)い物(もの) = Shopping.', explain: 'A standard weekend activity.' },
-  { section: "Part 1", type: "Vocabulary", stem: 'この お菓子(かし)は_____が いいです。', answer: "香(かお)り", choices: ["香(かお)り", "匂(にお)い", "響(ひび)き", "触(さわ)り"], correctNote: '香(かお)り = Good smell / Fragrance.', explain: '匂い can mean a bad smell, but 香り is always a pleasant aroma (like for sweets).' },
-  { section: "Part 1", type: "Vocabulary", stem: '駅(えき)の 前(まえ)に 新(あたら)しい_____が できました。', answer: "図書館(としょかん)", choices: ["図書館(としょかん)", "美術館(びじゅつかん)", "博物館(はくぶつかん)", "映画館(えいがかん)"], correctNote: '図書館(としょかん) = Library.', explain: 'できました here means "was built / was completed".' },
-  { section: "Part 1", type: "Vocabulary", stem: '彼(かれ)は いつも_____を 言(い)います。', answer: "冗談(じょうだん)", choices: ["冗談(じょうだん)", "本当(ほんとう)", "嘘(うそ)", "秘密(ひみつ)"], correctNote: '冗談(じょうだん) = Joke.', explain: '冗談を言う = To tell a joke.' },
-  { section: "Part 1", type: "Vocabulary", stem: '昨日(きのう)は_____が 痛(いた)かったです。', answer: "頭(あたま)", choices: ["頭(あたま)", "足(あし)", "手(て)", "目(め)"], correctNote: '頭(あたま)が痛(いた)い = Headache.', explain: 'All options are body parts, but Head is the most common textbook example.' },
+  // Part 1: Vocabulary & Grammar (1-10)
+  { section: "Part 1", type: "Grammar", stem: '日本(にほん)に 来(き)た_____です。', answer: "ばかり", choices: ["ばかり", "から", "まで", "より"], correctNote: 'V-た + ばかり = "just did V"', explain: 'Focuses on the speaker\'s subjective feeling that the action happened recently.' },
+  { section: "Part 1", type: "Grammar", stem: 'あの 人(ひと)は とても_____そうですね。', answer: "まじめ", choices: ["まじめ", "きれいだ", "ゆうめいな", "げんきに"], correctNote: 'Na-adjective stem + そう = "looks ~"', explain: 'まじめ is a Na-adjective. Drop the な to connect to そう.' },
+  { section: "Part 1", type: "Vocabulary", stem: 'レストランで 店員(てんいん)を 呼(よ)ぶとき、「_____」と 言(い)います。', answer: "すみません", choices: ["すみません", "さようなら", "いただきます", "ごちそうさまでした"], correctNote: '"Excuse me" in a service setting.', explain: 'This is the standard phrase to call a waiter.' },
+  { section: "Part 1", type: "Vocabulary", stem: 'お寿司(すし)に_____を つけて 食(た)べます。', answer: "しょうゆ", choices: ["しょうゆ", "お茶(ちゃ)", "コーヒー", "水(みず)"], correctNote: 'しょうゆを つける = To dip in soy sauce.', explain: 'Soy sauce is the only logical condiment for sushi here.' },
+  { section: "Part 1", type: "Vocabulary", stem: 'ホテルに 泊(と)まるために、_____を しました。', answer: "予約(よやく)", choices: ["予約(よやく)", "約束(やくそく)", "予定(よてい)", "予習(よしゅう)"], correctNote: '予約(よやく) = Reservation.', explain: 'You make a reservation (予約) for a hotel.' },
+  { section: "Part 1", type: "Vocabulary", stem: '山(やま)の 上(うえ)から きれいな_____が 見(み)えました。', answer: "景色(けしき)", choices: ["景色(けしき)", "音(おと)", "味(あじ)", "匂(にお)い"], correctNote: '景色(けしき) = Scenery / View.', explain: 'Scenery is the only thing you can "see" (見えます).' },
+  { section: "Part 1", type: "Vocabulary", stem: '外(そと)で 雨(あめ)が 降(ふ)ってきたので、イベントは_____で やります。', answer: "ホール", choices: ["ホール", "空(そら)", "海(うみ)", "山(やま)"], correctNote: 'ホール = Hall (Indoors).', explain: 'If it rains, you must move indoors to a hall.' },
+  { section: "Part 1", type: "Vocabulary", stem: '重(おも)い 荷物(にもつ)が あるので、家(いえ)まで_____を 呼(よ)びましょう。', answer: "タクシー", choices: ["タクシー", "電車(でんしゃ)", "新幹線(しんかんせん)", "飛行機(ひこうき)"], correctNote: 'タクシーを呼(よ)ぶ = to call a taxi.', explain: 'You can only call a taxi to your house.' },
+  { section: "Part 1", type: "Vocabulary", stem: '砂糖(さとう)を 入(い)れすぎたので、この コーヒーは_____が 甘(あま)すぎます。', answer: "味(あじ)", choices: ["味(あじ)", "声(こえ)", "色(いろ)", "音(おと)"], correctNote: '味(あじ) = Taste / Flavor.', explain: 'Sweetness is a property of taste (味).' },
+  { section: "Part 1", type: "Vocabulary", stem: 'わからない 漢字(かんじ)が あったら、_____で 調(しら)べます。', answer: "辞書(じしょ)", choices: ["辞書(じしょ)", "時計(とけい)", "財布(さいふ)", "靴(くつ)"], correctNote: '辞書(じしょ) = Dictionary.', explain: 'You use a dictionary to look up kanji.' },
 
-  // ── Part 2: Particles & Verbs (21-40) ──
-  { section: "Part 2", type: "Verb Form", stem: '昨日(きのう)の 夜(よる)、雨(あめ)が_____。', answer: "降(ふ)っていました", choices: ["降(ふ)りました", "降(ふ)っていました", "降(ふ)るでしょう", "降(ふ)るはずです"], correctNote: 'Past Continuous State.', explain: 'Describes a state that was ongoing in the past ("It was raining last night").' },
-  { section: "Part 2", type: "Particle", stem: '彼(かれ)は 日本語(にほんご)を 話(はな)す こと_____ できます。', answer: "が", choices: ["が", "を", "に", "も"], correctNote: '〜ことができる = "Can do ~"', explain: 'The potential expression できます always takes the particle が.' },
-  { section: "Part 2", type: "Grammar", stem: 'ここに 座(すわ)っ_____ いいですか。', answer: "ても", choices: ["ても", "たら", "ては", "と"], correctNote: 'V-てもいいですか = "May I V?"', explain: 'The standard grammar for asking permission.', connect: '🔗 MNN L15.' },
-  { section: "Part 2", type: "Grammar", stem: 'テレビを_____ながら、ご飯(はん)を 食(た)べます。', answer: "見(み)", choices: ["見(み)", "見(み)て", "見(み)る", "見(み)た"], correctNote: 'V-ます stem + ながら = "While doing V"', explain: 'Drop the ます from 見ます. Simultaneous actions by one person.' },
-  { section: "Part 2", type: "Grammar", stem: '窓(まど)を_____ ください。', answer: "開(あ)けて", choices: ["開(あ)けて", "開(あ)ける", "開(あ)け", "開(あ)けた"], correctNote: 'V-てください = "Please do V"', explain: 'Connects to the te-form of the verb.' },
-  { section: "Part 2", type: "Grammar", stem: '彼(かれ)は_____と 言(い)っていました。', answer: "来(く)る", choices: ["来(く)る", "来(き)て", "来(き)", "来(き)た"], correctNote: 'Plain Form + と言っていました = Quoted speech.', explain: 'You must use the plain dictionary form (来る) before と.' },
-  { section: "Part 2", type: "Grammar", stem: 'この 本(ほん)を_____ ことが ありますか。', answer: "読(よ)んだ", choices: ["読(よ)んだ", "読(よ)む", "読(よ)んで", "読(よ)み"], correctNote: 'V-た + ことがある = "Have the experience of V-ing"', explain: 'Always connects to the past plain form (た-form).' },
-  { section: "Part 2", type: "Grammar", stem: '私(わたし)は_____ つもりです。', answer: "行(い)く", choices: ["行(い)く", "行(い)って", "行(い)き", "行(い)った"], correctNote: 'V-る + つもりです = "Plan to V"', explain: 'Always use the dictionary form.' },
-  { section: "Part 2", type: "Grammar", stem: 'もし 雨(あめ)が_____、行(い)きません。', answer: "降(ふ)ったら", choices: ["降(ふ)ったら", "降(ふ)れば", "降(ふ)ると", "降(ふ)るなら"], correctNote: 'V-たら = "If it rains..."', explain: 'The most natural conditional for a specific future event.' },
-  { section: "Part 2", type: "Grammar", stem: '彼(かれ)は_____ そうです。', answer: "忙(いそが)し", choices: ["忙(いそが)しい", "忙(いそが)し", "忙(いそが)しくて", "忙(いそが)しかった"], correctNote: 'Adj stem + そう = "Looks busy"', explain: 'Drop the い from 忙しい.' },
-  { section: "Part 2", type: "Grammar", stem: '日本語(にほんご)を 教(おし)えるのは_____ です。', answer: "難(むずか)しい", choices: ["難(むずか)しい", "難(むずか)しく", "難(むずか)しくて", "難(むずか)しかった"], correctNote: 'Adjective ending.', explain: 'The nominalizer の makes the first part a noun. The sentence simply ends with an adjective + です.' },
-  { section: "Part 2", type: "Grammar", stem: '私(わたし)は_____のが 好(す)きです。', answer: "歌(うた)う こと", choices: ["歌(うた)う こと", "歌(うた)って", "歌(うた)い", "歌(うた)った"], correctNote: 'V-ること = Nominalization.', explain: '好き requires a noun (or nominalized verb) before it.' },
-  { section: "Part 2", type: "Grammar", stem: '彼(かれ)は「_____」と 言(い)いました。', answer: "ありがとう", choices: ["ありがとう", "ありがとうございます", "ありがとうございました", "ありがとうございまして"], correctNote: 'Quoted speech.', explain: 'Usually plain form is used in casual quotes. "ありがとう" fits perfectly.' },
-  { section: "Part 2", type: "Grammar", stem: '昨日(きのう)は_____ でした。', answer: "休(やす)み", choices: ["休(やす)み", "休(やす)む", "休(やす)んで", "休(やす)んだ"], correctNote: 'Noun + でした = Past state.', explain: '休み is a noun here.' },
-  { section: "Part 2", type: "Grammar", stem: 'ここで_____はいけません。', answer: "泳(およ)いでは", choices: ["泳(およ)いでは", "泳(およ)いで", "泳(およ)ぐ", "泳(およ)いだ"], correctNote: 'V-てはいけません = "Must not V"', explain: 'Prohibition grammar.' },
-  { section: "Part 2", type: "Grammar", stem: '彼(かれ)は_____と 思(おも)っています。', answer: "行(い)こう", choices: ["行(い)こう", "行(い)く", "行(い)って", "行(い)き"], correctNote: 'Volitional + と思っています = "Thinking of V-ing"', explain: 'Shows intention.' },
-  { section: "Part 2", type: "Grammar", stem: '私(わたし)は_____のが 好(す)きではありません。', answer: "走(はし)る こと", choices: ["走(はし)る こと", "走(はし)って", "走(はし)り", "走(はし)った"], correctNote: 'V-ること = Nominalization.', explain: 'Turning a verb into a noun to express dislikes.' },
-  { section: "Part 2", type: "Grammar", stem: '彼(かれ)は_____と 言(い)っていました。', answer: "行(い)かない", choices: ["行(い)かない", "行(い)かなくて", "行(い)かないで", "行(い)かなかった"], correctNote: 'Plain form + と言っていました', explain: 'Quoting a negative intention.' },
-  { section: "Part 2", type: "Grammar", stem: '昨日(きのう)は_____ でした。', answer: "暑(あつ)かった", choices: ["暑(あつ)かった", "暑(あつ)い", "暑(あつ)くて", "暑(あつ)かったら"], correctNote: '⚠️ Grammar Note:', explain: 'I-adjectives normally drop "でした" (e.g., 暑かったです or 暑かった). The PDF question is slightly flawed, but 暑かった is the intended answer.', warn: '⚠️ Standard Japanese: 昨日は暑かったです。' },
-  { section: "Part 2", type: "Grammar", stem: '彼(かれ)は「_____」と 言(い)いました。', answer: "さようなら", choices: ["さようなら", "さようならと 言(い)いました", "さようならでした", "さようならと 言(い)っていました"], correctNote: 'Direct Quote.', explain: 'Just the greeting goes inside the quotes.' },
+  // Part 2: Particles & Verbs (11-20)
+  { section: "Part 2", type: "Verb Form", stem: '今(いま)、外(そと)で 雨(あめ)が_____。', answer: "降(ふ)っています", choices: ["降(ふ)っています", "降(ふ)りました", "降(ふ)る つもりです", "降(ふ)った ことが あります"], correctNote: 'Present Continuous State.', explain: 'The word 今 (now) indicates the action is currently happening.' },
+  { section: "Part 2", type: "Particle", stem: '私(わたし)は 日本語(にほんご)を 話(はな)す こと_____ できます。', answer: "が", choices: ["が", "を", "へ", "で"], correctNote: '〜ことができる = "Can do ~"', explain: 'The potential expression できます always takes the particle が.' },
+  { section: "Part 2", type: "Grammar", stem: '暑(あつ)いので、窓(まど)を_____ いいですか。', answer: "開(あ)けても", choices: ["開(あ)けても", "開(あ)けたり", "開(あ)けた", "開(あ)けない"], correctNote: 'V-てもいいですか = "May I V?"', explain: 'The standard grammar for asking permission.' },
+  { section: "Part 2", type: "Grammar", stem: '音楽(おんがく)を_____ながら、勉強(べんきょう)を します。', answer: "聞(き)き", choices: ["聞(き)き", "聞(き)いて", "聞(き)く", "聞(き)かない"], correctNote: 'V-ます stem + ながら = "While doing V"', explain: 'Drop the ます from 聞きます to connect with ながら.' },
+  { section: "Part 2", type: "Grammar", stem: '寒(さむ)いので、ドアを_____ ください。', answer: "閉(し)めて", choices: ["閉(し)めて", "閉(し)める", "閉(し)めた", "閉(し)めない"], correctNote: 'V-てください = "Please do V"', explain: 'Connects to the te-form of the verb (閉める -> 閉めて).' },
+  { section: "Part 2", type: "Grammar", stem: '私(わたし)は 日本(にほん)の 映画(えいが)を_____ ことが あります。', answer: "見(み)た", choices: ["見(み)た", "見(み)る", "見(み)て", "見(み)ない"], correctNote: 'V-た + ことがある = "Have the experience of V-ing"', explain: 'Always connects to the past plain form (た-form).' },
+  { section: "Part 2", type: "Grammar", stem: '来年(らいねん)、日本(にほん)へ_____ つもりです。', answer: "行(い)く", choices: ["行(い)く", "行(い)って", "行(い)き", "行(い)った"], correctNote: 'V-る + つもりです = "Plan to V"', explain: 'Always use the dictionary form before つもりです.' },
+  { section: "Part 2", type: "Grammar", stem: '明日(あした) 雨(あめ)が_____、ピクニックには 行(い)きません。', answer: "降(ふ)ったら", choices: ["降(ふ)ったら", "降(ふ)りて", "降(ふ)る", "降(ふ)らない"], correctNote: 'V-たら = "If it rains..."', explain: 'The most natural conditional for a specific future event.' },
+  { section: "Part 2", type: "Grammar", stem: '私(わたし)は 本(ほん)を_____のが 好(す)きです。', answer: "読(よ)む", choices: ["読(よ)む", "読(よ)んで", "読(よ)み", "読(よ)んだ"], correctNote: 'V-る + のが 好きです = Nominalization.', explain: 'You must use the dictionary form before the nominalizer の.' },
+  { section: "Part 2", type: "Grammar", stem: '病院(びょういん)の 中(なか)で 写真(しゃしん)を_____はいけません。', answer: "撮(と)って", choices: ["撮(と)って", "撮(と)る", "撮(と)った", "撮(と)り"], correctNote: 'V-てはいけません = "Must not V"', explain: 'Prohibition grammar. Requires the te-form (撮る -> 撮って).' },
 
-  // ── Part 3: Reading Comprehension (41-50) ──
-  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)は いつ 日本(にほん)に 来(き)ましたか。', answer: "去年(きょねん)の 九月(くがつ)", choices: ["去年(きょねん)の 九月(くがつ)", "去年(きょねん)の 六月(ろくがつ)", "今年(ことし)の 九月(くがつ)", "今年(ことし)の 六月(ろくがつ)"], correctNote: '"I came to Japan last September."', explain: 'Stated in the first sentence: 私(わたし)は 去年(きょねん)の 九月(くがつ)に 日本(にほん)に 来(き)ました。' },
-  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)の 今(いま)の 仕事(しごと)は 何(なん)ですか。', answer: "日本語(にほんご)の 先生(せんせい)", choices: ["学生(がくせい)", "日本語(にほんご)の 先生(せんせい)", "会社員(かいしゃいん)", "医者(いしゃ)"], correctNote: 'Working as a Japanese teacher.', explain: 'Stated clearly: 今(いま)は マニラで 日本語(にほんご)の 先生(せんせい)を していますが...' },
-  { section: "Part 3", type: "Reading", isReading: true, stem: '最初(さいしょ)、筆者(ひっしゃ)は 何(なに)が 難(むずか)しいと 感(かん)じましたか。', answer: "ゴミの 出(だ)し方(かた)", choices: ["日本語(にほんご)を 話(はな)す こと", "ゴミの 出(だ)し方(かた)", "日本(にほん)の 食(た)べ物(もの)", "友達(ともだち)を 作(つく)る こと"], correctNote: 'Throwing away garbage and riding trains was hard.', explain: '特(とく)に、ゴミの 出(だ)し方(かた)や 電車(でんしゃ)の 乗(の)り方(かた)が 難(むずか)しかったです。' },
-  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)が 京都(きょうと)に 行(い)ったのは いつですか。', answer: "秋(あき)", choices: ["春(はる)", "夏(なつ)", "秋(あき)", "冬(ふゆ)"], correctNote: 'Autumn in Kyoto.', explain: '私(わたし)は 秋(あき)の 京都(きょうと)に 行(い)った ことが ありますが...' },
-  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)は 京都(きょうと)で 何(なに)を 見(み)て 感動(かんどう)しましたか。', answer: "お寺(てら)と 紅葉(こうよう)", choices: ["お寺(てら)と 紅葉(こうよう)", "桜(さくら)", "雪(ゆき)", "お祭(まつ)り"], correctNote: 'Temples and Autumn Leaves.', explain: 'お寺(てら)と 紅葉(こうよう)が 一緒(いっしょ)に 見(み)られて、とても 感動(かんどう)しました。' },
-  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)が 将来(しょうらい) 行(い)ってみたい 場所(ばしょ)は どこですか。', answer: "北海道(ほっかいどう)", choices: ["東京(とうきょう)", "大阪(おおさか)", "北海道(ほっかいどう)", "沖縄(おきなわ)"], correctNote: 'Wants to visit Hokkaido next.', explain: '今度(こんど)は 北海道(ほっかいどう)などの 違(ちが)う 場所(ばしょ)も 見(み)てみたいと 思(おも)っています。' },
-  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)が 最近(さいきん) 興味(きょうみ)を 持(も)っている 食(た)べ物(もの)は 何(なん)ですか。', answer: "屋台(やたい)の 料理(りょうり)", choices: ["お寿司(すし)", "天(てん)ぷら", "屋台(やたい)の 料理(りょうり)", "ラーメン"], correctNote: 'Interested in Food Stall (Yatai) cuisine.', explain: '最近(さいきん)は 屋台(やたい)で 食(た)べる 料理(りょうり)にも 興味(きょうみ)が あります。' },
-  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)は 日本(にほん)の 祭(まつ)りを どう 思(おも)っていますか。', answer: "活気(かっき)が あって 楽(たの)しい", choices: ["静(しず)かだ", "活気(かっき)が あって 楽(たの)しい", "忙(いそが)しい", "難(むずか)しい"], correctNote: 'Lively and fun.', explain: '祭(まつ)りの 時(とき)に 出(で)る 屋台(やたい)は、活気(かっき)が あって とても 楽(たの)しいです。' },
-  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)の 日本語(にほんご)の 勉強(べんきょう)の 目的(もくてき)は 何(なん)ですか。', answer: "日本(にほん)の 文化(ぶんか)を より 知(し)るため", choices: ["日本(にほん)で 働(はたら)く ため", "日本(にほん)の 文化(ぶんか)を より 知(し)るため", "友達(ともだち)と 話(はな)す ため", "旅行(りょこう)に 行(い)く ため"], correctNote: 'To know more about Japanese culture.', explain: 'もっと 日本(にほん)の 文化(ぶんか)に ついて 知(し)りたいです。' },
-  { section: "Part 3", type: "Reading", isReading: true, stem: 'この 文章(ぶんしょう)の テーマは 何(なん)ですか。', answer: "日本(にほん)の 生活(せいかつ)と 文化(ぶんか)", choices: ["日本(にほん)の 生活(せいかつ)と 文化(ぶんか)", "日本語(にほんご)の 勉強法(べんきょうほう)", "私(わたし)の 将来(しょうらい)の 夢(ゆめ)", "日本(にほん)の 食(た)べ物(もの)"], correctNote: 'Main theme: Life and Culture in Japan.', explain: 'The passage touches on living in Japan, rules, scenery, and food.' }
+  // Part 3: Reading Comprehension (21-30)
+  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)は いつ 日本(にほん)に 来(き)ましたか。', answer: "去年(きょねん)の 九月(くがつ)", choices: ["去年(きょねん)の 九月(くがつ)", "今年(ことし)の 九月(くがつ)", "去年(きょねん)の 春(はる)", "来年(らいねん)の 九月(くがつ)"], correctNote: '"I came to Japan last September."', explain: 'Stated in the first sentence: 私(わたし)は 去年(きょねん)の 九月(くがつ)に 日本(にほん)に 来(き)ました。' },
+  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)の 今(いま)の 仕事(しごと)は 何(なん)ですか。', answer: "日本語(にほんご)の 先生(せんせい)", choices: ["日本語(にほんご)の 先生(せんせい)", "英語(えいご)の 先生(せんせい)", "会社員(かいしゃいん)", "学生(がくせい)"], correctNote: 'Working as a Japanese teacher.', explain: 'Stated clearly: 今(いま)は マニラで 日本語(にほんご)の 先生(せんせい)を していますが...' },
+  { section: "Part 3", type: "Reading", isReading: true, stem: '最初(さいしょ)、筆者(ひっしゃ)は 何(なに)が 難(むずか)しいと 感(かん)じましたか。', answer: "ゴミの 出(だ)し方(かた)", choices: ["ゴミの 出(だ)し方(かた)", "日本語(にほんご)の 勉強(べんきょう)", "日本(にほん)の 料理(りょうり)", "友達(ともだち)を 作(つく)る こと"], correctNote: 'Throwing away garbage and riding trains was hard.', explain: '特(とく)に、ゴミの 出(だ)し方(かた)や 電車(でんしゃ)の 乗(の)り方(かた)が 難(むずか)しかったです。' },
+  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)が 京都(きょうと)に 行(い)ったのは いつですか。', answer: "秋(あき)", choices: ["秋(あき)", "春(はる)", "夏(なつ)", "冬(ふゆ)"], correctNote: 'Autumn in Kyoto.', explain: '私(わたし)は 秋(あき)の 京都(きょうと)に 行(い)った ことが ありますが...' },
+  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)は 京都(きょうと)で 何(なに)を 見(み)て 感動(かんどう)しましたか。', answer: "お寺(てら)と 紅葉(こうよう)", choices: ["お寺(てら)と 紅葉(こうよう)", "桜(さくら)", "雪(ゆき)と 景色(けしき)", "海(うみ)と 山(やま)"], correctNote: 'Temples and Autumn Leaves.', explain: 'お寺(てら)と 紅葉(こうよう)が 一緒(いっしょ)に 見(み)られて、とても 感動(かんどう)しました。' },
+  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)が 将来(しょうらい) 行(い)ってみたい 場所(ばしょ)は どこですか。', answer: "北海道(ほっかいどう)", choices: ["北海道(ほっかいどう)", "東京(とうきょう)", "大阪(おおさか)", "京都(きょうと)"], correctNote: 'Wants to visit Hokkaido next.', explain: '今度(こんど)は 北海道(ほっかいどう)などの 違(ちが)う 場所(ばしょ)も 見(み)てみたいと 思(おも)っています。' },
+  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)が 最近(さいきん) 興味(きょうみ)を 持(も)っている 食(た)べ物(もの)は 何(なん)ですか。', answer: "屋台(やたい)の 料理(りょうり)", choices: ["屋台(やたい)の 料理(りょうり)", "お寿司(すし)", "天(てん)ぷら", "ラーメン"], correctNote: 'Interested in Food Stall (Yatai) cuisine.', explain: '最近(さいきん)は 屋台(やたい)で 食(た)べる 料理(りょうり)にも 興味(きょうみ)が あります。' },
+  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)は 日本(にほん)の 祭(まつ)りを どう 思(おも)っていますか。', answer: "活気(かっき)が あって 楽(たの)しい", choices: ["活気(かっき)が あって 楽(たの)しい", "静(しず)かで きれい", "人(ひと)が 多(おお)くて 疲(つか)れる", "少(すこ)し 難(むずか)しい"], correctNote: 'Lively and fun.', explain: '祭(まつ)りの 時(とき)に 出(で)る 屋台(やたい)は、活気(かっき)が あって とても 楽(たの)しいです。' },
+  { section: "Part 3", type: "Reading", isReading: true, stem: '筆者(ひっしゃ)の 日本語(にほんご)の 勉強(べんきょう)の 目的(もくてき)は 何(なん)ですか。', answer: "日本(にほん)の 文化(ぶんか)を より 知(し)るため", choices: ["日本(にほん)の 文化(ぶんか)を より 知(し)るため", "日本(にほん)で 働(はたら)く ため", "日本(にほん)の アニメを 見(み)るため", "マニラに 帰(かえ)る ため"], correctNote: 'To know more about Japanese culture.', explain: 'もっと 日本(にほん)の 文化(ぶんか)に ついて 知(し)りたいです。' },
+  { section: "Part 3", type: "Reading", isReading: true, stem: 'この 文章(ぶんしょう)の テーマは 何(なん)ですか。', answer: "日本(にほん)の 生活(せいかつ)と 文化(ぶんか)", choices: ["日本(にほん)の 生活(せいかつ)と 文化(ぶんか)", "ゴミの 出(だ)し方(かた)", "京都(きょうと)の 紅葉(こうよう)", "屋台(やたい)の 料理(りょうり)"], correctNote: 'Main theme: Life and Culture in Japan.', explain: 'The passage touches on living in Japan, rules, scenery, and food.' }
 ];
 
-// Utility: Convert "漢字(かんじ)" to <ruby> tags
 function applyFurigana(text) {
   return text.replace(/([\u4e00-\u9faf]+)\(([\u3040-\u309f]+)\)/g, '<ruby>$1<rt>$2</rt></ruby>');
 }
 
-// Utility: Shuffle Array
+// Remove reading tags for clean email plain-text body
+function stripFuriganaForEmail(text) {
+  return text.replace(/([\u4e00-\u9faf]+)\(([\u3040-\u309f]+)\)/g, '$1');
+}
+
 function shuffle(array) {
   let arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -365,18 +359,35 @@ let currentIndex = 0;
 let score = 0;
 let hasAnsweredCurrent = false;
 
+// New States for Email functionality
+let playerName = "";
+let userAnswers = [];
+
+/* ── DOM Events for Name Screen ── */
+const nameInput = document.getElementById('name-input');
+const btnStart = document.getElementById('btn-start');
+
+nameInput.addEventListener("input", () => {
+  btnStart.disabled = !nameInput.value.trim();
+});
+nameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && nameInput.value.trim()) initQuiz();
+});
+btnStart.addEventListener("click", initQuiz);
+
+/* ── Quiz Flow ── */
 function initQuiz() {
-  // We don't shuffle the whole deck this time to preserve the 3-Part structure logic
-  // but we will shuffle choices!
+  playerName = nameInput.value.trim();
   deck = [...MASTER_DB]; 
   
   currentIndex = 0;
   score = 0;
+  userAnswers = new Array(deck.length).fill(null);
   
-  document.getElementById('quiz-container').style.display = 'flex';
+  document.getElementById('name-screen').style.display = 'none';
+  document.getElementById('quiz-wrapper').style.display = 'flex';
   document.getElementById('final-screen').style.display = 'none';
   
-  // Inject Reading Passage
   document.getElementById('reading-text').innerHTML = applyFurigana(READING_PASSAGE_JP);
   
   renderQuestion();
@@ -386,23 +397,15 @@ function renderQuestion() {
   const q = deck[currentIndex];
   hasAnsweredCurrent = false;
   
-  // Update Header
-  document.getElementById('progress-text').textContent = `Question ${currentIndex + 1} of 50`;
+  document.getElementById('progress-text').textContent = `Question ${currentIndex + 1} of 30`;
   document.getElementById('q-lesson').textContent = `📘 ${q.section}`;
   document.getElementById('q-type').textContent = q.type;
   
-  // Toggle Reading Passage UI Component
   const passageBox = document.getElementById('reading-passage-container');
-  if (q.isReading) {
-    passageBox.style.display = 'block';
-  } else {
-    passageBox.style.display = 'none';
-  }
+  passageBox.style.display = q.isReading ? 'block' : 'none';
   
-  // Format and set question stem
   document.getElementById('q-stem').innerHTML = applyFurigana(q.stem);
   
-  // Generate vertical choices (a, b, c, d)
   const choicesList = document.getElementById('choices-list');
   choicesList.innerHTML = '';
   
@@ -414,7 +417,6 @@ function renderQuestion() {
     btn.className = 'choice-btn';
     btn.onclick = () => selectAnswer(choiceText, btn, shuffledChoices);
     
-    // Structure: <span class="choice-letter">a)</span> <span class="choice-text">Text</span>
     btn.innerHTML = `
       <span class="choice-letter">${labels[index]})</span>
       <span class="choice-text">${applyFurigana(choiceText)}</span>
@@ -423,7 +425,6 @@ function renderQuestion() {
     choicesList.appendChild(btn);
   });
   
-  // Reset UI
   document.getElementById('feedback-panel').style.display = 'none';
   document.getElementById('btn-next').style.display = 'none';
 }
@@ -435,9 +436,11 @@ function selectAnswer(selectedValue, clickedBtn, currentChoices) {
   const q = deck[currentIndex];
   const isCorrect = (selectedValue === q.answer);
   
+  // Save answer for email payload
+  userAnswers[currentIndex] = selectedValue;
+  
   if (isCorrect) score++;
   
-  // Lock all buttons & highlight
   const allBtns = document.getElementById('choices-list').querySelectorAll('.choice-btn');
   allBtns.forEach(btn => {
     btn.disabled = true;
@@ -448,13 +451,12 @@ function selectAnswer(selectedValue, clickedBtn, currentChoices) {
     }
   });
   
-  // Populate & Show Feedback Panel
   const fbHeader = document.getElementById('fb-header');
   if (isCorrect) {
     fbHeader.textContent = "📒 正解！ Correct!";
     fbHeader.className = "fb-header correct-text";
   } else {
-    fbHeader.textContent = `❌ Incorrect. The correct answer is: ${q.answer}`;
+    fbHeader.textContent = `❌ Incorrect. The correct answer is: ${stripFuriganaForEmail(q.answer)}`;
     fbHeader.className = "fb-header wrong-text";
   }
   
@@ -470,7 +472,6 @@ function selectAnswer(selectedValue, clickedBtn, currentChoices) {
 
   setBlock('fb-note', q.correctNote);
   setBlock('fb-explain', q.explain);
-  setBlock('fb-connect', q.connect);
   setBlock('fb-warn', q.warn);
   
   document.getElementById('feedback-panel').style.display = 'block';
@@ -486,17 +487,58 @@ function nextQuestion() {
   }
 }
 
-function showFinalScreen() {
-  document.getElementById('quiz-container').style.display = 'none';
-  document.getElementById('btn-next').style.display = 'none';
+async function showFinalScreen() {
+  document.getElementById('quiz-wrapper').style.display = 'none';
   document.getElementById('progress-text').textContent = "Review Complete";
   
   const finalScreen = document.getElementById('final-screen');
   finalScreen.style.display = 'block';
-  document.getElementById('final-score').textContent = `${score} / 50`;
+  document.getElementById('final-score').textContent = `${score} / 30`;
+
+  await sendEmailResults();
 }
 
-// Utility: Toggle Reading Analysis
+/* ═══════════════════════════════════════════════════════════════
+   EMAIL SUBMISSION LOGIC
+   ═══════════════════════════════════════════════════════════════ */
+async function sendEmailResults() {
+  const emailRow = document.getElementById('email-row');
+  
+  const EMAILJS_PUBLIC_KEY  = "1oR0j0WDvUmSSYEpK";
+  const EMAILJS_SERVICE_ID  = "service_v7ifzdj";
+  const EMAILJS_TEMPLATE_ID = "template_lb9c879";
+
+  const pct = Math.round((score / deck.length) * 100);
+  const now = new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", dateStyle: "full", timeStyle: "short" });
+  
+  // Format detailed results
+  const details = deck.map((q, i) => {
+    const cleanStem = stripFuriganaForEmail(q.stem);
+    const cleanCorrect = stripFuriganaForEmail(q.answer);
+    const cleanUser = userAnswers[i] ? stripFuriganaForEmail(userAnswers[i]) : "—";
+    const mark = userAnswers[i] === q.answer ? "✓" : "✗";
+    return `${i + 1}. ${cleanStem}\n   Answer: ${cleanUser} | Correct: ${cleanCorrect} ${mark}`;
+  }).join("\n\n");
+
+  const emailParams = {
+    name: playerName,
+    email: "noreply@quiz.com",
+    subject: `[${playerName}] Yellow Book Mid Quiz — ${pct}%`,
+    message: `Irodori / Yellow Book Mid Quiz Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${score}/${deck.length} (${pct}%)\n\n--- Detailed Results ---\n\n${details}\n\nKeep pushing towards N3!`,
+    time: now
+  };
+
+  emailRow.innerHTML = `<span class="email-pill">📧 Sending results to instructor…</span>`;
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams, EMAILJS_PUBLIC_KEY);
+    emailRow.innerHTML = `<span class="email-pill sent">✓ Results successfully emailed!</span>`;
+  } catch (err) {
+    console.error("EmailJS error:", err);
+    emailRow.innerHTML = `<span class="email-pill error">✗ Failed to send email: ${err?.text || err?.message || 'Unknown error'}</span>`;
+  }
+}
+
 function toggleAnalysis() {
   const analysisDiv = document.getElementById('reading-analysis');
   if (analysisDiv.style.display === 'none' || analysisDiv.style.display === '') {
@@ -505,9 +547,6 @@ function toggleAnalysis() {
     analysisDiv.style.display = 'none';
   }
 }
-
-// Boot the App
-window.onload = initQuiz;
 </script>
 </body>
 </html>
