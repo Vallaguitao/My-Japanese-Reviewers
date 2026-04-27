@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>みんなの日本語 N5 — Vocabulary Reviewer</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: #1a1525;
+    color: #e8e0f0;
+    font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(232,180,200,0.07) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(120,100,180,0.07) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Name Screen ── */
+  #name-screen { margin-top: 50px; }
+
+  .card {
+    background: #221d2e;
+    border-radius: 16px;
+    padding: 28px 20px;
+    border: 1px solid #3d3650;
+  }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #e8b4c8, #c89db7);
+    color: #1a1525;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .title {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 4px 0 4px;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: #9e93b0;
+  }
+
+  .name-label {
+    display: block;
+    font-size: 13px;
+    color: #9e93b0;
+    margin: 24px 0 8px;
+    text-align: left;
+  }
+
+  .name-input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 2px solid #3d3650;
+    background: #2a2535;
+    color: #e8e0f0;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  
+  select.name-input {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239e93b0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
+  }
+
+  .name-input:focus { border-color: #e8b4c8; }
+
+  .btn-primary {
+    width: 100%;
+    margin-top: 24px;
+    padding: 14px 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #e8b4c8, #c89db7);
+    border: none;
+    color: #1a1525;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:disabled { opacity: 0.35; cursor: default; }
+
+  /* ── Quiz Screen ── */
+  #quiz-screen { display: none; }
+
+  .header { text-align: center; margin-bottom: 22px; }
+  .header .subtitle { margin-top: 2px; }
+
+  /* Score Banner */
+  .score-banner {
+    display: none;
+    border-radius: 16px;
+    padding: 22px 16px;
+    text-align: center;
+    margin-bottom: 20px;
+    animation: slideDown 0.4s ease;
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .score-number { font-size: 44px; font-weight: 800; letter-spacing: -1px; }
+  .score-label { font-size: 16px; font-weight: 600; margin-top: 4px; }
+  .email-row { margin-top: 10px; }
+  .email-pill {
+    display: inline-block;
+    background: #3d3650;
+    font-size: 12px;
+    padding: 4px 14px;
+    border-radius: 12px;
+  }
+  .email-pill.sent { background: #2d6a4f; }
+  .email-pill.error { background: #9b2226; }
+  .btn-retake {
+    margin-top: 12px;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border: none;
+    padding: 8px 22px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  /* Progress */
+  .progress-row { margin-bottom: 14px; }
+  .progress-text { font-size: 12px; color: #9e93b0; display: block; margin-bottom: 6px; }
+  .progress-bar { height: 4px; background: #2a2535; border-radius: 4px; overflow: hidden; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #e8b4c8, #c89db7);
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  /* Nav Grid */
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .nav-dot {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    background: #2a2535;
+    color: #e8e0f0;
+    font-size: 11px;
+    font-weight: 600;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .nav-dot.answered { background: #4a4458; }
+  .nav-dot.active { border-color: #e8b4c8; }
+  .nav-dot.correct { background: #2d6a4f; }
+  .nav-dot.wrong { background: #9b2226; }
+
+  /* Question Card */
+  .q-card {
+    background: #221d2e;
+    border-radius: 16px;
+    padding: 24px 18px;
+    border: 1px solid #3d3650;
+    margin-bottom: 16px;
+    animation: fadeIn 0.25s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .q-number {
+    font-size: 11px;
+    color: #9e93b0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .q-english {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.3;
+  }
+  .choices-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  @media (max-width: 480px) {
+    .choices-grid { grid-template-columns: 1fr; }
+  }
+  .choice-btn {
+    padding: 14px 10px;
+    border-radius: 12px;
+    border: 2px solid #3d3650;
+    background: #2a2535;
+    color: #e8e0f0;
+    text-align: center;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    position: relative;
+    transition: all 0.15s;
+  }
+  .choice-btn:hover:not(.locked) { border-color: #5c4d7a; background: #302844; }
+  .choice-btn.selected { background: #5c4d7a; border-color: #e8b4c8; }
+  .choice-btn.correct-reveal { background: #2d6a4f; border-color: #40916c; }
+  .choice-btn.wrong-reveal { background: #9b2226; border-color: #ca6702; }
+  .choice-btn .mark {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 14px;
+  }
+  .choice-btn .mark.ok { color: #a7f3d0; }
+  .choice-btn .mark.no { color: #fca5a5; }
+
+  /* Arrow Row */
+  .arrow-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .btn-nav {
+    flex: 1;
+    padding: 12px 0;
+    border-radius: 12px;
+    background: #2a2535;
+    border: 1px solid #3d3650;
+    color: #e8e0f0;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn-nav:disabled { opacity: 0.3; cursor: default; }
+  .btn-submit {
+    flex: 1;
+    padding: 12px 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #e8b4c8, #c89db7);
+    border: none;
+    color: #1a1525;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-submit:disabled { opacity: 0.35; cursor: default; }
+
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ════ NAME SCREEN ════ -->
+  <div id="name-screen">
+    <div class="card text-center">
+      <span class="badge">JLPT N5 Vocabulary Prep</span>
+      <h1 class="title">みんなの日本語 Reviewer</h1>
+      <p class="subtitle">Complete 9-Set Challenge • 30 items per set</p>
+      
+      <label class="name-label">おなまえは？ Enter your name</label>
+      <input class="name-input" id="name-input" type="text" placeholder="Your name..." autofocus>
+      
+      <label class="name-label" style="margin-top: 16px;">セットをえらんでください Select Exam Set</label>
+      <select class="name-input" id="set-select">
+        <optgroup label="Lessons 1-12">
+          <option value="L1_12_S1">Lessons 1-12 — Set 1</option>
+          <option value="L1_12_S2">Lessons 1-12 — Set 2</option>
+          <option value="L1_12_S3">Lessons 1-12 — Set 3</option>
+        </optgroup>
+        <optgroup label="Lessons 13-25">
+          <option value="L13_25_S1">Lessons 13-25 — Set 1</option>
+          <option value="L13_25_S2">Lessons 13-25 — Set 2</option>
+          <option value="L13_25_S3">Lessons 13-25 — Set 3</option>
+        </optgroup>
+        <optgroup label="Lessons 1-25 (Comprehensive)">
+          <option value="L1_25_S1">Lessons 1-25 — Set 1</option>
+          <option value="L1_25_S2">Lessons 1-25 — Set 2</option>
+          <option value="L1_25_S3">Lessons 1-25 — Set 3</option>
+        </optgroup>
+      </select>
+
+      <button class="btn-primary" id="btn-start" disabled>Start Exam →</button>
+    </div>
+  </div>
+
+  <!-- ════ QUIZ SCREEN ════ -->
+  <div id="quiz-screen">
+    <header class="header">
+      <span class="badge" id="quiz-badge">みんなの日本語</span>
+      <h1 class="title" id="quiz-title">Vocabulary Exam</h1>
+      <p class="subtitle" id="quiz-subtitle"></p>
+    </header>
+
+    <div class="score-banner" id="score-banner">
+      <div class="score-number" id="score-number"></div>
+      <div class="score-label" id="score-label"></div>
+      <div class="email-row" id="email-row"></div>
+      <button class="btn-retake" id="btn-retake">Retake Quiz</button>
+      <button class="btn-retake" id="btn-home" style="margin-left: 8px;">Main Menu</button>
+    </div>
+
+    <div class="progress-row">
+      <span class="progress-text" id="progress-text">0 / 30 answered</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <div class="nav-grid" id="nav-grid"></div>
+
+    <div class="q-card" id="q-card">
+      <div class="q-number" id="q-number"></div>
+      <div class="q-english" id="q-english"></div>
+      <div class="choices-grid" id="choices-grid"></div>
+    </div>
+
+    <div class="arrow-row">
+      <button class="btn-nav" id="btn-prev">← Previous</button>
+      <button class="btn-nav" id="btn-next">Next →</button>
+      <button class="btn-submit hidden" id="btn-submit" disabled>Submit Exam</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ALL_SETS = {
+  "L1_12_S1": {
+    title: "Lessons 1-12 | Set 1",
+    questions: [
+      { english: "Teacher", answer: "先生（せんせい）", choices: ["医者（いしゃ）", "先生（せんせい）", "学生（がくせい）", "会社員（かいしゃいん）"] },
+      { english: "Watch / Clock", answer: "時計（とけい）", choices: ["時計（とけい）", "傘（かさ）", "靴（くつ）", "鞄（かばん）"] },
+      { english: "Train", answer: "電車（でんしゃ）", choices: ["自転車（じてんしゃ）", "地下鉄（ちかてつ）", "電車（でんしゃ）", "飛行機（ひこうき）"] },
+      { english: "Lunch / Noon", answer: "昼（ひる）", choices: ["朝（あさ）", "昼（ひる）", "晩（ばん）", "夜（よる）"] },
+      { english: "Friend", answer: "友達（ともだち）", choices: ["友達（ともだち）", "家族（かぞく）", "恋人（こいびと）", "兄弟（きょうだい）"] },
+      { english: "Delicious", answer: "美味しい（おいしい）", choices: ["美味しい（おいしい）", "新しい（あたらしい）", "忙しい（いそがしい）", "難しい（むずかしい）"] },
+      { english: "To eat", answer: "食べます（たべます）", choices: ["飲みます（のみます）", "食べます（たべます）", "見ます（みます）", "会います（あいます）"] },
+      { english: "Library", answer: "図書館（としょかん）", choices: ["郵便局（ゆうびんきょく）", "美術館（びじゅつかん）", "図書館（としょかん）", "映画館（えいがかん）"] },
+      { english: "Vegetable", answer: "野菜（やさい）", choices: ["果物（くだもの）", "野菜（やさい）", "卵（たまご）", "肉（にく）"] },
+      { english: "Quiet", answer: "静か（しずか）", choices: ["賑やか（にぎやか）", "静か（しずか）", "親切（しんせつ）", "元気（げんき）"] },
+      { english: "Birthday", answer: "誕生日（たんじょうび）", choices: ["誕生日（たんじょうび）", "日曜日（にちようび）", "休み（やすみ）", "旅行（りょこう）"] },
+      { english: "Stamp (Postage)", answer: "切手（きって）", choices: ["切符（きっぷ）", "切手（きって）", "葉書（はがき）", "封筒（ふうとう）"] },
+      { english: "Weather", answer: "天気（てんき）", choices: ["電気（でんき）", "天気（てんき）", "病気（びょうき）", "元気（げんき）"] },
+      { english: "To lend", answer: "貸します（かします）", choices: ["貸します（かします）", "借ります（かります）", "返します（かえします）", "教えます（おしえます）"] },
+      { english: "Next month", answer: "来月（らいげつ）", choices: ["先月（せんげつ）", "今月（こんげつ）", "来月（らいげつ）", "毎月（まいつき）"] },
+      { english: "Hot (Weather)", answer: "暑い（あつい）", choices: ["寒い（さむい）", "暑い（あつい）", "熱い（あつい）", "冷たい（つめたい）"] },
+      { english: "To cut", answer: "切ります（きります）", choices: ["切ります（きります）", "送ります（おくります）", "作ります（つくります）", "使います（つかいます）"] },
+      { english: "Good at / Skillful", answer: "上手（じょうず）", choices: ["下手（へた）", "好き（すき）", "嫌い（きらい）", "上手（じょうず）"] },
+      { english: "Brother (Older)", answer: "お兄さん（おにいさん）", choices: ["お兄さん（おにいさん）", "お姉さん（おねえさん）", "弟（おとうと）", "妹（いもうと）"] },
+      { english: "Electricity / Light", answer: "電気（でんき）", choices: ["電車（でんしゃ）", "電話（でんわ）", "電気（でんき）", "電池（でんち）"] },
+      { english: "Famous", answer: "有名（ゆうめい）", choices: ["有名（ゆうめい）", "便利（べんり）", "暇（ひま）", "素敵（すてき）"] },
+      { english: "Hand", answer: "手（て）", choices: ["目（め）", "耳（みみ）", "手（て）", "足（あし）"] },
+      { english: "To understand", answer: "わかります", choices: ["あります", "います", "かかります", "わかります"] },
+      { english: "Stairs", answer: "階段（かいだん）", choices: ["エレベーター", "エスカレーター", "階段（かいだん）", "会社（かいしゃ）"] },
+      { english: "Homework", answer: "宿題（しゅくだい）", choices: ["仕事（しごと）", "宿題（しゅくだい）", "問題（もんだい）", "質問（しつもん）"] },
+      { english: "Dangerous", answer: "危ない（あぶない）", choices: ["危ない（あぶない）", "大丈夫（だいじょうぶ）", "大切（たいせつ）", "大変（たいへん）"] },
+      { english: "Left", answer: "左（ひだり）", choices: ["右（みぎ）", "左（ひだり）", "中（なか）", "外（そと）"] },
+      { english: "Dictionary", answer: "辞書（じしょ）", choices: ["辞書（じしょ）", "雑誌（ざっし）", "新聞（しんぶん）", "手帳（てちょう）"] },
+      { english: "Black", answer: "黒い（くろい）", choices: ["白い（しろい）", "黒い（くろい）", "赤い（あかい）", "青い（あおい）"] },
+      { english: "To buy", answer: "買います（かいます）", choices: ["買います（かいます）", "買い物します（かいものします）", "書きます（かきます）", "聞きます（ききます）"] }
+    ]
+  },
+  "L1_12_S2": {
+    title: "Lessons 1-12 | Set 2",
+    questions: [
+      { english: "Company / Office", answer: "会社（かいしゃ）", choices: ["会社（かいしゃ）", "学校（がっこう）", "病院（びょういん）", "食堂（しょくどう）"] },
+      { english: "Umbrella", answer: "傘（かさ）", choices: ["鞄（かばん）", "鍵（かぎ）", "傘（かさ）", "靴（くつ）"] },
+      { english: "Pencil", answer: "鉛筆（えんぴつ）", choices: ["鉛筆（えんぴつ）", "時計（とけい）", "手帳（てちょう）", "辞書（じしょ）"] },
+      { english: "Airplane", answer: "飛行機（ひこうき）", choices: ["電車（でんしゃ）", "地下鉄（ちかてつ）", "自転車（じてんしゃ）", "飛行機（ひこうき）"] },
+      { english: "Next Week", answer: "来週（らいしゅう）", choices: ["先週（せんしゅう）", "今週（こんしゅう）", "来週（らいしゅう）", "毎週（まいしゅう）"] },
+      { english: "To drink", answer: "飲みます（のみます）", choices: ["吸います（すいます）", "飲みます（のみます）", "読みます（よみます）", "休みます（やすみます）"] },
+      { english: "To meet (a friend)", answer: "会います（あいます）", choices: ["会います（あいます）", "行きます（いきます）", "来ます（きます）", "帰ります（かえります）"] },
+      { english: "Chopsticks", answer: "箸（はし）", choices: ["鋏（はさみ）", "箸（はし）", "スプーン", "ナイフ"] },
+      { english: "Flower", answer: "花（はな）", choices: ["鼻（はな）", "花（はな）", "春（はる）", "箱（はこ）"] },
+      { english: "Cold (Touch/Object)", answer: "冷たい（つめたい）", choices: ["寒い（さむい）", "冷たい（つめたい）", "涼しい（すずしい）", "暖かい（あたたかい）"] },
+      { english: "Interesting / Funny", answer: "面白い（おもしろい）", choices: ["面白い（おもしろい）", "楽しい（たのしい）", "嬉しい（うれしい）", "珍しい（めずらしい）"] },
+      { english: "Expensive / High", answer: "高い（たかい）", choices: ["安い（やすい）", "低い（ひくい）", "高い（たかい）", "短い（みじかい）"] },
+      { english: "Song", answer: "歌（うた）", choices: ["音（おと）", "声（こえ）", "歌（うた）", "絵（え）"] },
+      { english: "Apple", answer: "林檎（りんご）", choices: ["林檎（りんご）", "蜜柑（みかん）", "魚（さかな）", "牛乳（ぎゅうにゅう）"] },
+      { english: "Letter", answer: "手紙（てがみ）", choices: ["写真（しゃしん）", "手紙（てがみ）", "荷物（にもつ）", "携帯（けいたい）"] },
+      { english: "To play / To have fun", answer: "遊びます（あそびます）", choices: ["働きます（はたらきます）", "勉強します（べんきょうします）", "遊びます（あそびます）", "習います（ならいます）"] },
+      { english: "Sea / Ocean", answer: "海（うみ）", choices: ["山（やま）", "川（かわ）", "海（うみ）", "町（まち）"] },
+      { english: "Yesterday", answer: "昨日（きのう）", choices: ["明日（あした）", "昨日（きのう）", "一昨日（おととい）", "明後日（あさって）"] },
+      { english: "Dog", answer: "犬（いぬ）", choices: ["猫（ねこ）", "犬（いぬ）", "象（ぞう）", "馬（うま）"] },
+      { english: "Box", answer: "箱（はこ）", choices: ["箱（はこ）", "窓（まど）", "ドア", "スイッチ"] },
+      { english: "Younger Brother", answer: "弟（おとうと）", choices: ["お兄さん（おにいさん）", "お父さん（おとうさん）", "弟（おとうと）", "妹（いもうと）"] },
+      { english: "Near / Close", answer: "近い（ちかい）", choices: ["遠い（とおい）", "近い（ちかい）", "早い（はやい）", "遅い（おそい）"] },
+      { english: "Car", answer: "車（くるま）", choices: ["電車（でんしゃ）", "車（くるま）", "バス", "タクシー"] },
+      { english: "Ticket", answer: "切符（きっぷ）", choices: ["切手（きって）", "切符（きっぷ）", "雑誌（ざっし）", "封筒（ふうとう）"] },
+      { english: "Homework", answer: "宿題（しゅくだい）", choices: ["授業（じゅぎょう）", "試験（しけん）", "宿題（しゅくだい）", "質問（しつもん）"] },
+      { english: "Busy", answer: "忙しい（いそがしい）", choices: ["暇（ひま）", "忙しい（いそがしい）", "寂しい（さびしい）", "眠い（ねむい）"] },
+      { english: "Park", answer: "公園（こうえん）", choices: ["公園（こうえん）", "病院（びょういん）", "喫茶店（きっさてん）", "銀行（ぎんこう）"] },
+      { english: "Paper", answer: "紙（かみ）", choices: ["髪（かみ）", "紙（かみ）", "神（かみ）", "瓶（びん）"] },
+      { english: "Three things (Counter)", answer: "三つ（みっつ）", choices: ["一つ（ひとつ）", "二つ（ふたつ）", "三つ（みっつ）", "四つ（よっつ）"] },
+      { english: "To write", answer: "書きます（かきます）", choices: ["聞きます（ききます）", "書きます（かきます）", "読みます（よみます）", "歩きます（あるきます）"] }
+    ]
+  },
+  "L1_12_S3": {
+    title: "Lessons 1-12 | Set 3",
+    questions: [
+      { english: "Breakfast", answer: "朝ご飯（あさごはん）", choices: ["朝ご飯（あさごはん）", "昼ご飯（ひるごはん）", "晩ご飯（ばんごはん）", "卵（たまご）"] },
+      { english: "Water", answer: "水（みず）", choices: ["お茶（おちゃ）", "水（みず）", "ジュース", "牛乳（ぎゅうにゅう）"] },
+      { english: "Station", answer: "駅（えき）", choices: ["空港（くうこう）", "駅（えき）", "地下鉄（ちかてつ）", "病院（びょういん）"] },
+      { english: "Money", answer: "お金（おかね）", choices: ["手紙（てがみ）", "買い物（かいもの）", "お金（おかね）", "お土産（おみやげ）"] },
+      { english: "Bicycle", answer: "自転車（じてんしゃ）", choices: ["自転車（じてんしゃ）", "自動車（じどうしゃ）", "電車（でんしゃ）", "新幹線（しんかんせん）"] },
+      { english: "Room", answer: "部屋（へや）", choices: ["部屋（へや）", "庭（にわ）", "家（うち）", "事務所（じむしょ）"] },
+      { english: "To listen / To ask", answer: "聞きます（ききます）", choices: ["書きます（かきます）", "聞きます（ききます）", "話します（はなします）", "読みます（よみます）"] },
+      { english: "Father (My father)", answer: "父（ちち）", choices: ["お父さん（おとうさん）", "父（ちち）", "母（はは）", "夫（おっと）"] },
+      { english: "Mother (My mother)", answer: "母（はは）", choices: ["お母さん（おかあさん）", "妻（つま）", "姉（あね）", "母（はは）"] },
+      { english: "Key", answer: "鍵（かぎ）", choices: ["鍵（かぎ）", "傘（かさ）", "鞄（かばん）", "靴（くつ）"] },
+      { english: "New", answer: "新しい（あたらしい）", choices: ["古い（ふるい）", "新しい（あたらしい）", "暑い（あつい）", "良い（よい）"] },
+      { english: "Saturday", answer: "土曜日（どようび）", choices: ["木曜日（もくようび）", "金曜日（きんようび）", "土曜日（どようび）", "日曜日（にちようび）"] },
+      { english: "Next Year", answer: "来年（らいねん）", choices: ["去年（きょねん）", "今年（ことし）", "来年（らいねん）", "毎年（まいとし）"] },
+      { english: "Cat", answer: "猫（ねこ）", choices: ["犬（いぬ）", "猫（ねこ）", "魚（さかな）", "パンダ"] },
+      { english: "Television", answer: "テレビ", choices: ["ラジオ", "カメラ", "パソコン", "テレビ"] },
+      { english: "To sleep", answer: "寝ます（ねます）", choices: ["起きます（おきます）", "寝ます（ねます）", "休みます（やすみます）", "終わります（おわります）"] },
+      { english: "Wallet", answer: "財布（さいふ）", choices: ["財布（さいふ）", "荷物（にもつ）", "鉛筆（えんぴつ）", "名刺（めいし）"] },
+      { english: "Window", answer: "窓（まど）", choices: ["ドア", "窓（まど）", "箱（はこ）", "机（つくえ）"] },
+      { english: "Spacious / Wide", answer: "広い（ひろい）", choices: ["狭い（せまい）", "広い（ひろい）", "暗い（くらい）", "明るい（あかるい）"] },
+      { english: "Milk", answer: "牛乳（ぎゅうにゅう）", choices: ["紅茶（こうちゃ）", "お酒（おさけ）", "牛乳（ぎゅうにゅう）", "水（みず）"] },
+      { english: "Spouse (My husband)", answer: "夫（おっと）", choices: ["主人（しゅじん）", "夫（おっと）", "奥さん（おくさん）", "妻（つま）"] },
+      { english: "To teach", answer: "教えます（おしえます）", choices: ["習います（ならいます）", "勉強します（べんきょうします）", "教えます（おしえます）", "手伝います（てつだいます）"] },
+      { english: "Morning", answer: "朝（あさ）", choices: ["朝（あさ）", "昼（ひる）", "晩（ばん）", "今（いま）"] },
+      { english: "Shoes", answer: "靴（くつ）", choices: ["鞄（かばん）", "帽子（ぼうし）", "靴（くつ）", "眼鏡（めがね）"] },
+      { english: "Souvenir", answer: "お土産（おみやげ）", choices: ["売り場（うりば）", "お土産（おみやげ）", "切手（きって）", "葉書（はがき）"] },
+      { english: "Difficult", answer: "難しい（むずかしい）", choices: ["易しい（やさしい）", "難しい（むずかしい）", "楽しい（たのしい）", "小さい（ちいさい）"] },
+      { english: "Dictionary", answer: "辞書（じしょ）", choices: ["手帳（てちょう）", "雑誌（ざっし）", "辞書（じしょ）", "新聞（しんぶん）"] },
+      { english: "To return (home)", answer: "帰ります（かえります）", choices: ["行きます（いきます）", "来ます（きます）", "帰ります（かえります）", "入ります（はいります）"] },
+      { english: "Alone", answer: "一人で（ひとりで）", choices: ["一人で（ひとりで）", "一緒に（いっしょに）", "皆で（みんなで）", "家族と（かぞくと）"] },
+      { english: "Person", answer: "人（ひと）", choices: ["大人（おとな）", "人（ひと）", "子供（こども）", "男（おとこ）"] }
+    ]
+  },
+  "L13_25_S1": {
+    title: "Lessons 13-25 | Set 1",
+    questions: [
+      { english: "To want (something)", answer: "欲しい（ほしい）", choices: ["好き（すき）", "嫌い（きらい）", "欲しい（ほしい）", "寂しい（さびしい）"] },
+      { english: "To turn on (electricity/switch)", answer: "つけます", choices: ["つけます", "消します（けします）", "開けます（あけます）", "閉めます（しめます）"] },
+      { english: "To hurry", answer: "急ぎます（いそぎます）", choices: ["待ちます（まちます）", "急ぎます（いそぎます）", "呼びます（よびます）", "止まります（とまります）"] },
+      { english: "To wait", answer: "待ちます（まちます）", choices: ["持ちます（もちます）", "待ちます（まちます）", "取ります（とります）", "手伝います（てつだいます）"] },
+      { english: "Passport", answer: "パスポート", choices: ["切符（きっぷ）", "住所（じゅうしょ）", "パスポート", "名前（なまえ）"] },
+      { english: "Slowly", answer: "ゆっくり", choices: ["すぐ", "また", "ゆっくり", "だんだん"] },
+      { english: "To get off (a train)", answer: "降ります（おります）", choices: ["乗ります（のります）", "降ります（おります）", "入ります（はいります）", "出ます（でます）"] },
+      { english: "To take a shower", answer: "浴びます（あびます）", choices: ["浴びます（あびます）", "洗います（あらいます）", "泳ぎます（およぎます）", "入れます（いれます）"] },
+      { english: "Dangerous", answer: "危ない（あぶない）", choices: ["大丈夫（だいじょうぶ）", "危ない（あぶない）", "大切（たいせつ）", "心配（しんぱい）"] },
+      { english: "To forget", answer: "忘れます（わすれます）", choices: ["覚えます（おぼえます）", "考えます（かんがえます）", "忘れます（わすれます）", "無くします（なくします）"] },
+      { english: "To lose (something)", answer: "無くします（なくします）", choices: ["払います（はらいます）", "返します（かえします）", "無くします（なくします）", "脱ぎます（ぬぎます）"] },
+      { english: "Hobby", answer: "趣味（しゅみ）", choices: ["興味（きょうみ）", "趣味（しゅみ）", "夢（ゆめ）", "習慣（しゅうかん）"] },
+      { english: "Can do / Able to", answer: "できます", choices: ["します", "できます", "なります", "やります"] },
+      { english: "Piano", answer: "ピアノ", choices: ["ギター", "カラオケ", "ピアノ", "コンサート"] },
+      { english: "To become", answer: "なります", choices: ["なります", "あります", "います", "来ます（きます）"] },
+      { english: "Sleepy", answer: "眠い（ねむい）", choices: ["痛い（いたい）", "眠い（ねむい）", "強い（つよい）", "若い（わかい）"] },
+      { english: "Body", answer: "体（からだ）", choices: ["頭（あたま）", "顔（かお）", "体（からだ）", "お腹（おなか）"] },
+      { english: "Head", answer: "頭（あたま）", choices: ["髪（かみ）", "頭（あたま）", "目（め）", "口（くち）"] },
+      { english: "Medicine", answer: "薬（くすり）", choices: ["病気（びょうき）", "病院（びょういん）", "薬（くすり）", "医者（いしゃ）"] },
+      { english: "To repair", answer: "直します（なおします）", choices: ["直します（なおします）", "手伝います（てつだいます）", "働きます（はたらきます）", "調べます（しらべます）"] },
+      { english: "To think", answer: "思います（おもいます）", choices: ["言います（いいます）", "思います（おもいます）", "知ります（しります）", "聞きます（ききます）"] },
+      { english: "Useful / Convenient", answer: "便利（べんり）", choices: ["不便（ふべん）", "便利（べんり）", "簡単（かんたん）", "複雑（ふくざつ）"] },
+      { english: "Place", answer: "所（ところ）", choices: ["所（ところ）", "物（もの）", "時（とき）", "事（こと）"] },
+      { english: "To wear (shirt)", answer: "着ます（きます）", choices: ["履きます（はきます）", "被ります（かぶります）", "着ます（きます）", "かけます"] },
+      { english: "Shoes", answer: "靴（くつ）", choices: ["眼鏡（めがね）", "帽子（ぼうし）", "靴（くつ）", "コート"] },
+      { english: "To be born", answer: "生まれます（うまれます）", choices: ["生まれます（うまれます）", "死にます（しにます）", "住みます（すみます）", "結婚します（けっこんします）"] },
+      { english: "Hat / Cap", answer: "帽子（ぼうし）", choices: ["帽子（ぼうし）", "傘（かさ）", "鞄（かばん）", "財布（さいふ）"] },
+      { english: "Intersection", answer: "交差点（こうさてん）", choices: ["信号（しんごう）", "角（かど）", "交差点（こうさてん）", "橋（はし）"] },
+      { english: "To give (to me)", answer: "くれます", choices: ["あげます", "もらいます", "くれます", "かします"] },
+      { english: "Refrigerator", answer: "冷蔵庫（れいぞうこ）", choices: ["洗濯機（せんたくき）", "掃除機（そうじき）", "冷蔵庫（れいぞうこ）", "自動販売機（じどうはんばいき）"] }
+    ]
+  },
+  "L13_25_S2": {
+    title: "Lessons 13-25 | Set 2",
+    questions: [
+      { english: "To open", answer: "開けます（あけます）", choices: ["開けます（あけます）", "閉めます（しめます）", "つけます", "消します（けします）"] },
+      { english: "To close", answer: "閉めます（しめます）", choices: ["入れます（いれます）", "出します（だします）", "閉めます（しめます）", "止めます（とめます）"] },
+      { english: "To turn off (power/fire)", answer: "消します（けします）", choices: ["消します（けします）", "返します（かえします）", "貸します（かします）", "直します（なおします）"] },
+      { english: "To stand up", answer: "立ちます（たちます）", choices: ["座ります（すわります）", "立ちます（たちます）", "歩きます（あるきます）", "走ります（はしります）"] },
+      { english: "To sit down", answer: "座ります（すわります）", choices: ["乗ります（のります）", "降ります（おります）", "座ります（すわります）", "使います（つかいます）"] },
+      { english: "To enter (a café/room)", answer: "入ります（はいります）", choices: ["出ます（でます）", "入ります（はいります）", "行きます（いきます）", "来ます（きます）"] },
+      { english: "To exit / To leave", answer: "出ます（でます）", choices: ["出ます（でます）", "入れます（いれます）", "降ります（おります）", "渡ります（わたります）"] },
+      { english: "To stop / To park", answer: "止めます（とめます）", choices: ["辞めます（やめます）", "止めます（とめます）", "泊まります（とまります）", "終わります（おわります）"] },
+      { english: "To show", answer: "見せます（みせます）", choices: ["見ます（みます）", "見せます（みせます）", "探します（さがします）", "調べます（しらべます）"] },
+      { english: "To pay", answer: "払います（はらいます）", choices: ["払います（はらいます）", "買います（かいます）", "売ります（うります）", "働きます（はたらきます）"] },
+      { english: "To take off (clothes)", answer: "脱ぎます（ぬぎます）", choices: ["着ます（きます）", "履きます（はきます）", "脱ぎます（ぬぎます）", "被ります（かぶります）"] },
+      { english: "To memorize", answer: "覚えます（おぼえます）", choices: ["忘れます（わすれます）", "覚えます（おぼえます）", "考えます（かんがえます）", "数えます（かぞえます）"] },
+      { english: "To help", answer: "手伝います（てつだいます）", choices: ["手伝います（てつだいます）", "使います（つかいます）", "作ります（つくります）", "連れていきます（つれていきます）"] },
+      { english: "To go out", answer: "出かけます（でかけます）", choices: ["散歩します（さんぽします）", "出かけます（でかけます）", "旅行します（りょこうします）", "買い物します（かいものします）"] },
+      { english: "To throw away", answer: "捨てます（すてます）", choices: ["拾います（ひろいます）", "捨てます（すてます）", "集めます（あつめます）", "変えます（かえます）"] },
+      { english: "Fever", answer: "熱（ねつ）", choices: ["風邪（かぜ）", "病気（びょうき）", "熱（ねつ）", "薬（くすり）"] },
+      { english: "Illness / Sickness", answer: "病気（びょうき）", choices: ["病院（びょういん）", "元気（げんき）", "医者（いしゃ）", "病気（びょうき）"] },
+      { english: "Throat", answer: "喉（のど）", choices: ["頭（あたま）", "首（くび）", "喉（のど）", "声（こえ）"] },
+      { english: "Stomach", answer: "お腹（おなか）", choices: ["お腹（おなか）", "足（あし）", "胸（むね）", "背中（せなか）"] },
+      { english: "Painful / Hurts", answer: "痛い（いたい）", choices: ["痒い（かゆい）", "痛い（いたい）", "眠い（ねむい）", "苦しい（くるしい）"] },
+      { english: "Young", answer: "若い（わかい）", choices: ["若い（わかい）", "古い（ふるい）", "美しい（うつくしい）", "珍しい（めずらしい）"] },
+      { english: "Simple / Easy", answer: "簡単（かんたん）", choices: ["難しい（むずかしい）", "大変（たいへん）", "簡単（かんたん）", "複雑（ふくざつ）"] },
+      { english: "Overtime Work", answer: "残業（ざんぎょう）", choices: ["仕事（しごと）", "残業（ざんぎょう）", "授業（じゅぎょう）", "宿題（しゅくだい）"] },
+      { english: "Appointment / Promise", answer: "約束（やくそく）", choices: ["用事（ようじ）", "約束（やくそく）", "予定（よてい）", "予約（よやく）"] },
+      { english: "Traffic Light", answer: "信号（しんごう）", choices: ["交番（こうばん）", "角（かど）", "信号（しんごう）", "道（みち）"] },
+      { english: "Bridge", answer: "橋（はし）", choices: ["箸（はし）", "橋（はし）", "星（ほし）", "旗（はた）"] },
+      { english: "Meaning", answer: "意味（いみ）", choices: ["意見（いけん）", "意味（いみ）", "理由（りゆう）", "質問（しつもん）"] },
+      { english: "Answer", answer: "答え（こたえ）", choices: ["答え（こたえ）", "問題（もんだい）", "説明（せつめい）", "会話（かいわ）"] },
+      { english: "How to do (Method)", answer: "やり方（やりかた）", choices: ["やり方（やりかた）", "読み方（よみかた）", "食べ方（たべかた）", "行き方（いきかた）"] },
+      { english: "Cash", answer: "現金（げんきん）", choices: ["現金（げんきん）", "銀行（ぎんこう）", "値段（ねだん）", "お釣り（おつり）"] }
+    ]
+  },
+  "L13_25_S3": {
+    title: "Lessons 13-25 | Set 3",
+    questions: [
+      { english: "To wash", answer: "洗います（あらいます）", choices: ["洗います（あらいます）", "歩きます（あるきます）", "浴びます（あびます）", "会います（あいます）"] },
+      { english: "To swim", answer: "泳ぎます（およぎます）", choices: ["泳ぎます（およぎます）", "急ぎます（いそぎます）", "終わります（おわります）", "置きます（おきます）"] },
+      { english: "To play (string instrument)", answer: "弾きます（ひきます）", choices: ["聞きます（ききます）", "弾きます（ひきます）", "引きます（ひきます）", "吹きます（ふきます）"] },
+      { english: "To sing", answer: "歌います（うたいます）", choices: ["歌います（うたいます）", "言います（いいます）", "売ります（うります）", "運動します（うんどうします）"] },
+      { english: "To collect / gather", answer: "集めます（あつめます）", choices: ["遊びます（あそびます）", "集めます（あつめます）", "歩きます（あるきます）", "浴びます（あびます）"] },
+      { english: "To exchange / change", answer: "変えます（かえます）", choices: ["変えます（かえます）", "買います（かいます）", "返します（かえします）", "通います（かよいます）"] },
+      { english: "To drive", answer: "運転します（うんてんします）", choices: ["運動します（うんどうします）", "運転します（うんてんします）", "予習します（よしゅうします）", "復習します（ふくしゅうします）"] },
+      { english: "To stay (at a hotel)", answer: "泊まります（とまります）", choices: ["止まります（とまります）", "泊まります（とまります）", "取ります（とります）", "撮ります（とります）"] },
+      { english: "To clean (a room)", answer: "掃除します（そうじします）", choices: ["洗濯します（せんたくします）", "掃除します（そうじします）", "準備します（じゅんびします）", "心配します（しんぱいします）"] },
+      { english: "To put in / insert", answer: "入れます（いれます）", choices: ["入ります（はいります）", "入れます（いれます）", "要ります（いります）", "乗ります（のります）"] },
+      { english: "Sweet (Taste)", answer: "甘い（あまい）", choices: ["甘い（あまい）", "辛い（からい）", "苦い（にがい）", "濃い（こい）"] },
+      { english: "Spicy / Hot (Taste)", answer: "辛い（からい）", choices: ["塩辛い（しおからい）", "辛い（からい）", "汚い（きたない）", "硬い（かたい）"] },
+      { english: "Serious (Personality)", answer: "真面目（まじめ）", choices: ["大切（たいせつ）", "真面目（まじめ）", "好き（すき）", "静か（しずか）"] },
+      { english: "Strong", answer: "強い（つよい）", choices: ["強い（つよい）", "弱い（よわい）", "悪い（わるい）", "怖い（こわい）"] },
+      { english: "Washing Machine", answer: "洗濯機（せんたくき）", choices: ["掃除機（そうじき）", "洗濯機（せんたくき）", "自動販売機（じどうはんばいき）", "飛行機（ひこうき）"] },
+      { english: "Vacuum Cleaner", answer: "掃除機（そうじき）", choices: ["冷蔵庫（れいぞうこ）", "電子レンジ（でんしレンジ）", "掃除機（そうじき）", "炊飯器（すいはんき）"] },
+      { english: "Map", answer: "地図（ちず）", choices: ["地図（ちず）", "辞書（じしょ）", "手紙（てがみ）", "切符（きっぷ）"] },
+      { english: "Socks", answer: "靴下（くつした）", choices: ["靴（くつ）", "靴下（くつした）", "ズボン", "スカート"] },
+      { english: "To wear (lower body)", answer: "履きます（はきます）", choices: ["着ます（きます）", "脱ぎます（ぬぎます）", "履きます（はきます）", "被ります（かぶります）"] },
+      { english: "To wear (glasses)", answer: "かけます", choices: ["かけます", "します", "取ります（とります）", "入れます（いれます）"] },
+      { english: "Someone else's wife", answer: "奥さん（おくさん）", choices: ["妻（つま）", "家内（かない）", "奥さん（おくさん）", "お母さん（おかあさん）"] },
+      { english: "Someone else's husband", answer: "ご主人（ごしゅじん）", choices: ["夫（おっと）", "主人（しゅじん）", "ご主人（ごしゅじん）", "お父さん（おとうさん）"] },
+      { english: "Machine", answer: "機械（きかい）", choices: ["機会（きかい）", "機械（きかい）", "世界（せかい）", "会社（かいしゃ）"] },
+      { english: "Research", answer: "研究（けんきゅう）", choices: ["研究（けんきゅう）", "勉強（べんきょう）", "専門（せんもん）", "経済（けいざい）"] },
+      { english: "Reservation", answer: "予約（よやく）", choices: ["約束（やくそく）", "予約（よやく）", "用事（ようじ）", "予定（よてい）"] },
+      { english: "For the first time", answer: "初めて（はじめて）", choices: ["初めて（はじめて）", "始めに（はじめに）", "一番（いちばん）", "先に（さきに）"] },
+      { english: "Festival", answer: "お祭り（おまつり）", choices: ["お土産（おみやげ）", "お祭り（おまつり）", "お見舞い（おみまい）", "お祈り（おいのり）"] },
+      { english: "Dictionary", answer: "辞書（じしょ）", choices: ["授業（じゅぎょう）", "辞書（じしょ）", "住所（じゅうしょ）", "自転車（じてんしゃ）"] },
+      { english: "Clothes", answer: "服（ふく）", choices: ["着物（きもの）", "荷物（にもつ）", "服（ふく）", "袋（ふくろ）"] },
+      { english: "Practice", answer: "練習（れんしゅう）", choices: ["復習（ふくしゅう）", "練習（れんしゅう）", "習慣（しゅうかん）", "経験（けいけん）"] }
+    ]
+  },
+  "L1_25_S1": {
+    title: "Lessons 1-25 | Set 1",
+    questions: [
+      { english: "To swim", answer: "泳ぎます（およぎます）", choices: ["泳ぎます（およぎます）", "洗います（あらいます）", "走ります（はしります）", "遊びます（あそびます）"] },
+      { english: "Library", answer: "図書館（としょかん）", choices: ["美術館（びじゅつかん）", "図書館（としょかん）", "映画館（えいがかん）", "郵便局（ゆうびんきょく）"] },
+      { english: "Older Sister", answer: "姉（あね）", choices: ["妹（いもうと）", "姉（あね）", "お姉さん（おねえさん）", "母（はは）"] },
+      { english: "To repair", answer: "直します（なおします）", choices: ["直します（なおします）", "無くします（なくします）", "返します（かえします）", "治します（なおします）"] },
+      { english: "Next Month", answer: "来月（らいげつ）", choices: ["先月（せんげつ）", "今月（こんげつ）", "来月（らいげつ）", "毎月（まいつき）"] },
+      { english: "Green", answer: "緑（みどり）", choices: ["赤（あか）", "青（あお）", "緑（みどり）", "黒（くろ）"] },
+      { english: "To get tired", answer: "疲れます（つかれます）", choices: ["疲れます（つかれます）", "着ます（きます）", "作ります（つくります）", "勤めます（つとめます）"] },
+      { english: "Airplane", answer: "飛行機（ひこうき）", choices: ["飛行機（ひこうき）", "空港（くうこう）", "新幹線（しんかんせん）", "地下鉄（ちかてつ）"] },
+      { english: "Quiet", answer: "静か（しずか）", choices: ["親切（しんせつ）", "静か（しずか）", "賑やか（にぎやか）", "暇（ひま）"] },
+      { english: "To take (a photo)", answer: "撮ります（とります）", choices: ["撮ります（とります）", "取ります（とります）", "書きます（かきます）", "描きます（かきます）"] },
+      { english: "Homework", answer: "宿題（しゅくだい）", choices: ["質問（しつもん）", "宿題（しゅくだい）", "仕事（しごと）", "試験（しけん）"] },
+      { english: "To help", answer: "手伝います（てつだいます）", choices: ["手伝います（てつだいます）", "使います（つかいます）", "連れて来ます（つれてきます）", "届けます（とどけます）"] },
+      { english: "Stairs", answer: "階段（かいだん）", choices: ["階段（かいだん）", "会社（かいしゃ）", "会議（かいぎ）", "部屋（へや）"] },
+      { english: "Weather", answer: "天気（てんき）", choices: ["元気（げんき）", "天気（てんき）", "電気（でんき）", "空気（くうき）"] },
+      { english: "Dangerous", answer: "危ない（あぶない）", choices: ["痛い（いたい）", "悪い（わるい）", "危ない（あぶない）", "怖い（こわい）"] },
+      { english: "Stomach", answer: "お腹（おなか）", choices: ["頭（あたま）", "お腹（おなか）", "足（あし）", "手（て）"] },
+      { english: "To be late", answer: "遅れます（おくれます）", choices: ["遅れます（おくれます）", "忘れます（わすれます）", "負けます（まけます）", "辞めます（やめます）"] },
+      { english: "Every morning", answer: "毎朝（まいあさ）", choices: ["毎晩（まいばん）", "毎朝（まいあさ）", "毎日（まいにち）", "毎週（まいしゅう）"] },
+      { english: "Famous", answer: "有名（ゆうめい）", choices: ["有名（ゆうめい）", "立派（りっぱ）", "きれい", "好き（すき）"] },
+      { english: "Salt", answer: "塩（しお）", choices: ["砂糖（さとう）", "塩（しお）", "醤油（しょうゆ）", "お酒（おさけ）"] },
+      { english: "To brush / polish", answer: "磨きます（みがきます）", choices: ["磨きます（みがきます）", "見ます（みます）", "見せます（みせます）", "持ちます（もちます）"] },
+      { english: "Wallet", answer: "財布（さいふ）", choices: ["荷物（にもつ）", "財布（さいふ）", "切符（きっぷ）", "封筒（ふうとう）"] },
+      { english: "To turn on (switch)", answer: "つけます", choices: ["開けます（あけます）", "つけます", "消します（けします）", "押します（おします）"] },
+      { english: "Narrow", answer: "狭い（せまい）", choices: ["広い（ひろい）", "狭い（せまい）", "長い（ながい）", "短い（みじかい）"] },
+      { english: "Skillful / Good at", answer: "上手（じょうず）", choices: ["下手（へた）", "嫌い（きらい）", "上手（じょうず）", "苦手（にがて）"] },
+      { english: "To enter (coffee shop)", answer: "入ります（はいります）", choices: ["入ります（はいります）", "入れます（いれます）", "出ます（でます）", "降ります（おります）"] },
+      { english: "Foreign Country", answer: "外国（がいこく）", choices: ["外国（がいこく）", "英語（えいご）", "世界（せかい）", "会社（かいしゃ）"] },
+      { english: "Day off / Holiday", answer: "休み（やすみ）", choices: ["休み（やすみ）", "旅行（りょこう）", "誕生日（たんじょうび）", "平日（へいじつ）"] },
+      { english: "To give (flowers to)", answer: "あげます", choices: ["もらいます", "あげます", "くれます", "かします"] },
+      { english: "Beside / Next to", answer: "隣（となり）", choices: ["中（なか）", "隣（となり）", "間（あいだ）", "上（うえ）"] }
+    ]
+  },
+  "L1_25_S2": {
+    title: "Lessons 1-25 | Set 2",
+    questions: [
+      { english: "To lose (an object)", answer: "無くします（なくします）", choices: ["無くします（なくします）", "忘れます（わすれます）", "払います（はらいます）", "返します（かえします）"] },
+      { english: "Refrigerator", answer: "冷蔵庫（れいぞうこ）", choices: ["洗濯機（せんたくき）", "冷蔵庫（れいぞうこ）", "掃除機（そうじき）", "自動販売機（じどうはんばいき）"] },
+      { english: "To answer", answer: "答えます（こたえます）", choices: ["答えます（こたえます）", "考えます（かんがえます）", "覚えます（おぼえます）", "調べます（しらべます）"] },
+      { english: "Subway", answer: "地下鉄（ちかてつ）", choices: ["電車（でんしゃ）", "新幹線（しんかんせん）", "地下鉄（ちかてつ）", "空港（くうこう）"] },
+      { english: "Next Year", answer: "来年（らいねん）", choices: ["去年（きょねん）", "来年（らいねん）", "今年（ことし）", "毎年（まいとし）"] },
+      { english: "Heavy", answer: "重い（おもい）", choices: ["軽い（かるい）", "重い（おもい）", "暗い（くらい）", "近い（ちかい）"] },
+      { english: "To smoke (tobacco)", answer: "吸います（すいます）", choices: ["飲みます（のみます）", "吸います（すいます）", "休みます（やすみます）", "読みます（よみます）"] },
+      { english: "Meaning", answer: "意味（いみ）", choices: ["意味（いみ）", "意見（いけん）", "趣味（しゅみ）", "興味（きょうみ）"] },
+      { english: "Vegetable", answer: "野菜（やさい）", choices: ["果物（くだもの）", "野菜（やさい）", "料理（りょうり）", "牛肉（ぎゅうにく）"] },
+      { english: "To lend", answer: "貸します（かします）", choices: ["借ります（かります）", "返します（かえします）", "貸します（かします）", "取ります（とります）"] },
+      { english: "Stamp (Postage)", answer: "切手（きって）", choices: ["切符（きっぷ）", "切手（きって）", "封筒（ふうとう）", "葉書（はがき）"] },
+      { english: "To repair / fix", answer: "直します（なおします）", choices: ["直します（なおします）", "手伝います（てつだいます）", "治します（なおします）", "作ります（つくります）"] },
+      { english: "Weekend", answer: "週末（しゅうまつ）", choices: ["先週（せんしゅう）", "今週（こんしゅう）", "来週（らいしゅう）", "週末（しゅうまつ）"] },
+      { english: "Busy", answer: "忙しい（いそがしい）", choices: ["暇（ひま）", "忙しい（いそがしい）", "難しい（むずかしい）", "寂しい（さびしい）"] },
+      { english: "To go out", answer: "出かけます（でかけます）", choices: ["出かけます（でかけます）", "出ます（でます）", "入ります（はいります）", "散歩します（さんぽします）"] },
+      { english: "Birthday", answer: "誕生日（たんじょうび）", choices: ["誕生日（たんじょうび）", "日曜日（にちようび）", "生年月日（せいねんがっぴ）", "祝日（しゅくじつ）"] },
+      { english: "To memorise", answer: "覚えます（おぼえます）", choices: ["忘れます（わすれます）", "覚えます（おぼえます）", "考えます（かんがえます）", "知ります（しります）"] },
+      { english: "Simple / Easy", answer: "簡単（かんたん）", choices: ["簡単（かんたん）", "複雑（ふくざつ）", "難しい（むずかしい）", "近い（ちかい）"] },
+      { english: "Cat", answer: "猫（ねこ）", choices: ["犬（いぬ）", "猫（ねこ）", "鳥（とり）", "馬（うま）"] },
+      { english: "To stay (overnight)", answer: "泊まります（とまります）", choices: ["泊まります（とまります）", "止まります（とまります）", "住みます（すみます）", "座ります（すわります）"] },
+      { english: "Together", answer: "一緒に（いっしょに）", choices: ["一人で（ひとりで）", "一緒に（いっしょに）", "全部で（ぜんぶで）", "皆で（みんなで）"] },
+      { english: "Younger Brother", answer: "弟（おとうと）", choices: ["弟（おとうと）", "兄（あに）", "息子（むすこ）", "甥（おい）"] },
+      { english: "To withdraw (money)", answer: "下ろします（おろします）", choices: ["下ろします（おろします）", "降ります（おります）", "出します（だします）", "入れます（いれます）"] },
+      { english: "Sugar", answer: "砂糖（さとう）", choices: ["塩（しお）", "砂糖（さとう）", "醤油（しょうゆ）", "牛乳（ぎゅうにゅう）"] },
+      { english: "To wait", answer: "待ちます（まちます）", choices: ["持ちます（もちます）", "立ちます（たちます）", "待ちます（まちます）", "呼びます（よびます）"] },
+      { english: "Key", answer: "鍵（かぎ）", choices: ["傘（かさ）", "鍵（かぎ）", "鏡（かがみ）", "壁（かべ）"] },
+      { english: "Hat / Cap", answer: "帽子（ぼうし）", choices: ["帽子（ぼうし）", "眼鏡（めがね）", "靴下（くつした）", "手袋（てぶくろ）"] },
+      { english: "To show", answer: "見せます（みせます）", choices: ["見ます（みます）", "見せます（みせます）", "探します（さがします）", "調べます（しらべます）"] },
+      { english: "Near", answer: "近い（ちかい）", choices: ["遠い（とおい）", "早い（はやい）", "近い（ちかい）", "遅い（おそい）"] },
+      { english: "Cash", answer: "現金（げんきん）", choices: ["現金（げんきん）", "お金（おかね）", "細かいお金（こまかいおかね）", "お釣り（おつり）"] }
+    ]
+  },
+  "L1_25_S3": {
+    title: "Lessons 1-25 | Set 3",
+    questions: [
+      { english: "To sell", answer: "売ります（うります）", choices: ["買います（かいます）", "売ります（うります）", "払います（はらいます）", "貸します（かします）"] },
+      { english: "Post Office", answer: "郵便局（ゆうびんきょく）", choices: ["銀行（ぎんこう）", "郵便局（ゆうびんきょく）", "図書館（としょかん）", "美術館（びじゅつかん）"] },
+      { english: "Newspaper", answer: "新聞（しんぶん）", choices: ["雑誌（ざっし）", "辞書（じしょ）", "新聞（しんぶん）", "手帳（てちょう）"] },
+      { english: "Grandfather", answer: "祖父（そふ）", choices: ["お爺さん（おじいさん）", "祖父（そふ）", "叔父（おじ）", "兄（あに）"] },
+      { english: "To make / To produce", answer: "作ります（つくります）", choices: ["使います（つかいます）", "作ります（つくります）", "直します（なおします）", "撮ります（とります）"] },
+      { english: "White", answer: "白い（しろい）", choices: ["黒い（くろい）", "白い（しろい）", "赤い（あかい）", "青い（あおい）"] },
+      { english: "Cold (Weather)", answer: "寒い（さむい）", choices: ["冷たい（つめたい）", "涼しい（すずしい）", "寒い（さむい）", "暑い（あつい）"] },
+      { english: "Ship / Boat", answer: "船（ふね）", choices: ["自転車（じてんしゃ）", "船（ふね）", "飛行機（ひこうき）", "車（くるま）"] },
+      { english: "Lively / Bustling", answer: "賑やか（にぎやか）", choices: ["静か（しずか）", "賑やか（にぎやか）", "元気（げんき）", "有名（ゆうめい）"] },
+      { english: "To meet", answer: "会います（あいます）", choices: ["会います（あいます）", "言います（いいます）", "行きます（いきます）", "待ちます（まちます）"] },
+      { english: "Job / Work", answer: "仕事（しごと）", choices: ["会社（かいしゃ）", "仕事（しごと）", "工場（こうじょう）", "事務所（じむしょ）"] },
+      { english: "To teach", answer: "教えます（おしえます）", choices: ["習います（ならいます）", "勉強します（べんきょうします）", "教えます（おしえます）", "覚えます（おぼえます）"] },
+      { english: "Town / City", answer: "町（まち）", choices: ["道（みち）", "町（まち）", "国（くに）", "村（むら）"] },
+      { english: "Electricity / Light", answer: "電気（でんき）", choices: ["天気（てんき）", "電気（でんき）", "電車（でんしゃ）", "電話（でんわ）"] },
+      { english: "Scary", answer: "怖い（こわい）", choices: ["怖い（こわい）", "危ない（あぶない）", "痛い（いたい）", "辛い（つらい）"] },
+      { english: "Hand", answer: "手（て）", choices: ["足（あし）", "目（め）", "手（て）", "耳（みみ）"] },
+      { english: "To stop (something)", answer: "止めます（とめます）", choices: ["止めます（とめます）", "辞めます（やめます）", "閉めます（しめます）", "始めます（はじめます）"] },
+      { english: "Every night", answer: "毎晩（まいばん）", choices: ["毎日（まいにち）", "毎朝（まいあさ）", "毎晩（まいばん）", "毎週（まいしゅう）"] },
+      { english: "Free time", answer: "暇（ひま）", choices: ["暇（ひま）", "忙しい（いそがしい）", "好き（すき）", "下手（へた）"] },
+      { english: "Soy Sauce", answer: "醤油（しょうゆ）", choices: ["砂糖（さとう）", "塩（しお）", "醤油（しょうゆ）", "味噌（みそ）"] },
+      { english: "To walk", answer: "歩きます（あるきます）", choices: ["走ります（はしります）", "歩きます（あるきます）", "行きます（いきます）", "泳ぎます（およぎます）"] },
+      { english: "Bag", answer: "鞄（かばん）", choices: ["靴（くつ）", "財布（さいふ）", "鞄（かばん）", "傘（かさ）"] },
+      { english: "To push / To press", answer: "押します（おします）", choices: ["引きます（ひきます）", "押します（おします）", "落とします（おとします）", "置きます（おきます）"] },
+      { english: "Wide / Spacious", answer: "広い（ひろい）", choices: ["広い（ひろい）", "狭い（せまい）", "明るい（あかるい）", "大きい（おおきい）"] },
+      { english: "Bad at / Unskillful", answer: "下手（へた）", choices: ["上手（じょうず）", "下手（へた）", "嫌い（きらい）", "好き（すき）"] },
+      { english: "To exit / To leave", answer: "出ます（でます）", choices: ["入ります（はいります）", "出ます（でます）", "来ます（きます）", "帰ります（かえります）"] },
+      { english: "World", answer: "世界（せかい）", choices: ["外国（がいこく）", "世界（せかい）", "世話（せわ）", "社会（しゃかい）"] },
+      { english: "Noon / Daytime", answer: "昼（ひる）", choices: ["朝（あさ）", "夜（よる）", "昼（ひる）", "晩（ばん）"] },
+      { english: "To receive", answer: "もらいます", choices: ["あげます", "もらいます", "くれます", "かします"] },
+      { english: "Outside", answer: "外（そと）", choices: ["中（なか）", "外（そと）", "前（まえ）", "後ろ（うしろ）"] }
+    ]
+  }
+};
+
+/* ── State ── */
+let playerName = "";
+let currentSetKey = "";
+let quiz = [];
+let answers = {};
+let currentQ = 0;
+let submitted = false;
+
+/* ── Helpers ── */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ── Initialize EmailJS ── */
+emailjs.init("1oR0j0WDvUmSSYEpK");
+
+/* ── DOM refs ── */
+const $nameScreen = document.getElementById("name-screen");
+const $quizScreen = document.getElementById("quiz-screen");
+const $nameInput  = document.getElementById("name-input");
+const $setSelect  = document.getElementById("set-select");
+const $btnStart   = document.getElementById("btn-start");
+const $quizTitle  = document.getElementById("quiz-title");
+const $subtitle   = document.getElementById("quiz-subtitle");
+const $scoreBanner= document.getElementById("score-banner");
+const $scoreNum   = document.getElementById("score-number");
+const $scoreLbl   = document.getElementById("score-label");
+const $emailRow   = document.getElementById("email-row");
+const $btnRetake  = document.getElementById("btn-retake");
+const $btnHome    = document.getElementById("btn-home");
+const $progText   = document.getElementById("progress-text");
+const $progFill   = document.getElementById("progress-fill");
+const $navGrid    = document.getElementById("nav-grid");
+const $qCard      = document.getElementById("q-card");
+const $qNumber    = document.getElementById("q-number");
+const $qEnglish   = document.getElementById("q-english");
+const $choicesGrid= document.getElementById("choices-grid");
+const $btnPrev    = document.getElementById("btn-prev");
+const $btnNext    = document.getElementById("btn-next");
+const $btnSubmit  = document.getElementById("btn-submit");
+
+/* ── Name Screen ── */
+$nameInput.addEventListener("input", () => {
+  $btnStart.disabled = !$nameInput.value.trim();
+});
+$nameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && $nameInput.value.trim()) startQuiz();
+});
+$btnStart.addEventListener("click", startQuiz);
+
+function startQuiz() {
+  playerName = $nameInput.value.trim();
+  currentSetKey = $setSelect.value;
+  const selectedSet = ALL_SETS[currentSetKey];
+  
+  quiz = shuffle(selectedSet.questions).map(q => ({ ...q, choices: shuffle(q.choices) }));
+  answers = {};
+  currentQ = 0;
+  submitted = false;
+
+  $nameScreen.style.display = "none";
+  $quizScreen.style.display = "block";
+  $scoreBanner.style.display = "none";
+  
+  $quizTitle.textContent = selectedSet.title;
+  $subtitle.textContent = `${playerName}さん — Choose the correct translation`;
+
+  buildNavGrid();
+  renderQuestion();
+  updateProgress();
+}
+
+/* ── Nav Grid ── */
+function buildNavGrid() {
+  $navGrid.innerHTML = "";
+  quiz.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.className = "nav-dot";
+    btn.textContent = i + 1;
+    btn.addEventListener("click", () => { currentQ = i; renderQuestion(); });
+    $navGrid.appendChild(btn);
+  });
+}
+
+function updateNavGrid() {
+  const dots = $navGrid.querySelectorAll(".nav-dot");
+  dots.forEach((dot, i) => {
+    dot.className = "nav-dot";
+    if (i === currentQ) dot.classList.add("active");
+    if (!submitted && answers[i] !== undefined) dot.classList.add("answered");
+    if (submitted && answers[i] === quiz[i].answer) dot.classList.add("correct");
+    if (submitted && answers[i] !== undefined && answers[i] !== quiz[i].answer) dot.classList.add("wrong");
+  });
+}
+
+/* ── Progress ── */
+function updateProgress() {
+  const count = Object.keys(answers).length;
+  $progText.textContent = `${count} / ${quiz.length} answered`;
+  $progFill.style.width = `${(count / quiz.length) * 100}%`;
+  $btnSubmit.disabled = count < quiz.length;
+}
+
+/* ── Render Question ── */
+function renderQuestion() {
+  const q = quiz[currentQ];
+  $qNumber.textContent = `Question ${currentQ + 1}`;
+  $qEnglish.textContent = q.english;
+
+  $choicesGrid.innerHTML = "";
+  q.choices.forEach(c => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    if (submitted) btn.classList.add("locked");
+    btn.innerHTML = `<span>${c}</span>`;
+
+    const selected = answers[currentQ] === c;
+    const isCorrectChoice = c === q.answer;
+
+    if (!submitted) {
+      if (selected) btn.classList.add("selected");
+      btn.addEventListener("click", () => {
+        if (submitted) return;
+        answers[currentQ] = c;
+        renderQuestion();
+        updateNavGrid();
+        updateProgress();
+      });
+    } else {
+      if (isCorrectChoice) {
+        btn.classList.add("correct-reveal");
+        btn.innerHTML += `<span class="mark ok">✓</span>`;
+      }
+      if (selected && !isCorrectChoice) {
+        btn.classList.add("wrong-reveal");
+        btn.innerHTML += `<span class="mark no">✗</span>`;
+      }
+    }
+
+    $choicesGrid.appendChild(btn);
+  });
+
+  updateNavGrid();
+
+  /* Arrow / submit visibility */
+  const isLast = currentQ === quiz.length - 1;
+  $btnPrev.disabled = currentQ === 0;
+
+  if (isLast && !submitted) {
+    $btnNext.classList.add("hidden");
+    $btnSubmit.classList.remove("hidden");
+  } else {
+    $btnNext.classList.remove("hidden");
+    $btnSubmit.classList.add("hidden");
+    $btnNext.disabled = isLast;
+  }
+}
+
+/* ── Navigation ── */
+$btnPrev.addEventListener("click", () => { if (currentQ > 0) { currentQ--; renderQuestion(); } });
+$btnNext.addEventListener("click", () => { if (currentQ < quiz.length - 1) { currentQ++; renderQuestion(); } });
+$btnHome.addEventListener("click", () => {
+  $quizScreen.style.display = "none";
+  $nameScreen.style.display = "block";
+});
+
+/* ── Submit ── */
+$btnSubmit.addEventListener("click", submitQuiz);
+
+async function submitQuiz() {
+  let s = 0;
+  quiz.forEach((q, i) => { if (answers[i] === q.answer) s++; });
+  submitted = true;
+
+  const pct = Math.round((s / quiz.length) * 100);
+  $scoreNum.textContent = `${s}/${quiz.length}`;
+
+  if (s === quiz.length) $scoreLbl.textContent = "完璧！ Perfect!";
+  else if (s >= quiz.length * 0.9) $scoreLbl.textContent = "すごい！ Excellent!";
+  else if (s >= quiz.length * 0.7) $scoreLbl.textContent = "いいですね！ Good job!";
+  else $scoreLbl.textContent = "もう一度！ Try again!";
+
+  const gradient = s >= quiz.length * 0.9
+    ? "linear-gradient(135deg,#2d6a4f,#40916c)"
+    : s >= quiz.length * 0.7
+      ? "linear-gradient(135deg,#b08d37,#d4a843)"
+      : "linear-gradient(135deg,#9b2226,#ca6702)";
+  $scoreBanner.style.background = gradient;
+  $scoreBanner.style.display = "block";
+
+  currentQ = 0;
+  renderQuestion();
+  updateNavGrid();
+
+  /* Hide submit, show next */
+  $btnSubmit.classList.add("hidden");
+  $btnNext.classList.remove("hidden");
+  $btnNext.disabled = false;
+
+  /* Email setup */
+  const EMAILJS_PUBLIC_KEY  = "1oR0j0WDvUmSSYEpK";
+  const EMAILJS_SERVICE_ID  = "service_v7ifzdj";
+  const EMAILJS_TEMPLATE_ID = "template_lb9c879";
+
+  const now = new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", dateStyle: "full", timeStyle: "short" });
+  const details = quiz.map((q, i) =>
+    `${i+1}. ${q.english} → Answer: ${answers[i] || "—"} | Correct: ${q.answer} ${answers[i] === q.answer ? "✓" : "✗"}`
+  ).join("\n");
+
+  const emailParams = {
+    name: playerName,
+    email: "noreply@quiz.com",
+    subject: `[${playerName}] ${ALL_SETS[currentSetKey].title} Quiz — ${pct}%`,
+    message: `Minna no Nihongo - ${ALL_SETS[currentSetKey].title} Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${quiz.length} (${pct}%)\n\n--- Detailed Results ---\n${details}\n\nがんばって！`,
+    time: now
+  };
+
+  if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
+    $emailRow.innerHTML = `<span class="email-pill error">⚠ EmailJS not configured</span>`;
+  } else {
+    $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams, EMAILJS_PUBLIC_KEY);
+      $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || 'Email failed'}</span>`;
+    }
+  }
+}
+
+/* ── Retake ── */
+$btnRetake.addEventListener("click", () => {
+  const selectedSet = ALL_SETS[currentSetKey];
+  quiz = shuffle(selectedSet.questions).map(q => ({ ...q, choices: shuffle(q.choices) }));
+  answers = {};
+  currentQ = 0;
+  submitted = false;
+  $scoreBanner.style.display = "none";
+  buildNavGrid();
+  renderQuestion();
+  updateProgress();
+});
+</script>
+</body>
+</html>
