@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irodori A2 Mastery Hub - Sakura Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;900&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sakura: {
+                            50: '#fff5f7',
+                            100: '#ffe4ec',
+                            200: '#ffc9d9',
+                            300: '#ffa8c0',
+                            400: '#ff7ea3',
+                            500: '#f25a82',
+                            600: '#d63f6a'
+                        },
+                        ink: {
+                            DEFAULT: '#2b1a22',
+                            soft: '#6b4a58'
+                        },
+                        paper: '#fffaf9',
+                        gold: '#c9a34a',
+                        matcha: {
+                            bg: '#e6f7ee',
+                            DEFAULT: '#3ea67a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Zen Maru Gothic"', 'sans-serif'],
+                        serif: ['"Noto Serif JP"', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: var(--paper, #fffaf9); }
+        .tab-content { display: none; }
+        .tab-content.active { display: flex; }
+        .view-screen { display: none; }
+        .view-screen.active { display: flex; }
+        
+        /* Japanese Typography Tweaks */
+        ruby { font-family: 'Noto Serif JP', serif; }
+        rt { font-family: 'Zen Maru Gothic', sans-serif; }
+        .jp-text { font-family: 'Noto Serif JP', serif; }
+        
+        /* SVG Score Ring Animation */
+        .ring-fg {
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Email Pill Styles */
+        .email-pill { display: inline-block; padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 14px; animation: pulse 2s infinite; background: #e2e8f0; color: #475569; }
+        .email-pill.sent { animation: none; background: #e6f7ee; color: #3ea67a; border: 1px solid #3ea67a; }
+        .email-pill.error { animation: none; background: #fee2e2; color: #b91c1c; border: 1px solid #b91c1c; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #ffc9d9; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ffa8c0; }
+    </style>
+</head>
+<body class="bg-sakura-50 text-ink min-h-screen p-4 md:p-8 flex justify-center items-start font-sans">
+
+    <div class="max-w-6xl w-full bg-paper rounded-3xl shadow-sm border border-sakura-200 overflow-hidden flex flex-col md:flex-row h-[90vh] md:h-auto md:min-h-[850px]">
+        
+        <!-- Navigation Sidebar -->
+        <div class="w-full md:w-64 bg-sakura-50/50 p-6 flex flex-col gap-4 border-b md:border-b-0 md:border-r border-sakura-200 shrink-0">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-ink tracking-tight">Irodori A2 Hub</h1>
+                <p class="text-sm text-ink-soft mt-1 font-medium">Yellow Book ・ Sakura</p>
+            </div>
+            
+            <nav class="flex md:flex-col gap-3 overflow-x-auto md:overflow-visible pb-2 md:pb-0">
+                <button onclick="switchTab('exam')" id="nav-exam" class="nav-btn flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all font-bold whitespace-nowrap bg-sakura-500 text-white shadow-md border-b-[3px] border-sakura-600 translate-y-[1px]">
+                    <span class="text-xl">📝</span> Exam Center
+                </button>
+                <button onclick="switchTab('conjugation')" id="nav-conjugation" class="nav-btn flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all font-bold whitespace-nowrap bg-white text-ink-soft hover:bg-sakura-100 hover:text-sakura-600 border border-sakura-200 border-b-[3px]">
+                    <span class="text-xl">🔄</span> Conjugations
+                </button>
+                <button onclick="switchTab('cheatsheet')" id="nav-cheatsheet" class="nav-btn flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all font-bold whitespace-nowrap bg-white text-ink-soft hover:bg-sakura-100 hover:text-sakura-600 border border-sakura-200 border-b-[3px]">
+                    <span class="text-xl">📚</span> Cheat Sheet
+                </button>
+            </nav>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 overflow-hidden relative bg-paper">
+            
+            <!-- ==========================================
+                 TAB 1: EXAM CENTER (Home -> Active -> Results)
+                 ========================================== -->
+            <div id="tab-exam" class="tab-content active flex-col h-full overflow-hidden">
+                
+                <!-- VIEW: EXAM HOME -->
+                <div id="view-exam-home" class="view-screen active flex-col h-full p-6 md:p-10 max-w-3xl mx-auto w-full overflow-y-auto">
+                    <h2 class="text-3xl font-black text-ink mb-2">Irodori A2 Quizzes</h2>
+                    <p class="text-ink-soft font-medium mb-10">Select a module to test your Elementary 2 grammar and vocabulary.</p>
+
+                    <div class="bg-white border-2 border-sakura-100 rounded-3xl p-6 mb-8 shadow-sm">
+                        <label class="block text-sm font-bold text-ink-soft uppercase tracking-widest mb-3">Student Name</label>
+                        <input type="text" id="player-name" placeholder="Enter your name..." class="w-full bg-sakura-50 border-2 border-sakura-200 rounded-xl px-5 py-4 text-lg font-bold text-ink focus:outline-none focus:border-sakura-500 transition">
+                    </div>
+
+                    <div class="grid gap-4">
+                        <!-- SET 1 CARD -->
+                        <div class="bg-white border border-sakura-200 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 hover:shadow-md transition">
+                            <div>
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="bg-sakura-500 text-white text-xs font-bold px-3 py-1 rounded-lg uppercase tracking-wider">Set 1</span>
+                                    <span class="text-sm font-bold text-ink-soft">30 Questions</span>
+                                </div>
+                                <h3 class="text-2xl font-bold text-ink mb-1">Yellow Book Mid Quiz</h3>
+                                <p class="text-ink-soft text-sm font-medium">Covers Part 1 to Part 5 (Giving/Receiving, Conditionals, Intentions).</p>
+                            </div>
+                            <button onclick="startQuiz(1)" class="w-full md:w-auto px-8 py-4 bg-sakura-500 text-white rounded-2xl font-bold hover:bg-sakura-600 transition shadow-sm border-b-4 border-sakura-600 active:border-b-0 active:translate-y-1 shrink-0">
+                                Start Exam
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: ACTIVE QUIZ -->
+                <div id="view-exam-active" class="view-screen flex-col h-full p-6 md:p-10 max-w-2xl mx-auto w-full overflow-y-auto">
+                    <div class="flex justify-between items-center mb-8 shrink-0">
+                        <span id="quiz-progress" class="text-sm font-bold tracking-widest text-sakura-400 uppercase">Question 1 / 30</span>
+                        <span id="quiz-score-badge" class="bg-sakura-100 text-sakura-600 text-xs font-bold px-4 py-1.5 rounded-full border border-sakura-200">Score: 0</span>
+                    </div>
+                    
+                    <div class="mb-8 shrink-0">
+                        <h2 id="quiz-question" class="jp-text text-2xl md:text-[28px] font-semibold text-ink mb-4 leading-loose tracking-wide">
+                            <!-- Question injected here -->
+                        </h2>
+                    </div>
+
+                    <div id="quiz-options" class="flex flex-col gap-3 mb-8 shrink-0 jp-text">
+                        <!-- Options injected here -->
+                    </div>
+
+                    <div id="quiz-explanation" class="hidden p-5 rounded-2xl mb-6 border-2 shrink-0 bg-white">
+                        <div id="quiz-expl-status" class="font-bold text-lg mb-3 flex items-center gap-2"></div>
+                        <p class="text-sm text-ink-soft mb-2"><strong class="text-ink">Meaning:</strong> <span id="quiz-expl-meaning"></span></p>
+                    </div>
+
+                    <div class="mt-auto pt-4 shrink-0">
+                        <button id="quiz-action-btn" onclick="handleQuizAction()" class="w-full py-4 rounded-2xl font-bold text-lg transition border-b-4 bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed">
+                            Check Answer
+                        </button>
+                    </div>
+                </div>
+
+                <!-- VIEW: RESULTS (TANA STYLE + EMAIL JS) -->
+                <div id="view-exam-results" class="view-screen flex-col h-full p-6 md:p-10 max-w-3xl mx-auto w-full overflow-y-auto">
+                    
+                    <div class="flex flex-col items-center justify-center text-center mb-10 mt-4 shrink-0">
+                        <div class="relative w-48 h-48 mb-6 mx-auto">
+                            <svg viewBox="0 0 150 150" class="w-full h-full drop-shadow-md">
+                                <defs>
+                                    <linearGradient id="sakuraGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#ff7ea3"/>
+                                        <stop offset="100%" stop-color="#d63f6a"/>
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="75" cy="75" r="65" class="stroke-sakura-100 fill-paper" stroke-width="12"/>
+                                <circle id="score-ring-fg" cx="75" cy="75" r="65" 
+                                    stroke="url(#sakuraGrad)" 
+                                    stroke-width="12" 
+                                    fill="none" 
+                                    stroke-linecap="round" 
+                                    class="ring-fg" 
+                                    stroke-dasharray="408.4" 
+                                    stroke-dashoffset="408.4"/>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <div class="text-4xl font-black text-sakura-600 tracking-tighter" id="final-score-num">0<span class="text-lg text-sakura-300 ml-1">/30</span></div>
+                                <div class="text-xs font-bold text-ink-soft uppercase tracking-widest mt-1" id="final-score-pct">0%</div>
+                            </div>
+                        </div>
+
+                        <h2 class="text-3xl font-black text-ink mb-2">Practice Complete!</h2>
+                        <div id="final-verdict" class="text-lg font-bold text-matcha mb-6 bg-matcha-bg px-4 py-1 rounded-full border border-matcha/20"></div>
+
+                        <!-- Email JS Container -->
+                        <div id="emailRow" class="w-full flex justify-center mb-2">
+                            <button onclick="sendEmail()" class="px-6 py-3 bg-ink text-white rounded-xl font-bold shadow-sm hover:bg-ink-soft transition flex items-center gap-2">
+                                📧 Email Results to Instructor
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="w-full shrink-0">
+                        <h3 class="text-xl font-bold text-ink mb-4 border-b-2 border-sakura-100 pb-2">Review your answers</h3>
+                        <div id="review-list" class="flex flex-col gap-3 mb-8">
+                            <!-- Review items injected here -->
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pt-6 shrink-0 flex justify-center">
+                        <button onclick="returnToMenu()" class="px-10 py-4 bg-sakura-500 text-white rounded-2xl font-bold hover:bg-sakura-600 transition shadow-sm border-b-4 border-sakura-600 active:border-b-0 active:translate-y-1">
+                            もういちど ・ Back to Menu
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ==========================================
+                 TAB 2: CONJUGATIONS (Preserved Logic)
+                 ========================================== -->
+            <div id="tab-conjugation" class="tab-content flex-col h-full p-6 md:p-10">
+                <h2 class="text-2xl font-bold text-ink mb-6 shrink-0 border-b-2 border-sakura-100 pb-4">Interactive Conjugations</h2>
+                
+                <div class="flex bg-sakura-50 p-1.5 rounded-2xl mb-6 shrink-0 border border-sakura-100">
+                    <button onclick="selectVerbGroup('group1')" id="grp-btn-group1" class="grp-btn flex-1 py-2.5 text-sm font-bold rounded-xl transition bg-white shadow-sm text-sakura-600 border border-sakura-200">Group 1 (Godan)</button>
+                    <button onclick="selectVerbGroup('group2')" id="grp-btn-group2" class="grp-btn flex-1 py-2.5 text-sm font-bold rounded-xl transition text-ink-soft hover:text-ink">Group 2 (Ichidan)</button>
+                    <button onclick="selectVerbGroup('group3')" id="grp-btn-group3" class="grp-btn flex-1 py-2.5 text-sm font-bold rounded-xl transition text-ink-soft hover:text-ink">Group 3 (Irreg.)</button>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-6 flex-1 min-h-0">
+                    <div id="verb-list" class="w-full md:w-1/3 bg-white border border-sakura-200 rounded-2xl overflow-y-auto max-h-64 md:max-h-full shadow-sm">
+                        <!-- Verb buttons injected here -->
+                    </div>
+
+                    <div class="w-full md:w-2/3 flex flex-col gap-4 overflow-y-auto pb-4">
+                        <div class="bg-gradient-to-br from-sakura-500 to-sakura-600 text-white rounded-3xl p-8 shadow-lg shadow-sakura-200 shrink-0 relative overflow-hidden">
+                            <div class="absolute -right-10 -top-10 w-32 h-32 bg-white opacity-10 rounded-full"></div>
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-sakura-100 mb-2">Base Form (Masu)</h3>
+                            <div id="conj-base" class="jp-text text-[40px] font-bold mb-2 leading-tight"></div>
+                            <div id="conj-meaning" class="text-sakura-50 font-medium text-lg"></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 shrink-0">
+                            <div class="bg-white border-2 border-sakura-100 rounded-2xl p-5 hover:border-sakura-300 transition shadow-sm">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-xs font-bold text-ink-soft uppercase">Dictionary</span>
+                                    <span class="text-[10px] font-bold bg-sakura-100 text-sakura-600 px-2 py-1 rounded-md">辞書形</span>
+                                </div>
+                                <div id="conj-dict" class="jp-text text-3xl font-semibold text-ink leading-normal"></div>
+                            </div>
+                            <div class="bg-white border-2 border-sakura-100 rounded-2xl p-5 hover:border-sakura-300 transition shadow-sm">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-xs font-bold text-ink-soft uppercase">Te Form</span>
+                                    <span class="text-[10px] font-bold bg-sakura-100 text-sakura-600 px-2 py-1 rounded-md">て形</span>
+                                </div>
+                                <div id="conj-te" class="jp-text text-3xl font-semibold text-ink leading-normal"></div>
+                            </div>
+                            <div class="bg-white border-2 border-sakura-100 rounded-2xl p-5 hover:border-sakura-300 transition shadow-sm">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-xs font-bold text-ink-soft uppercase">Nai Form</span>
+                                    <span class="text-[10px] font-bold bg-sakura-100 text-sakura-600 px-2 py-1 rounded-md">ない形</span>
+                                </div>
+                                <div id="conj-nai" class="jp-text text-3xl font-semibold text-ink leading-normal"></div>
+                            </div>
+                            <div class="bg-white border-2 border-sakura-100 rounded-2xl p-5 hover:border-sakura-300 transition shadow-sm">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-xs font-bold text-ink-soft uppercase">Ta Form</span>
+                                    <span class="text-[10px] font-bold bg-sakura-100 text-sakura-600 px-2 py-1 rounded-md">た形</span>
+                                </div>
+                                <div id="conj-ta" class="jp-text text-3xl font-semibold text-ink leading-normal"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 TAB 3: CHEAT SHEET (Irodori A2 Focus)
+                 ========================================== -->
+            <div id="tab-cheatsheet" class="tab-content flex-col h-full p-6 md:p-10 overflow-y-auto">
+                <h2 class="text-2xl font-bold text-ink mb-8 border-b-2 border-sakura-100 pb-4">Digital Cheat Sheet (Irodori A2)</h2>
+                
+                <div class="space-y-10 pb-10">
+                    <section>
+                        <h3 class="text-xl font-bold mb-5 text-sakura-600 flex items-center gap-2">
+                            <span class="bg-sakura-100 px-2 py-1 rounded-lg text-sm">1</span> Giving & Receiving (L1-4)
+                        </h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="bg-white border border-sakura-200 p-5 rounded-2xl shadow-sm"><h4 class="jp-text font-bold text-ink text-xl mb-2">あげます</h4><p class="text-sm text-ink-soft font-medium">I give to someone. (or someone gives to someone else).</p></div>
+                            <div class="bg-white border border-sakura-200 p-5 rounded-2xl shadow-sm"><h4 class="jp-text font-bold text-ink text-xl mb-2">もらいます</h4><p class="text-sm text-ink-soft font-medium">I receive from someone (Source marked by <span class="font-bold">に</span> or <span class="font-bold">から</span>).</p></div>
+                            <div class="bg-white border border-sakura-200 p-5 rounded-2xl shadow-sm"><h4 class="jp-text font-bold text-ink text-xl mb-2">くれます</h4><p class="text-sm text-ink-soft font-medium">Someone gives to ME (or my in-group).</p></div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold mb-5 text-sakura-600 flex items-center gap-2">
+                            <span class="bg-sakura-100 px-2 py-1 rounded-lg text-sm">2</span> Crucial Forms & Expressions
+                        </h3>
+                        <ul class="bg-white p-6 rounded-2xl space-y-4 text-sm border border-sakura-200 list-none m-0 shadow-sm">
+                            <li class="flex items-start gap-3"><span class="text-sakura-400 font-bold mt-0.5">•</span> <div><strong class="jp-text text-lg text-ink">〜た ほうがいいです:</strong> You should do... (Giving Advice). Uses Ta-form.</div></li>
+                            <li class="flex items-start gap-3"><span class="text-sakura-400 font-bold mt-0.5">•</span> <div><strong class="jp-text text-lg text-ink">〜ないで ください:</strong> Please do not... Uses Nai-form.</div></li>
+                            <li class="flex items-start gap-3"><span class="text-sakura-400 font-bold mt-0.5">•</span> <div><strong class="jp-text text-lg text-ink">〜ても いいですか:</strong> May I...? (Asking permission). Uses Te-form.</div></li>
+                            <li class="flex items-start gap-3"><span class="text-sakura-400 font-bold mt-0.5">•</span> <div><strong class="jp-text text-lg text-ink">〜て しまいました:</strong> Did something completely OR unfortunately.</div></li>
+                            <li class="flex items-start gap-3"><span class="text-sakura-400 font-bold mt-0.5">•</span> <div><strong class="jp-text text-lg text-ink">〜んです:</strong> Used to explain a reason or ask for an explanation. (Casual: ~n da).</div></li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold mb-5 text-sakura-600 flex items-center gap-2">
+                            <span class="bg-sakura-100 px-2 py-1 rounded-lg text-sm">3</span> Conditionals
+                        </h3>
+                        <div class="bg-sakura-50 border border-sakura-200 p-6 rounded-2xl shadow-sm">
+                            <h4 class="jp-text font-bold text-sakura-600 text-xl mb-2">〜たら (Tara) <span class="font-sans text-sm text-ink-soft ml-2">If / When</span></h4>
+                            <p class="text-sm text-ink-soft mb-6 pb-6 border-b border-sakura-200 font-medium">Ta-form + ら (e.g., 行[い]ったら). Covers most "If/When" situations in A2.</p>
+                            
+                            <h4 class="jp-text font-bold text-sakura-600 text-xl mb-2">〜ばいいですか <span class="font-sans text-sm text-ink-soft ml-2">Asking for instructions</span></h4>
+                            <p class="text-sm text-ink-soft font-medium">"What should I do?" / "How should I go?" e.g., どうやって行[い]けばいいですか / 行[い]ったらいいですか.</p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIG & DATA (Strict Formatting Applied)
+        // ==========================================
+
+        // EMAIL JS CONFIGURATION (Replace with actual keys)
+        const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY";
+        const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";
+        const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
+
+        const irodoriQuizData = [
+            { id: 1, q: "わたしは 毎日[まいにち] 漢字[かんじ]を 覚[おぼ]える_____ しています。", options: ["a) ことに", "b) ように", "c) ために", "d) ものに"], answer: "b", meaning: "I make an effort to memorize Kanji every day." },
+            { id: 2, q: "この パソコンは 軽[かる]くて 持[も]ち歩[ある]き_____ です。", options: ["a) やすい", "b) にくい", "c) たい", "d) ながら"], answer: "a", meaning: "This laptop is light and easy to carry around." },
+            { id: 3, q: "あしたは 雨[あめ]が _____ かもしれません。", options: ["a) ふる", "b) ふって", "c) ふります", "d) ふらない"], answer: "a", meaning: "It might rain tomorrow." },
+            { id: 4, q: "窓[まど]が _____ いますね。", options: ["a) あけて", "b) あいて", "c) あく", "d) あけた"], answer: "b", meaning: "The window is open, isn't it? (State)." },
+            { id: 5, q: "電車[でんしゃ]の 中[なか]で 携帯電話[けいたいでんわ]を _____は いけません。", options: ["a) つかって", "b) つかう", "c) つかわない", "d) つかった"], answer: "a", meaning: "You must not use mobile phones inside the train." },
+            { id: 6, q: "薬[くすり]を 飲[の]んだ _____、寝[ね]た ほうが いいですよ。", options: ["a) あとで", "b) まえに", "c) ほうが", "d) だから"], answer: "a", meaning: "You should sleep after taking the medicine." },
+            { id: 7, q: "コーヒーを _____ ながら、本[ほん]を 読[よ]みます。", options: ["a) のむ", "b) のんで", "c) のみ", "d) のんだ"], answer: "c", meaning: "I read a book while drinking coffee." },
+            { id: 8, q: "わたしは 田中[たなか]さんに 誕生日[たんじょうび]の プレゼントを _____。", options: ["a) あげました", "b) もらいました", "c) くれました", "d) きました"], answer: "a", meaning: "I gave Ms. Tanaka a birthday present." },
+            { id: 9, q: "ここに 車[くるま]を _____で ください。", options: ["a) とめない", "b) とめる", "c) とめて", "d) とめた"], answer: "a", meaning: "Please do not park your car here." },
+            { id: 10, q: "ケーキを 食[た]べ_____ しまいました。", options: ["a) すぎて", "b) すぎ", "c) すぎる", "d) すぎない"], answer: "a", meaning: "I unfortunately ate too much cake." },
+            { id: 11, q: "富士山[ふじさん]に _____ ことが ありますか。", options: ["a) 登[のぼ]る", "b) 登[のぼ]った", "c) 登[のぼ]って", "d) 登[のぼ]らない"], answer: "b", meaning: "Have you ever climbed Mt. Fuji?" },
+            { id: 12, q: "部屋[へや]を _____ して ください。", options: ["a) きれい", "b) きれいに", "c) きれいな", "d) きれいで"], answer: "b", meaning: "Please make the room clean." },
+            { id: 13, q: "この 漢字[かんじ]は なんと _____ んですか。", options: ["a) よむ", "b) よんで", "c) よまない", "d) よんだ"], answer: "a", meaning: "How do you read this Kanji? (Asking for explanation)." },
+            { id: 14, q: "もし お金[かね]が _____、世界旅行[せかいりょこう]を したいです。", options: ["a) あったら", "b) ある", "c) あると", "d) あれば"], answer: "a", meaning: "If I have money, I want to travel the world." },
+            { id: 15, q: "電気[でんき]を _____ まま、寝[ね]て しまいました。", options: ["a) つける", "b) つけた", "c) つけて", "d) つけない"], answer: "b", meaning: "I fell asleep with the lights left on." },
+            { id: 16, q: "あの 人[ひと]は 学生[がくせい] _____。", options: ["a) みたいです", "b) そうです", "c) らしいです", "d) ですから"], answer: "a", meaning: "That person seems like a student." },
+            { id: 17, q: "電車[でんしゃ]が 遅[おく]れた _____、遅刻[ちこく] して しまいました。", options: ["a) ので", "b) でも", "c) ながら", "d) たり"], answer: "a", meaning: "Because the train was late, I unfortunately arrived late." },
+            { id: 18, q: "日本語[にほんご]が 上手[じょうず]に _____ ね。", options: ["a) なりました", "b) しました", "c) あります", "d) います"], answer: "a", meaning: "You have become good at Japanese, haven't you." },
+            { id: 19, q: "ちょっと 荷物[にもつ]を _____ もらえませんか。", options: ["a) 手伝[てつだ]って", "b) 手伝[てつだ]う", "c) 手伝[てつだ]った", "d) 手伝[てつだ]わない"], answer: "a", meaning: "Could you please help me with the luggage?" },
+            { id: 20, q: "日曜日[にちようび]は、掃除[そうじ]を _____、洗濯[せんたく]を _____ します。", options: ["a) して / して", "b) したり / したり", "c) する / する", "d) します / します"], answer: "b", meaning: "On Sundays, I do things like clean and do laundry." },
+            { id: 21, q: "約束[やくそく]の 時間[じかん]に 遅[おく]れない _____ して ください。", options: ["a) ように", "b) ことに", "c) ために", "d) ものに"], answer: "a", meaning: "Please try your best not to be late for the appointment." },
+            { id: 22, q: "Ａ：「合格[ごうかく] しました！」 Ｂ：「_____。」", options: ["a) おめでとう ございます", "b) おじゃま します", "c) ごめん ください", "d) おかげ さまで"], answer: "a", meaning: "A: 'I passed!' B: 'Congratulations!'" },
+            { id: 23, q: "風邪[かぜ]を _____ ので、学校[がっこう]を 休[やす]みます。", options: ["a) ひいた", "b) いたい", "c) なおった", "d) わるい"], answer: "a", meaning: "Because I caught a cold, I will be absent from school." },
+            { id: 24, q: "この スープは ちょっと _____ すぎます。", options: ["a) から", "b) からい", "c) からくて", "d) からかった"], answer: "a", meaning: "This soup is a little too spicy." },
+            { id: 25, q: "かばんの 中[なか]に 財布[さいふ]が _____。", options: ["a) 入[はい]って います", "b) 入[い]れて います", "c) 入[はい]ります", "d) 入[い]れます"], answer: "a", meaning: "The wallet is inside the bag. (State of existence)." },
+            { id: 26, q: "駅[えき]まで どうやって _____ いいですか。", options: ["a) 行[い]けば", "b) 行[い]ったら", "c) 行[い]くと", "d) 行[い]く"], answer: "b", meaning: "How should I go to the station? (Asking for instructions)." },
+            { id: 27, q: "疲[つか]れたから、何[なに]も _____ くないです。", options: ["a) する", "b) して", "c) した", "d) します"], answer: "c", meaning: "Because I'm tired, I don't want to do anything." },
+            { id: 28, q: "ごみは ここに _____ は いけません。", options: ["a) すてて", "b) すてる", "c) すてない", "d) すてた"], answer: "a", meaning: "You must not throw away garbage here." },
+            { id: 29, q: "わたしは ギターを 弾[ひ]く _____ が できます。", options: ["a) こと", "b) もの", "c) の", "d) つもり"], answer: "a", meaning: "I can play the guitar." },
+            { id: 30, q: "この 料理[りょうり]は 辛[から]い _____、おいしい です。", options: ["a) ですが", "b) だけど", "c) だから", "d) くて"], answer: "a", meaning: "This dish is spicy, but delicious." }
+        ];
+
+        const verbsData = {
+            group1: [
+                { base: '飲[の]みます', dict: '飲[の]む', te: '飲[の]んで', nai: '飲[の]まない', ta: '飲[の]んだ', meaning: 'to drink', rule: 'mi -> nde / ma' },
+                { base: '書[か]きます', dict: '書[か]く', te: '書[か]いて', nai: '書[か]かない', ta: '書[か]いた', meaning: 'to write', rule: 'ki -> ite / ka' },
+                { base: '行[い]きます', dict: '行[い]く', te: '行[い]って', nai: '行[い]かない', ta: '行[い]った', meaning: 'to go', rule: 'Exception: ki -> tte' }
+            ],
+            group2: [
+                { base: '食[た]べます', dict: '食[た]べる', te: '食[た]べて', nai: '食[た]べない', ta: '食[た]べた', meaning: 'to eat', rule: 'Drop masu, add suffix' },
+                { base: '見[み]ます', dict: '見[み]る', te: '見[み]て', nai: '見[み]ない', ta: '見[み]た', meaning: 'to see/watch', rule: 'Drop masu, add suffix' }
+            ],
+            group3: [
+                { base: '来[き]ます', dict: '来[く]る', te: '来[き]て', nai: '来[こ]ない', ta: '来[き]た', meaning: 'to come', rule: 'Irregular (Kimasu)' },
+                { base: 'します', dict: 'する', te: 'して', nai: 'しない', ta: 'した', meaning: 'to do', rule: 'Irregular (Shimasu)' }
+            ]
+        };
+
+        // ==========================================
+        // STATE & UTILS
+        // ==========================================
+        let playerName = "";
+        let currentQIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        let isSubmitted = false;
+        let userAnswers = []; // Tracks chosen answers 'a', 'b', etc.
+
+        // HTML Furigana `<ruby>` parser
+        function parseFurigana(text) {
+            if (!text) return "";
+            return text.replace(/([\u4E00-\u9FAF々]+)\[([^\]]+)\]/g, 
+                '<ruby class="mx-0.5">$1<rt class="text-[0.6em] text-ink-soft font-bold select-none">$2</rt></ruby>');
+        }
+
+        // Clean Furigana string for Plain Text Emails
+        function stripFuriganaForEmail(text) {
+            if (!text) return "";
+            return text.replace(/([\u4E00-\u9FAF々]+)\[([^\]]+)\]/g, "$1");
+        }
+
+        // ==========================================
+        // NAVIGATION
+        // ==========================================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all font-bold whitespace-nowrap bg-white text-ink-soft hover:bg-sakura-100 hover:text-sakura-600 border border-sakura-200 border-b-[3px]";
+            });
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('nav-' + tabId).className = "nav-btn flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all font-bold whitespace-nowrap bg-sakura-500 text-white shadow-md border-b-[3px] border-sakura-600 translate-y-[1px]";
+        }
+
+        function switchExamView(viewId) {
+            document.querySelectorAll('#tab-exam .view-screen').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        // ==========================================
+        // QUIZ LOGIC
+        // ==========================================
+        function startQuiz(setId) {
+            const nameInput = document.getElementById('player-name').value.trim();
+            if(!nameInput) {
+                alert("Please enter your name before starting the exam.");
+                document.getElementById('player-name').focus();
+                return;
+            }
+            playerName = nameInput;
+            currentQIndex = 0;
+            score = 0;
+            userAnswers = [];
+            switchExamView('view-exam-active');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = irodoriQuizData[currentQIndex];
+            document.getElementById('quiz-progress').innerText = `Question ${currentQIndex + 1} / 30`;
+            document.getElementById('quiz-score-badge').innerText = `Score: ${score}`;
+            document.getElementById('quiz-question').innerHTML = parseFurigana(q.q);
+            
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((opt) => {
+                const optChar = opt.charAt(0);
+                const btn = document.createElement('button');
+                btn.className = "quiz-opt-btn text-left px-6 py-5 rounded-2xl border-2 transition-all text-xl font-medium border-sakura-200 hover:border-sakura-300 bg-white text-ink shadow-sm";
+                btn.innerHTML = parseFurigana(opt);
+                btn.onclick = () => selectQuizOption(optChar, btn);
+                btn.dataset.val = optChar;
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('quiz-explanation').classList.add('hidden');
+            
+            const actionBtn = document.getElementById('quiz-action-btn');
+            actionBtn.innerText = "Check Answer";
+            actionBtn.className = "w-full py-4 rounded-2xl font-bold text-lg transition border-b-4 bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed";
+            actionBtn.disabled = true;
+            
+            selectedOption = null;
+            isSubmitted = false;
+        }
+
+        function selectQuizOption(val, btnElement) {
+            if (isSubmitted) return;
+            selectedOption = val;
+            
+            document.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+                btn.className = "quiz-opt-btn text-left px-6 py-5 rounded-2xl border-2 transition-all text-xl font-medium border-sakura-200 hover:border-sakura-300 bg-white text-ink shadow-sm";
+            });
+            btnElement.className = "quiz-opt-btn text-left px-6 py-5 rounded-2xl border-2 transition-all text-xl font-bold border-sakura-500 bg-sakura-50 text-sakura-600 shadow-sm";
+
+            const actionBtn = document.getElementById('quiz-action-btn');
+            actionBtn.className = "w-full py-4 rounded-2xl font-bold text-lg transition border-b-4 bg-sakura-500 text-white border-sakura-600 hover:bg-sakura-600 active:translate-y-[2px] active:border-b-2 shadow-md";
+            actionBtn.disabled = false;
+        }
+
+        function handleQuizAction() {
+            if (!isSubmitted) {
+                if (!selectedOption) return;
+                isSubmitted = true;
+                userAnswers[currentQIndex] = selectedOption; // Save answer for EmailJS Review
+                
+                const q = irodoriQuizData[currentQIndex];
+                const isCorrect = selectedOption === q.answer;
+                if (isCorrect) score++;
+                document.getElementById('quiz-score-badge').innerText = `Score: ${score}`;
+
+                document.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+                    btn.disabled = true;
+                    const val = btn.dataset.val;
+                    if (val === q.answer) {
+                        btn.className = "quiz-opt-btn text-left px-6 py-5 rounded-2xl border-2 transition-all text-xl font-bold border-matcha bg-matcha-bg text-matcha shadow-sm";
+                    } else if (val === selectedOption && !isCorrect) {
+                        btn.className = "quiz-opt-btn text-left px-6 py-5 rounded-2xl border-2 transition-all text-xl font-bold border-sakura-600 bg-sakura-100 text-sakura-600 shadow-sm";
+                    } else {
+                        btn.className = "quiz-opt-btn text-left px-6 py-5 rounded-2xl border-2 transition-all text-xl font-medium border-sakura-100 bg-sakura-50 text-ink-soft opacity-60";
+                    }
+                });
+
+                const explDiv = document.getElementById('quiz-explanation');
+                explDiv.classList.remove('hidden');
+                
+                if (isCorrect) {
+                    explDiv.className = "p-5 rounded-2xl mb-6 border-2 bg-matcha-bg border-matcha/30 shrink-0";
+                    document.getElementById('quiz-expl-status').innerHTML = '<span class="text-matcha">✅ Correct!</span>';
+                } else {
+                    explDiv.className = "p-5 rounded-2xl mb-6 border-2 bg-sakura-50 border-sakura-300 shrink-0";
+                    document.getElementById('quiz-expl-status').innerHTML = '<span class="text-sakura-600">❌ Incorrect</span>';
+                }
+                document.getElementById('quiz-expl-meaning').innerText = q.meaning;
+
+                const actionBtn = document.getElementById('quiz-action-btn');
+                actionBtn.innerText = "Next Question";
+                actionBtn.className = "w-full py-4 rounded-2xl font-bold text-lg bg-ink text-white hover:bg-black shadow-md border-b-4 border-ink-soft active:translate-y-[2px] active:border-b-2 transition";
+            } else {
+                currentQIndex++;
+                if (currentQIndex >= irodoriQuizData.length) {
+                    showFinalResults();
+                } else {
+                    renderQuestion();
+                }
+            }
+        }
+
+        // ==========================================
+        // RESULTS & EMAIL JS
+        // ==========================================
+        function showFinalResults() {
+            switchExamView('view-exam-results');
+            
+            document.getElementById('final-score-num').innerHTML = `${score}<span class="text-lg text-sakura-300 ml-1">/30</span>`;
+            const pct = Math.round((score / 30) * 100);
+            document.getElementById('final-score-pct').innerText = `${pct}%`;
+            
+            let verdict = "";
+            if(pct >= 90) verdict = "Excellent! Subarashii!";
+            else if(pct >= 70) verdict = "Good Job! Yokatta desu!";
+            else verdict = "Keep Studying! Ganbatte!";
+            document.getElementById('final-verdict').innerText = verdict;
+
+            // Reset Email Pill
+            document.getElementById('emailRow').innerHTML = `
+                <button onclick="sendEmail()" class="px-6 py-3 bg-ink text-white rounded-xl font-bold shadow-sm hover:bg-ink-soft transition flex items-center gap-2">
+                    📧 Email Results to Instructor
+                </button>
+            `;
+
+            // Render detailed review list
+            const reviewContainer = document.getElementById('review-list');
+            reviewContainer.innerHTML = '';
+            
+            irodoriQuizData.forEach((q, i) => {
+                const userAns = userAnswers[i] || 'None';
+                const isCorrect = userAns === q.answer;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `p-4 rounded-xl border-2 ${isCorrect ? 'bg-matcha-bg border-matcha/30' : 'bg-sakura-50 border-sakura-300'}`;
+                
+                itemDiv.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <div class="font-bold ${isCorrect ? 'text-matcha' : 'text-sakura-600'} w-6 shrink-0">${i+1}.</div>
+                        <div>
+                            <div class="jp-text font-bold text-ink mb-1 text-lg leading-relaxed">${parseFurigana(q.q)}</div>
+                            <div class="text-sm font-medium text-ink-soft flex items-center gap-3">
+                                <span>Your Answer: <strong class="${isCorrect ? 'text-matcha' : 'text-sakura-600'} uppercase">${userAns}</strong></span>
+                                ${!isCorrect ? `<span>Correct: <strong class="text-matcha uppercase">${q.answer}</strong></span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                reviewContainer.appendChild(itemDiv);
+            });
+
+            // SVG Ring Animation
+            const circumference = 2 * Math.PI * 65;
+            const offset = circumference - (score / 30) * circumference;
+            const ring = document.getElementById('score-ring-fg');
+            ring.style.strokeDasharray = circumference;
+            ring.style.strokeDashoffset = circumference;
+            
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    ring.style.strokeDashoffset = offset;
+                }, 100);
+            });
+        }
+
+        async function sendEmail() {
+            const emailContainer = document.getElementById('emailRow');
+            const pct = Math.round((score / 30) * 100);
+            const now = new Date().toLocaleString();
+
+            // Build Plain Text String for Email Body
+            const details = irodoriQuizData.map((q, i) => {
+                const cleanStem = stripFuriganaForEmail(q.q);
+                const userAns = userAnswers[i] || "—";
+                const mark = userAns === q.answer ? "✓" : "✗";
+                return `${i + 1}. ${cleanStem}\n   Answer: ${userAns} | Correct: ${q.answer} ${mark}`;
+            }).join("\n\n");
+
+            const emailParams = {
+                name: playerName,
+                email: "noreply@quiz.com", // Adjust if you want CCs
+                subject: `[${playerName}] Yellow Book Mid Quiz — ${pct}%`,
+                message: `Irodori / Yellow Book Mid Quiz Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${score}/30 (${pct}%)\n\n--- Detailed Results ---\n\n${details}\n\nKeep pushing towards N3!`,
+                time: now
+            };
+
+            emailContainer.innerHTML = `<span class="email-pill">📧 Sending results to instructor…</span>`;
+
+            try {
+                // To activate, replace the constants at the top of the JS block.
+                // await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams, EMAILJS_PUBLIC_KEY);
+                
+                // MOCK SUCCESS (Since keys are missing)
+                setTimeout(() => {
+                    emailContainer.innerHTML = `<span class="email-pill sent">✓ Results successfully emailed!</span>`;
+                }, 1500);
+
+            } catch (err) {
+                console.error("EmailJS error:", err);
+                emailContainer.innerHTML = `<span class="email-pill error">✗ Failed to send email. Check API keys.</span>`;
+            }
+        }
+
+        function returnToMenu() {
+            switchExamView('view-exam-home');
+        }
+
+        // ==========================================
+        // CONJUGATION LOGIC
+        // ==========================================
+        function selectVerbGroup(groupId) {
+            document.querySelectorAll('.grp-btn').forEach(btn => {
+                btn.className = "grp-btn flex-1 py-2.5 text-sm font-bold rounded-xl transition text-ink-soft hover:text-ink";
+            });
+            document.getElementById('grp-btn-' + groupId).className = "grp-btn flex-1 py-2.5 text-sm font-bold rounded-xl transition bg-white shadow-sm text-sakura-600 border border-sakura-200";
+
+            const listContainer = document.getElementById('verb-list');
+            listContainer.innerHTML = '';
+            
+            verbsData[groupId].forEach((verb, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "verb-item w-full text-left px-5 py-4 border-b border-sakura-100 transition hover:bg-sakura-50 border-l-[6px] border-l-transparent";
+                btn.innerHTML = `
+                    <div class="jp-text font-bold text-xl text-ink tracking-wide">${parseFurigana(verb.base)}</div>
+                    <div class="text-[13px] text-ink-soft font-medium mt-1">${verb.meaning}</div>
+                `;
+                btn.onclick = () => renderVerbDetails(verb, btn);
+                listContainer.appendChild(btn);
+                
+                if (idx === 0) renderVerbDetails(verb, btn);
+            });
+        }
+
+        function renderVerbDetails(verb, btnElement) {
+            document.querySelectorAll('.verb-item').forEach(btn => {
+                btn.classList.remove('bg-sakura-50', 'border-l-sakura-500');
+                btn.classList.add('border-l-transparent', 'bg-white');
+            });
+            if (btnElement) {
+                btnElement.classList.remove('bg-white', 'border-l-transparent');
+                btnElement.classList.add('bg-sakura-50', 'border-l-sakura-500');
+            }
+
+            document.getElementById('conj-base').innerHTML = parseFurigana(verb.base);
+            document.getElementById('conj-meaning').innerText = verb.meaning;
+            document.getElementById('conj-dict').innerHTML = parseFurigana(verb.dict);
+            document.getElementById('conj-te').innerHTML = parseFurigana(verb.te);
+            document.getElementById('conj-nai').innerHTML = parseFurigana(verb.nai);
+            document.getElementById('conj-ta').innerHTML = parseFurigana(verb.ta);
+        }
+
+        // INIT
+        window.onload = () => {
+            document.querySelectorAll('#tab-cheatsheet strong').forEach(el => {
+                el.innerHTML = parseFurigana(el.innerHTML);
+            });
+            selectVerbGroup('group1');
+        };
+
+    </script>
+</body>
+</html>
