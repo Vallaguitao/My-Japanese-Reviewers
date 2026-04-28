@@ -1,925 +1,941 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>みんなの日本語 N5 — Bunpo Reviewer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <style>
-        :root {
-            --bg-color: #1a1525;
-            --surface: #2d2438;
-            --primary: #b088f9;
-            --primary-hover: #c4a6fb;
-            --text-main: #e8e0f0;
-            --text-muted: #a095b5;
-            --correct: #4ade80;
-            --wrong: #f87171;
-            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>みんなの日本語 N5 — Bunpo Reviewer</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: #1a1525;
+    color: #e8e0f0;
+    font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-        body {
-            min-height: 100vh;
-            background: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(232,180,200,0.07) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(176,136,249,0.07) 0%, transparent 50%);
+    z-index: -1;
+  }
 
-        body::before {
-            content: '';
-            position: fixed; inset: 0;
-            background:
-              radial-gradient(circle at 20% 30%, rgba(176, 136, 249, 0.07) 0%, transparent 50%),
-              radial-gradient(circle at 80% 70%, rgba(232, 180, 200, 0.07) 0%, transparent 50%);
-            z-index: -1;
-        }
+  .app-container {
+    width: 100%;
+    max-width: 640px;
+    margin: 20px;
+    background: #2d2438;
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
 
-        .container {
-            width: 100%;
-            max-width: 600px;
-            background: var(--surface);
-            border-radius: 20px;
-            padding: 40px 30px;
-            box-shadow: var(--card-shadow);
-            position: relative;
-            overflow: hidden;
-        }
+  /* Views */
+  .view { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .view.active { display: block; }
 
-        .screen {
-            display: none;
-            animation: fadeIn 0.4s ease forwards;
-        }
-        .screen.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+  /* Setup View */
+  .header { text-align: center; margin-bottom: 40px; }
+  .header h1 { font-size: 2rem; color: #b088f9; margin-bottom: 8px; font-weight: 800; letter-spacing: 0.5px; }
+  .header p { color: #a095b5; font-size: 1rem; }
 
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { font-size: 1.8rem; color: var(--primary); margin-bottom: 5px; font-weight: 800; }
-        .header p { color: var(--text-muted); font-size: 0.95rem; }
+  .input-group { margin-bottom: 24px; }
+  .input-group label { display: block; margin-bottom: 10px; font-size: 0.95rem; color: #a095b5; font-weight: 600; }
+  .input-group input, .input-group select {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: 2px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.25);
+    color: white;
+    font-size: 1.05rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+  }
+  .input-group input:focus, .input-group select:focus {
+    outline: none;
+    border-color: #b088f9;
+    background: rgba(0,0,0,0.4);
+  }
+  optgroup { background: #2d2438; color: #b088f9; font-weight: 700; }
+  option { background: #2d2438; color: white; }
 
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted); }
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.2);
-            color: white;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: border 0.3s;
-        }
-        .input-group input:focus, .input-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        optgroup { background: var(--surface); color: var(--primary); font-weight: 700; }
-        option { background: var(--surface); color: white; }
+  .btn {
+    width: 100%;
+    padding: 18px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #b088f9, #e8b4c8);
+    color: #1a1525;
+    font-size: 1.15rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 15px rgba(176,136,249,0.3);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(176,136,249,0.4); }
+  .btn:active { transform: translateY(1px); }
 
-        .btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 10px;
-            background: var(--primary);
-            color: #1a1525;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.1s;
-        }
-        .btn:hover { background: var(--primary-hover); }
-        .btn:active { transform: scale(0.98); }
+  /* Quiz View */
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    color: #a095b5;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  .progress-wrap {
+    width: 100%;
+    height: 8px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 4px;
+    margin-bottom: 35px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #b088f9, #e8b4c8);
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 4px;
+  }
 
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
+  .question-box {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    margin-bottom: 35px;
+    font-weight: 700;
+    color: #fff;
+  }
 
-        .question {
-            font-size: 1.4rem;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            font-weight: 600;
-        }
+  .options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .option-btn {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.05);
+    padding: 18px 24px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 1.15rem;
+    text-align: left;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    color: #e8e0f0;
+    font-family: inherit;
+  }
+  .option-btn .prefix {
+    font-weight: 800;
+    color: #b088f9;
+    margin-right: 18px;
+    width: 24px;
+  }
+  .option-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(176,136,249,0.5);
+  }
+  .option-btn:disabled { cursor: default; }
+  
+  .option-btn.correct {
+    background: rgba(74, 222, 128, 0.15);
+    border-color: #4ade80;
+    color: #4ade80;
+  }
+  .option-btn.wrong {
+    background: rgba(248, 113, 113, 0.15);
+    border-color: #f87171;
+    color: #f87171;
+  }
 
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+  .action-row { margin-top: 35px; display: none; }
 
-        .option {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.05);
-            padding: 16px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-        }
-        
-        .option .prefix {
-            font-weight: 700;
-            color: var(--primary);
-            margin-right: 15px;
-            width: 20px;
-        }
+  /* Result View */
+  .result-top { text-align: center; margin-bottom: 35px; }
+  .score-display {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 25px;
+    border-radius: 50%;
+    border: 8px solid #b088f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(176,136,249,0.2);
+  }
+  .score-num { font-size: 2.8rem; font-weight: 800; color: #fff; line-height: 1; }
+  .score-pct { font-size: 1.1rem; color: #b088f9; font-weight: 700; margin-top: 5px; }
+  
+  .email-row { text-align: center; margin-bottom: 25px; min-height: 30px; }
+  .email-pill {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: rgba(255,255,255,0.1);
+    color: #e8e0f0;
+  }
+  .email-pill.sent { background: rgba(74,222,128,0.2); color: #4ade80; }
+  .email-pill.error { background: rgba(248,113,113,0.2); color: #f87171; }
 
-        .option:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.2);
-        }
+  .breakdown-box {
+    background: rgba(0,0,0,0.25);
+    border-radius: 16px;
+    padding: 24px;
+    max-height: 320px;
+    overflow-y: auto;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .q-result { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .q-result:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .q-result-text { font-weight: 700; margin-bottom: 8px; font-size: 1.05rem; }
+  .q-ans { font-size: 0.95rem; color: #a095b5; }
+  .q-ans.correct-text { color: #4ade80; }
+  .q-ans.wrong-text { color: #f87171; }
 
-        .option.correct {
-            background: rgba(74, 222, 128, 0.1);
-            border-color: var(--correct);
-            color: var(--correct);
-        }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
 
-        .option.wrong {
-            background: rgba(248, 113, 113, 0.1);
-            border-color: var(--wrong);
-            color: var(--wrong);
-        }
-
-        .next-btn-container {
-            margin-top: 30px;
-            display: none;
-        }
-
-        .result-header { text-align: center; margin-bottom: 30px; }
-        .score-circle {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 6px solid var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin: 0 auto 20px;
-            color: var(--primary);
-        }
-        
-        .breakdown {
-            background: rgba(0,0,0,0.2);
-            border-radius: 12px;
-            padding: 20px;
-            max-height: 250px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-        .breakdown-item {
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .breakdown-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-        .breakdown-item.correct .status { color: var(--correct); }
-        .breakdown-item.wrong .status { color: var(--wrong); }
-        
-        .email-status { text-align: center; margin-bottom: 20px; font-size: 0.85rem; color: var(--text-muted); }
-        .email-status.success { color: var(--correct); }
-        .email-status.error { color: var(--wrong); }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
-    </style>
+  @media (max-width: 600px) {
+    .app-container { padding: 30px 20px; border-radius: 20px; margin: 10px; }
+    .header h1 { font-size: 1.6rem; }
+    .question-box { font-size: 1.25rem; }
+    .option-btn { font-size: 1rem; padding: 15px 20px; }
+    .score-display { width: 120px; height: 120px; }
+    .score-num { font-size: 2.2rem; }
+  }
+</style>
 </head>
 <body>
 
-<div class="container">
-    <div id="start-screen" class="screen active">
-        <div class="header">
-            <h1>みんなの日本語 N5</h1>
-            <p>文法 (Bunpo) Reviewer</p>
-        </div>
-        
-        <div class="input-group">
-            <label for="student-name">Student Name</label>
-            <input type="text" id="student-name" placeholder="Enter your name" autocomplete="off">
-        </div>
-
-        <div class="input-group">
-            <label for="quiz-set">Select Level/Set</label>
-            <select id="quiz-set">
-                <optgroup label="Core Lessons">
-                    <option value="set1">Set 1: Lessons 1-3</option>
-                    <option value="set2">Set 2: Lessons 4-6</option>
-                    <option value="set3">Set 3: Lessons 7-9</option>
-                    <option value="set4">Set 4: Lessons 10-11</option>
-                    <option value="set5">Set 5: Lessons 11-12</option>
-                    <option value="set6">Set 6: Lesson 13</option>
-                    <option value="set7">Set 7: Lessons 14-16</option>
-                    <option value="set8">Set 8: Lessons 17-19</option>
-                    <option value="set9">Set 9: Lessons 20-22</option>
-                    <option value="set10">Set 10: Lessons 23-25</option>
-                </optgroup>
-                <optgroup label="Comprehensive Mix">
-                    <option value="level1">Mix Level 1: Fundamentals</option>
-                    <option value="level2">Mix Level 2: Application</option>
-                    <option value="level3">Mix Level 3: Complex & Nuance</option>
-                </optgroup>
-            </select>
-        </div>
-
-        <button class="btn" onclick="startQuiz()">Start Exam</button>
+<div class="app-container">
+  <!-- Setup View -->
+  <div id="view-setup" class="view active">
+    <div class="header">
+      <h1>みんなの日本語 N5</h1>
+      <p>文法 (Bunpo) Reviewer</p>
+    </div>
+    
+    <div class="input-group">
+      <label for="player-name">Student Name</label>
+      <input type="text" id="player-name" placeholder="Enter your name" autocomplete="off">
     </div>
 
-    <div id="quiz-screen" class="screen">
-        <div class="top-bar">
-            <span id="question-counter">Question 1/30</span>
-            <span id="set-title">Mix Level 1</span>
-        </div>
-        
-        <div class="progress-bar">
-            <div id="progress-fill" class="progress-fill"></div>
-        </div>
-
-        <div id="question-text" class="question"></div>
-
-        <div id="options-container" class="options">
-        </div>
-
-        <div class="next-btn-container" id="next-btn-container">
-            <button class="btn" onclick="nextQuestion()">Next Question</button>
-        </div>
+    <div class="input-group">
+      <label for="set-select">Select Level/Set</label>
+      <select id="set-select">
+        <optgroup label="Core Lessons">
+          <option value="set1">Set 1: Lessons 1-3</option>
+          <option value="set2">Set 2: Lessons 4-6</option>
+          <option value="set3">Set 3: Lessons 7-9</option>
+          <option value="set4">Set 4: Lessons 10-11</option>
+          <option value="set5">Set 5: Lessons 11-12</option>
+          <option value="set6">Set 6: Lesson 13</option>
+          <option value="set7">Set 7: Lessons 14-16</option>
+          <option value="set8">Set 8: Lessons 17-19</option>
+          <option value="set9">Set 9: Lessons 20-22</option>
+          <option value="set10">Set 10: Lessons 23-25</option>
+        </optgroup>
+        <optgroup label="Comprehensive Mix">
+          <option value="level1">Mix Level 1: Fundamentals</option>
+          <option value="level2">Mix Level 2: Application</option>
+          <option value="level3">Mix Level 3: Complex & Nuance</option>
+        </optgroup>
+      </select>
     </div>
 
-    <div id="result-screen" class="screen">
-        <div class="result-header">
-            <h2>Exam Complete!</h2>
-            <p id="result-name"></p>
-        </div>
+    <button class="btn" onclick="startQuiz()">Start Exam</button>
+  </div>
 
-        <div class="score-circle" id="score-display">30/30</div>
-
-        <div id="email-status" class="email-status">Sending results to instructor...</div>
-
-        <div class="breakdown" id="breakdown-container">
-        </div>
-
-        <button class="btn" onclick="resetApp()">Return to Menu</button>
+  <!-- Quiz View -->
+  <div id="view-quiz" class="view">
+    <div class="quiz-header">
+      <span id="lbl-set"></span>
+      <span id="lbl-progress"></span>
     </div>
+    <div class="progress-wrap">
+      <div id="bar-progress" class="progress-bar"></div>
+    </div>
+
+    <div id="quiz-question" class="question-box"></div>
+    <div id="quiz-options" class="options-grid"></div>
+
+    <div id="quiz-action" class="action-row">
+      <button class="btn" onclick="nextQuestion()" id="btn-next">Next Question</button>
+    </div>
+  </div>
+
+  <!-- Result View -->
+  <div id="view-result" class="view">
+    <div class="result-top">
+      <h2 style="font-size:1.6rem; margin-bottom:10px;">Exam Complete!</h2>
+      <p id="res-name" style="color:#a095b5;"></p>
+    </div>
+
+    <div class="score-display">
+      <div id="res-score" class="score-num"></div>
+      <div id="res-pct" class="score-pct"></div>
+    </div>
+
+    <div id="email-row" class="email-row"></div>
+
+    <div id="res-breakdown" class="breakdown-box"></div>
+
+    <button class="btn" onclick="resetApp()">Return to Menu</button>
+  </div>
 </div>
 
 <script>
-    const BUNPO_DATA = {
-        "set1": {
-            title: "Set 1: Lessons 1-3",
-            questions: [
-                { q: "私(わたし) _____ マイク・ミラーです。", options: ["の", "は", "を", "で"], answer: 1 },
-                { q: "あの 方(かた)は どなた _____ 。", options: ["に", "で", "ですか", "です"], answer: 2 },
-                { q: "李さんは研究者です。ワンさん _____ 研究者です。", options: ["を", "に", "も", "と"], answer: 2 },
-                { q: "これ _____ 辞書(じしょ)です。", options: ["の", "は", "を", "に"], answer: 1 },
-                { q: "それは コンピュータ _____ 本(ほん)です。", options: ["の", "を", "へ", "何(なん)"], answer: 0 },
-                { q: "この 傘(かさ)は 私(わたし) _____ です。", options: ["の", "を", "で", "に"], answer: 0 },
-                { q: "サントスさんは 学生(がくせい) _____ 。", options: ["ありません", "じゃありません", "ですありません", "でわない"], answer: 1 },
-                { q: "_____ は シャープペンシルですか。", options: ["どれ", "これ", "この", "ここ"], answer: 1 },
-                { q: "_____ 鞄(かばん)は 誰(だれ)の ですか。", options: ["これ", "その", "それ", "あれ"], answer: 1 },
-                { q: "すみません、電話(でんわ)は _____ ですか。", options: ["どちら", "どれ", "どこ", "だれ"], answer: 2 },
-                { q: "トイレは _____ です。", options: ["あそこ", "あれ", "あの", "なに"], answer: 0 },
-                { q: "_____ は ミラーさんです。", options: ["これ", "ここ", "こちら", "この"], answer: 2 },
-                { q: "A: テレホンカードですか。 B: はい、 _____ です。", options: ["これ", "それ", "そう", "ああ"], answer: 2 },
-                { q: "あの 人(ひと)は _____ ですか。", options: ["なに", "だれ", "どこ", "どれ"], answer: 1 },
-                { q: "これから お _____ に なります。", options: ["てんき", "せわ", "なまえ", "くに"], answer: 1 },
-                { q: "カリナさんは _____ ですか。（Age）", options: ["何(なん)さい", "何(なん)ばん", "何(なん)じ", "何(なん)ようび"], answer: 0 },
-                { q: "あなたの 会社(かいしゃ)は _____ ですか。", options: ["だれ", "どちら", "どれ", "なに"], answer: 1 },
-                { q: "この ネクタイは _____ ですか。（Price）", options: ["いくつ", "いくら", "どちら", "どう"], answer: 1 },
-                { q: "それは _____ の CDですか。（Content）", options: ["なん", "だれ", "どこ", "どれ"], answer: 0 },
-                { q: "それは _____ の かばんですか。（Owner）", options: ["なん", "だれ", "どこ, どれ"], answer: 1 },
-                { q: "A: はじめまして。 B: _____ こそ よろしく。", options: ["こちら", "そちら", "あちら", "わたし"], answer: 0 },
-                { q: "A: _____。 B: はい、どなたですか。", options: ["こんばんは", "失礼(しつれい)します", "ごめんください", "おはよう"], answer: 2 },
-                { q: "ここは _____ です。", options: ["教室(きょうしつ)", "先生(せんせい)", "机(つくえ)", "鉛筆(えんぴつ)"], answer: 0 },
-                { q: "ワットさんは 桜(さくら)大学(だいがく)の _____ です。", options: ["医者(いしゃ)", "学生(がくせい)", "先生(せんせい)", "時計(とけい)"], answer: 2 },
-                { q: "この ワインは _____ の ワインです。（Origin）", options: ["フランス", "フランス人(じん)", "フランス語(ご)", "フランスで"], answer: 0 },
-                { q: "Which is correct?", options: ["ミラーさんはアメリカ人じゃありません", "ミラーさんはアメリカ人はありません", "ミラーさんはアメリカ人にありません", "ミラーさんはアメリカ人のありません"], answer: 0 },
-                { q: "Which is correct?", options: ["これ本は私のです", "この本は私のです", "こちら本は私のです", "ここ本は私のです"], answer: 1 },
-                { q: "Which is correct?", options: ["事務所はあちらにです", "事務所はあちらです", "事務所はあちらのです", "事務所にあちらです"], answer: 1 },
-                { q: "A: ありがとうございます。 B: _____ 。", options: ["そうですか", "ちがいます", "いいえちがいます", "いいえいたしまして"], answer: 3 },
-                { q: "これは ボールペンですか、シャープペンシル _____ 。", options: ["か", "ですか", "は", "の"], answer: 1 }
-            ]
-        },
-        "set2": {
-            title: "Set 2: Lessons 4-6",
-            questions: [
-                { q: "今(いま) 4時(じ) _____ です。", options: ["ふん", "ぷん", "はん", "まい"], answer: 2 },
-                { q: "毎朝(まいあさ) 6時(じ) _____ 起(お)きます。", options: ["に", "で", "を", "へ"], answer: 0 },
-                { q: "銀行(ぎんこう)は 9時(じ) _____ 3時(じ)までです。", options: ["に", "から", "と", "より"], answer: 1 },
-                { q: "昨日(きのう) 勉強(べんきょう) _____ 。", options: ["します", "しますた", "しました", "しません"], answer: 2 },
-                { q: "休み(やすみ)は 土曜日(どようび) _____ 日曜日(にちようび)です。", options: ["に", "から", "と", "や"], answer: 2 },
-                { q: "毎晩(まいばん) 何時(なんじ)に _____ か。", options: ["寝(ね)ました", "寝(ね)ます", "寝(ね)ません", "寝(ね)る"], answer: 1 },
-                { q: "おととい 働き(はたらき) _____ 。", options: ["ません", "ました", "ませんでした", "ます"], answer: 2 },
-                { q: "スーパー _____ 行(い)きます。", options: ["で", "を", "へ", "が"], answer: 2 },
-                { q: "バス _____ 会社(かいしゃ)へ 行(い)きます。", options: ["で", "に", "を", "と"], answer: 0 },
-                { q: "友達(ともだち) _____ 日本(にほん)へ 来(き)ました。", options: ["で", "と", "へ", "に"], answer: 1 },
-                { q: "歩(ある)いて _____ 帰(か)えりました。", options: ["で", "に", "（なし）", "を"], answer: 2 },
-                { q: "A: どこへ 行(い)きますか。 B: _____ 行(い)きません。", options: ["どこも", "どこか", "どこへ", "どこで"], answer: 0 },
-                { q: "_____ 日本(にほん)へ 来(き)ましたか。", options: ["いつ", "なんじ", "どこ", "だれ"], answer: 0 },
-                { q: "次(つぎ)の 電車(でんしゃ)は 甲子園(こうしえん)へ _____ か。", options: ["行(い)きます", "来(き)ます", "帰(か)ります", "します"], answer: 0 },
-                { q: "朝(あさ) パン _____ 食(た)べます。", options: ["で", "に", "を", "が"], answer: 2 },
-                { q: "図書館(としょかん) _____ 本(ほん)を 読(よ)みます。", options: ["に", "で", "へ", "を"], answer: 1 },
-                { q: "何(なに)を _____ か。... 手紙(てがみ)を 書(か)きます。", options: ["します", "きます", "います", "あります"], answer: 0 },
-                { q: "一緒(いっしょ)に 京都(きょうと)へ _____ か。", options: ["行(い)きます", "行(い)きません", "行(い)きましょう", "行(い)く"], answer: 1 },
-                { q: "お酒(さけ)を _____ 。(Let's drink)", options: ["飲(の)みましょう", "飲(の)みませんか", "飲(の)みます", "飲(の)みました"], answer: 0 },
-                { q: "お花見(はなみ)を しませんか。... いいですね。 _____ 。", options: ["します", "しません", "しましょう", "したいです"], answer: 2 },
-                { q: "たばこを 吸(す)いますか。... いいえ、 _____ 。", options: ["吸(す)いません", "吸(す)います", "吸(す)いましょう", "吸(す)いませんでした"], answer: 0 },
-                { q: "毎朝(まいあさ) 新聞(しんぶん)を _____ 。", options: ["見(み)ます", "書(か)きます", "読(よ)みます", "聞(き)きます"], answer: 2 },
-                { q: "友達(ともだち)に _____ 。", options: ["会(あ)います", "行(い)きます", "来(き)ます", "吸(す)います"], answer: 0 },
-                { q: "写真(しゃしん)を _____ 。", options: ["かきます", "とります", "します", "みます"], answer: 1 },
-                { q: "誕生日(たんじょうび)は _____ ですか。", options: ["なんじ", "いつ", "どこ", "だれ"], answer: 1 },
-                { q: "新幹線(しんかんせん) _____ 大阪(おおさか)へ 行(い)きます。", options: ["に", "と", "で", "を"], answer: 2 },
-                { q: "銀行(ぎんこう)で _____ 。", options: ["休(やす)みます", "働(はたら)きます", "終(お)わります", "起(お)きます"], answer: 1 },
-                { q: "昼(ひる)ごはんを _____ 。", options: ["食(た)べます", "飲(の)みます", "吸(す)います", "見(み)ます"], answer: 0 },
-                { q: "ビールを _____ 。", options: ["食(た)べます", "飲(の)みます", "吸(す)います", "見(み)ます"], answer: 1 },
-                { q: "テニスを _____ 。", options: ["します", "いきます", "きます", "かえります"], answer: 0 }
-            ]
-        },
-        "set3": {
-            title: "Set 3: Lessons 7-9",
-            questions: [
-                { q: "はし _____ ごはんを 食(た)べます。", options: ["で", "に", "を", "と"], answer: 0 },
-                { q: "日本語(にほんご) _____ レポートを 書(か)きます。", options: ["を", "で", "に", "が"], answer: 1 },
-                { q: "「Thank you」は 日本語(にほんご)で _____ ですか。", options: ["なん", "なに", "どこ", "だれ"], answer: 0 },
-                { q: "木村(きむら)さん _____ 花(はな)を あげました。", options: ["を", "の", "に", "で"], answer: 2 },
-                { q: "カリナさん _____ チョコレートを もらいました。", options: ["に", "へ", "を", "で"], answer: 0 },
-                { q: "父(ちち)に シャツを _____ 。(Received)", options: ["あげました", "もらいました", "かしました", "おしえました"], answer: 1 },
-                { q: "もう 荷物(にもつ)を 送(おく)りましたか。... いいえ、 _____ 。", options: ["まだです", "もうです", "送(おく)りました", "送(おく)りません"], answer: 0 },
-                { q: "先生(せんせい)に 日本語(にほんご)を _____ 。(Learned)", options: ["貸(か)しました", "習(なら)いました", "教(おし)えました", "かけました"], answer: 1 },
-                { q: "京都(きょうと)は _____ ですか。", options: ["きれい", "きれいくない", "きれいな", "きれいに"], answer: 0 },
-                { q: "桜(さくら)は _____ です。", options: ["きれい", "きれいな", "きれいくない", "きれいだ"], answer: 0 },
-                { q: "今日(きょう)は _____ です。(Hot)", options: ["あつい", "あついな", "あつ", "あつく"], answer: 0 },
-                { q: "この 本(ほん)は _____ 。(Not interesting)", options: ["おもしろくないです", "おもしろくありませんでした", "おもしろいじゃないです", "おもしろいです"], answer: 0 },
-                { q: "あの 映画(えいが)は _____ 。(Good)", options: ["いかったです", "いいです", "よかったです", "よくないです"], answer: 2 },
-                { q: "東京(とうきょう)は _____ 町(まち)ですか。", options: ["どう", "どんな", "どれ", "どちら"], answer: 1 },
-                { q: "奈良(なら)は _____ 町(まち)です。(Quiet)", options: ["しずか", "しずかな", "しずかの", "しずくに"], answer: 1 },
-                { q: "富士山(ふじさん)は _____ 山(やま)です。", options: ["たかい", "たかいな", "たかいの", "たかく"], answer: 0 },
-                { q: "日本(にほん)の 食(た)べ物(もの)は _____ ですか。", options: ["どう", "どんな", "なん", "どれ"], answer: 0 },
-                { q: "イタリア料理(りょうり) _____ 好(す)きです。", options: ["を", "は", "が", "の"], answer: 2 },
-                { q: "漢字(かんじ) _____ わかります。", options: ["が", "を", "に", "で"], answer: 0 },
-                { q: "ダンスが _____ です。(Good at)", options: ["じょうず", "すき", "ほしい", "いたい"], answer: 0 },
-                { q: "スポーツが _____ です。(Dislike)", options: ["すき", "きらい", "へた", "じょうず"], answer: 1 },
-                { q: "時間(じかん)が ありません _____ 、新聞(しんぶん)を 読(よ)みません。", options: ["が", "から", "まで", "と"], answer: 1 },
-                { q: "_____ 朝(あさ) 新聞(しんぶん)を 読(よ)みませんか。... 時間(じかん)が ないからです。", options: ["どう", "どうして", "どんな", "いかが"], answer: 1 },
-                { q: "英語(えいご)が _____ わかります。(Well)", options: ["よく", "たくさん", "すこし", "あまり"], answer: 0 },
-                { q: "お金(かね)が _____ ありません。(Not at all)", options: ["ぜんぜん", "よく", "だいたい", "たくさん"], answer: 0 },
-                { q: "わたしは カメラが _____ 。(Do not have)", options: ["ありません", "いません", "あります", "います"], answer: 0 },
-                { q: "用事(ようじ)が _____ から、早(はや)く 帰(か)えります。", options: ["あります", "います", "ありません", "いません"], answer: 0 },
-                { q: "この 辞書(じしょ)は _____ です。(Convenient)", options: ["べんり", "べんりな", "ゆうめい", "ひま"], answer: 0 },
-                { q: "コーヒー、もう一杯(いっぱい) いかがですか。... いいえ、 _____ 。", options: ["いただきます", "けっこうです", "そうです", "おねがいします"], answer: 1 },
-                { q: "スプーンで スープを _____ 。", options: ["かきます", "のみます", "たべます", "きります"], answer: 1 }
-            ]
-        },
-        "set4": {
-            title: "Set 4: Lessons 10-11",
-            questions: [
-                { q: "あそこに 佐藤(さとう)さんが _____ 。", options: ["あります", "います", "ないです", "いませんでした"], answer: 1 },
-                { q: "庭(にわ)に 桜(さくら)の 木(き)が _____ 。", options: ["あります", "います", "ないです", "いません"], answer: 0 },
-                { q: "机(つくえ)の 上(うえ)に 写真(しゃしん)が _____ 。", options: ["います", "あります", "いました", "いません"], answer: 1 },
-                { q: "公園(こうえん)に 誰(だれ)が _____ か。", options: ["あります", "います", "なん", "どこ"], answer: 1 },
-                { q: "箱(はこ)の 中(なか)に 何(なに)が _____ か。", options: ["います", "あります", "だれ", "どちら"], answer: 1 },
-                { q: "コンビニは あそこ _____ あります。", options: ["に", "で", "を", "へ"], answer: 0 },
-                { q: "銀行(ぎんこう)は スーパーの _____ に あります。(Next to)", options: ["なか", "うえ", "となり", "あいだ"], answer: 2 },
-                { q: "本(ほん)は カバンの _____ です。(Inside)", options: ["なか", "そと", "うえ", "した"], answer: 0 },
-                { q: "ベッドの _____ に 猫(ねこ)が います。(Under)", options: ["うえ", "した", "まえ", "うしろ"], answer: 1 },
-                { q: "郵便局(ゆうびんきょく)は 銀行(ぎんこう) _____ 病院(びょういん)の 間(あいだ)に あります。", options: ["が", "と", "や", "も"], answer: 1 },
-                { q: "冷蔵庫(れいぞうこ)の 中(なか)に ビール _____ ジュースなどが あります。", options: ["と", "や", "も", "が"], answer: 1 },
-                { q: "りんごを _____ ください。(4 items)", options: ["よっつ", "しっつ", "よん", "よねん"], answer: 0 },
-                { q: "みかんを _____ 買(か)いました。(9 items)", options: ["ななつ", "ここのつ", "きゅうつ", "やっと"], answer: 1 },
-                { q: "教室(きょうしつ)に 学生(がくせい)が _____ います。(2 people)", options: ["ににん", "ふたり", "にめい", "ふたつ"], answer: 1 },
-                { q: "家族(かぞく)は _____ ですか。(How many people)", options: ["なんびと", "なんにん", "いくつ", "どのくらい"], answer: 1 },
-                { q: "シャツを _____ 洗(あら)いました。(1 sheet)", options: ["ひとつ", "いちだい", "いちまい", "いちほん"], answer: 2 },
-                { q: "自転車(じてんしゃ)が _____ あります。(1 machine)", options: ["ひとつ", "いちだい", "いちまい", "いちばん"], answer: 1 },
-                { q: "80円(えん)の 切手(きって)を _____ 買(か)いました。(10 sheets)", options: ["じゅうまい", "とおまい", "じゅうだい", "じゅう"], answer: 0 },
-                { q: "毎日(まいにち) _____ 日本語(にほんご)を 勉強(べんきょう)しますか。", options: ["どのくらい", "どの", "いくら", "いくつ"], answer: 0 },
-                { q: "毎晩(まいばん) _____ 寝(ね)ますか。(Length of time)", options: ["7時(じ)", "7時間(じかん)", "7時(じ)に", "7時間(じかん)に"], answer: 1 },
-                { q: "会社(かいしゃ)を _____ 休(やす)みました。(3 days)", options: ["3日(みっか)", "3日(にち)", "3にち", "3かい"], answer: 0 },
-                { q: "国(くに)で _____ 日本語(にほんご)を 勉強(べんきょう)しました。(2 months)", options: ["2げつ", "2かげつ", "2がつ", "2ねん"], answer: 1 },
-                { q: "大阪(おおさか)から 東京(とうきょう)まで 2時間(じかん)半(はん) _____ かかります。", options: ["ごろ", "ぐらい", "から", "まで"], answer: 1 },
-                { q: "1週間(しゅうかん)に _____ 映画(えいが)を 見(み)ますか。", options: ["なんまい", "なんかい", "なんだい", "なんにん"], answer: 1 },
-                { q: "1か月(げつ)に 2回(かい) _____ 映画(えいが)を 見(み)ます。", options: ["（なし）", "で", "に", "ぐらい"], answer: 0 },
-                { q: "休み(やすみ)は 日曜日(にちようび) _____ です。(Only)", options: ["だけ", "しか", "ごろ", "ぐらい"], answer: 0 },
-                { q: "外国人(がいこくじん)の 先生(せんせい)が _____ います。(Only one)", options: ["ひとりだけ", "いちばん", "ひとりしか", "ひとつ"], answer: 0 },
-                { q: "みかんは _____ ですか。(How many?)", options: ["いくら", "いくつ", "なんぼ", "どのくらい"], answer: 1 },
-                { q: "兄弟(きょうだい)は _____ いますか。(4 people)", options: ["よにん", "しにん", "よんにん", "よんめい"], answer: 2 },
-                { q: "いろいろな お菓子(かし) _____ あります。", options: ["に", "が", "を", "で"], answer: 1 }
-            ]
-        },
-        "set5": {
-            title: "Set 5: Lessons 11-12",
-            questions: [
-                { q: "りんごを _____ 買(か)いました。(8 items)", options: ["ななつ", "やっつ", "ここのつ", "とお"], answer: 1 },
-                { q: "家族(かぞく)は _____ ですか。", options: ["なんびと", "なんにん", "いくつ", "どのくらい"], answer: 1 },
-                { q: "兄弟(きょうだい)が ひとり _____ 。", options: ["あります", "います", "ありました", "いました"], answer: 1 },
-                { q: "東京から大阪まで新幹線で _____ かかりますか。", options: ["どのぐらい", "いくつ", "なんにん", "なんだい"], answer: 0 },
-                { q: "1か月(げつ) _____ 2回(かい) 映画(えいが)を 見(み)ます。", options: ["が", "で", "に", "を"], answer: 2 },
-                { q: "休み(やすみ)は 日曜日(にちようび) _____ です。(Only)", options: ["ぐらい", "だけ", "ごろ", "まで"], answer: 1 },
-                { q: "国(くに)で 3か月(げつ) _____ 日本語(にほんご)を 勉強(べんきょう)しました。(About)", options: ["だけ", "ぐらい", "ごろ", "まで"], answer: 1 },
-                { q: "みかんを ひとつ _____ 食(た)べました。(Only one)", options: ["だけ", "しか", "ぐらい", "ごろ"], answer: 0 },
-                { q: "昨日(きのう)は 雨(あめ) _____ 。", options: ["です", "でした", "ました", "かったです"], answer: 1 },
-                { q: "昨日(きのう)の 試験(しけん)は _____ 。（Was not simple）", options: ["簡単くないです", "簡単くなかったです", "簡単じゃありませんでした", "簡単でした"], answer: 2 },
-                { q: "先週(せんしゅう)は とても _____ 。（Was busy）", options: ["忙しいでした", "忙しかったです", "忙しくなかったです", "忙しいです"], answer: 1 },
-                { q: "旅行(りょこう)は あまり _____ 。（Was not fun）", options: ["楽しくなかったです", "楽しくないでした", "楽しいじゃありませんでした", "楽しかったじゃありません"], answer: 0 },
-                { q: "お祭(まつ)りは _____ か。... はい、にぎやかでした。", options: ["どう", "どんな", "どうでした", "なに"], answer: 2 },
-                { q: "天気(てんき)は _____ 。（Was good）", options: ["いかったです", "よかったです", "いいでした", "よいでした"], answer: 1 },
-                { q: "この 車(くるま)は あの 車(くるま) _____ 大(おお)きいです。", options: ["より", "ほど", "のほう", "と"], answer: 0 },
-                { q: "A: 東京(とうきょう)と 大阪(おおさか)と _____ 人(ひと)が 多(おお)いですか。", options: ["どこ", "どちら", "どの", "だれ"], answer: 1 },
-                { q: "B: 東京(とうきょう) _____ 人(ひと)が 多(おお)いです。", options: ["ほうが", "より", "のほうが", "と"], answer: 2 },
-                { q: "日本料理(にほんりょうり) _____ 何(なに)が いちばん 好(す)きですか。", options: ["が", "で", "を", "に"], answer: 1 },
-                { q: "スポーツで サッカーが _____ おもしろいです。", options: ["ずっと", "いちばん", "とても", "どちらも"], answer: 1 },
-                { q: "A: コーヒーと 紅茶(こうちゃ)と どちらが いいですか。 B: _____ いいです。(Like both)", options: ["どちらも", "どちらが", "どれも", "なにも"], answer: 0 },
-                { q: "中国(ちゅうごく)は 日本(にほん)より _____ 広(ひろ)いです。(Much more)", options: ["いちばん", "ずっと", "とても", "あまり"], answer: 1 },
-                { q: "80円(えん)の 切手(きって)を 10枚(まい) _____ ください。", options: ["と", "に", "を", "（なし）"], answer: 3 },
-                { q: "1週間(しゅうかん)に _____ テニスを しますか。", options: ["なんまい", "なんだい", "なんかい", "なんぞく"], answer: 2 },
-                { q: "昨日(きのう)の パーティーは _____ 。(Was lively)", options: ["暇でした", "にぎやかでした", "静かでした", "元気でした"], answer: 1 },
-                { q: "家族(かぞく)で _____ いちばん 若(わか)いですか。", options: ["どこ", "だれが", "いつ", "なに"], answer: 1 },
-                { q: "カバンは どれですか。... あの 赤(あか)くて _____ です。", options: ["小(ちい)さいの", "小(ちい)さい", "小(ちい)さいこと", "小(ちい)さいもの"], answer: 0 },
-                { q: "パソコンが _____ あります。(2 machines)", options: ["にまい", "にほん", "にだい", "ふたつ"], answer: 2 },
-                { q: "会議(かいぎ)は _____ かかります。", options: ["2時間(じかん)", "2時(じ)", "2時(じ)に", "2時間(じかん)に"], answer: 0 },
-                { q: "みかんを _____ 買(か)いました。(8 items)", options: ["ななつ", "やっつ", "ここのつ", "とお"], answer: 1 },
-                { q: "切手(きって)を _____ 買(か)いました。(5 sheets)", options: ["ごだい", "ごほん", "ごまい", "ごさつ"], answer: 2 }
-            ]
-        },
-        "set6": {
-            title: "Set 6: Lesson 13",
-            questions: [
-                { q: "私(わたし)は 大(おお)きい 家(いえ) _____ 欲(ほ)しいです。", options: ["を", "で", "が", "に"], answer: 2 },
-                { q: "今(いま) 何(なに)が いちばん 欲(ほ)しいですか。... _____ が 欲(ほ)しいです。", options: ["くるま", "かいもの", "たべます", "あつい"], answer: 0 },
-                { q: "誕生(たんじょう)日(び)に 何(なに) _____ 欲(ほ)しいですか。", options: ["が", "を", "で", "に"], answer: 0 },
-                { q: "私は カメラが _____ 。(Don't want)", options: ["欲(ほ)しいです", "欲(ほ)しくないです", "欲(ほ)しかったです", "欲(ほ)しくなかったです"], answer: 1 },
-                { q: "忙(いそが)しいですから、時間(じかん)が _____ 。", options: ["あります", "います", "欲(ほ)しいです", "好(す)きです"], answer: 2 },
-                { q: "私(わたし)は 沖縄(おきなわ)へ _____ たいです。", options: ["行(い)く", "行(い)き", "行(い)って", "行(い)った"], answer: 1 },
-                { q: "喉(のど)が 渇(かわ)きましたから、水(みず) _____ 飲(の)みたいです。", options: ["が", "で", "に", "へ"], answer: 0 },
-                { q: "今日(きょう)は 疲(つか)れましたから、何(なに)も _____ 。", options: ["したいです", "して いません", "したくないです", "します"], answer: 2 },
-                { q: "この 靴(くつ)を _____ たいんですが。", options: ["履(は)き", "履(は)く", "履(は)いて", "履(は)いた"], answer: 0 },
-                { q: "週末(しゅうまつ)は 家(いえ)で _____ たいです。", options: ["休(やす)み", "休(やす)む", "休(やす)んで", "休(やす)め"], answer: 0 },
-                { q: "何(なに)を 食(た)べたいですか。... 何(なに) _____ 食(た)べたくないです。", options: ["を", "が", "も", "か"], answer: 2 },
-                { q: "暑(あつ)いですから、ビールを _____ たいです。", options: ["食(た)べ", "飲(の)み", "買(か)い", "行(い)き"], answer: 1 },
-                { q: "日本(にほん)へ 美術(びじゅつ)の 勉強(べんきょう) _____ 来(き)ました。", options: ["を", "に", "で", "が"], answer: 1 },
-                { q: "デパートへ 靴(くつ)を _____ に 行(い)きます。", options: ["買(か)う", "買(か)い", "買(か)って", "買(か)った"], answer: 1 },
-                { q: "図書館(としょかん)へ 本(ほん)を 借(か)り _____ 行(い)きます。", options: ["に", "を", "で", "（なし）"], answer: 0 },
-                { q: "ロビーへ 友達(ともだち)を 待(ま)ち _____ 行(い)きます。", options: ["に", "へ", "で", "を"], answer: 0 },
-                { q: "日曜日(にちようび)、京都(きょうと)へ 遊(あそ)び _____ 行(い)きました。", options: ["に", "を", "で", "が"], answer: 0 },
-                { q: "レストランへ 食事(しょくじ) _____ 行(い)きます。", options: ["を", "に", "で", "が"], answer: 1 },
-                { q: "公園(こうえん)へ 散歩(さんぽ) _____ 行(い)きます。", options: ["に", "を", "で", "が"], answer: 0 },
-                { q: "川(かわ)へ 釣(つ)り _____ 行(い)きます。", options: ["に", "を", "で", "が"], answer: 0 },
-                { q: "冬休(ふゆやす)みは _____ 行(い)きたいですか。", options: ["どこも", "どこかへ", "だれも", "何(なに)も"], answer: 1 },
-                { q: "お腹(なか)が すきましたね。 _____ 食(た)べませんか。", options: ["何(なに)か", "何(なに)を", "何(なに)も", "どこか"], answer: 0 },
-                { q: "喉(のど)が 渇(かわ)きました。 _____ 飲(の)みたいです。", options: ["何(なに)を", "何(なに)か", "どこか", "だれか"], answer: 1 },
-                { q: "週末(しゅうまつ) どこか 行(い)きましたか。... いいえ、 _____ 行(い)きませんでした。", options: ["どこか", "どこも", "何(なに)か", "だれも"], answer: 1 },
-                { q: "お腹(なか)が _____ 。(Hungry)", options: ["すきました", "いきました", "きました", "しました"], answer: 0 },
-                { q: "喉(のど)が _____ 。(Thirsty)", options: ["かわきました", "すきました", "いきました", "のみました"], answer: 0 },
-                { q: "12時(じ)です。 _____ 食事(しょくじ)に 行(い)きませんか。", options: ["ひとりで", "いっしょに", "べつべつに", "まっすぐ"], answer: 1 },
-                { q: "ご注文(ちゅうもん)は？... カレーライスを _____ 。", options: ["お願(ねが)いします", "欲(ほ)しいです", "食(た)べたいです", "あります"], answer: 0 },
-                { q: "釣(つ)りを _____ 。(To fish)", options: ["します", "いきます", "きます", "たべます"], answer: 0 },
-                { q: "郵便局(ゆうびんきょく)へ 切手(きって)を _____ に 行(い)きます。", options: ["買(か)う", "買(か)い", "買(か)って", "売(う)り"], answer: 1 }
-            ]
-        },
-        "set7": {
-            title: "Set 7: Lessons 14-16",
-            questions: [
-                { q: "名前(なまえ)を _____ ください。", options: ["書(か)き", "書(か)く", "書(か)いて", "書(か)いた"], answer: 2 },
-                { q: "もっと ゆっくり _____ ください。", options: ["話(はな)して", "話(はな)し", "話(はな)す", "話(はな)した"], answer: 0 },
-                { q: "荷物(にもつ)を _____ ましょうか。", options: ["持(も)って", "持(も)ち", "持(も)つ", "持(も)て"], answer: 1 },
-                { q: "エアコンを つけましょうか。... _____ 。", options: ["はいけっこうです", "いいえおねがいします", "はいおねがいします", "いいえそうです"], answer: 2 },
-                { q: "今(いま) 雨(あめ)が _____ います。", options: ["降(ふ)り", "降(ふ)る", "降(ふ)って", "降(ふ)ら"], answer: 2 },
-                { q: "ミラーさんは 今(いま) レポートを _____ います。", options: ["読(よ)み", "読(よ)んで", "読(よ)む", "読(よ)んだ"], answer: 1 },
-                { q: "タクシーを _____ ください。", options: ["呼(よ)んで", "呼(よ)びて", "呼(よ)い", "呼(よ)んだ"], answer: 0 },
-                { q: "ちょっと _____ ください。", options: ["待(ま)ちて", "待(ま)って", "待(ま)つ", "待(ま)て"], answer: 1 },
-                { q: "ここに 座(すわ)っても _____ ですか。", options: ["いい", "います", "いけません", "ありません"], answer: 0 },
-                { q: "ここで タバコを 吸(す)っては _____ 。", options: ["いいです", "いけません", "います", "ありません"], answer: 1 },
-                { q: "この カタログを _____ も いいですか。", options: ["もらい", "もらう", "もらって", "もらった"], answer: 2 },
-                { q: "病院(びょういん)で 携帯(けいたい)電話(でんわ)を _____ いけません。", options: ["使(つか)って", "使(つか)っては", "使(つか)っても", "使(つか)う"], answer: 1 },
-                { q: "ここに 車(くるま)を 止(と)めても いいですか。... いいえ、 _____ 。", options: ["いいです", "止(と)めて ください", "いけません", "かまいません"], answer: 2 },
-                { q: "私は 結婚(けっこん) _____ 。", options: ["します", "しました", "して います", "して あります"], answer: 2 },
-                { q: "私は 東京(とうきょう)に _____ 。", options: ["住(す)みます", "住(す)んで います", "住(す)んで あります", "住(す)みました"], answer: 1 },
-                { q: "あの 人(ひと)を 知(し)って いますか。... いいえ、 _____ 。", options: ["知(し)りません", "知(し)って いません", "知(し)りないです", "知(し)って ありません"], answer: 0 },
-                { q: "山田(やまだ)さんは 車(くるま)を _____ 。(Possesses)", options: ["持(も)ちます", "持(も)って います", "あります", "います"], answer: 1 },
-                { q: "IMCは コンピューターソフトを _____ 。(Produces)", options: ["作(つく)ります", "作(つく)って います", "作(つく)って あります", "作(つく)りました"], answer: 1 },
-                { q: "昨日(きのう)、デパートへ _____ 、買(か)い物(もの)しました。", options: ["行(い)き", "行(い)く", "行(い)って", "行(い)った"], answer: 2 },
-                { q: "朝(あさ) ジョギングを _____ 、シャワーを 浴(あ)びます。", options: ["して", "し", "します", "する"], answer: 0 },
-                { q: "コンサートが _____ から、レストランで 食事(しょくじ)しました。", options: ["終(お)わって", "終(お)わる", "終(お)わり", "終(お)わった"], answer: 0 },
-                { q: "国(くに)へ _____ から、大学(だいがく)に 入(はい)ります。", options: ["帰(かえ)る", "帰(かえ)って", "帰(かえ)り", "帰(かえ)った"], answer: 1 },
-                { q: "この 部屋(へや)は _____ 、明(あか)るいです。", options: ["広(ひろ)い", "広(ひろ)くて", "広(ひろ)いで", "広(ひろ)いな"], answer: 1 },
-                { q: "マリアさんは _____ 、きれいな 人(ひと)です。", options: ["有名(ゆうめい)", "有名(ゆうめい)くて", "有名(ゆうめい)な", "有名(ゆうめい)で"], answer: 3 },
-                { q: "カリナさんは 学生(がくせい) _____ 、マリアさんは 主婦(しゅふ)です。", options: ["で", "て", "に", "の"], answer: 0 },
-                { q: "象(ぞう)は 鼻(はな) _____ 長(なが)いです。", options: ["は", "が", "の", "を"], answer: 1 },
-                { q: "大阪(おおさか)は 食(た)べ物(もの) _____ おいしいです。", options: ["が", "は", "の", "を"], answer: 0 },
-                { q: "大学(だいがく)まで _____ 行(い)きますか。(How)", options: ["どう", "どんな", "どうやって", "どのくらい"], answer: 2 },
-                { q: "京都(きょうと)駅(えき)から 16番(ばん)の バスに _____ ください。", options: ["乗(の)って", "降(お)りて", "入(はい)って", "出(で)て"], answer: 0 },
-                { q: "お金(かね)を _____ から、買(か)い物(もの)に 行(い)きます。(Withdraw)", options: ["出(だ)して", "おろして", "かえて", "いれて"], answer: 1 }
-            ]
-        },
-        "set8": {
-            title: "Set 8: Lessons 17-19",
-            questions: [
-                { q: "ここで 写真(しゃしん)を _____ ください。", options: ["とらないで", "とらなくて", "とりないで", "とらない"], answer: 0 },
-                { q: "病院(びょういん)へ _____ なりません。", options: ["行(い)かない", "行(い)かなくて", "行(い)かなければ", "行(い)かないで"], answer: 2 },
-                { q: "明日(あした)は 休(やす)みですから、 _____ いいです。", options: ["起(お)きなくて", "起(お)きないで", "起(お)きなければ", "起(お)きなくても"], answer: 3 },
-                { q: "心配(しんぱい) _____ ください。", options: ["しない", "しないで", "しなくて", "して"], answer: 1 },
-                { q: "パスポートを _____ なりません。", options: ["見(み)せなければ", "見(み)せなくて", "見(み)せないで", "見(み)せても"], answer: 0 },
-                { q: "靴(くつ)を _____ も いいですか。", options: ["脱(ぬ)がないで", "脱(ぬ)がなくて", "脱(ぬ)がなければ", "脱(ぬ)ぐ"], answer: 1 },
-                { q: "金曜日(きんようび) _____ 出(だ)して ください。", options: ["まで", "までに", "から", "に"], answer: 1 },
-                { q: "漢字(かんじ)を _____ ことが できます。", options: ["読(よ)む", "読(よ)みます", "読(よ)んで", "読(よ)める"], answer: 0 },
-                { q: "趣味(しゅみ)は 絵(え)を _____ ことです。", options: ["かく", "かいて", "かき", "かいた"], answer: 0 },
-                { q: "寝(ね)る _____ 、お祈(いの)りを します。", options: ["あとで", "まえに", "とき", "ながら"], answer: 1 },
-                { q: "車(くるま)を _____ ことが できますか。", options: ["運転(うんてん)", "運転(うんてん)して", "運転(うんてん)する", "運転(うんてん)します"], answer: 2 },
-                { q: "食事(しょくじ)の _____ 、手(て)を 洗(あら)います。", options: ["まえに", "まえ", "あと", "とき"], answer: 0 },
-                { q: "5年(ねん) _____ 、日本(にほん)へ 来(き)ました。", options: ["まえ", "まえに", "ごろ", "ぐらい"], answer: 1 },
-                { q: "泳(およ)ぐ _____ が できますか。", options: ["もの", "こと", "の", "ほう"], answer: 1 },
-                { q: "相撲(すもう)を _____ ことが ありますか。", options: ["見(み)る", "見(み)た", "見(み)て", "見(み)ない"], answer: 1 },
-                { q: "日曜日(にちようび)は テニスを _____ 、映画(えいが)を 見(み)たり しました。", options: ["して", "した", "したり", "する"], answer: 2 },
-                { q: "毎晩(まいばん) テレビを 見(み)たり、本(ほん)を _____ します。", options: ["読(よ)む", "読(よ)んで", "読(よ)んだ", "読(よ)んだり"], answer: 3 },
-                { q: "寒(さむ)く _____ ね。", options: ["なりました", "しました", "ありました", "いました"], answer: 0 },
-                { q: "部屋(へや)が _____ なりました。", options: ["きれい", "きれいに", "きれいな", "きれいく"], answer: 1 },
-                { q: "将来(しょうらい) 医者(いしゃ)に _____ です。", options: ["なりたい", "したい", "ありたい", "いきたい"], answer: 0 },
-                { q: "一度(いちど) _____ 日本(にほん)へ 行(い)った ことが ありません。", options: ["も", "が", "に", "を"], answer: 0 },
-                { q: "書(か)きます → Dictionary Form:", options: ["かく", "かける", "かこう", "かいた"], answer: 0 },
-                { q: "食(た)べます → Nai Form:", options: ["たべない", "たべらない", "たべがない", "たべたくない"], answer: 0 },
-                { q: "来(き)ます → Ta Form:", options: ["きた", "くる", "きった", "こない"], answer: 0 },
-                { q: "します → Dictionary Form:", options: ["しる", "す", "する", "して"], answer: 2 },
-                { q: "飲(の)みます → Nai Form:", options: ["のまない", "のみない", "のんまない", "のめない"], answer: 0 },
-                { q: "テレサちゃんは 背(せ)が _____ なりましたね。", options: ["高(たか)い", "高(たか)く", "高(たか)に", "高(たか)くて"], answer: 1 },
-                { q: "大切(たいせつ)な 資料(しりょう)ですから、_____ ください。", options: ["なくさないで", "なくさなくて", "なくなる", "なくす"], answer: 0 },
-                { q: "日本(にほん)の 歌(うた)を _____ ことが できますか。", options: ["歌(うた)う", "歌(うた)って", "歌(うた)い", "歌(うた)います"], answer: 0 },
-                { q: "買(か)い物(もの) _____ 、散歩(さんぽ)したり します。", options: ["したり", "して", "した", "すると"], answer: 0 }
-            ]
-        },
-        "set9": {
-            title: "Set 9: Lessons 20-22",
-            questions: [
-                { q: "A: 明日(あした) 東京(とうきょう)へ 行(い)く？ B: うん、 _____ 。", options: ["行(い)きます", "行(い)く", "行(い)かない", "行(い)って"], answer: 1 },
-                { q: "A: 毎日(まいにち) 忙(いそが)しい？ B: ううん、あまり _____ 。", options: ["忙(いそが)しい", "忙(いそが)しくない", "忙(いそが)しいくない", "忙(いそが)しいない"], answer: 1 },
-                { q: "A: 昨日(きのう) ピアノを 練習(れんしゅう)した？ B: ううん、 _____ 。", options: ["しない", "しなかった", "して いない", "した"], answer: 1 },
-                { q: "A: カレーライスは おいしい？ B: うん、 _____ 。", options: ["おいしいだ", "おいしい", "おいしいの", "おいしいな"], answer: 1 },
-                { q: "A: 今(いま) 暇(ひま)？ B: うん、 _____ 。", options: ["暇(ひま)だ", "暇(ひま)", "暇(ひま)な", "暇(ひま)の"], answer: 0 },
-                { q: "A: 住所(じゅうしょ)を 知(し)って いる？ B: ううん、 _____ 。", options: ["知(し)らない", "知(し)りない", "知(し)って いない", "知(し)らなかった"], answer: 0 },
-                { q: "昨日(きのう)は 雨(あめ) _____ 。(Plain Past)", options: ["だった", "でした", "だ", "かった"], answer: 0 },
-                { q: "明日(あした)は 雨(あめ)が _____ と 思(おも)います。", options: ["降(ふ)る", "降(ふ)ります", "降(ふ)って", "降(ふ)り"], answer: 0 },
-                { q: "ミラーさんは 来(こ)ない _____ 思(おも)います。", options: ["を", "と", "が", "に"], answer: 1 },
-                { q: "日本(にほん)の 地下鉄(ちかてつ)は 便利(べんり) _____ と 思(おも)います。", options: ["だ", "な", "です", "の"], answer: 0 },
-                { q: "新(あたら)しい 空港(くうこう)に ついて _____ 思(おも)いますか。", options: ["なん", "どう", "どんな", "どれ"], answer: 1 },
-                { q: "物価(ぶっか)は _____ と 思(おも)います。", options: ["高(たか)い", "高(たか)いだ", "高(たか)いです", "高(たか)いな"], answer: 0 },
-                { q: "寝(ね)る 前(まえ)に、「おやすみなさい」 _____ 言(い)います。", options: ["を", "と", "に", "で"], answer: 1 },
-                { q: "ミラーさんは 「来週(らいしゅう) 東京(とうきょう)へ 行(い)きます」 _____ 言(い)いました。", options: ["と", "を", "が", "に"], answer: 0 },
-                { q: "首相(しゅしょう)は 来月(らいげつ) アメリカへ _____ と 言(い)いました。", options: ["行(い)く", "行(い)きます", "行(い)って", "行(い)った"], answer: 0 },
-                { q: "明日(あした)は 休(やす)み _____ 。(Confirmation)", options: ["でしょう", "と 思(おも)います", "と 言(い)いました", "か"], answer: 0 },
-                { q: "映画(えいが)を 見(み)に 行(い)きませんか。... ええ、 _____ ですね。", options: ["いい", "よくない", "いきます", "そう"], answer: 0 },
-                { q: "これは 母(はは) _____ 作(つく)った ケーキです。", options: ["は", "が", "を", "に"], answer: 1 },
-                { q: "ミラーさんが 住(す)んで いる _____ は 大阪(おおさか)です。", options: ["うち", "ひと", "もの", "こと"], answer: 0 },
-                { q: "朝(あさ) ごはんを _____ 時間(じかん)が ありません。", options: ["食(た)べる", "食(た)べて", "食(た)べた", "食(た)べ"], answer: 0 },
-                { q: "あそこ(あそこ)に _____ 人(ひと)は 誰(だれ)ですか。", options: ["いる", "います", "いって", "いった"], answer: 0 },
-                { q: "彼女(かのじょ)に あげた _____ は 何(なん)ですか。", options: ["プレゼント", "ひと", "ところ", "じかん"], answer: 0 },
-                { q: "奈良(なら)で 撮(と)った _____ を 見(み)せて ください。", options: ["写真(しゃしん)", "ひと", "まち", "じかん"], answer: 0 },
-                { q: "約束(やくそく)の 時間(じかん)に _____ 。(Not in time)", options: ["間(ま)に 合(あ)いませんでした", "遅(おく)れました", "行(い)きました", "来(き)ました"], answer: 0 },
-                { q: "首相(しゅしょう)は スピーチを _____ 。", options: ["しました", "言(い)いました", "話(はな)しました", "聞(き)きました"], answer: 0 },
-                { q: "図書館(としょかん)で 本(ほん)を _____ ことが ありますか。(Borrow)", options: ["借(か)りた", "貸(か)した", "読(よ)んだ", "買(か)った"], answer: 0 },
-                { q: "日本(にほん)の アニメは _____ と 思(おも)います。", options: ["おもしろい", "おもしろいだ", "おもしろ", "おもしろかった"], answer: 0 },
-                { q: "昨日(きのう) 行(い)った _____ は とても きれいでした。", options: ["所(ところ)", "物(もの)", "人(ひと)", "時(とき)"], answer: 0 },
-                { q: "チケットは ありますか。... いいえ、 _____ 。(Plain style)", options: ["ない", "ありません", "あらない", "なかった"], answer: 0 },
-                { q: "彼(かれ)は 日本語(にほんご)が _____ と 言(い)いました。(Can speak)", options: ["話(はな)せる", "話(はな)す", "話(はな)して", "話(はな)した"], answer: 0 }
-            ]
-        },
-        "set10": {
-            title: "Set 10: Lessons 23-25",
-            questions: [
-                { q: "図書館(としょかん)で 本(ほん)を _____ とき、カードが 要(い)ります。", options: ["借(か)りる", "借(か)りた", "借(か)りて", "借(か)りない"], answer: 0 },
-                { q: "道(みち)を _____ とき、車(くるま)に 気(き)を つけて ください。", options: ["渡(わた)る", "渡(わた)った", "渡(わた)り", "渡(わた)って"], answer: 0 },
-                { q: "朝(あさ) _____ とき、家族(かぞく)の 写真(しゃしん)を 見(み)ました。", options: ["起(お)きる", "起(お)きた", "起(お)きて", "起(お)きない"], answer: 1 },
-                { q: "暇(ひま)な _____ 、ビデオを 見(み)ます。", options: ["とき", "こと", "もの", "ところ"], answer: 0 },
-                { q: "妻(つま)が _____ とき、レストランで 食事(しょくじ)します。", options: ["病気(びょうき)", "病気(びょうき)の", "病気(びょうき)な", "病気(びょうき)だ"], answer: 1 },
-                { q: "この ボタンを _____ と、お釣(つ)りが 出(で)ます。", options: ["押(お)す", "押(お)して", "押(お)した", "押(お)そう"], answer: 0 },
-                { q: "右(みぎ)へ _____ と、郵便局(ゆうびんきょく)が あります。", options: ["曲(ま)がる", "曲(ま)がって", "曲(ま)がった", "曲(ま)がり"], answer: 0 },
-                { q: "佐藤(さとう)さんは 私(わたし)に クリスマスカードを _____ 。", options: ["あげました", "もらいました", "くれました", "かしました"], answer: 2 },
-                { q: "私(わたし)は 木村(きむら)さんに 本(ほん)を _____ 。", options: ["あげました", "もらいました", "くれました", "かしました"], answer: 0 },
-                { q: "私(わたし)は 山田(やまだ)さんに 傘(かさ)を _____ 。(Received)", options: ["あげました", "もらいました", "くれました", "おしえました"], answer: 1 },
-                { q: "田中(たなか)さんは 妹(いもうと)に お菓子(かし)を _____ 。", options: ["もらいました", "くれました", "あげました", "いきました"], answer: 2 },
-                { q: "誰(だれ)が 手伝(てつだ)って _____ か。", options: ["あげました", "もらいました", "くれました", "しました"], answer: 2 },
-                { q: "私(わたし)は ミラーさんに 写真(しゃしん)を 見(み)せて _____ 。", options: ["もらいました", "くれました", "あげました", "いきました"], answer: 2 },
-                { q: "雨(あめ)が _____ 、出(で)かけません。(If)", options: ["降(ふ)る", "降(ふ)れば", "降(ふ)ったら", "降(ふ)っても"], answer: 2 },
-                { q: "お金(かね)が _____ 、旅行(りょこう)します。", options: ["あったら", "あって", "あると", "あっても"], answer: 0 },
-                { q: "時間(じかん)が _____ 、テレビを 見(み)ましょう。", options: ["ない", "なかったら", "なくて", "なくても"], answer: 1 },
-                { q: "駅(えき)に _____ 、電話(でんわ)を ください。", options: ["着(つ)く", "着(つ)いて", "着(つ)いたら", "着(つ)いても"], answer: 2 },
-                { q: "暇(ひま) _____ 、手伝(てつだ)って ください。", options: ["だ", "だったら", "な", "で"], answer: 1 },
-                { q: "10時(じ)に _____ 、出(で)かけましょう。", options: ["なったら", "なって", "なると", "なれば"], answer: 0 },
-                { q: "スイッチを _____ 、動(うご)きません。", options: ["押(お)すと", "押(お)したら", "押(お)しても", "押(お)して"], answer: 2 },
-                { q: "高(たか) _____ 、買(か)います。(Even if)", options: ["くて", "かったら", "くても", "いと"], answer: 2 },
-                { q: "日曜日(にちようび) _____ 、働(はたら)きます。", options: ["でも", "だから", "なのに", "で"], answer: 0 },
-                { q: "考(かんが)え _____ 、わかりません。", options: ["ても", "たら", "ると", "ないと"], answer: 0 },
-                { q: "音(おと)が _____ します。", options: ["小(ちい)さい", "小(ちい)さく", "小(ちい)さくて", "小(ちい)さいに"], answer: 1 },
-                { q: "この 機械(きかい)の _____ を 教(お)えて ください。", options: ["使(つか)い方(かた)", "使(つか)い", "使(つか)って", "使(つか)う"], answer: 0 },
-                { q: "信号(しんごう)を _____ と、橋(はし)が あります。", options: ["渡(わた)る", "曲(ま)がる", "歩(ある)く", "行(い)く"], answer: 0 },
-                { q: "部屋(へや)が _____ 、エアコンを つけて ください。(If)", options: ["暑(あつ)い", "暑(あつ)くて", "暑(あつ)かったら", "暑(あつ)くても"], answer: 2 },
-                { q: "バスが _____ 、タクシーで 行(い)きます。", options: ["来(き)なかったら", "来(き)なくて", "来(き)ないで", "来(き)なくても"], answer: 0 },
-                { q: "どうぞ たくさん 食(た)べて _____ 。", options: ["あげます", "ください", "もらいます", "くれます"], answer: 1 },
-                { q: "もし 1億円(おくえん) _____ 、何(なに)を したいですか。", options: ["あって", "あったら", "あると", "あっても"], answer: 1 }
-            ]
-        },
-        "level1": {
-            title: "Mix Level 1: Fundamentals",
-            questions: [
-                { q: "私(わたし) _____ 学生(がくせい)です。", options: ["の", "は", "を", "に"], answer: 1 },
-                { q: "これは 私(わたし) _____ 本(ほん)です。", options: ["の", "は", "も", "が"], answer: 0 },
-                { q: "図書館(としょかん) _____ 勉強(べんきょう)します。", options: ["に", "へ", "で", "を"], answer: 2 },
-                { q: "8時(じ) _____ 学校(がっこう)へ 行(い)きます。", options: ["に", "で", "を", "が"], answer: 0 },
-                { q: "毎日(まいにち) コーヒー _____ 飲(の)みます。", options: ["が", "で", "に", "を"], answer: 3 },
-                { q: "教室(きょうしつ)に 学生(がくせい)が _____ 。", options: ["あります", "います", "ありません", "いません"], answer: 1 },
-                { q: "りんごを _____ ください。(4 items)", options: ["よっつ", "よん", "よにん", "よねん"], answer: 0 },
-                { q: "切手(きって)を _____ 買(か)いました。(2 sheets)", options: ["にだい", "にまい", "にほん", "にこ"], answer: 1 },
-                { q: "昨日(きのう)は _____ です。(Cold)", options: ["さむい", "さむかった", "さむいでした", "さむくなかった"], answer: 1 },
-                { q: "この 町(まち)は _____ です。(Quiet)", options: ["しずか", "しずかな", "しずく", "しずかで"], answer: 0 },
-                { q: "東京(とうきょう)は 大阪(おおさか) _____ 人(ひと)が 多(おお)いです。", options: ["ほう", "より", "の", "と"], answer: 1 },
-                { q: "私は 車(くるま)が _____ 。(Want)", options: ["ほしいです", "ほしがります", "ほしくないです", "したいです"], answer: 0 },
-                { q: "日本(にほん)へ 料理(りょうり)を _____ に 行(い)きます。(To eat)", options: ["食(た)べる", "食(た)べ", "食(た)べて", "食(た)べた"], answer: 1 },
-                { q: "窓(まど)を _____ ください。(Please open)", options: ["開(あ)け", "開(あ)けて", "開(あ)く", "開(あ)いた"], answer: 1 },
-                { q: "今(いま) 雨(あめ)が _____ います。", options: ["降(ふ)って", "降(ふ)り", "降(ふ)る", "降(ふ)らない"], answer: 0 },
-                { q: "ここで 写真(しゃしん)を _____ も いいですか。", options: ["とる", "とり", "とって", "とった"], answer: 2 },
-                { q: "ここに 車(くるま)を _____ ください。(Please don't park)", options: ["止(と)めないで", "止(と)めなくて", "止(と)めない", "止(と)める"], answer: 0 },
-                { q: "薬(くすり)を _____ なりません。(Must)", options: ["飲(の)まなくて", "飲(の)まないで", "飲(の)まなければ", "飲(の)んでも"], answer: 2 },
-                { q: "私は 漢字(かんじ)を _____ ことが できます。", options: ["読(よ)む", "読(よ)める", "読(よ)んで", "読(よ)みます"], answer: 0 },
-                { q: "馬(うま)に _____ ことが ありますか。(Ridden)", options: ["乗(の)る", "乗(の)った", "乗(の)って", "乗(の)り"], answer: 1 },
-                { q: "掃除(そうじ)して、部屋(へや)が _____ なりました。", options: ["きれい", "きれいに", "きれいな", "きれいく"], answer: 1 },
-                { q: "A: 明日(あした) パーティーに 行(い)く？ B: ううん、 _____ 。", options: ["行(い)きません", "行(い)かない", "行(い)くない", "行(い)って"], answer: 1 },
-                { q: "明日(あした)は 雨(あめ)だと _____ 。(Think)", options: ["言(い)いました", "思(おも)います", "します", "あります"], answer: 1 },
-                { q: "これは 母(はは)が _____ 料理(りょうり)です。", options: ["作(つく)る", "作(つく)った", "作(つく)って", "作(つく)り"], answer: 1 },
-                { q: "私(わたし)が 生(う)まれた _____ は 大阪(おおさか)です。", options: ["ところ", "こと", "もの", "ひと"], answer: 0 },
-                { q: "道(みち)を _____ と、右(みぎ)に 駅(えき)が あります。", options: ["渡(わた)る", "渡(わた)った", "渡(わた)り", "渡(わた)れば"], answer: 0 },
-                { q: "山田(やまだ)さんは 妹(いもうと)に お菓子(かし)を _____ 。(Gave)", options: ["もらいました", "くれました", "あげました", "いただきました"], answer: 2 },
-                { q: "お金(かね)が _____ 、旅行(りょこう)しません。(If I don't have)", options: ["ないと", "なかったら", "なくて", "ない"], answer: 1 },
-                { q: "雨(あめ)が _____ 、行(い)きます。(Even if)", options: ["降(ふ)っても", "降(ふ)ったら", "降(ふ)ると", "降(ふ)れば"], answer: 0 },
-                { q: "もし 時間(じかん)が _____ 、映画(えいが)を 見(み)ませんか。", options: ["ある", "あったら", "あっても", "あって"], answer: 1 }
-            ]
-        },
-        "level2": {
-            title: "Mix Level 2: Application",
-            questions: [
-                { q: "日曜日(にちようび) どこ _____ 行(い)きませんでした。", options: ["か", "も", "へ", "を"], answer: 1 },
-                { q: "電車(でんしゃ) _____ カバンを 忘(わす)れました。", options: ["に", "で", "を", "へ"], answer: 0 },
-                { q: "友達(ともだち) _____ 会(あ)います。", options: ["で", "と", "に", "を"], answer: 2 },
-                { q: "会社(かいしゃ) _____ 休みます。", options: ["を", "が", "は", "に"], answer: 0 },
-                { q: "1時間(じかん) _____ 着(つ)きます。(Time limit/Span)", options: ["に", "で", "を", "が"], answer: 1 },
-                { q: "この バスは 駅(えき) _____ 行(い)きますか。", options: ["で", "を", "に", "が"], answer: 2 },
-                { q: "毎晩(まいばん) テレビを _____ 、寝(ね)ます。", options: ["見(み)て", "見(み)る", "見(み)た", "見(み)たり"], answer: 0 },
-                { q: "辞書(じしょ)を _____ ないで ください。", options: ["使(つか)わ", "使(つか)い", "使(つか)う", "使(つか)って"], answer: 0 },
-                { q: "写真(しゃしん)を _____ まえに、ご飯(はん)を 食(た)べました。", options: ["撮(と)った", "撮(と)る", "撮(と)り", "撮(と)って"], answer: 1 },
-                { q: "週末(しゅうまつ)は 掃除(そうじ)したり、洗濯(せんたく) _____ しました。", options: ["した", "して", "したり", "する"], answer: 2 },
-                { q: "図書館(としょかん)で 本(ほん)を _____ ことが あります。", options: ["借(か)りる", "借(か)りて", "借(か)りた", "借(か)りない"], answer: 2 },
-                { q: "趣味(しゅみ)は 古(ふる)い 時計(とけい)を _____ ことです。", options: ["集(あつ)める", "集(あつ)めた", "集(あつ)めて", "集(あつ)め"], answer: 0 },
-                { q: "この パソコンは _____ 、便利(べんり)です。", options: ["軽(かる)い", "軽(かる)くて", "軽(かる)いで", "軽(かる)かった"], answer: 1 },
-                { q: "マリアさんは _____ 、親切(しんせつ)な 人(ひと)です。", options: ["まじめ", "まじめな", "まじめで", "まじめくて"], answer: 2 },
-                { q: "日本語(にほんご)が _____ なりました。", options: ["上手(じょうず)", "上手(じょうず)に", "上手(じょうず)な", "上手(じょうず)く"], answer: 1 },
-                { q: "もう 昼(ひる)ごはんを 食(た)べましたか。... いいえ、 _____ 。", options: ["まだです", "もうです", "食(た)べませんでした", "食(た)べました"], answer: 0 },
-                { q: "映画(えいが)は _____ おもしろくなかったです。", options: ["あまり", "すこし", "たくさん", "とても"], answer: 0 },
-                { q: "誕生(たんじょう)日(び)に 母(はは)は（私に）シャツを _____ 。", options: ["もらいました", "あげました", "くれました", "やりました"], answer: 2 },
-                { q: "私は 部長(ぶちょう)に お土産(みやげ)を _____ 。(Received)", options: ["いただきました", "もらいました", "くれました", "あげました"], answer: 0 },
-                { q: "塩(しお)を 取(と)って ください。... はい、 _____ 。", options: ["どうぞ", "どうも", "お願(ねが)いします", "いただきました"], answer: 0 },
-                { q: "一緒(いっしょ)に 行(い)きませんか。... _____ 。行きましょう。", options: ["ええ", "いいえ", "ちょっと", "だめです"], answer: 0 },
-                { q: "映画(えいが)を 見(み)たいですね。... 日曜日(にちようび)は ちょっと...。あ、 _____ 。", options: ["そうですね", "そうですか", "そうしましょう", "いけませんね"], answer: 1 },
-                { q: "お金(かね)が _____ 、買(か)い物(もの)に 行(い)きません。", options: ["なかったら", "ないで", "なくて", "ない"], answer: 0 },
-                { q: "この ボタンを _____ と、切符(きっぷ)が 出(で)ます。", options: ["押(お)す", "押(お)して", "押(お)した", "押(お)せば"], answer: 0 },
-                { q: "あそこ(あそこ)で 新聞(しんぶん)を 読(よ)んで いる _____ は ミラーさんです。", options: ["の", "こと", "人(ひと)", "も"], answer: 2 },
-                { q: "私(わたし)が 行(い)きたい _____ は 京都(きょうと)です。", options: ["所(ところ)", "物(もの)", "人(ひと)", "時(とき)"], answer: 0 },
-                { q: "寒(さむ)い _____ 、窓(まど)を 閉(し)めて ください。", options: ["とき", "こと", "もの", "ところ"], answer: 0 },
-                { q: "明日(あした) 雨(あめ) _____ 、出(で)かけます。(Even if)", options: ["でも", "ても", "だから", "なのに"], answer: 0 },
-                { q: "約束(やくそく)の 時間(じかん)に 友達(ともだち)が _____ 。", options: ["来(こ)なかったです", "来(き)ませんでした", "来(く)ないでした", "来(き)ません"], answer: 1 },
-                { q: "カレーライスは 辛(から)いですが、 _____ 。(Delicious)", options: ["おいしいです", "おいしくないです", "おいしかったです", "おいしいでした"], answer: 0 }
-            ]
-        },
-        "level3": {
-            title: "Mix Level 3: Complex & Nuance",
-            questions: [
-                { q: "これ(これ)は ミラーさん _____ 撮(と)った 写真(しゃしん)です。", options: ["は", "が", "を", "に"], answer: 1 },
-                { q: "友達(ともだち) _____ 会(あ)う 約束(やくそく)が あります。", options: ["で", "と", "に", "を"], answer: 2 },
-                { q: "電車(でんしゃ) _____ 乗(の)って、大阪(おおさか)へ 行(い)きます。", options: ["で", "に", "を", "へ"], answer: 1 },
-                { q: "梅田(うめだ)で 電車(でんしゃ) _____ 降(お)りました。", options: ["を", "に", "で", "が"], answer: 0 },
-                { q: "教室(きょうしつ) _____ 入(はい)らないで ください。", options: ["に", "で", "を", "へ"], answer: 0 },
-                { q: "私(わたし)は コーヒー _____ 好き(すき)ですが、妹(いもうと)は 嫌(きら)いです。", options: ["が", "は", "を", "も"], answer: 1 },
-                { q: "日本(にほん)で どこ _____ いちばん きれいですか。", options: ["が", "で", "を", "に"], answer: 0 },
-                { q: "コーヒーと 紅茶(こうちゃ)と _____ 好(す)きですか。", options: ["どちらも", "どの", "どちらが", "どれが"], answer: 2 },
-                { q: "京都(きょうと)は 静(しず)か _____ 、きれいな 町(まち)です。", options: ["で", "な", "に", "だ"], answer: 0 },
-                { q: "カリナさんは 背(せ) _____ 高(たか)いです。", options: ["の", "が", "は", "を"], answer: 1 },
-                { q: "この 料理(りょうり)は 安(やす)くて、 _____ です。", options: ["おいしい", "おいしく", "おいしいで", "おいしくて"], answer: 0 },
-                { q: "図書館(としょかん)で 本(ほん)を _____ とき、カードを 見(み)せます。", options: ["借(か)りた", "借(か)りる", "借(か)りて", "借(か)りない"], answer: 1 },
-                { q: "晩(ばん)ご飯(はん)を _____ あとで、テレビを 見(み)ました。", options: ["食(た)べる", "食(た)べた", "食(た)べて", "食(た)べ"], answer: 1 },
-                { q: "泳(およ)ぎに _____ まえに、準備(じゅんび)運動(うんどう)を します。", options: ["行(い)く", "行(い)った", "行(い)きて", "行(い)かない"], answer: 0 },
-                { q: "妻(つま)が _____ とき、会社(かいしゃ)を 休(やす)みました。", options: ["病気(びょうき)", "病気(びょうき)の", "病気(びょうき)な", "病気(びょうき)だ"], answer: 1 },
-                { q: "私(わたし)が 欲しい(ほしい) _____ は 車(くるま)です。", options: ["こと", "もの", "ひと", "ところ"], answer: 1 },
-                { q: "ここは 実習生(じっしゅうせい)が 日本語(にほんご)を _____ 教室(きょうしつ)です。", options: ["勉強(べんきょう)する", "勉強(べんきょう)した", "勉強(べんきょう)して", "勉強(べんきょう)します"], answer: 0 },
-                { q: "昨日(きのう) _____ 映画(えいが)は 面白(おもしろ)かったです。", options: ["見(み)る", "見(み)た", "見(み)て", "見(み)ない"], answer: 1 },
-                { q: "朝(あさ)ごはんを 食(た)べる _____ が ありません。", options: ["時間(じかん)", "約束(やくそく)", "用事(ようじ)", "暇(ひま)"], answer: 0 },
-                { q: "漢字(かんじ)の _____ を 教(お)えて ください。", options: ["読(よ)み方(かた)", "読(よ)み", "読(よ)んで", "読(よ)む"], answer: 0 },
-                { q: "暑(あつ)く _____ 、泳(およ)ぎに 行(い)きません。", options: ["なかったら", "ないで", "なくて", "ない"], answer: 0 },
-                { q: "この ボタンを _____ と、電気(でんき)が つきます。", options: ["押(お)して", "押(お)せば", "押(お)す", "押(お)した"], answer: 2 },
-                { q: "どうして 昨日(きのう) 来(こ)なかったんですか。... 用事(ようじ)が _____ からです。", options: ["あった", "ありました", "ある", "あって"], answer: 0 },
-                { q: "もう レポートを 書(か)きましたか。... いいえ、まだ _____ 。", options: ["書(か)きません", "書(か)いて いません", "書(か)きませんでした", "書(か)くことが ありません"], answer: 1 },
-                { q: "部長(ぶちょう)は 私(わたし)に レポートを _____ 。", options: ["くれました", "あげました", "もらいました", "やりました"], answer: 0 },
-                { q: "私(わたし)は 佐藤(さとう)さんに 花(はな)を _____ 。", options: ["くれました", "あげました", "もらいました", "いただきました"], answer: 1 },
-                { q: "誰(だれ)に 日本語(にほんご)を _____ か。... 松本(まつもと)先生(せんせい)に 習(なら)いました。", options: ["教(お)えました", "習(なら)いました", "勉強(べんきょう)しました", "かしました"], answer: 1 },
-                { q: "お金(かね)を 忘(わす)れましたから、友達(ともだち)に _____ 。", options: ["貸(か)しました", "借(か)りました", "返(かえ)しました", "あげました"], answer: 1 },
-                { q: "A: この ボールペン、 _____ も いいですか。 B: ええ、どうぞ。", options: ["使(つか)って", "使(つか)う", "使(つか)ったら", "使(つか)えば"], answer: 0 },
-                { q: "日曜日(にちようび)は 散歩(さんぽ) _____ 、本(ほん)を 読(よ)んだり します。", options: ["して", "した", "したり", "する"], answer: 2 }
-            ]
-        }
-    };
+const ALL_SETS = {
+  "set1": {
+      title: "Set 1: Lessons 1-3",
+      questions: [
+          { q: "私(わたし) _____ マイク・ミラーです。", options: ["の", "は", "を", "で"], answer: 1 },
+          { q: "あの 方(かた)は どなた _____ 。", options: ["に", "で", "ですか", "です"], answer: 2 },
+          { q: "李さんは研究者です。ワンさん _____ 研究者です。", options: ["を", "に", "も", "と"], answer: 2 },
+          { q: "これ _____ 辞書(じしょ)です。", options: ["の", "は", "を", "に"], answer: 1 },
+          { q: "それは コンピュータ _____ 本(ほん)です。", options: ["の", "を", "へ", "何(なん)"], answer: 0 },
+          { q: "この 傘(かさ)は 私(わたし) _____ です。", options: ["の", "を", "で", "に"], answer: 0 },
+          { q: "サントスさんは 学生(がくせい) _____ 。", options: ["ありません", "じゃありません", "ですありません", "でわない"], answer: 1 },
+          { q: "_____ は シャープペンシルですか。", options: ["どれ", "これ", "この", "ここ"], answer: 1 },
+          { q: "_____ 鞄(かばん)は 誰(だれ)の ですか。", options: ["これ", "その", "それ", "あれ"], answer: 1 },
+          { q: "すみません、電話(でんわ)は _____ ですか。", options: ["どちら", "どれ", "どこ", "だれ"], answer: 2 },
+          { q: "トイレは _____ です。", options: ["あそこ", "あれ", "あの", "なに"], answer: 0 },
+          { q: "_____ は ミラーさんです。", options: ["これ", "ここ", "こちら", "この"], answer: 2 },
+          { q: "A: テレホンカードですか。 B: はい、 _____ です。", options: ["これ", "それ", "そう", "ああ"], answer: 2 },
+          { q: "あの 人(ひと)は _____ ですか。", options: ["なに", "だれ", "どこ", "どれ"], answer: 1 },
+          { q: "これから お _____ に なります。", options: ["てんき", "せわ", "なまえ", "くに"], answer: 1 },
+          { q: "カリナさんは _____ ですか。（Age）", options: ["何(なん)さい", "何(なん)ばん", "何(なん)じ", "何(なん)ようび"], answer: 0 },
+          { q: "あなたの 会社(かいしゃ)は _____ ですか。", options: ["だれ", "どちら", "どれ", "なに"], answer: 1 },
+          { q: "この ネクタイは _____ ですか。（Price）", options: ["いくつ", "いくら", "どちら", "どう"], answer: 1 },
+          { q: "それは _____ の CDですか。（Content）", options: ["なん", "だれ", "どこ", "どれ"], answer: 0 },
+          { q: "それは _____ の かばんですか。（Owner）", options: ["なん", "だれ", "どこ, どれ"], answer: 1 },
+          { q: "A: はじめまして。 B: _____ こそ よろしく。", options: ["こちら", "そちら", "あちら", "わたし"], answer: 0 },
+          { q: "A: _____。 B: はい、どなたですか。", options: ["こんばんは", "失礼(しつれい)します", "ごめんください", "おはよう"], answer: 2 },
+          { q: "ここは _____ です。", options: ["教室(きょうしつ)", "先生(せんせい)", "机(つくえ)", "鉛筆(えんぴつ)"], answer: 0 },
+          { q: "ワットさんは 桜(さくら)大学(だいがく)の _____ です。", options: ["医者(いしゃ)", "学生(がくせい)", "先生(せんせい)", "時計(とけい)"], answer: 2 },
+          { q: "この ワインは _____ の ワインです。（Origin）", options: ["フランス", "フランス人(じん)", "フランス語(ご)", "フランスで"], answer: 0 },
+          { q: "Which is correct?", options: ["ミラーさんはアメリカ人じゃありません", "ミラーさんはアメリカ人はありません", "ミラーさんはアメリカ人にありません", "ミラーさんはアメリカ人のありません"], answer: 0 },
+          { q: "Which is correct?", options: ["これ本は私のです", "この本は私のです", "こちら本は私のです", "ここ本は私のです"], answer: 1 },
+          { q: "Which is correct?", options: ["事務所はあちらにです", "事務所はあちらです", "事務所はあちらのです", "事務所にあちらです"], answer: 1 },
+          { q: "A: ありがとうございます。 B: _____ 。", options: ["そうですか", "ちがいます", "いいえちがいます", "いいえいたしまして"], answer: 3 },
+          { q: "これは ボールペンですか、シャープペンシル _____ 。", options: ["か", "ですか", "は", "の"], answer: 1 }
+      ]
+  },
+  "set2": {
+      title: "Set 2: Lessons 4-6",
+      questions: [
+          { q: "今(いま) 4時(じ) _____ です。", options: ["ふん", "ぷん", "はん", "まい"], answer: 2 },
+          { q: "毎朝(まいあさ) 6時(じ) _____ 起(お)きます。", options: ["に", "で", "を", "へ"], answer: 0 },
+          { q: "銀行(ぎんこう)は 9時(じ) _____ 3時(じ)までです。", options: ["に", "から", "と", "より"], answer: 1 },
+          { q: "昨日(きのう) 勉強(べんきょう) _____ 。", options: ["します", "しますた", "しました", "しません"], answer: 2 },
+          { q: "休み(やすみ)は 土曜日(どようび) _____ 日曜日(にちようび)です。", options: ["に", "から", "と", "や"], answer: 2 },
+          { q: "毎晩(まいばん) 何時(なんじ)に _____ か。", options: ["寝(ね)ました", "寝(ね)ます", "寝(ね)ません", "寝(ね)る"], answer: 1 },
+          { q: "おととい 働き(はたらき) _____ 。", options: ["ません", "ました", "ませんでした", "ます"], answer: 2 },
+          { q: "スーパー _____ 行(い)きます。", options: ["で", "を", "へ", "が"], answer: 2 },
+          { q: "バス _____ 会社(かいしゃ)へ 行(い)きます。", options: ["で", "に", "を", "と"], answer: 0 },
+          { q: "友達(ともだち) _____ 日本(にほん)へ 来(き)ました。", options: ["で", "と", "へ", "に"], answer: 1 },
+          { q: "歩(ある)いて _____ 帰(か)えりました。", options: ["で", "に", "（なし）", "を"], answer: 2 },
+          { q: "A: どこへ 行(い)きますか。 B: _____ 行(い)きません。", options: ["どこも", "どこか", "どこへ", "どこで"], answer: 0 },
+          { q: "_____ 日本(にほん)へ 来(き)ましたか。", options: ["いつ", "なんじ", "どこ", "だれ"], answer: 0 },
+          { q: "次(つぎ)の 電車(でんしゃ)は 甲子園(こうしえん)へ _____ か。", options: ["行(い)きます", "来(き)ます", "帰(か)ります", "します"], answer: 0 },
+          { q: "朝(あさ) パン _____ 食(た)べます。", options: ["で", "に", "を", "が"], answer: 2 },
+          { q: "図書館(としょかん) _____ 本(ほん)を 読(よ)みます。", options: ["に", "で", "へ", "を"], answer: 1 },
+          { q: "何(なに)を _____ か。... 手紙(てがみ)を 書(か)きます。", options: ["します", "きます", "います", "あります"], answer: 0 },
+          { q: "一緒(いっしょ)に 京都(きょうと)へ _____ か。", options: ["行(い)きます", "行(い)きません", "行(い)きましょう", "行(い)く"], answer: 1 },
+          { q: "お酒(さけ)を _____ 。(Let's drink)", options: ["飲(の)みましょう", "飲(の)みませんか", "飲(の)みます", "飲(の)みました"], answer: 0 },
+          { q: "お花見(はなみ)を しませんか。... いいですね。 _____ 。", options: ["します", "しません", "しましょう", "したいです"], answer: 2 },
+          { q: "たばこを 吸(す)いますか。... いいえ、 _____ 。", options: ["吸(す)いません", "吸(す)います", "吸(す)いましょう", "吸(す)いませんでした"], answer: 0 },
+          { q: "毎朝(まいあさ) 新聞(しんぶん)を _____ 。", options: ["見(み)ます", "書(か)きます", "読(よ)みます", "聞(き)きます"], answer: 2 },
+          { q: "友達(ともだち)に _____ 。", options: ["会(あ)います", "行(い)きます", "来(き)ます", "吸(す)います"], answer: 0 },
+          { q: "写真(しゃしん)を _____ 。", options: ["かきます", "とります", "します", "みます"], answer: 1 },
+          { q: "誕生日(たんじょうび)は _____ ですか。", options: ["なんじ", "いつ", "どこ", "だれ"], answer: 1 },
+          { q: "新幹線(しんかんせん) _____ 大阪(おおさか)へ 行(い)きます。", options: ["に", "と", "で", "を"], answer: 2 },
+          { q: "銀行(ぎんこう)で _____ 。", options: ["休(やす)みます", "働(はたら)きます", "終(お)わります", "起(お)きます"], answer: 1 },
+          { q: "昼(ひる)ごはんを _____ 。", options: ["食(た)べます", "飲(の)みます", "吸(す)います", "見(み)ます"], answer: 0 },
+          { q: "ビールを _____ 。", options: ["食(た)べます", "飲(の)みます", "吸(す)います", "見(み)ます"], answer: 1 },
+          { q: "テニスを _____ 。", options: ["します", "いきます", "きます", "かえります"], answer: 0 }
+      ]
+  },
+  "set3": {
+      title: "Set 3: Lessons 7-9",
+      questions: [
+          { q: "はし _____ ごはんを 食(た)べます。", options: ["で", "に", "を", "と"], answer: 0 },
+          { q: "日本語(にほんご) _____ レポートを 書(か)きます。", options: ["を", "で", "に", "が"], answer: 1 },
+          { q: "「Thank you」は 日本語(にほんご)で _____ ですか。", options: ["なん", "なに", "どこ", "だれ"], answer: 0 },
+          { q: "木村(きむら)さん _____ 花(はな)を あげました。", options: ["を", "の", "に", "で"], answer: 2 },
+          { q: "カリナさん _____ チョコレートを もらいました。", options: ["に", "へ", "を", "で"], answer: 0 },
+          { q: "父(ちち)に シャツを _____ 。(Received)", options: ["あげました", "もらいました", "かしました", "おしえました"], answer: 1 },
+          { q: "もう 荷物(にもつ)を 送(おく)りましたか。... いいえ、 _____ 。", options: ["まだです", "もうです", "送(おく)りました", "送(おく)りません"], answer: 0 },
+          { q: "先生(せんせい)に 日本語(にほんご)を _____ 。(Learned)", options: ["貸(か)しました", "習(なら)いました", "教(おし)えました", "かけました"], answer: 1 },
+          { q: "京都(きょうと)は _____ ですか。", options: ["きれい", "きれいくない", "きれいな", "きれいに"], answer: 0 },
+          { q: "桜(さくら)は _____ です。", options: ["きれい", "きれいな", "きれいくない", "きれいだ"], answer: 0 },
+          { q: "今日(きょう)は _____ です。(Hot)", options: ["あつい", "あついな", "あつ", "あつく"], answer: 0 },
+          { q: "この 本(ほん)は _____ 。(Not interesting)", options: ["おもしろくないです", "おもしろくありませんでした", "おもしろいじゃないです", "おもしろいです"], answer: 0 },
+          { q: "あの 映画(えいが)は _____ 。(Good)", options: ["いかったです", "いいです", "よかったです", "よくないです"], answer: 2 },
+          { q: "東京(とうきょう)は _____ 町(まち)ですか。", options: ["どう", "どんな", "どれ", "どちら"], answer: 1 },
+          { q: "奈良(なら)は _____ 町(まち)です。(Quiet)", options: ["しずか", "しずかな", "しずかの", "しずくに"], answer: 1 },
+          { q: "富士山(ふじさん)は _____ 山(やま)です。", options: ["たかい", "たかいな", "たかいの", "たかく"], answer: 0 },
+          { q: "日本(にほん)の 食(た)べ物(もの)は _____ ですか。", options: ["どう", "どんな", "なん", "どれ"], answer: 0 },
+          { q: "イタリア料理(りょうり) _____ 好(す)きです。", options: ["を", "は", "が", "の"], answer: 2 },
+          { q: "漢字(かんじ) _____ わかります。", options: ["が", "を", "に", "で"], answer: 0 },
+          { q: "ダンスが _____ です。(Good at)", options: ["じょうず", "すき", "ほしい", "いたい"], answer: 0 },
+          { q: "スポーツが _____ です。(Dislike)", options: ["すき", "きらい", "へた", "じょうず"], answer: 1 },
+          { q: "時間(じかん)が ありません _____ 、新聞(しんぶん)を 読(よ)みません。", options: ["が", "から", "まで", "と"], answer: 1 },
+          { q: "_____ 朝(あさ) 新聞(しんぶん)を 読(よ)みませんか。... 時間(じかん)が ないからです。", options: ["どう", "どうして", "どんな", "いかが"], answer: 1 },
+          { q: "英語(えいご)が _____ わかります。(Well)", options: ["よく", "たくさん", "すこし", "あまり"], answer: 0 },
+          { q: "お金(かね)が _____ ありません。(Not at all)", options: ["ぜんぜん", "よく", "だいたい", "たくさん"], answer: 0 },
+          { q: "わたしは カメラが _____ 。(Do not have)", options: ["ありません", "いません", "あります", "います"], answer: 0 },
+          { q: "用事(ようじ)が _____ から、早(はや)く 帰(か)えります。", options: ["あります", "います", "ありません", "いません"], answer: 0 },
+          { q: "この 辞書(じしょ)は _____ です。(Convenient)", options: ["べんり", "べんりな", "ゆうめい", "ひま"], answer: 0 },
+          { q: "コーヒー、もう一杯(いっぱい) いかがですか。... いいえ、 _____ 。", options: ["いただきます", "けっこうです", "そうです", "おねがいします"], answer: 1 },
+          { q: "スプーンで スープを _____ 。", options: ["かきます", "のみます", "たべます", "きります"], answer: 1 }
+      ]
+  },
+  "set4": {
+      title: "Set 4: Lessons 10-11",
+      questions: [
+          { q: "あそこに 佐藤(さとう)さんが _____ 。", options: ["あります", "います", "ないです", "いませんでした"], answer: 1 },
+          { q: "庭(にわ)に 桜(さくら)の 木(き)が _____ 。", options: ["あります", "います", "ないです", "いません"], answer: 0 },
+          { q: "机(つくえ)の 上(うえ)に 写真(しゃしん)が _____ 。", options: ["います", "あります", "いました", "いません"], answer: 1 },
+          { q: "公園(こうえん)に 誰(だれ)が _____ か。", options: ["あります", "います", "なん", "どこ"], answer: 1 },
+          { q: "箱(はこ)の 中(なか)に 何(なに)が _____ か。", options: ["います", "あります", "だれ", "どちら"], answer: 1 },
+          { q: "コンビニは あそこ _____ あります。", options: ["に", "で", "を", "へ"], answer: 0 },
+          { q: "銀行(ぎんこう)は スーパーの _____ に あります。(Next to)", options: ["なか", "うえ", "となり", "あいだ"], answer: 2 },
+          { q: "本(ほん)は カバンの _____ です。(Inside)", options: ["なか", "そと", "うえ", "した"], answer: 0 },
+          { q: "ベッドの _____ に 猫(ねこ)が います。(Under)", options: ["うえ", "した", "まえ", "うしろ"], answer: 1 },
+          { q: "郵便局(ゆうびんきょく)は 銀行(ぎんこう) _____ 病院(びょういん)の 間(あいだ)に あります。", options: ["が", "と", "や", "も"], answer: 1 },
+          { q: "冷蔵庫(れいぞうこ)の 中(なか)に ビール _____ ジュースなどが あります。", options: ["と", "や", "も", "が"], answer: 1 },
+          { q: "りんごを _____ ください。(4 items)", options: ["よっつ", "しっつ", "よん", "よねん"], answer: 0 },
+          { q: "みかんを _____ 買(か)いました。(9 items)", options: ["ななつ", "ここのつ", "きゅうつ", "やっと"], answer: 1 },
+          { q: "教室(きょうしつ)に 学生(がくせい)が _____ います。(2 people)", options: ["ににん", "ふたり", "にめい", "ふたつ"], answer: 1 },
+          { q: "家族(かぞく)は _____ ですか。(How many people)", options: ["なんびと", "なんにん", "いくつ", "どのくらい"], answer: 1 },
+          { q: "シャツを _____ 洗(あら)いました。(1 sheet)", options: ["ひとつ", "いちだい", "いちまい", "いちほん"], answer: 2 },
+          { q: "自転車(じてんしゃ)が _____ あります。(1 machine)", options: ["ひとつ", "いちだい", "いちまい", "いちばん"], answer: 1 },
+          { q: "80円(えん)の 切手(きって)を _____ 買(か)いました。(10 sheets)", options: ["じゅうまい", "とおまい", "じゅうだい", "じゅう"], answer: 0 },
+          { q: "毎日(まいにち) _____ 日本語(にほんご)を 勉強(べんきょう)しますか。", options: ["どのくらい", "どの", "いくら", "いくつ"], answer: 0 },
+          { q: "毎晩(まいばん) _____ 寝(ね)ますか。(Length of time)", options: ["7時(じ)", "7時間(じかん)", "7時(じ)に", "7時間(じかん)に"], answer: 1 },
+          { q: "会社(かいしゃ)を _____ 休(やす)みました。(3 days)", options: ["3日(みっか)", "3日(にち)", "3にち", "3かい"], answer: 0 },
+          { q: "国(くに)で _____ 日本語(にほんご)を 勉強(べんきょう)しました。(2 months)", options: ["2げつ", "2かげつ", "2がつ", "2ねん"], answer: 1 },
+          { q: "大阪(おおさか)から 東京(とうきょう)まで 2時間(じかん)半(はん) _____ かかります。", options: ["ごろ", "ぐらい", "から", "まで"], answer: 1 },
+          { q: "1週間(しゅうかん)に _____ 映画(えいが)を 見(み)ますか。", options: ["なんまい", "なんかい", "なんだい", "なんにん"], answer: 1 },
+          { q: "1か月(げつ)に 2回(かい) _____ 映画(えいが)を 見(み)ます。", options: ["（なし）", "で", "に", "ぐらい"], answer: 0 },
+          { q: "休み(やすみ)は 日曜日(にちようび) _____ です。(Only)", options: ["だけ", "しか", "ごろ", "ぐらい"], answer: 0 },
+          { q: "外国人(がいこくじん)の 先生(せんせい)が _____ います。(Only one)", options: ["ひとりだけ", "いちばん", "ひとりしか", "ひとつ"], answer: 0 },
+          { q: "みかんは _____ ですか。(How many?)", options: ["いくら", "いくつ", "なんぼ", "どのくらい"], answer: 1 },
+          { q: "兄弟(きょうだい)は _____ いますか。(4 people)", options: ["よにん", "しにん", "よんにん", "よんめい"], answer: 2 },
+          { q: "いろいろな お菓子(かし) _____ あります。", options: ["に", "が", "を", "で"], answer: 1 }
+      ]
+  },
+  "set5": {
+      title: "Set 5: Lessons 11-12",
+      questions: [
+          { q: "りんごを _____ 買(か)いました。(8 items)", options: ["ななつ", "やっつ", "ここのつ", "とお"], answer: 1 },
+          { q: "家族(かぞく)は _____ ですか。", options: ["なんびと", "なんにん", "いくつ", "どのくらい"], answer: 1 },
+          { q: "兄弟(きょうだい)が ひとり _____ 。", options: ["あります", "います", "ありました", "いました"], answer: 1 },
+          { q: "東京から大阪まで新幹線で _____ かかりますか。", options: ["どのぐらい", "いくつ", "なんにん", "なんだい"], answer: 0 },
+          { q: "1か月(げつ) _____ 2回(かい) 映画(えいが)を 見(み)ます。", options: ["が", "で", "に", "を"], answer: 2 },
+          { q: "休み(やすみ)は 日曜日(にちようび) _____ です。(Only)", options: ["ぐらい", "だけ", "ごろ", "まで"], answer: 1 },
+          { q: "国(くに)で 3か月(げつ) _____ 日本語(にほんご)を 勉強(べんきょう)しました。(About)", options: ["だけ", "ぐらい", "ごろ", "まで"], answer: 1 },
+          { q: "みかんを ひとつ _____ 食(た)べました。(Only one)", options: ["だけ", "しか", "ぐらい", "ごろ"], answer: 0 },
+          { q: "昨日(きのう)は 雨(あめ) _____ 。", options: ["です", "でした", "ました", "かったです"], answer: 1 },
+          { q: "昨日(きのう)の 試験(しけん)は _____ 。（Was not simple）", options: ["簡単くないです", "簡単くなかったです", "簡単じゃありませんでした", "簡単でした"], answer: 2 },
+          { q: "先週(せんしゅう)は とても _____ 。（Was busy）", options: ["忙しいでした", "忙しかったです", "忙しくなかったです", "忙しいです"], answer: 1 },
+          { q: "旅行(りょこう)は あまり _____ 。（Was not fun）", options: ["楽しくなかったです", "楽しくないでした", "楽しいじゃありませんでした", "楽しかったじゃありません"], answer: 0 },
+          { q: "お祭(まつ)りは _____ か。... はい、にぎやかでした。", options: ["どう", "どんな", "どうでした", "なに"], answer: 2 },
+          { q: "天気(てんき)は _____ 。（Was good）", options: ["いかったです", "よかったです", "いいでした", "よいでした"], answer: 1 },
+          { q: "この 車(くるま)は あの 車(くるま) _____ 大(おお)きいです。", options: ["より", "ほど", "のほう", "と"], answer: 0 },
+          { q: "A: 東京(とうきょう)と 大阪(おおさか)と _____ 人(ひと)が 多(おお)いですか。", options: ["どこ", "どちら", "どの", "だれ"], answer: 1 },
+          { q: "B: 東京(とうきょう) _____ 人(ひと)が 多(おお)いです。", options: ["ほうが", "より", "のほうが", "と"], answer: 2 },
+          { q: "日本料理(にほんりょうり) _____ 何(なに)が いちばん 好(す)きですか。", options: ["が", "で", "を", "に"], answer: 1 },
+          { q: "スポーツで サッカーが _____ おもしろいです。", options: ["ずっと", "いちばん", "とても", "どちらも"], answer: 1 },
+          { q: "A: コーヒーと 紅茶(こうちゃ)と どちらが いいですか。 B: _____ いいです。(Like both)", options: ["どちらも", "どちらが", "どれも", "なにも"], answer: 0 },
+          { q: "中国(ちゅうごく)は 日本(にほん)より _____ 広(ひろ)いです。(Much more)", options: ["いちばん", "ずっと", "とても", "あまり"], answer: 1 },
+          { q: "80円(えん)の 切手(きって)を 10枚(まい) _____ ください。", options: ["と", "に", "を", "（なし）"], answer: 3 },
+          { q: "1週間(しゅうかん)に _____ テニスを しますか。", options: ["なんまい", "なんだい", "なんかい", "なんぞく"], answer: 2 },
+          { q: "昨日(きのう)の パーティーは _____ 。(Was lively)", options: ["暇でした", "にぎやかでした", "静かでした", "元気でした"], answer: 1 },
+          { q: "家族(かぞく)で _____ いちばん 若(わか)いですか。", options: ["どこ", "だれが", "いつ", "なに"], answer: 1 },
+          { q: "カバンは どれですか。... あの 赤(あか)くて _____ です。", options: ["小(ちい)さいの", "小(ちい)さい", "小(ちい)さいこと", "小(ちい)さいもの"], answer: 0 },
+          { q: "パソコンが _____ あります。(2 machines)", options: ["にまい", "にほん", "にだい", "ふたつ"], answer: 2 },
+          { q: "会議(かいぎ)は _____ かかります。", options: ["2時間(じかん)", "2時(じ)", "2時(じ)に", "2時間(じかん)に"], answer: 0 },
+          { q: "みかんを _____ 買(か)いました。(8 items)", options: ["ななつ", "やっつ", "ここのつ", "とお"], answer: 1 },
+          { q: "切手(きって)を _____ 買(か)いました。(5 sheets)", options: ["ごだい", "ごほん", "ごまい", "ごさつ"], answer: 2 }
+      ]
+  },
+  "set6": {
+      title: "Set 6: Lesson 13",
+      questions: [
+          { q: "私(わたし)は 大(おお)きい 家(いえ) _____ 欲(ほ)しいです。", options: ["を", "で", "が", "に"], answer: 2 },
+          { q: "今(いま) 何(なに)が いちばん 欲(ほ)しいですか。... _____ が 欲(ほ)しいです。", options: ["くるま", "かいもの", "たべます", "あつい"], answer: 0 },
+          { q: "誕生(たんじょう)日(び)に 何(なに) _____ 欲(ほ)しいですか。", options: ["が", "を", "で", "に"], answer: 0 },
+          { q: "私は カメラが _____ 。(Don't want)", options: ["欲(ほ)しいです", "欲(ほ)しくないです", "欲(ほ)しかったです", "欲(ほ)しくなかったです"], answer: 1 },
+          { q: "忙(いそが)しいですから、時間(じかん)が _____ 。", options: ["あります", "います", "欲(ほ)しいです", "好(す)きです"], answer: 2 },
+          { q: "私(わたし)は 沖縄(おきなわ)へ _____ たいです。", options: ["行(い)く", "行(い)き", "行(い)って", "行(い)った"], answer: 1 },
+          { q: "喉(のど)が 渇(かわ)きましたから、水(みず) _____ 飲(の)みたいです。", options: ["が", "で", "に", "へ"], answer: 0 },
+          { q: "今日(きょう)は 疲(つか)れましたから、何(なに)も _____ 。", options: ["したいです", "して いません", "したくないです", "します"], answer: 2 },
+          { q: "この 靴(くつ)を _____ たいんですが。", options: ["履(は)き", "履(は)く", "履(は)いて", "履(は)いた"], answer: 0 },
+          { q: "週末(しゅうまつ)は 家(いえ)で _____ たいです。", options: ["休(やす)み", "休(やす)む", "休(やす)んで", "休(やす)め"], answer: 0 },
+          { q: "何(なに)を 食(た)べたいですか。... 何(なに) _____ 食(た)べたくないです。", options: ["を", "が", "も", "か"], answer: 2 },
+          { q: "暑(あつ)いですから、ビールを _____ たいです。", options: ["食(た)べ", "飲(の)み", "買(か)い", "行(い)き"], answer: 1 },
+          { q: "日本(にほん)へ 美術(びじゅつ)の 勉強(べんきょう) _____ 来(き)ました。", options: ["を", "に", "で", "が"], answer: 1 },
+          { q: "デパートへ 靴(くつ)を _____ に 行(い)きます。", options: ["買(か)う", "買(か)い", "買(か)って", "買(か)った"], answer: 1 },
+          { q: "図書館(としょかん)へ 本(ほん)を 借(か)り _____ 行(い)きます。", options: ["に", "を", "で", "（なし）"], answer: 0 },
+          { q: "ロビーへ 友達(ともだち)を 待(ま)ち _____ 行(い)きます。", options: ["に", "へ", "で", "を"], answer: 0 },
+          { q: "日曜日(にちようび)、京都(きょうと)へ 遊(あそ)び _____ 行(い)きました。", options: ["に", "を", "で", "が"], answer: 0 },
+          { q: "レストランへ 食事(しょくじ) _____ 行(い)きます。", options: ["を", "に", "で", "が"], answer: 1 },
+          { q: "公園(こうえん)へ 散歩(さんぽ) _____ 行(い)きます。", options: ["に", "を", "で", "が"], answer: 0 },
+          { q: "川(かわ)へ 釣(つ)り _____ 行(い)きます。", options: ["に", "を", "で", "が"], answer: 0 },
+          { q: "冬休(ふゆやす)みは _____ 行(い)きたいですか。", options: ["どこも", "どこかへ", "だれも", "何(なに)も"], answer: 1 },
+          { q: "お腹(なか)が すきましたね。 _____ 食(た)べませんか。", options: ["何(なに)か", "何(なに)を", "何(なに)も", "どこか"], answer: 0 },
+          { q: "喉(のど)が 渇(かわ)きました。 _____ 飲(の)みたいです。", options: ["何(なに)を", "何(なに)か", "どこか", "だれか"], answer: 1 },
+          { q: "週末(しゅうまつ) どこか 行(い)きましたか。... いいえ、 _____ 行(い)きませんでした。", options: ["どこか", "どこも", "何(なに)か", "だれも"], answer: 1 },
+          { q: "お腹(なか)が _____ 。(Hungry)", options: ["すきました", "いきました", "きました", "しました"], answer: 0 },
+          { q: "喉(のど)が _____ 。(Thirsty)", options: ["かわきました", "すきました", "いきました", "のみました"], answer: 0 },
+          { q: "12時(じ)です。 _____ 食事(しょくじ)に 行(い)きませんか。", options: ["ひとりで", "いっしょに", "べつべつに", "まっすぐ"], answer: 1 },
+          { q: "ご注文(ちゅうもん)は？... カレーライスを _____ 。", options: ["お願(ねが)いします", "欲(ほ)しいです", "食(た)べたいです", "あります"], answer: 0 },
+          { q: "釣(つ)りを _____ 。(To fish)", options: ["します", "いきます", "きます", "たべます"], answer: 0 },
+          { q: "郵便局(ゆうびんきょく)へ 切手(きって)を _____ に 行(い)きます。", options: ["買(か)う", "買(か)い", "買(か)って", "売(う)り"], answer: 1 }
+      ]
+  },
+  "set7": {
+      title: "Set 7: Lessons 14-16",
+      questions: [
+          { q: "名前(なまえ)を _____ ください。", options: ["書(か)き", "書(か)く", "書(か)いて", "書(か)いた"], answer: 2 },
+          { q: "もっと ゆっくり _____ ください。", options: ["話(はな)して", "話(はな)し", "話(はな)す", "話(はな)した"], answer: 0 },
+          { q: "荷物(にもつ)を _____ ましょうか。", options: ["持(も)って", "持(も)ち", "持(も)つ", "持(も)て"], answer: 1 },
+          { q: "エアコンを つけましょうか。... _____ 。", options: ["はいけっこうです", "いいえおねがいします", "はいおねがいします", "いいえそうです"], answer: 2 },
+          { q: "今(いま) 雨(あめ)が _____ います。", options: ["降(ふ)り", "降(ふ)る", "降(ふ)って", "降(ふ)ら"], answer: 2 },
+          { q: "ミラーさんは 今(いま) レポートを _____ います。", options: ["読(よ)み", "読(よ)んで", "読(よ)む", "読(よ)んだ"], answer: 1 },
+          { q: "タクシーを _____ ください。", options: ["呼(よ)んで", "呼(よ)びて", "呼(よ)い", "呼(よ)んだ"], answer: 0 },
+          { q: "ちょっと _____ ください。", options: ["待(ま)ちて", "待(ま)って", "待(ま)つ", "待(ま)て"], answer: 1 },
+          { q: "ここに 座(すわ)っても _____ ですか。", options: ["いい", "います", "いけません", "ありません"], answer: 0 },
+          { q: "ここで タバコを 吸(す)っては _____ 。", options: ["いいです", "いけません", "います", "ありません"], answer: 1 },
+          { q: "この カタログを _____ も いいですか。", options: ["もらい", "もらう", "もらって", "もらった"], answer: 2 },
+          { q: "病院(びょういん)で 携帯(けいたい)電話(でんわ)を _____ いけません。", options: ["使(つか)って", "使(つか)っては", "使(つか)っても", "使(つか)う"], answer: 1 },
+          { q: "ここに 車(くるま)を 止(と)めても いいですか。... いいえ、 _____ 。", options: ["いいです", "止(と)めて ください", "いけません", "かまいません"], answer: 2 },
+          { q: "私は 結婚(けっこん) _____ 。", options: ["します", "しました", "して います", "して あります"], answer: 2 },
+          { q: "私は 東京(とうきょう)に _____ 。", options: ["住(す)みます", "住(す)んで います", "住(す)んで あります", "住(す)みました"], answer: 1 },
+          { q: "あの 人(ひと)を 知(し)って いますか。... いいえ、 _____ 。", options: ["知(し)りません", "知(し)って いません", "知(し)りないです", "知(し)って ありません"], answer: 0 },
+          { q: "山田(やまだ)さんは 車(くるま)を _____ 。(Possesses)", options: ["持(も)ちます", "持(も)って います", "あります", "います"], answer: 1 },
+          { q: "IMCは コンピューターソフトを _____ 。(Produces)", options: ["作(つく)ります", "作(つく)って います", "作(つく)って あります", "作(つく)りました"], answer: 1 },
+          { q: "昨日(きのう)、デパートへ _____ 、買(か)い物(もの)しました。", options: ["行(い)き", "行(い)く", "行(い)って", "行(い)った"], answer: 2 },
+          { q: "朝(あさ) ジョギングを _____ 、シャワーを 浴(あ)びます。", options: ["して", "し", "します", "する"], answer: 0 },
+          { q: "コンサートが _____ から、レストランで 食事(しょくじ)しました。", options: ["終(お)わって", "終(お)わる", "終(お)わり", "終(お)わった"], answer: 0 },
+          { q: "国(くに)へ _____ から、大学(だいがく)に 入(はい)ります。", options: ["帰(かえ)る", "帰(かえ)って", "帰(かえ)り", "帰(かえ)った"], answer: 1 },
+          { q: "この 部屋(へや)は _____ 、明(あか)るいです。", options: ["広(ひろ)い", "広(ひろ)くて", "広(ひろ)いで", "広(ひろ)いな"], answer: 1 },
+          { q: "マリアさんは _____ 、きれいな 人(ひと)です。", options: ["有名(ゆうめい)", "有名(ゆうめい)くて", "有名(ゆうめい)な", "有名(ゆうめい)で"], answer: 3 },
+          { q: "カリナさんは 学生(がくせい) _____ 、マリアさんは 主婦(しゅふ)です。", options: ["で", "て", "に", "の"], answer: 0 },
+          { q: "象(ぞう)は 鼻(はな) _____ 長(なが)いです。", options: ["は", "が", "の", "を"], answer: 1 },
+          { q: "大阪(おおさか)は 食(た)べ物(もの) _____ おいしいです。", options: ["が", "は", "の", "を"], answer: 0 },
+          { q: "大学(だいがく)まで _____ 行(い)きますか。(How)", options: ["どう", "どんな", "どうやって", "どのくらい"], answer: 2 },
+          { q: "京都(きょうと)駅(えき)から 16番(ばん)の バスに _____ ください。", options: ["乗(の)って", "降(お)りて", "入(はい)って", "出(で)て"], answer: 0 },
+          { q: "お金(かね)を _____ から、買(か)い物(もの)に 行(い)きます。(Withdraw)", options: ["出(だ)して", "おろして", "かえて", "いれて"], answer: 1 }
+      ]
+  },
+  "set8": {
+      title: "Set 8: Lessons 17-19",
+      questions: [
+          { q: "ここで 写真(しゃしん)を _____ ください。", options: ["とらないで", "とらなくて", "とりないで", "とらない"], answer: 0 },
+          { q: "病院(びょういん)へ _____ なりません。", options: ["行(い)かない", "行(い)かなくて", "行(い)かなければ", "行(い)かないで"], answer: 2 },
+          { q: "明日(あした)は 休(やす)みですから、 _____ いいです。", options: ["起(お)きなくて", "起(お)きないで", "起(お)きなければ", "起(お)きなくても"], answer: 3 },
+          { q: "心配(しんぱい) _____ ください。", options: ["しない", "しないで", "しなくて", "して"], answer: 1 },
+          { q: "パスポートを _____ なりません。", options: ["見(み)せなければ", "見(み)せなくて", "見(み)せないで", "見(み)せても"], answer: 0 },
+          { q: "靴(くつ)を _____ も いいですか。", options: ["脱(ぬ)がないで", "脱(ぬ)がなくて", "脱(ぬ)がなければ", "脱(ぬ)ぐ"], answer: 1 },
+          { q: "金曜日(きんようび) _____ 出(だ)して ください。", options: ["まで", "までに", "から", "に"], answer: 1 },
+          { q: "漢字(かんじ)を _____ ことが できます。", options: ["読(よ)む", "読(よ)みます", "読(よ)んで", "読(よ)める"], answer: 0 },
+          { q: "趣味(しゅみ)は 絵(え)を _____ ことです。", options: ["かく", "かいて", "かき", "かいた"], answer: 0 },
+          { q: "寝(ね)る _____ 、お祈(いの)りを します。", options: ["あとで", "まえに", "とき", "ながら"], answer: 1 },
+          { q: "車(くるま)を _____ ことが できますか。", options: ["運転(うんてん)", "運転(うんてん)して", "運転(うんてん)する", "運転(うんてん)します"], answer: 2 },
+          { q: "食事(しょくじ)の _____ 、手(て)を 洗(あら)います。", options: ["まえに", "まえ", "あと", "とき"], answer: 0 },
+          { q: "5年(ねん) _____ 、日本(にほん)へ 来(き)ました。", options: ["まえ", "まえに", "ごろ", "ぐらい"], answer: 1 },
+          { q: "泳(およ)ぐ _____ が できますか。", options: ["もの", "こと", "の", "ほう"], answer: 1 },
+          { q: "相撲(すもう)を _____ ことが ありますか。", options: ["見(み)る", "見(み)た", "見(み)て", "見(み)ない"], answer: 1 },
+          { q: "日曜日(にちようび)は テニスを _____ 、映画(えいが)を 見(み)たり しました。", options: ["して", "した", "したり", "する"], answer: 2 },
+          { q: "毎晩(まいばん) テレビを 見(み)たり、本(ほん)を _____ します。", options: ["読(よ)む", "読(よ)んで", "読(よ)んだ", "読(よ)んだり"], answer: 3 },
+          { q: "寒(さむ)く _____ ね。", options: ["なりました", "しました", "ありました", "いました"], answer: 0 },
+          { q: "部屋(へや)が _____ なりました。", options: ["きれい", "きれいに", "きれいな", "きれいく"], answer: 1 },
+          { q: "将来(しょうらい) 医者(いしゃ)に _____ です。", options: ["なりたい", "したい", "ありたい", "いきたい"], answer: 0 },
+          { q: "一度(いちど) _____ 日本(にほん)へ 行(い)った ことが ありません。", options: ["も", "が", "に", "を"], answer: 0 },
+          { q: "書(か)きます → Dictionary Form:", options: ["かく", "かける", "かこう", "かいた"], answer: 0 },
+          { q: "食(た)べます → Nai Form:", options: ["たべない", "たべらない", "たべがない", "たべたくない"], answer: 0 },
+          { q: "来(き)ます → Ta Form:", options: ["きた", "くる", "きった", "こない"], answer: 0 },
+          { q: "します → Dictionary Form:", options: ["しる", "す", "する", "して"], answer: 2 },
+          { q: "飲(の)みます → Nai Form:", options: ["のまない", "のみない", "のんまない", "のめない"], answer: 0 },
+          { q: "テレサちゃんは 背(せ)が _____ なりましたね。", options: ["高(たか)い", "高(たか)く", "高(たか)に", "高(たか)くて"], answer: 1 },
+          { q: "大切(たいせつ)な 資料(しりょう)ですから、_____ ください。", options: ["なくさないで", "なくさなくて", "なくなる", "なくす"], answer: 0 },
+          { q: "日本(にほん)の 歌(うた)を _____ ことが できますか。", options: ["歌(うた)う", "歌(うた)って", "歌(うた)い", "歌(うた)います"], answer: 0 },
+          { q: "買(か)い物(もの) _____ 、散歩(さんぽ)したり します。", options: ["したり", "して", "した", "すると"], answer: 0 }
+      ]
+  },
+  "set9": {
+      title: "Set 9: Lessons 20-22",
+      questions: [
+          { q: "A: 明日(あした) 東京(とうきょう)へ 行(い)く？ B: うん、 _____ 。", options: ["行(い)きます", "行(い)く", "行(い)かない", "行(い)って"], answer: 1 },
+          { q: "A: 毎日(まいにち) 忙(いそが)しい？ B: ううん、あまり _____ 。", options: ["忙(いそが)しい", "忙(いそが)しくない", "忙(いそが)しいくない", "忙(いそが)しいない"], answer: 1 },
+          { q: "A: 昨日(きのう) ピアノを 練習(れんしゅう)した？ B: ううん、 _____ 。", options: ["しない", "しなかった", "して いない", "した"], answer: 1 },
+          { q: "A: カレーライスは おいしい？ B: うん、 _____ 。", options: ["おいしいだ", "おいしい", "おいしいの", "おいしいな"], answer: 1 },
+          { q: "A: 今(いま) 暇(ひま)？ B: うん、 _____ 。", options: ["暇(ひま)だ", "暇(ひま)", "暇(ひま)な", "暇(ひま)の"], answer: 0 },
+          { q: "A: 住所(じゅうしょ)を 知(し)って いる？ B: ううん、 _____ 。", options: ["知(し)らない", "知(し)りない", "知(し)って いない", "知(し)らなかった"], answer: 0 },
+          { q: "昨日(きのう)は 雨(あめ) _____ 。(Plain Past)", options: ["だった", "でした", "だ", "かった"], answer: 0 },
+          { q: "明日(あした)は 雨(あめ)が _____ と 思(おも)います。", options: ["降(ふ)る", "降(ふ)ります", "降(ふ)って", "降(ふ)り"], answer: 0 },
+          { q: "ミラーさんは 来(こ)ない _____ 思(おも)います。", options: ["を", "と", "が", "に"], answer: 1 },
+          { q: "日本(にほん)の 地下鉄(ちかてつ)は 便利(べんり) _____ と 思(おも)います。", options: ["だ", "な", "です", "の"], answer: 0 },
+          { q: "新(あたら)しい 空港(くうこう)に ついて _____ 思(おも)いますか。", options: ["なん", "どう", "どんな", "どれ"], answer: 1 },
+          { q: "物価(ぶっか)は _____ と 思(おも)います。", options: ["高(たか)い", "高(たか)いだ", "高(たか)いです", "高(たか)いな"], answer: 0 },
+          { q: "寝(ね)る 前(まえ)に、「おやすみなさい」 _____ 言(い)います。", options: ["を", "と", "に", "で"], answer: 1 },
+          { q: "ミラーさんは 「来週(らいしゅう) 東京(とうきょう)へ 行(い)きます」 _____ 言(い)いました。", options: ["と", "を", "が", "に"], answer: 0 },
+          { q: "首相(しゅしょう)は 来月(らいげつ) アメリカへ _____ と 言(い)いました。", options: ["行(い)く", "行(い)きます", "行(い)って", "行(い)った"], answer: 0 },
+          { q: "明日(あした)は 休(やす)み _____ 。(Confirmation)", options: ["でしょう", "と 思(おも)います", "と 言(い)いました", "か"], answer: 0 },
+          { q: "映画(えいが)を 見(み)に 行(い)きませんか。... ええ、 _____ ですね。", options: ["いい", "よくない", "いきます", "そう"], answer: 0 },
+          { q: "これは 母(はは) _____ 作(つく)った ケーキです。", options: ["は", "が", "を", "に"], answer: 1 },
+          { q: "ミラーさんが 住(す)んで いる _____ は 大阪(おおさか)です。", options: ["うち", "ひと", "もの", "こと"], answer: 0 },
+          { q: "朝(あさ) ごはんを _____ 時間(じかん)が ありません。", options: ["食(た)べる", "食(た)べて", "食(た)べた", "食(た)べ"], answer: 0 },
+          { q: "あそこ(あそこ)に _____ 人(ひと)は 誰(だれ)ですか。", options: ["いる", "います", "いって", "いった"], answer: 0 },
+          { q: "彼女(かのじょ)に あげた _____ は 何(なん)ですか。", options: ["プレゼント", "ひと", "ところ", "じかん"], answer: 0 },
+          { q: "奈良(なら)で 撮(と)った _____ を 見(み)せて ください。", options: ["写真(しゃしん)", "ひと", "まち", "じかん"], answer: 0 },
+          { q: "約束(やくそく)の 時間(じかん)に _____ 。(Not in time)", options: ["間(ま)に 合(あ)いませんでした", "遅(おく)れました", "行(い)きました", "来(き)ました"], answer: 0 },
+          { q: "首相(しゅしょう)は スピーチを _____ 。", options: ["しました", "言(い)いました", "話(はな)しました", "聞(き)きました"], answer: 0 },
+          { q: "図書館(としょかん)で 本(ほん)を _____ ことが ありますか。(Borrow)", options: ["借(か)りた", "貸(か)した", "読(よ)んだ", "買(か)った"], answer: 0 },
+          { q: "日本(にほん)の アニメは _____ と 思(おも)います。", options: ["おもしろい", "おもしろいだ", "おもしろ", "おもしろかった"], answer: 0 },
+          { q: "昨日(きのう) 行(い)った _____ は とても きれいでした。", options: ["所(ところ)", "物(もの)", "人(ひと)", "時(とき)"], answer: 0 },
+          { q: "チケットは ありますか。... いいえ、 _____ 。(Plain style)", options: ["ない", "ありません", "あらない", "なかった"], answer: 0 },
+          { q: "彼(かれ)は 日本語(にほんご)が _____ と 言(い)いました。(Can speak)", options: ["話(はな)せる", "話(はな)す", "話(はな)して", "話(はな)した"], answer: 0 }
+      ]
+  },
+  "set10": {
+      title: "Set 10: Lessons 23-25",
+      questions: [
+          { q: "図書館(としょかん)で 本(ほん)を _____ とき、カードが 要(い)ります。", options: ["借(か)りる", "借(か)りた", "借(か)りて", "借(か)りない"], answer: 0 },
+          { q: "道(みち)を _____ とき、車(くるま)に 気(き)を つけて ください。", options: ["渡(わた)る", "渡(わた)った", "渡(わた)り", "渡(わた)って"], answer: 0 },
+          { q: "朝(あさ) _____ とき、家族(かぞく)の 写真(しゃしん)を 見(み)ました。", options: ["起(お)きる", "起(お)きた", "起(お)きて", "起(お)きない"], answer: 1 },
+          { q: "暇(ひま)な _____ 、ビデオを 見(み)ます。", options: ["とき", "こと", "もの", "ところ"], answer: 0 },
+          { q: "妻(つま)が _____ とき、レストランで 食事(しょくじ)します。", options: ["病気(びょうき)", "病気(びょうき)の", "病気(びょうき)な", "病気(びょうき)だ"], answer: 1 },
+          { q: "この ボタンを _____ と、お釣(つ)りが 出(で)ます。", options: ["押(お)す", "押(お)して", "押(お)した", "押(お)そう"], answer: 0 },
+          { q: "右(みぎ)へ _____ と、郵便局(ゆうびんきょく)が あります。", options: ["曲(ま)がる", "曲(ま)がって", "曲(ま)がった", "曲(ま)がり"], answer: 0 },
+          { q: "佐藤(さとう)さんは 私(わたし)に クリスマスカードを _____ 。", options: ["あげました", "もらいました", "くれました", "かしました"], answer: 2 },
+          { q: "私(わたし)は 木村(きむら)さんに 本(ほん)を _____ 。", options: ["あげました", "もらいました", "くれました", "かしました"], answer: 0 },
+          { q: "私(わたし)は 山田(やまだ)さんに 傘(かさ)を _____ 。(Received)", options: ["あげました", "もらいました", "くれました", "おしえました"], answer: 1 },
+          { q: "田中(たなか)さんは 妹(いもうと)に お菓子(かし)を _____ 。", options: ["もらいました", "くれました", "あげました", "いきました"], answer: 2 },
+          { q: "誰(だれ)が 手伝(てつだ)って _____ か。", options: ["あげました", "もらいました", "くれました", "しました"], answer: 2 },
+          { q: "私(わたし)は ミラーさんに 写真(しゃしん)を 見(み)せて _____ 。", options: ["もらいました", "くれました", "あげました", "いきました"], answer: 2 },
+          { q: "雨(あめ)が _____ 、出(で)かけません。(If)", options: ["降(ふ)る", "降(ふ)れば", "降(ふ)ったら", "降(ふ)っても"], answer: 2 },
+          { q: "お金(かね)が _____ 、旅行(りょこう)します。", options: ["あったら", "あって", "あると", "あっても"], answer: 0 },
+          { q: "時間(じかん)が _____ 、テレビを 見(み)ましょう。", options: ["ない", "なかったら", "なくて", "なくても"], answer: 1 },
+          { q: "駅(えき)に _____ 、電話(電話)を ください。", options: ["着(つ)く", "着(つ)いて", "着(つ)いたら", "着(つ)いても"], answer: 2 },
+          { q: "暇(ひま) _____ 、手伝(てつだ)って ください。", options: ["だ", "だったら", "な", "で"], answer: 1 },
+          { q: "10時(じ)に _____ 、出(で)かけましょう。", options: ["なったら", "なって", "なると", "なれば"], answer: 0 },
+          { q: "スイッチを _____ 、動(うご)きません。", options: ["押(お)すと", "押(お)したら", "押(お)しても", "押(お)して"], answer: 2 },
+          { q: "高(たか) _____ 、買(か)います。(Even if)", options: ["くて", "かったら", "くても", "いと"], answer: 2 },
+          { q: "日曜日(にちようび) _____ 、働(はたら)きます。", options: ["でも", "だから", "なのに", "で"], answer: 0 },
+          { q: "考(かんが)え _____ 、わかりません。", options: ["ても", "たら", "ると", "ないと"], answer: 0 },
+          { q: "音(おと)が _____ します。", options: ["小(ちい)さい", "小(ちい)さく", "小(ちい)さくて", "小(ちい)さいに"], answer: 1 },
+          { q: "この 機械(きかい)の _____ を 教(お)えて ください。", options: ["使(つか)い方(かた)", "使(つか)い", "使(つか)って", "使(つか)う"], answer: 0 },
+          { q: "信号(しんごう)を _____ と、橋(はし)が あります。", options: ["渡(わた)る", "曲(ま)がる", "歩(ある)く", "行(い)く"], answer: 0 },
+          { q: "部屋(へや)が _____ 、エアコンを つけて ください。(If)", options: ["暑(あつ)い", "暑(あつ)くて", "暑(あつ)かったら", "暑(あつ)くても"], answer: 2 },
+          { q: "バスが _____ 、タクシーで 行(い)きます。", options: ["来(き)なかったら", "来(き)なくて", "来(き)ないで", "来(き)なくても"], answer: 0 },
+          { q: "どうぞ たくさん 食(た)べて _____ 。", options: ["あげます", "ください", "もらいます", "くれます"], answer: 1 },
+          { q: "もし 1億円(おくえん) _____ 、何(なに)を したいですか。", options: ["あって", "あったら", "あると", "あっても"], answer: 1 }
+      ]
+  },
+  "level1": {
+      title: "Mix Level 1: Fundamentals",
+      questions: [
+          { q: "私(わたし) _____ 学生(がくせい)です。", options: ["の", "は", "を", "に"], answer: 1 },
+          { q: "これは 私(わたし) _____ 本(ほん)です。", options: ["の", "は", "も", "が"], answer: 0 },
+          { q: "図書館(としょかん) _____ 勉強(べんきょう)します。", options: ["に", "へ", "で", "を"], answer: 2 },
+          { q: "8時(じ) _____ 学校(がっこう)へ 行(い)きます。", options: ["に", "で", "を", "が"], answer: 0 },
+          { q: "毎日(まいにち) コーヒー _____ 飲(の)みます。", options: ["が", "で", "に", "を"], answer: 3 },
+          { q: "教室(きょうしつ)に 学生(がくせい)が _____ 。", options: ["あります", "います", "ありません", "いません"], answer: 1 },
+          { q: "りんごを _____ ください。(4 items)", options: ["よっつ", "よん", "よにん", "よねん"], answer: 0 },
+          { q: "切手(きって)を _____ 買(か)いました。(2 sheets)", options: ["にだい", "にまい", "にほん", "にこ"], answer: 1 },
+          { q: "昨日(きのう)は _____ です。(Cold)", options: ["さむい", "さむかった", "さむいでした", "さむくなかった"], answer: 1 },
+          { q: "この 町(まち)は _____ です。(Quiet)", options: ["しずか", "しずかな", "しずく", "しずかで"], answer: 0 },
+          { q: "東京(とうきょう)は 大阪(おおさか) _____ 人(ひと)が 多(おお)いです。", options: ["ほう", "より", "の", "と"], answer: 1 },
+          { q: "私は 車(くるま)が _____ 。(Want)", options: ["ほしいです", "ほしがります", "ほしくないです", "したいです"], answer: 0 },
+          { q: "日本(にほん)へ 料理(りょうり)を _____ に 行(い)きます。(To eat)", options: ["食(た)べる", "食(た)べ", "食(た)べて", "食(た)べた"], answer: 1 },
+          { q: "窓(まど)を _____ ください。(Please open)", options: ["開(あ)け", "開(あ)けて", "開(あ)く", "開(あ)いた"], answer: 1 },
+          { q: "今(いま) 雨(あめ)が _____ います。", options: ["降(ふ)って", "降(ふ)り", "降(ふ)る", "降(ふ)らない"], answer: 0 },
+          { q: "ここで 写真(しゃしん)を _____ も いいですか。", options: ["とる", "とり", "とって", "とった"], answer: 2 },
+          { q: "ここに 車(くるま)を _____ ください。(Please don't park)", options: ["止(と)めないで", "止(と)めなくて", "止(と)めない", "止(と)める"], answer: 0 },
+          { q: "薬(くすり)を _____ なりません。(Must)", options: ["飲(の)まなくて", "飲(の)まないで", "飲(の)まなければ", "飲(の)んでも"], answer: 2 },
+          { q: "私は 漢字(かんじ)を _____ ことが できます。", options: ["読(よ)む", "読(よ)める", "読(よ)んで", "読(よ)みます"], answer: 0 },
+          { q: "馬(うま)に _____ ことが ありますか。(Ridden)", options: ["乗(の)る", "乗(の)った", "乗(の)って", "乗(の)り"], answer: 1 },
+          { q: "掃除(そうじ)して、部屋(へや)が _____ なりました。", options: ["きれい", "きれいに", "きれいな", "きれいく"], answer: 1 },
+          { q: "A: 明日(あした) パーティーに 行(い)く？ B: ううん、 _____ 。", options: ["行(い)きません", "行(い)かない", "行(い)くない", "行(い)って"], answer: 1 },
+          { q: "明日(あした)は 雨(あめ)だと _____ 。(Think)", options: ["言(い)いました", "思(おも)います", "します", "あります"], answer: 1 },
+          { q: "これは 母(はは)が _____ 料理(りょうり)です。", options: ["作(つく)る", "作(つく)った", "作(つく)って", "作(つく)り"], answer: 1 },
+          { q: "私(わたし)が 生(う)まれた _____ は 大阪(おおさか)です。", options: ["ところ", "こと", "もの", "ひと"], answer: 0 },
+          { q: "道(みち)を _____ と、右(みぎ)に 駅(えき)が あります。", options: ["渡(わた)る", "渡(わた)った", "渡(わた)り", "渡(わた)れば"], answer: 0 },
+          { q: "山田(やまだ)さんは 妹(いもうと)に お菓子(かし)を _____ 。(Gave)", options: ["もらいました", "くれました", "あげました", "いただきました"], answer: 2 },
+          { q: "お金(かね)が _____ 、旅行(りょこう)しません。(If I don't have)", options: ["ないと", "なかったら", "なくて", "ない"], answer: 1 },
+          { q: "雨(あめ)が _____ 、行(い)きます。(Even if)", options: ["降(ふ)っても", "降(ふ)ったら", "降(ふ)ると", "降(ふ)れば"], answer: 0 },
+          { q: "もし 時間(じかん)が _____ 、映画(えいが)を 見(み)ませんか。", options: ["ある", "あったら", "あっても", "あって"], answer: 1 }
+      ]
+  },
+  "level2": {
+      title: "Mix Level 2: Application",
+      questions: [
+          { q: "日曜日(にちようび) どこ _____ 行(い)きませんでした。", options: ["か", "も", "へ", "を"], answer: 1 },
+          { q: "電車(でんしゃ) _____ カバンを 忘(わす)れました。", options: ["に", "で", "を", "へ"], answer: 0 },
+          { q: "友達(ともだち) _____ 会(あ)います。", options: ["で", "と", "に", "を"], answer: 2 },
+          { q: "会社(かいしゃ) _____ 休みます。", options: ["を", "が", "は", "に"], answer: 0 },
+          { q: "1時間(じかん) _____ 着(つ)きます。(Time limit/Span)", options: ["に", "で", "を", "が"], answer: 1 },
+          { q: "この バスは 駅(えき) _____ 行(い)きますか。", options: ["で", "を", "に", "が"], answer: 2 },
+          { q: "毎晩(まいばん) テレビを _____ 、寝(ね)ます。", options: ["見(み)て", "見(み)る", "見(み)た", "見(み)たり"], answer: 0 },
+          { q: "辞書(じしょ)を _____ ないで ください。", options: ["使(つか)わ", "使(つか)い", "使(つか)う", "使(つか)って"], answer: 0 },
+          { q: "写真(しゃしん)を _____ まえに、ご飯(はん)を 食(た)べました。", options: ["撮(と)った", "撮(と)る", "撮(と)り", "撮(と)って"], answer: 1 },
+          { q: "週末(しゅうまつ)は 掃除(そうじ)したり、洗濯(せんたく) _____ しました。", options: ["した", "して", "したり", "する"], answer: 2 },
+          { q: "図書館(としょかん)で 本(ほん)を _____ ことが あります。", options: ["借(か)りる", "借(か)りて", "借(か)りた", "借(か)りない"], answer: 2 },
+          { q: "趣味(しゅみ)は 古(ふる)い 時計(とけい)を _____ ことです。", options: ["集(あつ)める", "集(あつ)めた", "集(あつ)めて", "集(あつ)め"], answer: 0 },
+          { q: "この パソコンは _____ 、便利(べんり)です。", options: ["軽(かる)い", "軽(かる)くて", "軽(かる)いで", "軽(かる)かった"], answer: 1 },
+          { q: "マリアさんは _____ 、親切(しんせつ)な 人(ひと)です。", options: ["まじめ", "まじめな", "まじめで", "まじめくて"], answer: 2 },
+          { q: "日本語(にほんご)が _____ なりました。", options: ["上手(じょうず)", "上手(じょうず)に", "上手(じょうず)な", "上手(じょうず)く"], answer: 1 },
+          { q: "もう 昼(ひる)ごはんを 食(た)べましたか。... いいえ、 _____ 。", options: ["まだです", "もうです", "食(た)べませんでした", "食(た)べました"], answer: 0 },
+          { q: "映画(えいが)は _____ おもしろくなかったです。", options: ["あまり", "すこし", "たくさん", "とても"], answer: 0 },
+          { q: "誕生(たんじょう)日(び)に 母(はは)は（私に）シャツを _____ 。", options: ["もらいました", "あげました", "くれました", "やりました"], answer: 2 },
+          { q: "私は 部長(ぶちょう)に お土産(みやげ)を _____ 。(Received)", options: ["いただきました", "もらいました", "くれました", "あげました"], answer: 0 },
+          { q: "塩(しお)を 取(と)って ください。... はい、 _____ 。", options: ["どうぞ", "どうも", "お願(ねが)いします", "いただきました"], answer: 0 },
+          { q: "一緒(いっしょ)に 行(い)きませんか。... _____ 。行きましょう。", options: ["ええ", "いいえ", "ちょっと", "だめです"], answer: 0 },
+          { q: "映画(えいが)を 見(み)たいですね。... 日曜日(にちようび)は ちょっと...。あ、 _____ 。", options: ["そうですね", "そうですか", "そうしましょう", "いけませんね"], answer: 1 },
+          { q: "お金(かね)が _____ 、買(か)い物(もの)に 行(い)きません。", options: ["なかったら", "ないで", "なくて", "ない"], answer: 0 },
+          { q: "この ボタンを _____ と、切符(きっぷ)が 出(で)ます。", options: ["押(お)す", "押(お)して", "押(お)した", "押(お)せば"], answer: 0 },
+          { q: "あそこ(あそこ)で 新聞(しんぶん)を 読(よ)んで いる _____ は ミラーさんです。", options: ["の", "こと", "人(ひと)", "も"], answer: 2 },
+          { q: "私(わたし)が 行(い)きたい _____ は 京都(きょうと)です。", options: ["所(ところ)", "物(もの)", "人(ひと)", "時(とき)"], answer: 0 },
+          { q: "寒(さむ)い _____ 、窓(まど)を 閉(し)めて ください。", options: ["とき", "こと", "もの", "ところ"], answer: 0 },
+          { q: "明日(あした) 雨(あめ) _____ 、出(で)かけます。(Even if)", options: ["でも", "ても", "だから", "なのに"], answer: 0 },
+          { q: "約束(やくそく)の 時間(じかん)に 友達(ともだち)が _____ 。", options: ["来(こ)なかったです", "来(き)ませんでした", "来(く)ないでした", "来(き)ません"], answer: 1 },
+          { q: "カレーライスは 辛(から)いですが、 _____ 。(Delicious)", options: ["おいしいです", "おいしくないです", "おいしかったです", "おいしいでした"], answer: 0 }
+      ]
+  },
+  "level3": {
+      title: "Mix Level 3: Complex & Nuance",
+      questions: [
+          { q: "これ(これ)は ミラーさん _____ 撮(と)った 写真(しゃしん)です。", options: ["は", "が", "を", "に"], answer: 1 },
+          { q: "友達(ともだち) _____ 会(あ)う 約束(やくそく)が あります。", options: ["で", "と", "に", "を"], answer: 2 },
+          { q: "電車(でんしゃ) _____ 乗(の)って、大阪(おおさか)へ 行(い)きます。", options: ["で", "に", "を", "へ"], answer: 1 },
+          { q: "梅田(うめだ)で 電車(でんしゃ) _____ 降(お)りました。", options: ["を", "に", "で", "が"], answer: 0 },
+          { q: "教室(きょうしつ) _____ 入(はい)らないで ください。", options: ["に", "で", "を", "へ"], answer: 0 },
+          { q: "私(わたし)は コーヒー _____ 好き(すき)ですが、妹(いもうと)は 嫌(きら)いです。", options: ["が", "は", "を", "も"], answer: 1 },
+          { q: "日本(にほん)で どこ _____ いちばん きれいですか。", options: ["が", "で", "を", "に"], answer: 0 },
+          { q: "コーヒーと 紅茶(こうちゃ)と _____ 好(す)きですか。", options: ["どちらも", "どの", "どちらが", "どれが"], answer: 2 },
+          { q: "京都(きょうと)は 静(しず)か _____ 、きれいな 町(まち)です。", options: ["で", "な", "に", "だ"], answer: 0 },
+          { q: "カリナさんは 背(せ) _____ 高(たか)いです。", options: ["の", "が", "は", "を"], answer: 1 },
+          { q: "この 料理(りょうり)は 安(やす)くて、 _____ です。", options: ["おいしい", "おいしく", "おいしいで", "おいしくて"], answer: 0 },
+          { q: "図書館(としょかん)で 本(ほん)を _____ とき、カードを 見(み)せます。", options: ["借(か)りた", "借(か)りる", "借(か)りて", "借(か)りない"], answer: 1 },
+          { q: "晩(ばん)ご飯(はん)を _____ あとで、テレビを 見(み)ました。", options: ["食(た)べる", "食(た)べた", "食(た)べて", "食(た)べ"], answer: 1 },
+          { q: "泳(およ)ぎに _____ まえに、準備(じゅんび)運動(うんどう)を します。", options: ["行(い)く", "行(い)った", "行(い)きて", "行(い)かない"], answer: 0 },
+          { q: "妻(つま)が _____ とき、会社(かいしゃ)を 休(やす)みました。", options: ["病気(びょうき)", "病気(びょうき)の", "病気(びょうき)な", "病気(びょうき)だ"], answer: 1 },
+          { q: "私(わたし)が 欲しい(ほしい) _____ は 車(くるま)です。", options: ["こと", "もの", "ひと", "ところ"], answer: 1 },
+          { q: "ここは 実習生(じっしゅうせい)が 日本語(にほんご)を _____ 教室(きょうしつ)です。", options: ["勉強(べんきょう)する", "勉強(べんきょう)した", "勉強(べんきょう)して", "勉強(べんきょう)します"], answer: 0 },
+          { q: "昨日(きのう) _____ 映画(えいが)は 面白(おもしろ)かったです。", options: ["見(み)る", "見(み)た", "見(み)て", "見(み)ない"], answer: 1 },
+          { q: "朝(あさ)ごはんを 食(た)べる _____ が ありません。", options: ["時間(じかん)", "約束(やくそく)", "用事(ようじ)", "暇(ひま)"], answer: 0 },
+          { q: "漢字(かんじ)の _____ を 教(お)えて ください。", options: ["読(よ)み方(かた)", "読(よ)み", "読(よ)んで", "読(よ)む"], answer: 0 },
+          { q: "暑(あつ)く _____ 、泳(およ)ぎに 行(い)きません。", options: ["なかったら", "ないで", "なくて", "ない"], answer: 0 },
+          { q: "この ボタンを _____ と、電気(でんき)が つきます。", options: ["押(お)して", "押(お)せば", "押(お)す", "押(お)した"], answer: 2 },
+          { q: "どうして 昨日(きのう) 来(こ)なかったんですか。... 用事(ようじ)が _____ からです。", options: ["あった", "ありました", "ある", "あって"], answer: 0 },
+          { q: "もう レポートを 書(か)きましたか。... いいえ、まだ _____ 。", options: ["書(か)きません", "書(か)いて いません", "書(か)きませんでした", "書(か)くことが ありません"], answer: 1 },
+          { q: "部長(ぶちょう)は 私(わたし)に レポートを _____ 。", options: ["くれました", "あげました", "もらいました", "やりました"], answer: 0 },
+          { q: "私(わたし)は 佐藤(さとう)さんに 花(はな)を _____ 。", options: ["くれました", "あげました", "もらいました", "いただきました"], answer: 1 },
+          { q: "誰(だれ)に 日本語(にほんご)を _____ か。... 松本(まつもと)先生(せんせい)に 習(なら)いました。", options: ["教(お)えました", "習(なら)いました", "勉強(べんきょう)しました", "かしました"], answer: 1 },
+          { q: "お金(かね)を 忘(わす)れましたから、友達(ともだち)に _____ 。", options: ["貸(か)しました", "借(か)りました", "返(かえ)しました", "あげました"], answer: 1 },
+          { q: "A: この ボールペン、 _____ も いいですか。 B: ええ、どうぞ。", options: ["使(つか)って", "使(つか)う", "使(つか)ったら", "使(つか)えば"], answer: 0 },
+          { q: "日曜日(にちようび)は 散歩(さんぽ) _____ 、本(ほん)を 読(よ)んだり します。", options: ["して", "した", "したり", "する"], answer: 2 }
+      ]
+  }
+};
 
-    let currentSet = [];
-    let currentSetTitle = "";
-    let currentIndex = 0;
-    let score = 0;
-    let studentName = "";
-    let userAnswers = [];
-    let isAnswered = false;
+let playerName = "";
+let currentSetKey = "";
+let quiz = [];
+let currentIndex = 0;
+let answers = [];
+let score = 0;
+let isAnswered = false;
 
-    const PREFIXES = ["a)", "b)", "c)", "d)"];
+const PREFIXES = ["a)", "b)", "c)", "d)"];
+const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";
+const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
+const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY";
 
-    const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";
-    const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
-    const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY";
+const $screenSetup = document.getElementById("view-setup");
+const $screenQuiz = document.getElementById("view-quiz");
+const $screenResult = document.getElementById("view-result");
 
-    function switchScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
+function switchScreen(screen) {
+  $screenSetup.classList.remove("active");
+  $screenQuiz.classList.remove("active");
+  $screenResult.classList.remove("active");
+  screen.classList.add("active");
+}
+
+function startQuiz() {
+  const nameInput = document.getElementById("player-name").value.trim();
+  const setKey = document.getElementById("set-select").value;
+
+  if (!nameInput) {
+    alert("Please enter your name to start.");
+    return;
+  }
+
+  playerName = nameInput;
+  currentSetKey = setKey;
+  quiz = [...ALL_SETS[setKey].questions];
+  
+  currentIndex = 0;
+  score = 0;
+  answers = [];
+  
+  document.getElementById("lbl-set").textContent = ALL_SETS[setKey].title;
+  
+  renderQuestion();
+  switchScreen($screenQuiz);
+}
+
+function renderQuestion() {
+  isAnswered = false;
+  document.getElementById("quiz-action").style.display = "none";
+  
+  const qData = quiz[currentIndex];
+  const qNum = currentIndex + 1;
+  const total = quiz.length;
+  
+  document.getElementById("lbl-progress").textContent = `Question ${qNum}/${total}`;
+  const pct = ((currentIndex) / total) * 100;
+  document.getElementById("bar-progress").style.width = `${pct}%`;
+
+  document.getElementById("quiz-question").innerHTML = `<span style="color:#b088f9; margin-right:8px;">Q${qNum}.</span> ${qData.q}`;
+
+  const optsHtml = qData.options.map((opt, i) => `
+    <button class="option-btn" onclick="selectOption(${i}, this)">
+      <span class="prefix">${PREFIXES[i]}</span>
+      <span class="text">${opt}</span>
+    </button>
+  `).join("");
+  
+  document.getElementById("quiz-options").innerHTML = optsHtml;
+}
+
+function selectOption(selectedIndex, btnEl) {
+  if (isAnswered) return;
+  isAnswered = true;
+
+  const qData = quiz[currentIndex];
+  const correctIndex = qData.answer;
+  const isCorrect = (selectedIndex === correctIndex);
+
+  if (isCorrect) score++;
+
+  answers.push({
+    q: qData.q,
+    selected: qData.options[selectedIndex],
+    correct: qData.options[correctIndex],
+    isCorrect: isCorrect
+  });
+
+  const allBtns = document.querySelectorAll(".option-btn");
+  allBtns.forEach(b => b.disabled = true);
+  
+  allBtns[correctIndex].classList.add("correct");
+  
+  if (!isCorrect) {
+    btnEl.classList.add("wrong");
+  }
+
+  document.getElementById("quiz-action").style.display = "block";
+  document.getElementById("bar-progress").style.width = `${((currentIndex + 1) / quiz.length) * 100}%`;
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex < quiz.length) {
+    renderQuestion();
+  } else {
+    endQuiz();
+  }
+}
+
+function endQuiz() {
+  switchScreen($screenResult);
+  
+  document.getElementById("res-name").textContent = `Great effort, ${playerName}!`;
+  document.getElementById("res-score").textContent = score;
+  const pct = Math.round((score / quiz.length) * 100);
+  document.getElementById("res-pct").textContent = `${pct}% Accuracy`;
+
+  const breakdownHtml = answers.map((ans, i) => `
+    <div class="q-result">
+      <div class="q-result-text">Q${i+1}. ${ans.q}</div>
+      <div class="q-ans ${ans.isCorrect ? 'correct-text' : 'wrong-text'}">
+        Your Answer: ${ans.selected}
+        ${!ans.isCorrect ? `<br><span style="color:#a095b5; margin-top:4px; display:inline-block;">Correct: ${ans.correct}</span>` : ''}
+      </div>
+    </div>
+  `).join("");
+  
+  document.getElementById("res-breakdown").innerHTML = breakdownHtml;
+
+  sendEmail();
+}
+
+async function sendEmail() {
+  const $emailRow = document.getElementById("email-row");
+  const pct = Math.round((score / quiz.length) * 100);
+  const now = new Date().toLocaleString();
+  
+  const details = answers.map((a, i) => 
+    `Q${i+1}: ${a.isCorrect ? "✓" : "✗"} (Ans: ${a.selected})`
+  ).join("\n");
+
+  const emailParams = {
+    name: playerName,
+    email: "noreply@quiz.com",
+    subject: `[${playerName}] ${ALL_SETS[currentSetKey].title} Quiz — ${pct}%`,
+    message: `Minna no Nihongo - ${ALL_SETS[currentSetKey].title} Bunpo Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${score}/${quiz.length} (${pct}%)\n\n--- Detailed Results ---\n${details}\n\nがんばって！`,
+    time: now
+  };
+
+  if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
+    $emailRow.innerHTML = `<span class="email-pill error">⚠ EmailJS not configured. Local view only.</span>`;
+  } else {
+    $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams, EMAILJS_PUBLIC_KEY);
+      $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed successfully!</span>`;
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      $emailRow.innerHTML = `<span class="email-pill error">✗ Failed to send email</span>`;
     }
+  }
+}
 
-    function startQuiz() {
-        const nameInput = document.getElementById('student-name').value.trim();
-        const setKey = document.getElementById('quiz-set').value;
-
-        if (!nameInput) {
-            alert("Please enter your name.");
-            return;
-        }
-
-        studentName = nameInput;
-        currentSet = [...BUNPO_DATA[setKey].questions];
-        currentSetTitle = BUNPO_DATA[setKey].title;
-        
-        currentIndex = 0;
-        score = 0;
-        userAnswers = [];
-        
-        document.getElementById('set-title').textContent = currentSetTitle;
-        
-        renderQuestion();
-        switchScreen('quiz-screen');
-    }
-
-    function renderQuestion() {
-        isAnswered = false;
-        document.getElementById('next-btn-container').style.display = 'none';
-        
-        const qData = currentSet[currentIndex];
-        
-        document.getElementById('question-counter').textContent = `Question ${currentIndex + 1}/${currentSet.length}`;
-        const progressPct = ((currentIndex) / currentSet.length) * 100;
-        document.getElementById('progress-fill').style.width = `${progressPct}%`;
-
-        document.getElementById('question-text').textContent = `${currentIndex + 1}. ${qData.q}`;
-
-        const optionsHtml = qData.options.map((opt, i) => `
-            <div class="option" onclick="selectOption(${i}, this)">
-                <span class="prefix">${PREFIXES[i]}</span>
-                <span class="text">${opt}</span>
-            </div>
-        `).join('');
-        
-        document.getElementById('options-container').innerHTML = optionsHtml;
-    }
-
-    window.selectOption = function(selectedIndex, el) {
-        if (isAnswered) return;
-        isAnswered = true;
-
-        const qData = currentSet[currentIndex];
-        const correctIndex = qData.answer;
-        const isCorrect = (selectedIndex === correctIndex);
-
-        if (isCorrect) score++;
-
-        userAnswers.push({
-            q: qData.q,
-            selected: qData.options[selectedIndex],
-            correct: qData.options[correctIndex],
-            isCorrect: isCorrect
-        });
-
-        const options = document.querySelectorAll('.option');
-        options[correctIndex].classList.add('correct');
-        
-        if (!isCorrect) {
-            options[selectedIndex].classList.add('wrong');
-        }
-
-        document.getElementById('next-btn-container').style.display = 'block';
-        document.getElementById('progress-fill').style.width = `${((currentIndex + 1) / currentSet.length) * 100}%`;
-    }
-
-    window.nextQuestion = function() {
-        currentIndex++;
-        if (currentIndex < currentSet.length) {
-            renderQuestion();
-        } else {
-            showResults();
-        }
-    }
-
-    function showResults() {
-        switchScreen('result-screen');
-        
-        document.getElementById('result-name').textContent = `Great effort, ${studentName}!`;
-        document.getElementById('score-display').textContent = `${score}/${currentSet.length}`;
-
-        const breakdownHtml = userAnswers.map((ans, i) => `
-            <div class="breakdown-item ${ans.isCorrect ? 'correct' : 'wrong'}">
-                <div style="margin-bottom: 5px;"><strong>Q${i+1}:</strong> ${ans.q}</div>
-                <div class="status">${ans.isCorrect ? '✓ Correct' : '✗ Wrong'}</div>
-                <div style="color: var(--text-muted); font-size: 0.85em;">
-                    Your Answer: ${ans.selected}<br>
-                    ${!ans.isCorrect ? `Correct Answer: ${ans.correct}` : ''}
-                </div>
-            </div>
-        `).join('');
-        
-        document.getElementById('breakdown-container').innerHTML = breakdownHtml;
-
-        sendEmailReport();
-    }
-
-    async function sendEmailReport() {
-        const statusEl = document.getElementById('email-status');
-        
-        if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
-            statusEl.className = "email-status error";
-            statusEl.textContent = "⚠ EmailJS not configured (Keys needed). Results shown locally.";
-            return;
-        }
-
-        statusEl.className = "email-status";
-        statusEl.textContent = "📧 Sending results to instructor...";
-
-        const pct = Math.round((score / currentSet.length) * 100);
-        let details = userAnswers.map((a, i) => 
-            `Q${i+1}: ${a.isCorrect ? "✓" : "✗"} (Ans: ${a.selected})`
-        ).join("\n");
-
-        const params = {
-            name: studentName,
-            email: "noreply@quiz.com",
-            subject: `[Bunpo] ${studentName} - ${currentSetTitle} - ${pct}%`,
-            message: `Student: ${studentName}\nSet: ${currentSetTitle}\nScore: ${score}/${currentSet.length} (${pct}%)\n\nBreakdown:\n${details}`
-        };
-
-        try {
-            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params, EMAILJS_PUBLIC_KEY);
-            statusEl.className = "email-status success";
-            statusEl.textContent = "✓ Results successfully emailed!";
-        } catch (err) {
-            console.error("EmailJS error:", err);
-            statusEl.className = "email-status error";
-            statusEl.textContent = "✗ Failed to send email.";
-        }
-    }
-
-    window.resetApp = function() {
-        document.getElementById('student-name').value = "";
-        switchScreen('start-screen');
-    }
+function resetApp() {
+  document.getElementById("player-name").value = "";
+  switchScreen($screenSetup);
+}
 </script>
 </body>
 </html>
