@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>みんなの日本語 Lesson 19 — Vocabulary Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { min-height: 100vh; background: #1a1525; color: #e8e0f0; font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 20% 30%, rgba(232,180,200,0.07) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(120,100,180,0.07) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+  .container { max-width: 540px; margin: 0 auto; padding: 24px 16px 60px; position: relative; z-index: 1; }
+  #name-screen { margin-top: 50px; }
+  .card { background: #221d2e; border-radius: 16px; padding: 28px 20px; border: 1px solid #3d3650; }
+  .badge { display: inline-block; background: linear-gradient(135deg, #e8b4c8, #c89db7); color: #1a1525; font-weight: 700; font-size: 12px; padding: 4px 14px; border-radius: 20px; letter-spacing: 1px; }
+  .title { font-size: 22px; font-weight: 800; margin: 14px 0 4px; letter-spacing: -0.5px; }
+  .subtitle { font-size: 13px; color: #9e93b0; }
+  .name-label { display: block; font-size: 13px; color: #9e93b0; margin: 24px 0 8px; text-align: left; }
+  .name-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; font-size: 16px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+  .name-input:focus { border-color: #e8b4c8; }
+  .btn-primary { width: 100%; margin-top: 16px; padding: 14px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+  .btn-primary:disabled { opacity: 0.35; cursor: default; }
+  #quiz-screen { display: none; }
+  .header { text-align: center; margin-bottom: 22px; }
+  .header .subtitle { margin-top: 2px; }
+  .score-banner { display: none; border-radius: 16px; padding: 22px 16px; text-align: center; margin-bottom: 20px; animation: slideDown 0.4s ease; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+  .score-number { font-size: 44px; font-weight: 800; letter-spacing: -1px; }
+  .score-label { font-size: 16px; font-weight: 600; margin-top: 4px; }
+  .email-row { margin-top: 10px; }
+  .email-pill { display: inline-block; background: #3d3650; font-size: 12px; padding: 4px 14px; border-radius: 12px; }
+  .email-pill.sent { background: #2d6a4f; }
+  .email-pill.error { background: #9b2226; }
+  .btn-retake { margin-top: 12px; background: rgba(255,255,255,0.15); color: #fff; border: none; padding: 8px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  .progress-row { margin-bottom: 14px; }
+  .progress-text { font-size: 12px; color: #9e93b0; display: block; margin-bottom: 6px; }
+  .progress-bar { height: 4px; background: #2a2535; border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #e8b4c8, #c89db7); border-radius: 4px; width: 0%; transition: width 0.3s ease; }
+  .nav-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-bottom: 20px; }
+  .nav-dot { aspect-ratio: 1; border-radius: 8px; background: #2a2535; color: #e8e0f0; font-size: 11px; font-weight: 600; border: 2px solid transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .nav-dot.answered { background: #4a4458; }
+  .nav-dot.active { border-color: #e8b4c8; }
+  .nav-dot.correct { background: #2d6a4f; }
+  .nav-dot.wrong { background: #9b2226; }
+  .q-card { background: #221d2e; border-radius: 16px; padding: 24px 18px; border: 1px solid #3d3650; margin-bottom: 16px; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .q-number { font-size: 11px; color: #9e93b0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .q-english { font-size: 19px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; }
+  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .choice-btn { padding: 16px 10px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; text-align: center; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; font-size: 17px; font-weight: 600; position: relative; transition: all 0.15s; min-height: 64px; display: flex; align-items: center; justify-content: center; line-height: 1.3; }
+  .choice-btn:hover:not(.locked) { border-color: #5c4d7a; background: #302844; }
+  .choice-btn.selected { background: #5c4d7a; border-color: #e8b4c8; }
+  .choice-btn.correct-reveal { background: #2d6a4f; border-color: #40916c; }
+  .choice-btn.wrong-reveal { background: #9b2226; border-color: #ca6702; }
+  .choice-btn .mark { position: absolute; top: 6px; right: 8px; font-size: 14px; }
+  .choice-btn .mark.ok { color: #a7f3d0; }
+  .choice-btn .mark.no { color: #fca5a5; }
+  .choice-btn ruby { display: inline; line-height: 1.1; }
+  .choice-btn ruby rt { font-size: 0.55em; color: rgba(232,224,240,0.6); font-weight: 500; }
+  .choice-btn.correct-reveal ruby rt { color: rgba(167,243,208,0.85); }
+  .choice-btn.wrong-reveal ruby rt { color: rgba(252,165,165,0.85); }
+  .choice-btn.selected ruby rt { color: rgba(232,180,200,0.85); }
+  .arrow-row { display: flex; justify-content: space-between; gap: 12px; }
+  .btn-nav { flex: 1; padding: 12px 0; border-radius: 12px; background: #2a2535; border: 1px solid #3d3650; color: #e8e0f0; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
+  .btn-nav:disabled { opacity: 0.3; cursor: default; }
+  .btn-submit { flex: 1; padding: 12px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+  .btn-submit:disabled { opacity: 0.35; cursor: default; }
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div id="name-screen">
+    <div class="card text-center">
+      <span class="badge">みんなの日本語</span>
+      <h1 class="title">Lesson 19 — Vocabulary Exam</h1>
+      <p class="subtitle">50 multiple-choice questions · vocabulary &amp; Japanese culture</p>
+      <label class="name-label">おなまえは？ Enter your name</label>
+      <input class="name-input" id="name-input" type="text" placeholder="Your name..." autofocus>
+      <button class="btn-primary" id="btn-start" disabled>Start Exam →</button>
+    </div>
+  </div>
+
+  <div id="quiz-screen">
+    <header class="header">
+      <span class="badge">みんなの日本語</span>
+      <h1 class="title">Lesson 19 — Vocabulary Exam</h1>
+      <p class="subtitle" id="quiz-subtitle"></p>
+    </header>
+    <div class="score-banner" id="score-banner">
+      <div class="score-number" id="score-number"></div>
+      <div class="score-label" id="score-label"></div>
+      <div class="email-row" id="email-row"></div>
+      <button class="btn-retake" id="btn-retake">Retake Quiz</button>
+    </div>
+    <div class="progress-row">
+      <span class="progress-text" id="progress-text">0 / 50 answered</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <div class="nav-grid" id="nav-grid"></div>
+    <div class="q-card" id="q-card">
+      <div class="q-number" id="q-number"></div>
+      <div class="q-english" id="q-english"></div>
+      <div class="choices-grid" id="choices-grid"></div>
+    </div>
+    <div class="arrow-row">
+      <button class="btn-nav" id="btn-prev">← Previous</button>
+      <button class="btn-nav" id="btn-next">Next →</button>
+      <button class="btn-submit hidden" id="btn-submit" disabled>Submit Exam</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DISPLAY = {
+  /* Traditional arts — 道 (the Way) */
+  "茶道":"<ruby>茶道<rt>さどう</rt></ruby>",
+  "華道":"<ruby>華道<rt>かどう</rt></ruby>",
+  "書道":"<ruby>書道<rt>しょどう</rt></ruby>",
+  /* Performing arts */
+  "歌舞伎":"<ruby>歌舞伎<rt>かぶき</rt></ruby>",
+  "能":"<ruby>能<rt>のう</rt></ruby>",
+  "文楽":"<ruby>文楽<rt>ぶんらく</rt></ruby>",
+  /* Martial arts */
+  "相撲":"<ruby>相撲<rt>すもう</rt></ruby>",
+  "柔道":"<ruby>柔道<rt>じゅうどう</rt></ruby>",
+  "剣道":"<ruby>剣道<rt>けんどう</rt></ruby>",
+  "空手":"<ruby>空手<rt>からて</rt></ruby>",
+  /* Comedy / games */
+  "漫才":"<ruby>漫才<rt>まんざい</rt></ruby>",
+  "落語":"<ruby>落語<rt>らくご</rt></ruby>",
+  "囲碁":"<ruby>囲碁<rt>いご</rt></ruby>",
+  "将棋":"<ruby>将棋<rt>しょうぎ</rt></ruby>",
+  /* Festival */
+  "盆踊り":"<ruby>盆踊<rt>ぼんおど</rt></ruby>り",
+  /* Landmark */
+  "東京スカイツリー":"<ruby>東京<rt>とうきょう</rt></ruby>スカイツリー"
+};
+
+const READING = {
+  "茶道":"さどう","華道":"かどう","書道":"しょどう",
+  "歌舞伎":"かぶき","能":"のう","文楽":"ぶんらく",
+  "相撲":"すもう","柔道":"じゅうどう","剣道":"けんどう","空手":"からて",
+  "漫才":"まんざい","落語":"らくご","囲碁":"いご","将棋":"しょうぎ",
+  "盆踊り":"ぼんおどり","東京スカイツリー":"とうきょうスカイツリー"
+};
+
+const QUESTIONS = [
+  /* ── Verbs ── */
+  { english: "climb, go up", answer: "のぼります", choices: ["のぼります","とまります","そうじします","なります"] },
+  { english: "stay [at a hotel]", answer: "とまります", choices: ["とまります","のぼります","せんたくします","なります"] },
+  { english: "clean (a room)", answer: "そうじします", choices: ["そうじします","せんたくします","のぼります","とまります"] },
+  { english: "wash (clothes, laundry)", answer: "せんたくします", choices: ["せんたくします","そうじします","なります","のぼります"] },
+  { english: "become", answer: "なります", choices: ["なります","のぼります","とまります","そうじします"] },
+
+  /* ── Adjectives ── */
+  { english: "sleepy", answer: "ねむい", choices: ["ねむい","つよい","よわい","むり"] },
+  { english: "strong", answer: "つよい", choices: ["つよい","よわい","ねむい","むり"] },
+  { english: "weak", answer: "よわい", choices: ["よわい","つよい","ねむい","むり"] },
+
+  /* ── Nouns ── */
+  { english: "practice", answer: "れんしゅう", choices: ["れんしゅう","ゴルフ","おちゃ","ちょうし"] },
+  { english: "golf", answer: "ゴルフ", choices: ["ゴルフ","れんしゅう","ダイエット","カラオケ"] },
+  { english: "tea ceremony (casual term)", answer: "おちゃ", choices: ["おちゃ","れんしゅう","ちょうし","ゴルフ"] },
+  { english: "day, date", answer: "ひ", choices: ["ひ","ちょうし","いちど","もうすぐ"] },
+  { english: "condition (of health / things)", answer: "ちょうし", choices: ["ちょうし","ひ","れんしゅう","ダイエット"] },
+
+  /* ── Adverbs / time ── */
+  { english: "once", answer: "いちど", choices: ["いちど","いちども","だんだん","もうすぐ"] },
+  { english: "not once, never (used with negatives)", answer: "いちども", choices: ["いちども","いちど","だんだん","もうすぐ"] },
+  { english: "gradually, little by little", answer: "だんだん", choices: ["だんだん","もうすぐ","いちど","いちども"] },
+  { english: "soon, before long", answer: "もうすぐ", choices: ["もうすぐ","だんだん","いちど","でも"] },
+
+  /* ── Phrases ── */
+  { english: "Thank you (gratitude for help received)", answer: "おかげさまで", choices: ["おかげさまで","かんぱい","でも","からだにいい"] },
+  { english: "but", answer: "でも", choices: ["でも","おかげさまで","だんだん","もうすぐ"] },
+
+  /* ── 会話 ── */
+  { english: "Bottoms up! / Cheers!", answer: "かんぱい", choices: ["かんぱい","おかげさまで","ダイエット","からだにいい"] },
+  { english: "diet (go on a diet)", answer: "ダイエット", choices: ["ダイエット","ゴルフ","カラオケ","パチンコ"] },
+  { english: "excessive, impossible, unreasonable", answer: "むり", choices: ["むり","からだにいい","ねむい","よわい"] },
+  { english: "good for one's health", answer: "からだにいい", choices: ["からだにいい","むり","ダイエット","かんぱい"] },
+
+  /* ── Landmark ── */
+  { english: "Tokyo Sky Tree (broadcasting tower)", answer: "東京スカイツリー", choices: ["東京スカイツリー","カラオケ","パチンコ","盆踊り"] },
+
+  /* ── Culture: traditional arts ── */
+  { english: "tea ceremony (the Way of Tea)", answer: "茶道", choices: ["茶道","華道","書道","柔道"] },
+  { english: "flower arranging (ikebana)", answer: "華道", choices: ["華道","茶道","書道","剣道"] },
+  { english: "calligraphy (the Way of Writing)", answer: "書道", choices: ["書道","茶道","華道","柔道"] },
+
+  /* ── Culture: performing arts ── */
+  { english: "Kabuki (traditional theater)", answer: "歌舞伎", choices: ["歌舞伎","能","文楽","落語"] },
+  { english: "Noh (classical masked drama)", answer: "能", choices: ["能","歌舞伎","文楽","漫才"] },
+  { english: "Bunraku (puppet theater)", answer: "文楽", choices: ["文楽","歌舞伎","能","落語"] },
+
+  /* ── Martial arts ── */
+  { english: "sumo wrestling", answer: "相撲", choices: ["相撲","柔道","剣道","空手"] },
+  { english: "judo", answer: "柔道", choices: ["柔道","剣道","空手","相撲"] },
+  { english: "kendo (Japanese fencing)", answer: "剣道", choices: ["剣道","柔道","空手","相撲"] },
+  { english: "karate", answer: "空手", choices: ["空手","柔道","剣道","相撲"] },
+
+  /* ── Comedy ── */
+  { english: "manzai (comic duo act)", answer: "漫才", choices: ["漫才","落語","歌舞伎","カラオケ"] },
+  { english: "rakugo (solo comic storytelling)", answer: "落語", choices: ["落語","漫才","文楽","能"] },
+
+  /* ── Board games ── */
+  { english: "go (board game)", answer: "囲碁", choices: ["囲碁","将棋","空手","書道"] },
+  { english: "shogi (Japanese chess)", answer: "将棋", choices: ["将棋","囲碁","剣道","相撲"] },
+
+  /* ── Modern entertainment ── */
+  { english: "pachinko", answer: "パチンコ", choices: ["パチンコ","カラオケ","ゴルフ","ダイエット"] },
+  { english: "karaoke", answer: "カラオケ", choices: ["カラオケ","パチンコ","ゴルフ","ダイエット"] },
+  { english: "Bon dance (summer festival dance)", answer: "盆踊り", choices: ["盆踊り","歌舞伎","カラオケ","茶道"] },
+
+  /* ═══ DEEPER UNDERSTANDING — descriptive / cultural context ═══ */
+  { english: "martial art meaning 'the gentle way'", answer: "柔道", choices: ["柔道","剣道","空手","相撲"] },
+  { english: "martial art meaning 'the way of the sword'", answer: "剣道", choices: ["剣道","柔道","書道","空手"] },
+  { english: "martial art meaning 'empty hand' (no weapons)", answer: "空手", choices: ["空手","柔道","剣道","相撲"] },
+  { english: "traditional Japanese puppet theater with three puppeteers", answer: "文楽", choices: ["文楽","歌舞伎","能","落語"] },
+  { english: "solo performer tells comic stories sitting on a cushion", answer: "落語", choices: ["落語","漫才","文楽","能"] },
+  { english: "comedy performed by a duo (straight man & funny man)", answer: "漫才", choices: ["漫才","落語","歌舞伎","カラオケ"] },
+  { english: "oldest Japanese theater form using masks and slow movements", answer: "能", choices: ["能","歌舞伎","文楽","落語"] },
+  { english: "strategic board game played with black and white stones", answer: "囲碁", choices: ["囲碁","将棋","書道","空手"] },
+  { english: "summer festival dance with drums, yukata, and lanterns", answer: "盆踊り", choices: ["盆踊り","カラオケ","パチンコ","歌舞伎"] },
+];
+
+let playerName = "";
+let quiz = [];
+let answers = {};
+let currentQ = 0;
+let submitted = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderChoiceText(text) { return DISPLAY[text] || text; }
+
+function plainAnswer(text) {
+  if (!text || text === "—") return "—";
+  const r = READING[text];
+  return r ? `${text}（${r}）` : text;
+}
+
+emailjs.init("1oR0j0WDvUmSSYEpK");
+
+const $ = id => document.getElementById(id);
+const $nameScreen=$("name-screen"),$quizScreen=$("quiz-screen"),$nameInput=$("name-input"),$btnStart=$("btn-start");
+const $subtitle=$("quiz-subtitle"),$scoreBanner=$("score-banner"),$scoreNum=$("score-number"),$scoreLbl=$("score-label");
+const $emailRow=$("email-row"),$btnRetake=$("btn-retake"),$progText=$("progress-text"),$progFill=$("progress-fill");
+const $navGrid=$("nav-grid"),$qNumber=$("q-number"),$qEnglish=$("q-english"),$choicesGrid=$("choices-grid");
+const $btnPrev=$("btn-prev"),$btnNext=$("btn-next"),$btnSubmit=$("btn-submit");
+
+$nameInput.addEventListener("input",()=>{$btnStart.disabled=!$nameInput.value.trim();});
+$nameInput.addEventListener("keydown",e=>{if(e.key==="Enter"&&$nameInput.value.trim())startQuiz();});
+$btnStart.addEventListener("click",startQuiz);
+
+function startQuiz(){
+  playerName=$nameInput.value.trim();
+  quiz=shuffle(QUESTIONS).map(q=>({...q,choices:shuffle(q.choices)}));
+  answers={};currentQ=0;submitted=false;
+  $nameScreen.style.display="none";$quizScreen.style.display="block";$scoreBanner.style.display="none";
+  $subtitle.textContent=`${playerName}さん — choose the correct word`;
+  buildNavGrid();renderQuestion();updateProgress();
+}
+function buildNavGrid(){
+  $navGrid.innerHTML="";
+  quiz.forEach((_,i)=>{const b=document.createElement("button");b.className="nav-dot";b.textContent=i+1;b.addEventListener("click",()=>{currentQ=i;renderQuestion();});$navGrid.appendChild(b);});
+}
+function updateNavGrid(){
+  $navGrid.querySelectorAll(".nav-dot").forEach((d,i)=>{d.className="nav-dot";if(i===currentQ)d.classList.add("active");if(!submitted&&answers[i]!==undefined)d.classList.add("answered");if(submitted&&answers[i]===quiz[i].answer)d.classList.add("correct");if(submitted&&answers[i]!==undefined&&answers[i]!==quiz[i].answer)d.classList.add("wrong");});
+}
+function updateProgress(){
+  const c=Object.keys(answers).length;$progText.textContent=`${c} / ${quiz.length} answered`;$progFill.style.width=`${(c/quiz.length)*100}%`;$btnSubmit.disabled=c<quiz.length;
+}
+function renderQuestion(){
+  const q=quiz[currentQ];$qNumber.textContent=`Question ${currentQ+1}`;$qEnglish.textContent=q.english;$choicesGrid.innerHTML="";
+  q.choices.forEach(c=>{const b=document.createElement("button");b.className="choice-btn";if(submitted)b.classList.add("locked");b.innerHTML=`<span>${renderChoiceText(c)}</span>`;const sel=answers[currentQ]===c,cor=c===q.answer;
+    if(!submitted){if(sel)b.classList.add("selected");b.addEventListener("click",()=>{if(submitted)return;answers[currentQ]=c;renderQuestion();updateNavGrid();updateProgress();});}
+    else{if(cor){b.classList.add("correct-reveal");b.innerHTML=`<span>${renderChoiceText(c)}</span><span class="mark ok">✓</span>`;}if(sel&&!cor){b.classList.add("wrong-reveal");b.innerHTML=`<span>${renderChoiceText(c)}</span><span class="mark no">✗</span>`;}}
+    $choicesGrid.appendChild(b);});
+  updateNavGrid();const isLast=currentQ===quiz.length-1;$btnPrev.disabled=currentQ===0;
+  if(isLast&&!submitted){$btnNext.classList.add("hidden");$btnSubmit.classList.remove("hidden");}else{$btnNext.classList.remove("hidden");$btnSubmit.classList.add("hidden");$btnNext.disabled=isLast;}
+}
+$btnPrev.addEventListener("click",()=>{if(currentQ>0){currentQ--;renderQuestion();}});
+$btnNext.addEventListener("click",()=>{if(currentQ<quiz.length-1){currentQ++;renderQuestion();}});
+$btnSubmit.addEventListener("click",submitQuiz);
+
+async function submitQuiz(){
+  let s=0;quiz.forEach((q,i)=>{if(answers[i]===q.answer)s++;});submitted=true;
+  const total=quiz.length,pct=Math.round((s/total)*100);
+  $scoreNum.textContent=`${s}/${total}`;
+  if(s===total)$scoreLbl.textContent="完璧！ Perfect!";
+  else if(pct>=90)$scoreLbl.textContent="すごい！ Excellent!";
+  else if(pct>=70)$scoreLbl.textContent="いいですね！ Good job!";
+  else $scoreLbl.textContent="もう一度！ Try again!";
+  $scoreBanner.style.background=pct>=90?"linear-gradient(135deg,#2d6a4f,#40916c)":pct>=70?"linear-gradient(135deg,#b08d37,#d4a843)":"linear-gradient(135deg,#9b2226,#ca6702)";
+  $scoreBanner.style.display="block";currentQ=0;renderQuestion();updateNavGrid();
+  $btnSubmit.classList.add("hidden");$btnNext.classList.remove("hidden");$btnNext.disabled=false;
+
+  const now=new Date().toLocaleString("en-PH",{timeZone:"Asia/Manila",dateStyle:"full",timeStyle:"short"});
+  const details=quiz.map((q,i)=>`${i+1}. ${q.english} → Answer: ${plainAnswer(answers[i]||"—")} | Correct: ${plainAnswer(q.answer)} ${answers[i]===q.answer?"✓":"✗"}`).join("\n");
+  const emailParams={name:playerName,email:"noreply@quiz.com",subject:`[${playerName}] みんなの日本語 Lesson 19 Quiz — ${pct}%`,message:`Minna no Nihongo - Lesson 19 Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${total} (${pct}%)\n\n--- Detailed Results ---\n${details}\n\nがんばって！`,time:now};
+  $emailRow.innerHTML=`<span class="email-pill">📧 Sending results…</span>`;
+  try{await emailjs.send("service_v7ifzdj","template_lb9c879",emailParams);$emailRow.innerHTML=`<span class="email-pill sent">✓ Results emailed!</span>`;}
+  catch(err){console.error("EmailJS error:",err);$emailRow.innerHTML=`<span class="email-pill error">✗ ${err?.text||err?.message||'Email failed'}</span>`;}
+}
+$btnRetake.addEventListener("click",()=>{quiz=shuffle(QUESTIONS).map(q=>({...q,choices:shuffle(q.choices)}));answers={};currentQ=0;submitted=false;$scoreBanner.style.display="none";buildNavGrid();renderQuestion();updateProgress();});
+</script>
+</body>
+</html>
