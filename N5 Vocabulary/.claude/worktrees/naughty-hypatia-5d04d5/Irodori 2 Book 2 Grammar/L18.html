@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Irodori Practice 18</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--sakura-50:#fef7f8;--sakura-100:#fdeef0;--sakura-200:#fbdae0;--sakura-300:#f7b8c4;--sakura-400:#f291a5;--sakura-500:#e86b8a;--sakura-600:#d44a6e;--sakura-700:#b83359;--sakura-800:#9a2d4e;--correct:#4caf7a;--correct-bg:#eaf7ef;--wrong:#d94f5c;--wrong-bg:#fdeef0;--text-primary:#3d2533;--text-secondary:#6b4a5a;--text-light:#9a7a8a;--bg-main:#fef7f8;--bg-card:#ffffff;--shadow-sm:0 2px 8px rgba(184,51,89,.08);--shadow-md:0 4px 20px rgba(184,51,89,.12);--shadow-lg:0 8px 32px rgba(184,51,89,.16);--radius:16px}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg-main);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 20% 20%,rgba(247,184,196,.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(242,145,165,.10) 0%,transparent 50%),radial-gradient(ellipse at 50% 50%,rgba(253,238,240,.3) 0%,transparent 70%);pointer-events:none;z-index:0}
+  .container{max-width:640px;margin:0 auto;padding:24px 16px 60px;position:relative;z-index:1}
+  .header{text-align:center;margin-bottom:32px;animation:fadeDown .6s ease}
+  .header-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--sakura-400),var(--sakura-500));color:#fff;padding:6px 16px;border-radius:20px;font-size:.75rem;font-weight:500;letter-spacing:.05em;margin-bottom:12px}
+  .header h1{font-family:'Zen Maru Gothic',sans-serif;font-size:1.75rem;font-weight:700;color:var(--sakura-700);margin-bottom:4px}
+  .header p{color:var(--text-light);font-size:.875rem}
+  .progress-area{margin-bottom:24px;animation:fadeDown .6s ease .1s both}
+  .progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:.8rem;color:var(--text-secondary)}
+  .progress-info .score{font-weight:500;color:var(--sakura-600)}
+  .progress-bar{height:8px;background:var(--sakura-100);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--sakura-400),var(--sakura-500));border-radius:4px;transition:width .5s cubic-bezier(.4,0,.2,1);width:0%}
+  .section-label{display:inline-flex;align-items:center;gap:6px;background:var(--sakura-100);color:var(--sakura-700);padding:5px 14px;border-radius:16px;font-size:.75rem;font-weight:500;margin-bottom:16px}
+  .question-card{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:28px 24px;margin-bottom:20px;animation:slideUp .5s ease;border:1px solid rgba(247,184,196,.2)}
+  .question-number{font-size:.75rem;color:var(--text-light);font-weight:500;margin-bottom:16px;display:flex;align-items:center;gap:6px}
+  .question-number::before{content:'🌸';font-size:.85rem}
+  .sentence{font-size:1.2rem;line-height:2.4;margin-bottom:8px;font-weight:400}
+  .sentence .blank{display:inline-block;min-width:90px;border-bottom:2.5px dashed var(--sakura-400);text-align:center;padding:0 4px;margin:0 2px;color:var(--sakura-600);font-weight:500;transition:all .3s ease}
+  .sentence .blank.filled{border-bottom-style:solid;border-color:var(--correct);color:var(--correct)}
+  .sentence .blank.wrong{border-bottom-style:solid;border-color:var(--wrong);color:var(--wrong);text-decoration:line-through}
+  .sentence-b{font-size:1.05rem;color:var(--text-secondary);line-height:2.2;margin-top:8px}
+  .kanji-display{text-align:center;font-size:3rem;font-weight:700;color:var(--text-primary);margin:16px 0 24px;font-family:'Noto Sans JP',serif;letter-spacing:.1em}
+  .reading-answer{text-align:center;font-size:1.3rem;color:var(--sakura-600);font-weight:500;margin-bottom:20px;min-height:2em;padding:8px;border-radius:10px;transition:all .3s ease}
+  .reading-answer.correct-bg{background:var(--correct-bg);color:var(--correct)}
+  .reading-answer.wrong-bg{background:var(--wrong-bg);color:var(--wrong)}
+  .options{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+  .option-btn{display:block;width:100%;padding:14px 20px 12px;border:2px solid var(--sakura-200);border-radius:12px;background:var(--sakura-50);font-family:'Noto Sans JP',sans-serif;font-size:1.1rem;line-height:2;color:var(--text-primary);cursor:pointer;transition:all .25s ease;text-align:center;font-weight:400}
+  .option-btn:hover:not(:disabled){border-color:var(--sakura-400);background:var(--sakura-100);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+  .option-btn:active:not(:disabled){transform:translateY(0)}
+  .option-btn:disabled{cursor:default}
+  .option-btn.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--correct);font-weight:500}
+  .option-btn.correct::after{content:' ✓';font-weight:700}
+  .option-btn.wrong{border-color:var(--wrong);background:var(--wrong-bg);color:var(--wrong);opacity:.8}
+  .option-btn.wrong::after{content:' ✗';font-weight:700}
+  .option-btn.dimmed{opacity:.45;border-color:var(--sakura-100)}
+  .explanation{margin-top:18px;padding:16px 20px;background:linear-gradient(135deg,#fef9f0,#fdf5e6);border-radius:12px;border-left:4px solid var(--sakura-400);animation:fadeIn .4s ease;font-size:.9rem;line-height:1.8;color:var(--text-secondary)}
+  .explanation strong{color:var(--sakura-700);font-weight:700}
+  .explanation .grammar-point{font-family:'Zen Maru Gothic',sans-serif;font-weight:700;color:var(--sakura-600);font-size:.95rem;margin-bottom:4px;display:block}
+  .next-btn{display:block;width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--sakura-500),var(--sakura-600));color:#fff;font-family:'Noto Sans JP',sans-serif;font-size:1rem;font-weight:500;cursor:pointer;transition:all .3s ease;animation:fadeIn .4s ease;margin-top:16px;box-shadow:0 4px 15px rgba(212,74,110,.3)}
+  .next-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,74,110,.4)}
+  .next-btn:active{transform:translateY(0)}
+  .section-break{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:40px 24px;text-align:center;animation:slideUp .6s ease;border:1px solid rgba(247,184,196,.2);margin-bottom:20px}
+  .section-break h2{font-family:'Zen Maru Gothic',sans-serif;font-size:1.3rem;color:var(--sakura-700);margin-bottom:8px}
+  .section-break p{color:var(--text-secondary);font-size:.9rem;margin-bottom:20px;line-height:1.7}
+  .section-score{font-size:2rem;font-weight:700;color:var(--sakura-600);font-family:'Zen Maru Gothic',sans-serif;margin-bottom:16px}
+  .section-score span{font-size:1rem;color:var(--text-light);font-weight:400}
+  .results-card{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:40px 24px;text-align:center;animation:slideUp .6s ease;border:1px solid rgba(247,184,196,.2)}
+  .results-emoji{font-size:3rem;margin-bottom:16px;display:block}
+  .results-card h2{font-family:'Zen Maru Gothic',sans-serif;font-size:1.5rem;color:var(--sakura-700);margin-bottom:8px}
+  .results-score{font-size:3rem;font-weight:700;color:var(--sakura-600);margin:16px 0;font-family:'Zen Maru Gothic',sans-serif}
+  .results-score span{font-size:1.2rem;color:var(--text-light);font-weight:400}
+  .results-message{color:var(--text-secondary);margin-bottom:24px;line-height:1.7;font-size:.95rem}
+  .results-breakdown{display:flex;justify-content:center;gap:24px;margin-bottom:24px}
+  .breakdown-item{background:var(--sakura-50);border-radius:12px;padding:12px 20px;text-align:center}
+  .breakdown-item .label{font-size:.7rem;color:var(--text-light);margin-bottom:4px}
+  .breakdown-item .value{font-size:1.3rem;font-weight:700;color:var(--sakura-600);font-family:'Zen Maru Gothic'}
+  .retry-btn{display:inline-block;padding:14px 40px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--sakura-500),var(--sakura-600));color:#fff;font-family:'Noto Sans JP',sans-serif;font-size:1rem;font-weight:500;cursor:pointer;transition:all .3s ease;box-shadow:0 4px 15px rgba(212,74,110,.3);margin-top:8px}
+  .retry-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,74,110,.4)}
+  .review-section{margin-top:32px;text-align:left}
+  .review-section h3{font-family:'Zen Maru Gothic',sans-serif;color:var(--sakura-700);font-size:1.1rem;margin-bottom:16px;text-align:center}
+  .review-item{background:var(--sakura-50);border-radius:12px;padding:14px 18px;margin-bottom:10px;border-left:4px solid var(--correct);font-size:.9rem;line-height:1.8}
+  .review-item.missed{border-left-color:var(--wrong);background:var(--wrong-bg)}
+  .review-item .q-label{font-size:.7rem;color:var(--text-light);font-weight:500;margin-bottom:4px}
+  .review-item .answer-line{font-size:.8rem;color:var(--text-secondary);margin-top:4px}
+  ruby{ruby-align:center}rt{font-size:.5em;color:var(--text-light);font-weight:300;letter-spacing:.02em}
+  .option-btn rt{font-size:.5em;color:inherit}.explanation rt{font-size:.55em}.review-item rt{font-size:.55em}
+  .hidden{display:none!important}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .petal{position:fixed;width:12px;height:12px;background:var(--sakura-300);border-radius:50% 0 50% 50%;opacity:.2;pointer-events:none;z-index:0;animation:float linear infinite}
+  @keyframes float{0%{transform:translateY(-20px) rotate(0deg);opacity:0}10%{opacity:.2}90%{opacity:.2}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="header-badge">IRODORI • <ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby> 18</div>
+    <h1>Practice Quiz 18</h1>
+    <p><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby> (7) ＋ <ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby><ruby>読<rt>よ</rt></ruby>み (5)</p>
+  </div>
+  <div class="progress-area">
+    <div class="progress-info">
+      <span id="progress-text">Question 1 / 12</span>
+      <span class="score" id="score-text">Score: 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+  <div id="quiz-area"></div>
+  <div id="results-area" class="hidden"></div>
+</div>
+<script>
+const R=(k,r)=>`<ruby>${k}<rt>${r}</rt></ruby>`;
+const TOTAL=12,GRAMMAR_COUNT=7;
+
+const grammarQuestions=[
+  {
+    id:1,type:'grammar',
+    display:[`${R('今','いま')}、${R('日','に')}${R('本','ほん')}の${R('会','かい')}${R('社','しゃ')}で${R('働','はたら')}いています。この${R('仕','し')}${R('事','ごと')}は、${R('中','ちゅう')}${R('国','ごく')}の${R('友','とも')}だちが`,'___','。'],
+    sentenceB:null,
+    options:[`${R('紹','しょう')}${R('介','かい')}してあげました`,`${R('紹','しょう')}${R('介','かい')}してもらいました`,`${R('紹','しょう')}${R('介','かい')}してくれました`],
+    answer:`${R('紹','しょう')}${R('介','かい')}してくれました`,
+    explanation:{
+      point:'〜てくれる（someone does ~ for me）',
+      text:'「〜てくれる」は、他の人が話し手（私）のために何かをしてくれた時に使います。主語は「友だちが」なので、友だちが私のために仕事を紹介してくれた、という意味です。「〜てあげる」は私が誰かのためにすること、「〜てもらう」は主語が「私が」になり「私が友だちに紹介してもらった」という形になります。ここでは主語が「友だちが」なので「くれました」が正解です。'
+    }
+  },
+  {
+    id:2,type:'grammar',
+    display:[`${R('別','べつ')}の${R('国','くに')}に${R('行','い')}って、いろいろな${R('国','くに')}の${R('文','ぶん')}${R('化','か')}を`,'___',`と${R('思','おも')}っています。`],
+    sentenceB:null,
+    options:[`${R('見','み')}てみる`,`${R('見','み')}てみよう`,`${R('見','み')}てみたら`],
+    answer:`${R('見','み')}てみよう`,
+    explanation:{
+      point:'意向形 ＋ と思っています（I\'m thinking of ~ing）',
+      text:'「〜（よ）うと思っています」は、自分の意志・計画を表します。「見てみる」（辞書形）の意向形は「見てみよう」です。「見てみようと思っています」＝いろいろな文化を見てみたいと思っている。「見てみる」は辞書形で「と思っています」の前では意向形が必要です。「見てみたら」は条件形で意味が違います。'
+    }
+  },
+  {
+    id:3,type:'grammar',
+    display:[`${R('一','いっ')}${R('生','しょう')}${R('懸','けん')}${R('命','めい')}${R('働','はたら')}いて、たくさんお${R('金','かね')}を${R('稼','かせ')}いで、${R('家','か')}${R('族','ぞく')}にお${R('金','かね')}を`,'___','。'],
+    sentenceB:null,
+    options:[`${R('送','おく')}ってあげます`,`${R('送','おく')}ってもらいます`,`${R('送','おく')}ってくれます`],
+    answer:`${R('送','おく')}ってあげます`,
+    explanation:{
+      point:'〜てあげる（I do ~ for someone）',
+      text:'「〜てあげる」は、話し手（私）が他の人のために何かをする時に使います。「家族にお金を送ってあげます」＝私が家族のためにお金を送る。「送ってもらいます」は誰かに送ってもらう（受ける側）、「送ってくれます」は誰かが私のために送る、で主語と方向が合いません。自分が家族のためにする行為なので「あげます」が正解です。'
+    }
+  },
+  {
+    id:4,type:'grammar',
+    display:[`${R('家','か')}${R('族','ぞく')}の${R('仕','し')}${R('事','ごと')}を${R('手','て')}${R('伝','つだ')}う`,'___',`、${R('一','いち')}${R('度','ど')}モンゴルに${R('戻','もど')}るつもりです。`],
+    sentenceB:null,
+    options:['ように','ために','のに'],
+    answer:'ために',
+    explanation:{
+      point:'〜ために（in order to ~）',
+      text:'「〜ために」は目的を表します。辞書形＋ために が正しい接続です。「手伝うために戻る」＝家族の仕事を手伝う目的で戻る。「ように」は無意志動詞や可能形と使うことが多く、「手伝う」のような意志動詞には「ために」が自然です。「のに」は「〜のに便利だ」のように用途を表す別の用法です。'
+    }
+  },
+  {
+    id:5,type:'grammar',
+    display:[`はじめは、${R('仕','し')}${R('事','ごと')}でたくさん${R('失','しっ')}${R('敗','ぱい')}しました。でも、${R('会','かい')}${R('社','しゃ')}の${R('人','ひと')}に、いろいろ`,'___','。'],
+    sentenceB:null,
+    options:[`${R('助','たす')}けてもらいました`,`${R('助','たす')}けてくれました`,`${R('助','たす')}けてあげました`],
+    answer:`${R('助','たす')}けてもらいました`,
+    explanation:{
+      point:'〜てもらう（I receive the favor of ~）',
+      text:'「〜てもらう」は、話し手が他の人から恩恵を受ける時に使います。「会社の人に助けてもらいました」＝私は会社の人に助けてもらった（感謝の気持ち）。「〜に」＋「てもらう」の形です。「助けてくれました」も意味は近いですが、その場合は「会社の人が」（が格）が主語になります。ここでは「会社の人に」（に格）なので「もらいました」が正解です。'
+    }
+  },
+  {
+    id:6,type:'grammar',
+    display:[`${R('将','しょう')}${R('来','らい')}、また${R('日','に')}${R('本','ほん')}に`,'___',`ために、ネパールで${R('一','いっ')}${R('生','しょう')}${R('懸','けん')}${R('命','めい')}がんばります。`],
+    sentenceB:null,
+    options:[`${R('来','こ')}よう`,`${R('来','き')}て`,`${R('来','く')}る`],
+    answer:`${R('来','く')}る`,
+    explanation:{
+      point:'辞書形 ＋ ために（in order to ~）',
+      text:'Q4と同じ「〜ために」のパターンです。「ために」の前には動詞の辞書形が来ます。「来る」（くる）は辞書形でそのまま接続します。「来るために」＝日本に来る目的で。「来よう」は意向形、「来て」はて形で、「ために」には接続できません。「来る」は不規則動詞で読みは「くる」です。'
+    }
+  },
+  {
+    id:7,type:'grammar',
+    display:[`${R('将','しょう')}${R('来','らい')}は、できればずっとこの${R('町','まち')}で`,'___',`と${R('思','おも')}っています。`],
+    sentenceB:null,
+    options:[`${R('暮','く')}らして`,`${R('暮','く')}らそう`,`${R('暮','く')}らした`],
+    answer:`${R('暮','く')}らそう`,
+    explanation:{
+      point:'意向形 ＋ と思っています（I\'m thinking of ~ing）',
+      text:'Q2と同じ「〜（よ）うと思っています」のパターンです。「暮らす」（五段動詞）の意向形は「暮らそう」です。「暮らそうと思っています」＝この町でずっと暮らしたいと思っている。「暮らして」はて形、「暮らした」は過去形で、「と思っています」の前では意向形が必要です。'
+    }
+  }
+];
+
+const kanjiQuestions=[
+  {
+    id:8,type:'kanji',
+    kanjiPlain:'募集',
+    options:['ぼしゅう','ぼちゅう','ぼすう'],
+    answer:'ぼしゅう',
+    explanation:{
+      point:'募集（ぼしゅう）',
+      text:'「募」は「ぼ」（応募＝おうぼ）、「集」は「しゅう」（集合＝しゅうごう）。「募集」は英語の "recruitment / wanted" の意味です。求人広告でよく見かける言葉です。「ぼちゅう」は「集」の読みが間違い、「ぼすう」は「数」に近い音で別の読みです。'
+    }
+  },
+  {
+    id:9,type:'kanji',
+    kanjiPlain:'希望',
+    options:['きぼう','きいぼう','きぼ'],
+    answer:'きぼう',
+    explanation:{
+      point:'希望（きぼう）',
+      text:'「希」は「き」（希少＝きしょう）、「望」は「ぼう」（望遠鏡＝ぼうえんきょう）。「希望」は英語の "hope / wish" の意味です。「きいぼう」は「希」を長音にした間違い、「きぼ」は「望」の読みが短すぎます。'
+    }
+  },
+  {
+    id:10,type:'kanji',
+    kanjiPlain:'役に立つ',
+    options:['やきにたつ','やくにたつ','やこにたつ'],
+    answer:'やくにたつ',
+    explanation:{
+      point:'役に立つ（やくにたつ）',
+      text:'「役」は「やく」（役割＝やくわり）、「立」は「た」（立つ＝たつ）。「役に立つ」は英語の "to be useful / helpful" の意味です。「やきにたつ」は「役」の「く」が「き」になった間違い、「やこにたつ」は存在しない読みです。'
+    }
+  },
+  {
+    id:11,type:'kanji',
+    kanjiPlain:'留学する',
+    options:['りゆがくする','りうがくする','りゅうがくする'],
+    answer:'りゅうがくする',
+    explanation:{
+      point:'留学する（りゅうがくする）',
+      text:'「留」は「りゅう」（留守＝るす、でも「留学」では「りゅう」）、「学」は「がく」（学校＝がっこう）。「留学する」は英語の "to study abroad" の意味です。「りゆがくする」は拗音「ゅ」が抜けています。「りうがくする」も同様に拗音が欠けた間違いです。'
+    }
+  },
+  {
+    id:12,type:'kanji',
+    kanjiPlain:'考える',
+    options:['かんがえる','がんかえる','かんかえる'],
+    answer:'かんがえる',
+    explanation:{
+      point:'考える（かんがえる）',
+      text:'「考」の訓読みは「かんが」で、「考える」（to think / to consider）になります。「何を食べようか考える」のように使います。「がんかえる」は最初の「か」と「が」が入れ替わった間違い、「かんかえる」は「が」が「か」になった間違いです。濁音の位置に注意しましょう。'
+    }
+  }
+];
+
+const allQuestions=[...grammarQuestions,...kanjiQuestions];
+let currentQ=0,score=0,grammarScore=0,kanjiScore=0,answered=[];
+
+function init(){
+  currentQ=0;score=0;grammarScore=0;kanjiScore=0;answered=[];
+  document.getElementById('results-area').classList.add('hidden');
+  renderQuestion();updateProgress();createPetals();
+}
+
+function renderQuestion(){
+  const area=document.getElementById('quiz-area');
+  if(currentQ===GRAMMAR_COUNT&&!document.querySelector('.section-shown')){
+    area.innerHTML=`<div class="section-break">
+      <span style="font-size:2rem;display:block;margin-bottom:12px">📖</span>
+      <h2><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby>セクション<ruby>完<rt>かん</rt></ruby><ruby>了<rt>りょう</rt></ruby>！</h2>
+      <div class="section-score">${grammarScore} <span>/ ${GRAMMAR_COUNT}</span></div>
+      <p><ruby>次<rt>つぎ</rt></ruby>は<ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>の<ruby>読<rt>よ</rt></ruby>みセクションです。<br><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>を<ruby>見<rt>み</rt></ruby>て<ruby>正<rt>ただ</rt></ruby>しい<ruby>読<rt>よ</rt></ruby>みを<ruby>選<rt>えら</rt></ruby>びましょう。</p>
+      <button class="next-btn" onclick="document.querySelector('.section-break').classList.add('section-shown');renderQuestionContent()"><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby><ruby>読<rt>よ</rt></ruby>みへ →</button>
+    </div>`;return;
+  }
+  renderQuestionContent();
+}
+
+function renderQuestionContent(){
+  const q=allQuestions[currentQ],area=document.getElementById('quiz-area');
+  if(q.type==='grammar'){
+    const parts=q.display.map(p=>p==='___'?'<span class="blank" id="blank-slot">　？　</span>':p).join('');
+    area.innerHTML=`<div class="question-card">
+      <div class="section-label"><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby></div>
+      <div class="question-number"><ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${currentQ+1} / ${TOTAL}</div>
+      <div class="sentence">${parts}</div>
+      ${q.sentenceB?`<div class="sentence-b">${q.sentenceB}</div>`:''}
+      <div class="options" id="options-area">
+        ${q.options.map((o,i)=>`<button class="option-btn" onclick="selectAnswer(${i})">${o}</button>`).join('')}
+      </div>
+      <div id="explanation-area"></div><div id="next-area"></div>
+    </div>`;
+  } else {
+    area.innerHTML=`<div class="question-card">
+      <div class="section-label"><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby><ruby>読<rt>よ</rt></ruby>み</div>
+      <div class="question-number"><ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${currentQ+1} / ${TOTAL}</div>
+      <div class="kanji-display">${q.kanjiPlain}</div>
+      <div class="reading-answer" id="reading-slot"></div>
+      <div class="options" id="options-area">
+        ${q.options.map((o,i)=>`<button class="option-btn" onclick="selectAnswer(${i})">${o}</button>`).join('')}
+      </div>
+      <div id="explanation-area"></div><div id="next-area"></div>
+    </div>`;
+  }
+}
+
+function selectAnswer(idx){
+  const q=allQuestions[currentQ],selected=q.options[idx],isCorrect=selected===q.answer;
+  const buttons=document.querySelectorAll('.option-btn');
+  if(isCorrect){score++;if(q.type==='grammar')grammarScore++;else kanjiScore++;}
+
+  if(q.type==='grammar'){
+    const blank=document.getElementById('blank-slot');
+    if(blank){
+      if(isCorrect){blank.innerHTML=q.answer;blank.classList.add('filled');}
+      else{blank.innerHTML=selected;blank.classList.add('wrong');
+        setTimeout(()=>{blank.innerHTML=q.answer;blank.classList.remove('wrong');blank.classList.add('filled');},800);}
+    }
+  } else {
+    const slot=document.getElementById('reading-slot');
+    slot.textContent=isCorrect?q.answer:selected;
+    slot.classList.add(isCorrect?'correct-bg':'wrong-bg');
+    if(!isCorrect)setTimeout(()=>{slot.textContent=q.answer;slot.classList.remove('wrong-bg');slot.classList.add('correct-bg');},800);
+  }
+
+  answered.push({id:q.id,type:q.type,correct:isCorrect,selected,answer:q.answer});
+  buttons.forEach((btn,i)=>{btn.disabled=true;
+    if(q.options[i]===q.answer)btn.classList.add('correct');
+    else if(i===idx&&!isCorrect)btn.classList.add('wrong');
+    else btn.classList.add('dimmed');
+  });
+
+  document.getElementById('explanation-area').innerHTML=`
+    <div class="explanation"><span class="grammar-point">${q.explanation.point}</span>${q.explanation.text}</div>`;
+  const isLast=currentQ>=allQuestions.length-1;
+  document.getElementById('next-area').innerHTML=`
+    <button class="next-btn" onclick="${isLast?'showResults()':'nextQuestion()'}">
+      ${isLast?`<ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby>を<ruby>見<rt>み</rt></ruby>る →`:`<ruby>次<rt>つぎ</rt></ruby>の<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> →`}
+    </button>`;
+  updateProgress();
+}
+
+function nextQuestion(){currentQ++;renderQuestion();updateProgress();window.scrollTo({top:0,behavior:'smooth'});}
+
+function updateProgress(){
+  document.getElementById('progress-text').textContent=`Question ${currentQ+1} / ${TOTAL}`;
+  document.getElementById('score-text').textContent=`Score: ${score}`;
+  document.getElementById('progress-fill').style.width=`${(answered.length/TOTAL)*100}%`;
+}
+
+function showResults(){
+  document.getElementById('quiz-area').innerHTML='';
+  document.getElementById('progress-fill').style.width='100%';
+  const pct=Math.round((score/TOTAL)*100);
+  let emoji,msg;
+  if(pct===100){emoji='🌸✨';msg=`<ruby>満<rt>まん</rt></ruby><ruby>点<rt>てん</rt></ruby>！パーフェクト！`;}
+  else if(pct>=80){emoji='🌸';msg='よくできました！あと<ruby>少<rt>すこ</rt></ruby>しで<ruby>完<rt>かん</rt></ruby><ruby>璧<rt>ぺき</rt></ruby>です。';}
+  else if(pct>=60){emoji='🌱';msg='まあまあです。<ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>えた<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>を<ruby>復<rt>ふく</rt></ruby><ruby>習<rt>しゅう</rt></ruby>しましょう。';}
+  else{emoji='📖';msg='もう<ruby>少<rt>すこ</rt></ruby>し<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>しましょう。';}
+
+  const missed=answered.filter(a=>!a.correct);
+  let reviewHTML='';
+  if(missed.length>0){
+    reviewHTML=`<div class="review-section">
+      <h3><ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>えた<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby></h3>
+      ${missed.map(m=>{
+        const q=allQuestions.find(qq=>qq.id===m.id);
+        const displayText=q.type==='grammar'
+          ?q.display.join('').replace('___',`<strong>${q.answer}</strong>`)
+          :`<strong>${q.kanjiPlain}</strong> → ${q.answer}`;
+        return`<div class="review-item missed">
+          <div class="q-label">${q.type==='grammar'?'<ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby>':'<ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>'} — <ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${m.id}</div>
+          <div>${displayText}</div>
+          <div class="answer-line">あなたの<ruby>答<rt>こた</rt></ruby>え：${m.selected}　→　<ruby>正<rt>せい</rt></ruby><ruby>解<rt>かい</rt></ruby>：${m.answer}</div>
+        </div>`;
+      }).join('')}</div>`;
+  }
+
+  const ra=document.getElementById('results-area');
+  ra.classList.remove('hidden');
+  ra.innerHTML=`<div class="results-card">
+    <span class="results-emoji">${emoji}</span>
+    <h2>クイズ<ruby>完<rt>かん</rt></ruby><ruby>了<rt>りょう</rt></ruby>！</h2>
+    <div class="results-score">${score} <span>/ ${TOTAL}</span></div>
+    <div class="results-breakdown">
+      <div class="breakdown-item"><div class="label"><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby></div><div class="value">${grammarScore}/${GRAMMAR_COUNT}</div></div>
+      <div class="breakdown-item"><div class="label"><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby></div><div class="value">${kanjiScore}/5</div></div>
+    </div>
+    <div class="results-message">${msg}</div>
+    <button class="retry-btn" onclick="init()">もう<ruby>一<rt>いち</rt></ruby><ruby>度<rt>ど</rt></ruby>チャレンジ →</button>
+    ${reviewHTML}
+  </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function createPetals(){
+  document.querySelectorAll('.petal').forEach(p=>p.remove());
+  for(let i=0;i<6;i++){
+    const p=document.createElement('div');p.className='petal';
+    p.style.left=Math.random()*100+'%';p.style.animationDuration=(8+Math.random()*12)+'s';
+    p.style.animationDelay=Math.random()*10+'s';p.style.width=(8+Math.random()*8)+'px';p.style.height=p.style.width;
+    document.body.appendChild(p);
+  }
+}
+init();
+</script>
+</body>
+</html>

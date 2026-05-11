@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>みんなの日本語 Lesson 25 — Vocabulary Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { min-height: 100vh; background: #1a1525; color: #e8e0f0; font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 20% 30%, rgba(232,180,200,0.07) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(120,100,180,0.07) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+  .container { max-width: 540px; margin: 0 auto; padding: 24px 16px 60px; position: relative; z-index: 1; }
+  #name-screen { margin-top: 50px; }
+  .card { background: #221d2e; border-radius: 16px; padding: 28px 20px; border: 1px solid #3d3650; }
+  .badge { display: inline-block; background: linear-gradient(135deg, #e8b4c8, #c89db7); color: #1a1525; font-weight: 700; font-size: 12px; padding: 4px 14px; border-radius: 20px; letter-spacing: 1px; }
+  .title { font-size: 22px; font-weight: 800; margin: 14px 0 4px; letter-spacing: -0.5px; }
+  .subtitle { font-size: 13px; color: #9e93b0; }
+  .name-label { display: block; font-size: 13px; color: #9e93b0; margin: 24px 0 8px; text-align: left; }
+  .name-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; font-size: 16px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+  .name-input:focus { border-color: #e8b4c8; }
+  .btn-primary { width: 100%; margin-top: 16px; padding: 14px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+  .btn-primary:disabled { opacity: 0.35; cursor: default; }
+  #quiz-screen { display: none; }
+  .header { text-align: center; margin-bottom: 22px; }
+  .header .subtitle { margin-top: 2px; }
+  .score-banner { display: none; border-radius: 16px; padding: 22px 16px; text-align: center; margin-bottom: 20px; animation: slideDown 0.4s ease; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+  .score-number { font-size: 44px; font-weight: 800; letter-spacing: -1px; }
+  .score-label { font-size: 16px; font-weight: 600; margin-top: 4px; }
+  .email-row { margin-top: 10px; }
+  .email-pill { display: inline-block; background: #3d3650; font-size: 12px; padding: 4px 14px; border-radius: 12px; }
+  .email-pill.sent { background: #2d6a4f; }
+  .email-pill.error { background: #9b2226; }
+  .btn-retake { margin-top: 12px; background: rgba(255,255,255,0.15); color: #fff; border: none; padding: 8px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  .progress-row { margin-bottom: 14px; }
+  .progress-text { font-size: 12px; color: #9e93b0; display: block; margin-bottom: 6px; }
+  .progress-bar { height: 4px; background: #2a2535; border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #e8b4c8, #c89db7); border-radius: 4px; width: 0%; transition: width 0.3s ease; }
+  .nav-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-bottom: 20px; }
+  .nav-dot { aspect-ratio: 1; border-radius: 8px; background: #2a2535; color: #e8e0f0; font-size: 11px; font-weight: 600; border: 2px solid transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .nav-dot.answered { background: #4a4458; }
+  .nav-dot.active { border-color: #e8b4c8; }
+  .nav-dot.correct { background: #2d6a4f; }
+  .nav-dot.wrong { background: #9b2226; }
+  .q-card { background: #221d2e; border-radius: 16px; padding: 24px 18px; border: 1px solid #3d3650; margin-bottom: 16px; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .q-number { font-size: 11px; color: #9e93b0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .q-english { font-size: 18px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; }
+  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .choice-btn { padding: 16px 8px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; text-align: center; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; font-size: 16px; font-weight: 600; position: relative; transition: all 0.15s; min-height: 64px; display: flex; align-items: center; justify-content: center; line-height: 1.3; }
+  .choice-btn:hover:not(.locked) { border-color: #5c4d7a; background: #302844; }
+  .choice-btn.selected { background: #5c4d7a; border-color: #e8b4c8; }
+  .choice-btn.correct-reveal { background: #2d6a4f; border-color: #40916c; }
+  .choice-btn.wrong-reveal { background: #9b2226; border-color: #ca6702; }
+  .choice-btn .mark { position: absolute; top: 6px; right: 8px; font-size: 14px; }
+  .choice-btn .mark.ok { color: #a7f3d0; }
+  .choice-btn .mark.no { color: #fca5a5; }
+  .choice-btn ruby { display: inline; line-height: 1.1; }
+  .choice-btn ruby rt { font-size: 0.5em; color: rgba(232,224,240,0.6); font-weight: 500; }
+  .choice-btn.correct-reveal ruby rt { color: rgba(167,243,208,0.85); }
+  .choice-btn.wrong-reveal ruby rt { color: rgba(252,165,165,0.85); }
+  .choice-btn.selected ruby rt { color: rgba(232,180,200,0.85); }
+  .arrow-row { display: flex; justify-content: space-between; gap: 12px; }
+  .btn-nav { flex: 1; padding: 12px 0; border-radius: 12px; background: #2a2535; border: 1px solid #3d3650; color: #e8e0f0; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
+  .btn-nav:disabled { opacity: 0.3; cursor: default; }
+  .btn-submit { flex: 1; padding: 12px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+  .btn-submit:disabled { opacity: 0.35; cursor: default; }
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div id="name-screen">
+    <div class="card text-center">
+      <span class="badge">みんなの日本語 · FINAL</span>
+      <h1 class="title">Lesson 25 — Vocabulary Exam</h1>
+      <p class="subtitle">45 multiple-choice questions · vocabulary &amp; life stages 🏁</p>
+      <label class="name-label">おなまえは？ Enter your name</label>
+      <input class="name-input" id="name-input" type="text" placeholder="Your name..." autofocus>
+      <button class="btn-primary" id="btn-start" disabled>Start Final Exam →</button>
+    </div>
+  </div>
+
+  <div id="quiz-screen">
+    <header class="header">
+      <span class="badge">みんなの日本語 · FINAL</span>
+      <h1 class="title">Lesson 25 — Vocabulary Exam</h1>
+      <p class="subtitle" id="quiz-subtitle"></p>
+    </header>
+    <div class="score-banner" id="score-banner">
+      <div class="score-number" id="score-number"></div>
+      <div class="score-label" id="score-label"></div>
+      <div class="email-row" id="email-row"></div>
+      <button class="btn-retake" id="btn-retake">Retake Quiz</button>
+    </div>
+    <div class="progress-row">
+      <span class="progress-text" id="progress-text">0 / 45 answered</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <div class="nav-grid" id="nav-grid"></div>
+    <div class="q-card" id="q-card">
+      <div class="q-number" id="q-number"></div>
+      <div class="q-english" id="q-english"></div>
+      <div class="choices-grid" id="choices-grid"></div>
+    </div>
+    <div class="arrow-row">
+      <button class="btn-nav" id="btn-prev">← Previous</button>
+      <button class="btn-nav" id="btn-next">Next →</button>
+      <button class="btn-submit hidden" id="btn-submit" disabled>Submit Exam</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DISPLAY = {
+  /* Life stages */
+  "赤ちゃん":"<ruby>赤<rt>あか</rt></ruby>ちゃん",
+  "子ども":"<ruby>子<rt>こ</rt></ruby>ども",
+  "青年":"<ruby>青年<rt>せいねん</rt></ruby>",
+  "中年":"<ruby>中年<rt>ちゅうねん</rt></ruby>",
+  "老年":"<ruby>老年<rt>ろうねん</rt></ruby>",
+  /* Schools */
+  "保育園":"<ruby>保育園<rt>ほいくえん</rt></ruby>",
+  "幼稚園":"<ruby>幼稚園<rt>ようちえん</rt></ruby>",
+  "小学校":"<ruby>小学校<rt>しょうがっこう</rt></ruby>",
+  "中学校":"<ruby>中学校<rt>ちゅうがっこう</rt></ruby>",
+  "高等学校":"<ruby>高等学校<rt>こうとうがっこう</rt></ruby>",
+  "大学":"<ruby>大学<rt>だいがく</rt></ruby>",
+  "短大":"<ruby>短大<rt>たんだい</rt></ruby>",
+  "専門学校":"<ruby>専門学校<rt>せんもんがっこう</rt></ruby>",
+  "大学院":"<ruby>大学院<rt>だいがくいん</rt></ruby>",
+  /* Life events */
+  "生まれます":"<ruby>生<rt>う</rt></ruby>まれます",
+  "学校に入ります":"<ruby>学校<rt>がっこう</rt></ruby>に<ruby>入<rt>はい</rt></ruby>ります",
+  "学校を出ます":"<ruby>学校<rt>がっこう</rt></ruby>を<ruby>出<rt>で</rt></ruby>ます",
+  "就職します":"<ruby>就職<rt>しゅうしょく</rt></ruby>します",
+  "結婚します":"<ruby>結婚<rt>けっこん</rt></ruby>します",
+  "子どもが生まれます":"<ruby>子<rt>こ</rt></ruby>どもが<ruby>生<rt>う</rt></ruby>まれます",
+  "離婚します":"<ruby>離婚<rt>りこん</rt></ruby>します",
+  "再婚します":"<ruby>再婚<rt>さいこん</rt></ruby>します",
+  "仕事をやめます":"<ruby>仕事<rt>しごと</rt></ruby>をやめます",
+  "死にます":"<ruby>死<rt>し</rt></ruby>にます",
+  /* Main vocab nouns */
+  "田舎":"<ruby>田舎<rt>いなか</rt></ruby>",
+  "億":"<ruby>億<rt>おく</rt></ruby>",
+  "意味":"<ruby>意味<rt>いみ</rt></ruby>",
+  "転勤":"<ruby>転勤<rt>てんきん</rt></ruby>",
+  "暇":"<ruby>暇<rt>ひま</rt></ruby>"
+};
+
+const READING = {};
+for (const [k,v] of Object.entries(DISPLAY)) {
+  READING[k] = v.replace(/<ruby>/g,"").replace(/<\/ruby>/g,"").replace(/<rt>/g,"（").replace(/<\/rt>/g,"）");
+}
+
+const QUESTIONS = [
+  /* ═══ TIER 1: MAIN VOCABULARY ═══ */
+
+  /* ── Verbs ── */
+  { english: "think, consider", answer: "かんがえます", choices: ["かんがえます","つきます","とります","たります"] },
+  { english: "arrive", answer: "つきます", choices: ["つきます","かんがえます","たります","とります"] },
+  { english: "grow old (take years)", answer: "とります", choices: ["とります","つきます","たります","かんがえます"] },
+  { english: "be enough, be sufficient", answer: "たります", choices: ["たります","とります","つきます","かんがえます"] },
+
+  /* ── Nouns (kanji + furigana) ── */
+  { english: "countryside, hometown", answer: "田舎", choices: ["田舎","億","意味","チャンス"] },
+  { english: "chance, opportunity", answer: "チャンス", choices: ["チャンス","田舎","意味","億"] },
+  { english: "hundred million", answer: "億", choices: ["億","意味","田舎","チャンス"] },
+  { english: "meaning", answer: "意味", choices: ["意味","億","田舎","チャンス"] },
+
+  /* ── Grammar ── */
+  { english: "if (conditional)", answer: "もし", choices: ["もし","もしもし","こと","ほかに"] },
+
+  /* ── 練習C ── */
+  { english: "hello (on the phone)", answer: "もしもし", choices: ["もしもし","もし","がんばります","どうぞおげんきで"] },
+
+  /* ── 会話 (kanji + furigana) ── */
+  { english: "transfer (to another office)", answer: "転勤", choices: ["転勤","就職します","暇","意味"] },
+  { english: "thing, matter (～のこと)", answer: "こと", choices: ["こと","もし","チャンス","意味"] },
+  { english: "free time", answer: "暇", choices: ["暇","転勤","こと","チャンス"] },
+  { english: "Thank you for everything you've done for me", answer: "おせわになりました", choices: ["おせわになりました","がんばります","どうぞおげんきで","もしもし"] },
+  { english: "do one's best", answer: "がんばります", choices: ["がんばります","おせわになりました","どうぞおげんきで","もしもし"] },
+  { english: "Please take care of yourself (long separation)", answer: "どうぞおげんきで", choices: ["どうぞおげんきで","おせわになりました","がんばります","もしもし"] },
+
+  /* ═══ TIER 2: LIFE STAGES (kanji + furigana) ═══ */
+
+  { english: "baby (0 years old)", answer: "赤ちゃん", choices: ["赤ちゃん","子ども","青年","中年"] },
+  { english: "child (~6 years old)", answer: "子ども", choices: ["子ども","赤ちゃん","青年","中年"] },
+  { english: "youth (~18 years old)", answer: "青年", choices: ["青年","子ども","中年","老年"] },
+  { english: "middle age (~40 years old)", answer: "中年", choices: ["中年","青年","老年","子ども"] },
+  { english: "old age (~60-70 years old)", answer: "老年", choices: ["老年","中年","青年","赤ちゃん"] },
+
+  /* ═══ TIER 3: SCHOOLS (kanji + furigana) ═══ */
+
+  { english: "nursery school (for very young children)", answer: "保育園", choices: ["保育園","幼稚園","小学校","中学校"] },
+  { english: "kindergarten", answer: "幼稚園", choices: ["幼稚園","保育園","小学校","中学校"] },
+  { english: "primary (elementary) school — 6 years", answer: "小学校", choices: ["小学校","中学校","高等学校","幼稚園"] },
+  { english: "lower secondary (junior high) school — 3 years", answer: "中学校", choices: ["中学校","小学校","高等学校","大学"] },
+  { english: "upper secondary (senior high) school — 3 years", answer: "高等学校", choices: ["高等学校","中学校","大学","小学校"] },
+  { english: "university — 4 years", answer: "大学", choices: ["大学","短大","専門学校","大学院"] },
+  { english: "junior college — 2 years", answer: "短大", choices: ["短大","大学","専門学校","大学院"] },
+  { english: "technical / vocational college — 2 years", answer: "専門学校", choices: ["専門学校","短大","大学","大学院"] },
+  { english: "postgraduate course (graduate school)", answer: "大学院", choices: ["大学院","大学","短大","専門学校"] },
+
+  /* ═══ TIER 4: LIFE EVENTS (kanji + furigana) ═══ */
+
+  { english: "be born", answer: "生まれます", choices: ["生まれます","学校に入ります","死にます","結婚します"] },
+  { english: "enter school", answer: "学校に入ります", choices: ["学校に入ります","学校を出ます","就職します","生まれます"] },
+  { english: "graduate from school", answer: "学校を出ます", choices: ["学校を出ます","学校に入ります","就職します","仕事をやめます"] },
+  { english: "get a job", answer: "就職します", choices: ["就職します","学校を出ます","結婚します","仕事をやめます"] },
+  { english: "get married", answer: "結婚します", choices: ["結婚します","離婚します","再婚します","就職します"] },
+  { english: "have a child", answer: "子どもが生まれます", choices: ["子どもが生まれます","結婚します","生まれます","再婚します"] },
+  { english: "get divorced", answer: "離婚します", choices: ["離婚します","結婚します","再婚します","仕事をやめます"] },
+  { english: "remarry", answer: "再婚します", choices: ["再婚します","離婚します","結婚します","就職します"] },
+  { english: "retire (quit one's job)", answer: "仕事をやめます", choices: ["仕事をやめます","就職します","学校を出ます","死にます"] },
+  { english: "die, pass away", answer: "死にます", choices: ["死にます","仕事をやめます","生まれます","老年"] },
+
+  /* ═══ TIER 5: DEEPER UNDERSTANDING ═══ */
+
+  { english: "保育園 and 幼稚園 are both for young children. Which comes FIRST?", answer: "保育園", choices: ["保育園","幼稚園","小学校","中学校"] },
+  { english: "after 高等学校, a 2-year college option is called...", answer: "短大", choices: ["短大","専門学校","大学","大学院"] },
+  { english: "結婚します is to marry; the opposite (to divorce) is...", answer: "離婚します", choices: ["離婚します","再婚します","仕事をやめます","死にます"] },
+  { english: "就職します is to get a job; the life-end opposite is...", answer: "仕事をやめます", choices: ["仕事をやめます","死にます","学校を出ます","離婚します"] },
+  { english: "said when a colleague is transferring: 'do your best!'", answer: "がんばります", choices: ["がんばります","おせわになりました","どうぞおげんきで","もしもし"] },
+];
+
+let playerName="";let quiz=[];let answers={};let currentQ=0;let submitted=false;
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function renderChoiceText(t){return DISPLAY[t]||t;}
+function plainAnswer(t){if(!t||t==="—")return"—";return READING[t]||t;}
+
+emailjs.init("1oR0j0WDvUmSSYEpK");
+const $=id=>document.getElementById(id);
+const $ns=$("name-screen"),$qs=$("quiz-screen"),$ni=$("name-input"),$bs=$("btn-start");
+const $st=$("quiz-subtitle"),$sb=$("score-banner"),$sn=$("score-number"),$sl=$("score-label");
+const $er=$("email-row"),$br=$("btn-retake"),$pt=$("progress-text"),$pf=$("progress-fill");
+const $ng=$("nav-grid"),$qn=$("q-number"),$qe=$("q-english"),$cg=$("choices-grid");
+const $bp=$("btn-prev"),$bn=$("btn-next"),$bm=$("btn-submit");
+
+$ni.addEventListener("input",()=>{$bs.disabled=!$ni.value.trim();});
+$ni.addEventListener("keydown",e=>{if(e.key==="Enter"&&$ni.value.trim())go();});
+$bs.addEventListener("click",go);
+
+function go(){
+  playerName=$ni.value.trim();quiz=shuffle(QUESTIONS).map(q=>({...q,choices:shuffle(q.choices)}));
+  answers={};currentQ=0;submitted=false;$ns.style.display="none";$qs.style.display="block";$sb.style.display="none";
+  $st.textContent=`${playerName}さん — choose the correct word`;nav();rend();prog();
+}
+function nav(){$ng.innerHTML="";quiz.forEach((_,i)=>{const b=document.createElement("button");b.className="nav-dot";b.textContent=i+1;b.addEventListener("click",()=>{currentQ=i;rend();});$ng.appendChild(b);});}
+function uNav(){$ng.querySelectorAll(".nav-dot").forEach((d,i)=>{d.className="nav-dot";if(i===currentQ)d.classList.add("active");if(!submitted&&answers[i]!==undefined)d.classList.add("answered");if(submitted&&answers[i]===quiz[i].answer)d.classList.add("correct");if(submitted&&answers[i]!==undefined&&answers[i]!==quiz[i].answer)d.classList.add("wrong");});}
+function prog(){const c=Object.keys(answers).length;$pt.textContent=`${c} / ${quiz.length} answered`;$pf.style.width=`${(c/quiz.length)*100}%`;$bm.disabled=c<quiz.length;}
+function rend(){
+  const q=quiz[currentQ];$qn.textContent=`Question ${currentQ+1}`;$qe.textContent=q.english;$cg.innerHTML="";
+  q.choices.forEach(c=>{const b=document.createElement("button");b.className="choice-btn";if(submitted)b.classList.add("locked");b.innerHTML=`<span>${renderChoiceText(c)}</span>`;const sel=answers[currentQ]===c,cor=c===q.answer;
+    if(!submitted){if(sel)b.classList.add("selected");b.addEventListener("click",()=>{if(submitted)return;answers[currentQ]=c;rend();uNav();prog();});}
+    else{if(cor){b.classList.add("correct-reveal");b.innerHTML=`<span>${renderChoiceText(c)}</span><span class="mark ok">✓</span>`;}if(sel&&!cor){b.classList.add("wrong-reveal");b.innerHTML=`<span>${renderChoiceText(c)}</span><span class="mark no">✗</span>`;}}
+    $cg.appendChild(b);});
+  uNav();const last=currentQ===quiz.length-1;$bp.disabled=currentQ===0;
+  if(last&&!submitted){$bn.classList.add("hidden");$bm.classList.remove("hidden");}else{$bn.classList.remove("hidden");$bm.classList.add("hidden");$bn.disabled=last;}
+}
+$bp.addEventListener("click",()=>{if(currentQ>0){currentQ--;rend();}});
+$bn.addEventListener("click",()=>{if(currentQ<quiz.length-1){currentQ++;rend();}});
+$bm.addEventListener("click",sub);
+
+async function sub(){
+  let s=0;quiz.forEach((q,i)=>{if(answers[i]===q.answer)s++;});submitted=true;
+  const t=quiz.length,p=Math.round((s/t)*100);
+  $sn.textContent=`${s}/${t}`;
+  if(s===t)$sl.textContent="完璧！ おめでとうございます！🎉";
+  else if(p>=90)$sl.textContent="すごい！ Excellent!";
+  else if(p>=70)$sl.textContent="いいですね！ Good job!";
+  else $sl.textContent="もう一度！ Try again!";
+  $sb.style.background=p>=90?"linear-gradient(135deg,#2d6a4f,#40916c)":p>=70?"linear-gradient(135deg,#b08d37,#d4a843)":"linear-gradient(135deg,#9b2226,#ca6702)";
+  $sb.style.display="block";currentQ=0;rend();uNav();$bm.classList.add("hidden");$bn.classList.remove("hidden");$bn.disabled=false;
+
+  const now=new Date().toLocaleString("en-PH",{timeZone:"Asia/Manila",dateStyle:"full",timeStyle:"short"});
+  const det=quiz.map((q,i)=>`${i+1}. ${q.english} → Answer: ${plainAnswer(answers[i]||"—")} | Correct: ${plainAnswer(q.answer)} ${answers[i]===q.answer?"✓":"✗"}`).join("\n");
+  const ep={name:playerName,email:"noreply@quiz.com",subject:`[${playerName}] みんなの日本語 Lesson 25 FINAL Quiz — ${p}%`,message:`Minna no Nihongo - Lesson 25 (FINAL) Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${t} (${p}%)\n\n--- Detailed Results ---\n${det}\n\n🎉 おめでとうございます！Book 1 Complete!\nがんばって！`,time:now};
+  $er.innerHTML=`<span class="email-pill">📧 Sending results…</span>`;
+  try{await emailjs.send("service_v7ifzdj","template_lb9c879",ep);$er.innerHTML=`<span class="email-pill sent">✓ Results emailed!</span>`;}
+  catch(err){console.error("EmailJS error:",err);$er.innerHTML=`<span class="email-pill error">✗ ${err?.text||err?.message||'Email failed'}</span>`;}
+}
+$br.addEventListener("click",()=>{quiz=shuffle(QUESTIONS).map(q=>({...q,choices:shuffle(q.choices)}));answers={};currentQ=0;submitted=false;$sb.style.display="none";nav();rend();prog();});
+</script>
+</body>
+</html>

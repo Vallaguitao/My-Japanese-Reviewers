@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 24 — Giving &amp; Receiving Actions | Minna no Nihongo N5</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e11d48;
+            --primary-light: #fb7185;
+            --primary-dark: #be123c;
+            --accent: #0d9488;
+            --accent-light: #ccfbf1;
+            --accent-dark: #0f766e;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --error: #ef4444;
+            --error-light: #fee2e2;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --bg-light: #fff1f2;
+            --bg-card: #ffffff;
+            --text-primary: #881337;
+            --text-secondary: #9f1239;
+            --text-muted: #6b7280;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --ageru: #7c3aed;
+            --morau: #0d9488;
+            --kureru: #e11d48;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        html{scroll-behavior:smooth;}
+        body{font-family:'Noto Sans JP','Outfit',sans-serif;background:linear-gradient(135deg,var(--bg-light) 0%,#fecdd3 100%);color:var(--text-primary);line-height:1.7;min-height:100vh;overflow-x:hidden;}
+
+        .progress-container{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--bg-card);box-shadow:var(--shadow);padding:12px 20px;}
+        .progress-header{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;gap:20px;}
+        .progress-title{font-size:0.9rem;font-weight:600;color:var(--primary);display:flex;align-items:center;gap:8px;}
+        .progress-title .lesson-badge{background:var(--primary);color:white;padding:2px 10px;border-radius:20px;font-size:0.75rem;}
+        .progress-bar-wrapper{flex:1;max-width:500px;}
+        .progress-bar{height:8px;background:var(--border);border-radius:10px;overflow:hidden;}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--primary) 0%,var(--accent) 100%);border-radius:10px;transition:width 0.5s ease;width:0%;}
+        .progress-text{font-size:0.8rem;color:var(--text-muted);text-align:right;margin-top:4px;}
+        .progress-nav{display:flex;gap:8px;}
+        .nav-btn{background:var(--primary);color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.85rem;font-weight:500;transition:var(--transition);display:flex;align-items:center;gap:6px;}
+        .nav-btn:hover{background:var(--primary-light);transform:translateY(-1px);}
+        .nav-btn:disabled{background:var(--border);color:var(--text-muted);cursor:not-allowed;transform:none;}
+
+        .presentation{padding-top:80px;min-height:100vh;}
+        .slide{display:none;max-width:1020px;margin:0 auto;padding:40px 20px;animation:fadeIn 0.5s ease;}
+        .slide.active{display:block;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+        .title-slide{text-align:center;padding:60px 20px;}
+        .title-slide .book-badge{display:inline-block;background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);color:white;padding:8px 24px;border-radius:30px;font-size:0.9rem;font-weight:500;margin-bottom:24px;letter-spacing:1px;}
+        .title-slide h1{font-size:clamp(2.5rem,6vw,4rem);font-weight:700;color:var(--primary);margin-bottom:16px;line-height:1.2;}
+        .title-slide .lesson-title-jp{font-size:clamp(1.5rem,4vw,2.5rem);color:var(--accent-dark);margin-bottom:8px;}
+        .title-slide .lesson-subtitle{font-size:1.15rem;color:var(--text-secondary);margin-bottom:40px;}
+        .title-card{background:var(--bg-card);border-radius:var(--radius-lg);padding:40px;box-shadow:var(--shadow-lg);max-width:720px;margin:0 auto 40px;}
+        .title-card h2{color:var(--primary);font-size:1.3rem;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px;}
+        .grammar-list{display:grid;gap:12px;}
+        .grammar-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg-light);border-radius:var(--radius);border-left:4px solid var(--accent);transition:var(--transition);}
+        .grammar-item:hover{transform:translateX(8px);background:var(--accent-light);}
+        .grammar-number{width:28px;height:28px;background:var(--primary);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:600;flex-shrink:0;}
+        .start-btn{background:linear-gradient(135deg,var(--accent) 0%,var(--primary) 100%);color:white;border:none;padding:16px 48px;border-radius:30px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:var(--transition);box-shadow:0 4px 14px rgba(0,0,0,0.2);}
+        .start-btn:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,0.3);}
+
+        .content-card{background:var(--bg-card);border-radius:var(--radius-lg);padding:40px;box-shadow:var(--shadow-lg);margin-bottom:24px;}
+        .slide-header{display:flex;align-items:center;gap:16px;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid var(--border);}
+        .grammar-badge{background:var(--primary);color:white;padding:8px 16px;border-radius:8px;font-size:0.85rem;font-weight:600;white-space:nowrap;}
+        .grammar-badge.ageru{background:var(--ageru);}.grammar-badge.morau{background:var(--morau);}.grammar-badge.kureru{background:var(--kureru);}
+        .slide-header h2{font-size:1.8rem;color:var(--primary);flex:1;}
+        .slide-header .jp-title{font-size:1.3rem;color:var(--accent-dark);font-weight:500;}
+        ruby{ruby-position:over;}ruby rt{font-size:0.6em;color:var(--text-muted);}
+
+        .example-box{background:linear-gradient(135deg,#fff1f2 0%,#fecdd3 100%);border-radius:var(--radius);padding:24px;margin:20px 0;border-left:4px solid var(--primary);}
+        .example-box.ageru{border-left-color:var(--ageru);background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 100%);}
+        .example-box.morau{border-left-color:var(--morau);background:linear-gradient(135deg,#f0fdfa 0%,#ccfbf1 100%);}
+        .example-box.kureru{border-left-color:var(--kureru);background:linear-gradient(135deg,#fff1f2 0%,#fecdd3 100%);}
+        .example-label{font-size:0.8rem;font-weight:600;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+        .example-box.ageru .example-label{color:var(--ageru);}.example-box.morau .example-label{color:var(--morau);}.example-box.kureru .example-label{color:var(--kureru);}
+        .example-japanese{font-size:1.35rem;color:var(--text-primary);margin-bottom:8px;line-height:2;}
+        .example-english{font-size:1rem;color:var(--text-secondary);font-style:italic;}
+
+        .example-comparison{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}
+        .example-triple{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin:20px 0;}
+        .box-a,.box-b,.box-c{padding:20px;border-radius:var(--radius);}
+        .box-a{background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 100%);border-left:4px solid var(--ageru);}
+        .box-b{background:linear-gradient(135deg,#f0fdfa 0%,#ccfbf1 100%);border-left:4px solid var(--morau);}
+        .box-c{background:linear-gradient(135deg,#fff1f2 0%,#fecdd3 100%);border-left:4px solid var(--kureru);}
+        .style-label{font-size:0.85rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+        .box-a .style-label{color:var(--ageru);}.box-b .style-label{color:var(--morau);}.box-c .style-label{color:var(--kureru);}
+
+        .structure-box{background:linear-gradient(135deg,#fff1f2 0%,#fb7185 100%);border-radius:var(--radius);padding:20px;margin:20px 0;border-left:4px solid var(--accent);}
+        .structure-box .label{font-size:0.8rem;font-weight:600;color:var(--accent-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+        .structure-formula{font-size:1.15rem;font-family:'Outfit',monospace;color:var(--primary-dark);background:white;padding:12px 20px;border-radius:8px;display:inline-block;margin:8px 4px;}
+        .structure-formula .highlight{color:var(--primary);font-weight:600;}
+        .structure-formula .accent{color:var(--accent-dark);font-weight:600;}
+
+        .explanation{margin:24px 0;}
+        .explanation h3{font-size:1.1rem;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+        .explanation p{color:var(--text-secondary);margin-bottom:12px;}
+        .key-point{background:var(--accent-light);padding:16px 20px;border-radius:var(--radius);margin:16px 0;border-left:4px solid var(--accent);}
+        .key-point strong{color:var(--primary-dark);}
+        .warning-box{background:#fef2f2;padding:16px 20px;border-radius:var(--radius);margin:16px 0;border-left:4px solid var(--error);}
+        .warning-box strong{color:#991b1b;}
+
+        .flow-visual{display:flex;align-items:center;justify-content:center;gap:8px;margin:20px 0;padding:20px;background:white;border-radius:var(--radius);border:2px solid var(--border);flex-wrap:wrap;font-size:1.2rem;}
+        .flow-person{padding:12px 20px;border-radius:var(--radius);font-weight:600;text-align:center;min-width:100px;}
+        .flow-person.giver{background:#f5f3ff;border:2px solid var(--ageru);color:var(--ageru);}
+        .flow-person.receiver{background:#fff1f2;border:2px solid var(--kureru);color:var(--kureru);}
+        .flow-person.me{background:#fef3c7;border:2px solid #d97706;color:#92400e;}
+        .flow-arrow{font-size:2rem;color:var(--primary);}
+        .flow-label{font-size:0.8rem;color:var(--text-muted);text-align:center;padding:4px 8px;background:var(--bg-light);border-radius:4px;}
+
+        .conversation-box{background:linear-gradient(135deg,#ecfdf5 0%,#a7f3d0 100%);border-radius:var(--radius);padding:24px;margin:20px 0;border-left:4px solid #10b981;}
+        .conversation-box .example-label{color:#065f46;}
+        .conversation-line{margin-bottom:12px;font-size:1.2rem;line-height:2;}.conversation-line:last-child{margin-bottom:0;}
+        .speaker{font-weight:600;color:var(--primary-dark);min-width:24px;display:inline-block;}.speaker.b{color:var(--accent-dark);}
+        .conversation-translation{font-size:0.9rem;color:var(--text-muted);margin-top:4px;font-style:italic;}
+
+        .ref-connection{margin:24px 0;}
+        .ref-toggle{width:100%;background:linear-gradient(135deg,var(--accent-light) 0%,#99f6e4 100%);border:none;padding:16px 20px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:1rem;font-weight:500;color:var(--accent-dark);transition:var(--transition);}
+        .ref-toggle:hover{background:linear-gradient(135deg,#99f6e4 0%,#5eead4 100%);}
+        .ref-toggle .icon{transition:transform 0.3s ease;}.ref-toggle.open .icon{transform:rotate(180deg);}
+        .ref-content{max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.4s ease;background:#f0fdf4;border-radius:0 0 var(--radius) var(--radius);}
+        .ref-content.open{max-height:800px;padding:20px;border:1px solid #99f6e4;border-top:none;}
+        .ref-content p{color:var(--text-secondary);font-size:0.95rem;margin-bottom:10px;}
+        .ref-badge{display:inline-block;background:var(--primary);color:white;padding:2px 10px;border-radius:20px;font-size:0.8rem;margin-right:8px;}
+
+        .table-container{overflow-x:auto;margin:24px 0;}
+        .data-table{width:100%;border-collapse:collapse;font-size:0.95rem;}
+        .data-table th{background:var(--primary);color:white;padding:14px 16px;text-align:left;font-weight:500;}
+        .data-table td{padding:12px 16px;border-bottom:1px solid var(--border);}
+        .data-table tr:nth-child(even){background:var(--bg-light);}
+        .data-table tr:hover{background:#fecdd3;}
+        .data-table .ageru-col{color:var(--ageru);font-weight:600;}
+        .data-table .morau-col{color:var(--morau);font-weight:600;}
+        .data-table .kureru-col{color:var(--kureru);font-weight:600;}
+
+        .quiz-card{background:linear-gradient(135deg,#fff1f2 0%,#fb7185 100%);border-radius:var(--radius-lg);padding:40px;box-shadow:var(--shadow-lg);margin-bottom:24px;}
+        .quiz-header{display:flex;align-items:center;gap:16px;margin-bottom:32px;}
+        .quiz-badge{background:var(--accent);color:white;padding:8px 16px;border-radius:8px;font-size:0.85rem;font-weight:600;}
+        .quiz-header h2{font-size:1.5rem;color:var(--primary);}
+        .quiz-question{background:white;padding:24px;border-radius:var(--radius);margin-bottom:20px;box-shadow:var(--shadow);}
+        .question-number{font-size:0.85rem;font-weight:600;color:var(--accent-dark);margin-bottom:12px;}
+        .question-context{font-size:0.95rem;color:var(--text-secondary);font-style:italic;margin-bottom:16px;padding:12px;background:var(--bg-light);border-radius:8px;}
+        .fill-blank{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:1.3rem;margin:20px 0;}
+        .blank-input{border:2px dashed var(--primary);background:#fff1f2;padding:8px 16px;border-radius:8px;min-width:100px;font-size:1.1rem;font-family:inherit;text-align:center;transition:var(--transition);}
+        .blank-input:focus{outline:none;border-color:var(--accent);background:white;box-shadow:0 0 0 3px rgba(13,148,136,0.2);}
+        .check-btn{background:var(--success);color:white;border:none;padding:12px 32px;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:var(--transition);margin-top:20px;}
+        .check-btn:hover{background:#059669;transform:translateY(-2px);}
+        .feedback-area{margin-top:16px;padding:16px 20px;border-radius:var(--radius);display:none;font-size:1rem;line-height:1.6;}
+        .feedback-area.show{display:block;animation:fadeIn 0.3s ease;}
+        .feedback-area.correct-feedback{background:var(--success-light);border-left:4px solid var(--success);color:#065f46;}
+        .feedback-area.incorrect-feedback{background:var(--error-light);border-left:4px solid var(--error);color:#991b1b;}
+        .mc-options{display:grid;gap:12px;margin:16px 0;}
+        .mc-option{display:flex;align-items:center;gap:12px;padding:14px 20px;border-radius:var(--radius);border:2px solid var(--border);background:white;cursor:pointer;transition:var(--transition);font-size:1.1rem;}
+        .mc-option:hover{border-color:var(--primary);background:#fff1f2;transform:translateX(4px);}
+        .mc-option.correct-choice{border-color:var(--success);background:var(--success-light);}
+        .mc-option.incorrect-choice{border-color:var(--error);background:var(--error-light);}
+        .mc-option.disabled{pointer-events:none;opacity:0.7;}
+        .mc-option .option-letter{width:32px;height:32px;border-radius:50%;background:var(--bg-light);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;color:var(--primary);flex-shrink:0;}
+        .mc-option.correct-choice .option-letter{background:var(--success);color:white;}
+        .mc-option.incorrect-choice .option-letter{background:var(--error);color:white;}
+
+        .summary-card{background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 100%);border-radius:var(--radius-lg);padding:40px;color:white;text-align:center;}
+        .summary-card h2{font-size:2rem;margin-bottom:24px;}
+        .summary-card>p{font-size:1.1rem;opacity:0.9;margin-bottom:12px;}
+        .summary-points{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;margin:32px 0;}
+        .summary-point{background:rgba(255,255,255,0.15);padding:20px;border-radius:var(--radius);backdrop-filter:blur(10px);}
+        .summary-point h4{font-size:1.05rem;margin-bottom:8px;}
+        .summary-point p{font-size:0.9rem;opacity:0.9;}
+        .restart-btn{background:white;color:var(--primary);border:none;padding:16px 48px;border-radius:30px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:var(--transition);margin-top:24px;}
+        .restart-btn:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,0.2);}
+
+        @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+        .pulse{animation:pulse 2s infinite;}
+
+        @media(max-width:768px){
+            .progress-header{flex-direction:column;gap:12px;}.progress-bar-wrapper{width:100%;max-width:none;}.progress-nav{width:100%;justify-content:space-between;}
+            .content-card,.quiz-card{padding:24px;}.slide-header{flex-direction:column;align-items:flex-start;gap:12px;}
+            .example-japanese{font-size:1.15rem;}.example-comparison,.example-triple{grid-template-columns:1fr;}
+            .fill-blank{font-size:1.1rem;}.data-table{font-size:0.85rem;}.data-table th,.data-table td{padding:10px 12px;}
+            .conversation-line{font-size:1.05rem;}.title-card{padding:24px;}.summary-points{grid-template-columns:1fr 1fr;}
+            .flow-visual{font-size:1rem;}.flow-person{min-width:80px;padding:10px 14px;}
+        }
+        @media(max-width:480px){
+            .progress-title{font-size:0.8rem;}.nav-btn{padding:6px 12px;font-size:0.8rem;}.title-slide h1{font-size:2rem;}
+            .grammar-item{padding:10px 12px;font-size:0.9rem;}.summary-points{grid-template-columns:1fr;}.mc-option{padding:12px 16px;font-size:1rem;}
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title"><span class="lesson-badge">L24</span> MNN Lesson 24 — Giving &amp; Receiving Actions</div>
+            <div class="progress-bar-wrapper"><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div><div class="progress-text"><span id="currentSlide">1</span> / <span id="totalSlides">24</span></div></div>
+            <div class="progress-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()">◀ <span class="btn-text">Back</span></button>
+                <button class="nav-btn" id="nextBtn" onclick="nextSlide()"><span class="btn-text">Next</span> ▶</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="presentation">
+
+        <!-- ======================== SLIDE 1: Title ======================== -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <div class="book-badge">みんなの<ruby>日本語<rt>にほんご</rt></ruby> <ruby>初級<rt>しょきゅう</rt></ruby> I — <ruby>第<rt>だい</rt></ruby>2<ruby>版<rt>はん</rt></ruby></div>
+                <h1>Lesson 24</h1>
+                <div class="lesson-title-jp">🤝 あげる・もらう・くれる</div>
+                <div class="lesson-subtitle">Give actions, receive favors, express gratitude — the heart of Japanese social grammar</div>
+                <div class="title-card">
+                    <h2>📚 Grammar Points</h2>
+                    <div class="grammar-list">
+                        <div class="grammar-item"><span class="grammar-number">1</span><span><strong>くれます</strong> — "(Someone) gives to me/my side"</span></div>
+                        <div class="grammar-item"><span class="grammar-number">2</span><span><strong>V て あげます</strong> — "I do ~ for (someone)"</span></div>
+                        <div class="grammar-item"><span class="grammar-number">3</span><span><strong>V て もらいます</strong> — "(Someone) does ~ for me" (I receive)</span></div>
+                        <div class="grammar-item"><span class="grammar-number">4</span><span><strong>V て くれます</strong> — "(Someone) does ~ for me" (they give)</span></div>
+                        <div class="grammar-item"><span class="grammar-number">5</span><span><strong>N₁ は N₂ が V</strong> — Topic is object, subject marked by が</span></div>
+                    </div>
+                </div>
+                <button class="start-btn pulse" onclick="nextSlide()">🤝 Let's Begin!</button>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 2: くれます — Things ======================== -->
+        <div class="slide" data-slide="2">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge kureru">Grammar 1</span><div><h2>くれます</h2><span class="jp-title">"(Someone) gives to me / my side"</span></div></div>
+                <div class="explanation">
+                    <h3>📖 Why do we need くれます?</h3>
+                    <p>In L7, you learned あげます for giving things. However, あげます <strong>cannot be used</strong> when someone gives to <strong>you (the speaker)</strong> or a member of your family/in-group. In that case, Japanese uses <strong>くれます</strong>. This reflects a deep cultural principle: Japanese distinguishes between giving TO others vs giving TO me, because acknowledging what others do for you expresses gratitude.</p>
+                </div>
+                <div class="example-box ageru">
+                    <div class="example-label">📝 Example ① — あげます: I give TO others</div>
+                    <div class="example-japanese">わたしは <ruby>佐藤<rt>さとう</rt></ruby>さんに <ruby>花<rt>はな</rt></ruby>を <strong>あげました</strong>。</div>
+                    <div class="example-english">I gave some flowers to Ms. Sato.</div>
+                </div>
+                <div class="warning-box">
+                    <strong>❌ × <ruby>佐藤<rt>さとう</rt></ruby>さんは わたしに クリスマスカードを あげました。</strong>
+                    <p style="color:#991b1b;margin-top:8px;">You CANNOT use あげます when someone gives to YOU. あげます = outward giving only!</p>
+                </div>
+                <div class="example-box kureru">
+                    <div class="example-label">📝 Example ② — くれます: Others give TO ME</div>
+                    <div class="example-japanese"><ruby>佐藤<rt>さとう</rt></ruby>さんは わたしに クリスマスカードを <strong>くれました</strong>。</div>
+                    <div class="example-english">Ms. Sato gave me a Christmas card.</div>
+                </div>
+                <div class="example-box kureru">
+                    <div class="example-label">📝 Example ③ — くれます: Others give to MY FAMILY</div>
+                    <div class="example-japanese"><ruby>佐藤<rt>さとう</rt></ruby>さんは <ruby>妹<rt>いもうと</rt></ruby>に お<ruby>菓子<rt>かし</rt></ruby>を <strong>くれました</strong>。</div>
+                    <div class="example-english">Ms. Sato gave some candies to my younger sister.</div>
+                </div>
+                <div class="flow-visual">
+                    <div class="flow-person giver">わたし</div>
+                    <div><div class="flow-arrow">→</div><div class="flow-label">あげます</div></div>
+                    <div class="flow-person receiver"><ruby>他<rt>ほか</rt></ruby>の<ruby>人<rt>ひと</rt></ruby></div>
+                    <div style="width:40px;"></div>
+                    <div class="flow-person giver"><ruby>他<rt>ほか</rt></ruby>の<ruby>人<rt>ひと</rt></ruby></div>
+                    <div><div class="flow-arrow">→</div><div class="flow-label">くれます</div></div>
+                    <div class="flow-person me">わたし(側)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 3: The Big Picture — Things vs Actions ======================== -->
+        <div class="slide" data-slide="3">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Grammar 2</span><div><h2>Things → Actions</h2><span class="jp-title">もの → <ruby>行為<rt>こうい</rt></ruby></span></div></div>
+                <div class="explanation">
+                    <h3>📖 From giving THINGS to giving ACTIONS</h3>
+                    <p>In L7, you learned あげます/もらいます/くれます for giving and receiving <strong>things</strong>. L24 extends the same logic to <strong>actions</strong> — doing something as a favor for someone. The て-form of the action verb connects to あげます/もらいます/くれます. The direction rules are identical: the only difference is that instead of giving an object, you're giving the benefit of an action.</p>
+                </div>
+                <div class="structure-box">
+                    <div class="label">📐 Structure — Actions as Favors</div>
+                    <div class="structure-formula">V <span class="accent">て-form</span> + <span class="highlight" style="color:var(--ageru);">あげます</span> — I do ~ for someone</div>
+                    <div class="structure-formula">V <span class="accent">て-form</span> + <span class="highlight" style="color:var(--morau);">もらいます</span> — Someone does ~ for me (I receive)</div>
+                    <div class="structure-formula">V <span class="accent">て-form</span> + <span class="highlight" style="color:var(--kureru);">くれます</span> — Someone does ~ for me (they give)</div>
+                </div>
+                <div class="key-point"><strong>💡 Same three verbs, same directions!</strong> あげます = outward (I → other), もらいます = I receive (other → me), くれます = they give to me (other → me). The ONLY new thing is adding て-form before them to express actions instead of things. If you understood L7's giving/receiving, L24 is a natural extension!</div>
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">📘 MNN Connections — Giving/Receiving Evolution (L7, L24) <span class="icon">▼</span></button>
+                    <div class="ref-content">
+                        <p><span class="ref-badge">L7</span> N を あげます — Give a thing TO someone</p>
+                        <p><span class="ref-badge">L7</span> N を もらいます — Receive a thing FROM someone</p>
+                        <p><span class="ref-badge">L24</span> くれます — Someone gives a thing TO me/my side (new!)</p>
+                        <p><span class="ref-badge">L24</span> V て あげます — Do an action FOR someone</p>
+                        <p><span class="ref-badge">L24</span> V て もらいます — Have someone do an action for me</p>
+                        <p><span class="ref-badge">L24</span> V て くれます — Someone does an action for me</p>
+                        <p>L7 = things. L24 = actions. Same giving/receiving logic, now applied to favors!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 4: て あげます ======================== -->
+        <div class="slide" data-slide="4">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge ageru">Grammar 2a</span><div><h2>V て あげます</h2><span class="jp-title">"I do ~ for (someone)"</span></div></div>
+                <div class="explanation">
+                    <h3>📖 Doing a favor for someone else</h3>
+                    <p>The doer of the action is the <strong>subject</strong>, and the action benefits the <strong>recipient</strong> (marked by に). It shows that the action confers benefit or profit on the other person. Be careful: because てあげます implies conferring a benefit, it can sound <strong>patronizing</strong> if the recipient is of higher status. In those cases, use ましょうか (L14) instead!</p>
+                </div>
+                <div class="example-box ageru">
+                    <div class="example-label">📝 Example ④</div>
+                    <div class="example-japanese">わたしは <ruby>木村<rt>きむら</rt></ruby>さん<strong>に</strong> <ruby>本<rt>ほん</rt></ruby>を <ruby>貸<rt>か</rt></ruby>して <strong>あげました</strong>。</div>
+                    <div class="example-english">I lent Ms. Kimura a book. (= I did her a favor)</div>
+                </div>
+                <div class="flow-visual">
+                    <div class="flow-person giver">わたし (doer)</div>
+                    <div><div class="flow-arrow">→ て あげます →</div><div class="flow-label">action benefits</div></div>
+                    <div class="flow-person receiver"><ruby>木村<rt>きむら</rt></ruby>さん (に)</div>
+                </div>
+                <div class="warning-box">
+                    <strong>⚠️ てあげます can sound patronizing!</strong>
+                    <p style="color:#991b1b;margin-top:8px;">For higher-status people (boss, teacher, senior), DON'T say × <ruby>先生<rt>せんせい</rt></ruby>に <ruby>教<rt>おし</rt></ruby>えてあげます (sounds like you're doing them a favor). Instead use ましょうか (L14):</p>
+                    <div class="example-box" style="background:white;border-left-color:var(--success);margin-top:8px;">
+                        <div class="example-label" style="color:#065f46;">📝 Examples ⑤⑥ — Use ましょうか instead</div>
+                        <div class="example-japanese" style="font-size:1.1rem;">タクシーを <ruby>呼<rt>よ</rt></ruby>びましょうか。 <span style="font-size:0.9rem;color:#065f46;">(Shall I call a cab?)</span></div>
+                        <div class="example-japanese" style="font-size:1.1rem;"><ruby>手伝<rt>てつだ</rt></ruby>いましょうか。 <span style="font-size:0.9rem;color:#065f46;">(May I help you?)</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 5: て もらいます ======================== -->
+        <div class="slide" data-slide="5">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge morau">Grammar 2b</span><div><h2>V て もらいます</h2><span class="jp-title">"(Someone) does ~ for me" — I receive the action</span></div></div>
+                <div class="explanation">
+                    <h3>📖 Receiving a favor from someone</h3>
+                    <p>The <strong>speaker</strong> (or speaker's side) is the subject — the one who <strong>receives the benefit</strong>. The person who does the action is marked by <strong>に</strong>. This pattern expresses gratitude by emphasizing that YOU received the benefit. When the subject is わたし, it's usually omitted.</p>
+                </div>
+                <div class="example-box morau">
+                    <div class="example-label">📝 Example ⑦</div>
+                    <div class="example-japanese">[わたしは] <ruby>山田<rt>やまだ</rt></ruby>さん<strong>に</strong> <ruby>図書館<rt>としょかん</rt></ruby>の <ruby>電話番号<rt>でんわばんごう</rt></ruby>を <ruby>教<rt>おし</rt></ruby>えて <strong>もらいました</strong>。</div>
+                    <div class="example-english">Mr. Yamada told me the telephone number of the library. (= I received the favor)</div>
+                </div>
+                <div class="flow-visual">
+                    <div class="flow-person me">わたし (receiver)</div>
+                    <div><div class="flow-arrow">← て もらいます ←</div><div class="flow-label">I receive the benefit</div></div>
+                    <div class="flow-person giver"><ruby>山田<rt>やまだ</rt></ruby>さん (に)</div>
+                </div>
+                <div class="key-point"><strong>💡 てもらいます vs てくれます — both mean "someone does for me" but differ in perspective!</strong> てもらいます = I receive (focus on MY receiving). てくれます = they give (focus on THEIR giving). The next slide explains てくれます!</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 6: て くれます ======================== -->
+        <div class="slide" data-slide="6">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge kureru">Grammar 2c</span><div><h2>V て くれます</h2><span class="jp-title">"(Someone) does ~ for me" — They give the action</span></div></div>
+                <div class="explanation">
+                    <h3>📖 Someone does something for my benefit</h3>
+                    <p>The <strong>person who does the action</strong> is the subject. The speaker (or speaker's side) is the <strong>beneficiary</strong>, marked by に (often omitted when it's わたし). This pattern shows the speaker feels the other person's action was a <strong>kind act</strong> that benefited them. It's the action equivalent of くれます (giving things to me).</p>
+                </div>
+                <div class="example-box kureru">
+                    <div class="example-label">📝 Example ⑧</div>
+                    <div class="example-japanese"><ruby>母<rt>はは</rt></ruby>は [わたしに] セーターを <ruby>送<rt>おく</rt></ruby>って <strong>くれました</strong>。</div>
+                    <div class="example-english">My mother sent me a sweater. (= she kindly did it for me)</div>
+                </div>
+                <div class="flow-visual">
+                    <div class="flow-person giver"><ruby>母<rt>はは</rt></ruby> (doer)</div>
+                    <div><div class="flow-arrow">→ て くれます →</div><div class="flow-label">they kindly give action</div></div>
+                    <div class="flow-person me">わたし (beneficiary)</div>
+                </div>
+                <div class="explanation">
+                    <h3>📖 More てくれます examples from the textbook (p. 153)</h3>
+                    <p>The textbook shows how regular sentences become てくれます sentences by adding the gratitude element. The particles stay the same — only the verb ending changes to てくれます:</p>
+                </div>
+                <div class="example-comparison">
+                    <div class="box-a">
+                        <div class="style-label">Neutral statement</div>
+                        <div class="example-japanese" style="font-size:1rem;"><ruby>旅行<rt>りょこう</rt></ruby>の <ruby>写真<rt>しゃしん</rt></ruby>を <ruby>見<rt>み</rt></ruby>せます。</div>
+                        <div class="example-english">He shows travel photos.</div>
+                    </div>
+                    <div class="box-c">
+                        <div class="style-label">+ くれます (gratitude!)</div>
+                        <div class="example-japanese" style="font-size:1rem;"><ruby>旅行<rt>りょこう</rt></ruby>の <ruby>写真<rt>しゃしん</rt></ruby>を <ruby>見<rt>み</rt></ruby>せて <strong>くれます</strong>。</div>
+                        <div class="example-english">He (kindly) shows me the travel photos.</div>
+                    </div>
+                </div>
+                <div class="example-comparison">
+                    <div class="box-a">
+                        <div class="style-label">Neutral statement</div>
+                        <div class="example-japanese" style="font-size:1rem;"><ruby>引<rt>ひ</rt></ruby>っ<ruby>越<rt>こ</rt></ruby>しを <ruby>手伝<rt>てつだ</rt></ruby>います。</div>
+                        <div class="example-english">He helps with moving.</div>
+                    </div>
+                    <div class="box-c">
+                        <div class="style-label">+ くれます (gratitude!)</div>
+                        <div class="example-japanese" style="font-size:1rem;"><ruby>引<rt>ひ</rt></ruby>っ<ruby>越<rt>こ</rt></ruby>しを <ruby>手伝<rt>てつだ</rt></ruby>って <strong>くれます</strong>。</div>
+                        <div class="example-english">He (kindly) helps me move.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 7: Quiz 1 ======================== -->
+        <div class="slide" data-slide="7">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Quick Check</span><h2>あげます / もらいます / くれます</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 3</div>
+                    <div class="question-context">"I taught Mr. Tanaka Japanese." (I did HIM a favor)</div>
+                    <div class="fill-blank"><ruby>田中<rt>たなか</rt></ruby>さんに <ruby>日本語<rt>にほんご</rt></ruby>を <ruby>教<rt>おし</rt></ruby>えて <input type="text" class="blank-input" id="q1-input" placeholder="？" style="min-width:100px;">。</div>
+                    <button class="check-btn" onclick="checkFillBlank('q1',['あげました'],'あげました','I do for someone = て あげます. I\'m the doer, Tanaka is the recipient (に). 教えて あげました = I taught him (as a favor). The direction is outward: me → Tanaka.')">Check →</button>
+                    <div class="feedback-area" id="q1-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 3</div>
+                    <div class="question-context">"My friend helped me with my homework." (focusing on MY receiving)</div>
+                    <div class="fill-blank"><ruby>友達<rt>ともだち</rt></ruby>に <ruby>宿題<rt>しゅくだい</rt></ruby>を <ruby>手伝<rt>てつだ</rt></ruby>って <input type="text" class="blank-input" id="q2-input" placeholder="？" style="min-width:100px;">。</div>
+                    <button class="check-btn" onclick="checkFillBlank('q2',['もらいました'],'もらいました','I receive the benefit = て もらいます. The speaker received help FROM the friend (友達に). 手伝って もらいました = I had my friend help me / I received the favor of being helped.')">Check →</button>
+                    <div class="feedback-area" id="q2-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 3 of 3</div>
+                    <div class="question-context">"My mother made me dinner." (SHE kindly did it for me)</div>
+                    <div class="fill-blank"><ruby>母<rt>はは</rt></ruby>が <ruby>晩<rt>ばん</rt></ruby>ごはんを <ruby>作<rt>つく</rt></ruby>って <input type="text" class="blank-input" id="q3-input" placeholder="？" style="min-width:100px;">。</div>
+                    <button class="check-btn" onclick="checkFillBlank('q3',['くれました'],'くれました','Someone does for ME = て くれます. My mother (母が) is the doer who gives the action to me. 作って くれました = she kindly made it for me. くれます focuses on the giver\'s kind action.')">Check →</button>
+                    <div class="feedback-area" id="q3-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 8: てもらいます vs てくれます ======================== -->
+        <div class="slide" data-slide="8">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Compare</span><div><h2>てもらいます vs てくれます</h2><span class="jp-title"><ruby>違<rt>ちが</rt></ruby>いを<ruby>理解<rt>りかい</rt></ruby>する</span></div></div>
+                <div class="explanation">
+                    <h3>📖 Both mean "someone does for me" — so what's the difference?</h3>
+                    <p>The key difference is <strong>who is the grammatical subject</strong> and <strong>whose perspective</strong> the sentence takes.</p>
+                </div>
+                <div class="example-comparison">
+                    <div class="box-b">
+                        <div class="style-label">🟢 てもらいます — MY perspective</div>
+                        <div class="example-japanese" style="font-size:1.1rem;">[わたしは] <ruby>山田<rt>やまだ</rt></ruby>さん<strong>に</strong> <ruby>教<rt>おし</rt></ruby>えて <strong>もらいました</strong>。</div>
+                        <div class="example-english">I had Mr. Yamada teach me.</div>
+                        <p style="color:var(--morau);margin-top:8px;font-size:0.9rem;">Subject = わたし (receiver). Focus: "I received this benefit."<br>Nuance: I actively sought or appreciate the help.</p>
+                    </div>
+                    <div class="box-c">
+                        <div class="style-label">🔴 てくれます — THEIR perspective</div>
+                        <div class="example-japanese" style="font-size:1.1rem;"><ruby>山田<rt>やまだ</rt></ruby>さん<strong>が</strong> <ruby>教<rt>おし</rt></ruby>えて <strong>くれました</strong>。</div>
+                        <div class="example-english">Mr. Yamada taught me (kindly).</div>
+                        <p style="color:var(--kureru);margin-top:8px;font-size:0.9rem;">Subject = 山田さん (doer). Focus: "They were kind enough to do this."<br>Nuance: Emphasizes the other person's kindness.</p>
+                    </div>
+                </div>
+                <div class="key-point"><strong>💡 Quick rule of thumb:</strong> てもらいます = "I had someone do ~" (I'm the subject, I received). てくれます = "Someone kindly did ~ for me" (they're the subject, they gave). Both express gratitude, but from different angles. In everyday Japanese, てくれます is extremely common and adds warmth to your speech!</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 9: Quiz 2 ======================== -->
+        <div class="slide" data-slide="9">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Quick Check</span><h2>Perspective Check</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">"Yamada kindly showed me the photos." — Focus: Yamada's kindness:</div>
+                    <div class="mc-options" id="q4-options">
+                        <div class="mc-option" onclick="checkMC('q4',this,'B')"><span class="option-letter">A</span><span><ruby>山田<rt>やまだ</rt></ruby>さんに <ruby>写真<rt>しゃしん</rt></ruby>を <ruby>見<rt>み</rt></ruby>せて <strong>もらいました</strong>。 (I received)</span></div>
+                        <div class="mc-option" onclick="checkMC('q4',this,'B')"><span class="option-letter">B</span><span><ruby>山田<rt>やまだ</rt></ruby>さんが <ruby>写真<rt>しゃしん</rt></ruby>を <ruby>見<rt>み</rt></ruby>せて <strong>くれました</strong>。 (They gave)</span></div>
+                    </div>
+                    <div class="feedback-area" id="q4-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">"My friend takes me to Osaka Castle." (Friend's kind action for me)</div>
+                    <div class="fill-blank"><ruby>友達<rt>ともだち</rt></ruby>が <ruby>大阪城<rt>おおさかじょう</rt></ruby>へ <ruby>連<rt>つ</rt></ruby>れて <ruby>行<rt>い</rt></ruby>って <input type="text" class="blank-input" id="q5-input" placeholder="？" style="min-width:100px;">。</div>
+                    <button class="check-btn" onclick="checkFillBlank('q5',['くれます'],'くれます','Friend (が = subject/doer) kindly takes me → て くれます. The friend\'s kind action benefits me. 連れて 行って くれます = (my friend) kindly takes me. くれます focuses on THEIR generosity.')">Check →</button>
+                    <div class="feedback-area" id="q5-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 10: N₁ は N₂ が V ======================== -->
+        <div class="slide" data-slide="10">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Grammar 3</span><div><h2>N₁ は N₂ が V</h2><span class="jp-title">Topicalized Object</span></div></div>
+                <div class="explanation">
+                    <h3>📖 When the topic IS the object</h3>
+                    <p>Sometimes the <strong>object</strong> of a sentence becomes the <strong>topic</strong> (は), and the <strong>subject</strong> is marked by が. This happens when both speaker and listener already know what they're talking about (the object is shared context), so it becomes the topic. The person who did the action is then marked by が.</p>
+                </div>
+                <div class="example-box">
+                    <div class="example-label">📝 Example ⑨</div>
+                    <div class="example-japanese">おいしい ワインですね。</div>
+                    <div class="example-english" style="margin-bottom:12px;">This wine is very nice, isn't it?</div>
+                    <div class="example-japanese">……ええ。[この ワインは] <ruby>佐藤<rt>さとう</rt></ruby>さん<strong>が</strong> くれました。</div>
+                    <div class="example-english">...Yes. Ms. Sato gave it to me.</div>
+                </div>
+                <div class="explanation">
+                    <p>The full sentence would be: <ruby>佐藤<rt>さとう</rt></ruby>さんが この ワインを くれました. But since "this wine" is already the topic of conversation, it becomes は (or is omitted entirely). <ruby>佐藤<rt>さとう</rt></ruby>さん, now needing a particle, takes が as the subject/agent.</p>
+                </div>
+                <div class="key-point"><strong>💡 This is the L17-5 pattern!</strong> When the object is topicalized (moved to は position), the subject takes が. You've seen similar patterns: N は N₂ が <ruby>好<rt>す</rt></ruby>き (L9), N は N₂ が あります (L10). The principle is: when は is already used for the topic, the subject/agent uses が.</div>
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">📘 MNN Connections — は and が Working Together (L9, L10, L17, L24) <span class="icon">▼</span></button>
+                    <div class="ref-content">
+                        <p><span class="ref-badge">L9</span> わたしは <ruby>音楽<rt>おんがく</rt></ruby>が <ruby>好<rt>す</rt></ruby>きです — Topic は + what you like が</p>
+                        <p><span class="ref-badge">L10</span> わたしは <ruby>車<rt>くるま</rt></ruby>が あります — Topic は + what you have が</p>
+                        <p><span class="ref-badge">L17</span> Topic は ... が — Topicalized object pattern</p>
+                        <p><span class="ref-badge">L22</span> Clause subject → が (inside modifying clauses)</p>
+                        <p><span class="ref-badge">L24</span> [ワインは] <ruby>佐藤<rt>さとう</rt></ruby>さんが くれました — Object topicalized, agent が</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 11: Quiz 3 ======================== -->
+        <div class="slide" data-slide="11">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Quick Check</span><h2>N₁ は N₂ が V &amp; くれます</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">"This is nice." → "Yes, my mother gave it to me." (focus: mom's action)</div>
+                    <div class="fill-blank"><ruby>母<rt>はは</rt></ruby><input type="text" class="blank-input" id="q6-input" placeholder="particle?" style="min-width:20px;"> くれました。</div>
+                    <button class="check-btn" onclick="checkFillBlank('q6',['が'],'が','The object (this nice thing) is already understood — it\'s the topic. So 母 (the giver/agent) takes が. 母が くれました = Mom gave it to me. When the object is topicalized with は (or omitted), the agent takes が.')">Check →</button>
+                    <div class="feedback-area" id="q6-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Someone gives something to your younger brother. Which verb?</div>
+                    <div class="mc-options" id="q7-options">
+                        <div class="mc-option" onclick="checkMC('q7',this,'B')"><span class="option-letter">A</span><span><ruby>弟<rt>おとうと</rt></ruby>に あげました (gave to brother)</span></div>
+                        <div class="mc-option" onclick="checkMC('q7',this,'B')"><span class="option-letter">B</span><span><ruby>弟<rt>おとうと</rt></ruby>に くれました (gave to my side)</span></div>
+                    </div>
+                    <div class="feedback-area" id="q7-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 12: Complete 3-Way Comparison ======================== -->
+        <div class="slide" data-slide="12">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Master Chart</span><div><h2>The Complete Picture</h2><span class="jp-title"><ruby>全体<rt>ぜんたい</rt></ruby>のまとめ</span></div></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th></th><th style="background:var(--ageru);">て あげます</th><th style="background:var(--morau);">て もらいます</th><th style="background:var(--kureru);">て くれます</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Meaning</strong></td><td class="ageru-col">I do for someone</td><td class="morau-col">Someone does for me (I receive)</td><td class="kureru-col">Someone does for me (they give)</td></tr>
+                            <tr><td><strong>Subject</strong></td><td class="ageru-col">Doer (me/others)</td><td class="morau-col">Receiver (me)</td><td class="kureru-col">Doer (others)</td></tr>
+                            <tr><td><strong>Direction</strong></td><td class="ageru-col">Me → Others</td><td class="morau-col">Others → Me</td><td class="kureru-col">Others → Me</td></tr>
+                            <tr><td><strong>Focus</strong></td><td class="ageru-col">My action benefits them</td><td class="morau-col">I received the benefit</td><td class="kureru-col">Their kindness benefits me</td></tr>
+                            <tr><td><strong>Particle</strong></td><td class="ageru-col">~に (recipient)</td><td class="morau-col">~に (doer)</td><td class="kureru-col">[わたしに] (often omitted)</td></tr>
+                            <tr><td><strong>Caution</strong></td><td class="ageru-col">Can sound patronizing!</td><td class="morau-col">—</td><td class="kureru-col">Only for giving to ME/my side</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="example-triple">
+                    <div class="box-a">
+                        <div class="style-label">🟣 てあげます</div>
+                        <div class="example-japanese" style="font-size:1rem;"><ruby>友達<rt>ともだち</rt></ruby><strong>に</strong> <ruby>教<rt>おし</rt></ruby>えて<strong>あげた</strong>。</div>
+                        <div class="example-english">I taught my friend.</div>
+                    </div>
+                    <div class="box-b">
+                        <div class="style-label">🟢 てもらいます</div>
+                        <div class="example-japanese" style="font-size:1rem;"><ruby>友達<rt>ともだち</rt></ruby><strong>に</strong> <ruby>教<rt>おし</rt></ruby>えて<strong>もらった</strong>。</div>
+                        <div class="example-english">My friend taught me.</div>
+                    </div>
+                    <div class="box-c">
+                        <div class="style-label">🔴 てくれます</div>
+                        <div class="example-japanese" style="font-size:1rem;"><ruby>友達<rt>ともだち</rt></ruby><strong>が</strong> <ruby>教<rt>おし</rt></ruby>えて<strong>くれた</strong>。</div>
+                        <div class="example-english">My friend taught me.</div>
+                    </div>
+                </div>
+                <div class="key-point"><strong>💡 Notice the particle shift!</strong> てあげます: 友達<strong>に</strong> (recipient). てもらいます: 友達<strong>に</strong> (doer). てくれます: 友達<strong>が</strong> (subject). The same action — teaching — described from three perspectives. に marks different roles depending on which verb you choose!</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 13: Model Conversation ======================== -->
+        <div class="slide" data-slide="13">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Practice</span><div><h2>Model Conversation</h2><span class="jp-title"><ruby>会話<rt>かいわ</rt></ruby>れんしゅう</span></div></div>
+                <div class="conversation-box">
+                    <div class="example-label">💬 Talking About Helpful Friends</div>
+                    <div class="conversation-line"><span class="speaker">A:</span> <ruby>引<rt>ひ</rt></ruby>っ<ruby>越<rt>こ</rt></ruby>し、<ruby>大変<rt>たいへん</rt></ruby>でしたか。</div>
+                    <div class="conversation-translation" style="margin-bottom:14px;margin-left:28px;">Was the move hard?</div>
+                    <div class="conversation-line"><span class="speaker b">B:</span> いいえ、<ruby>田中<rt>たなか</rt></ruby>さんが <ruby>手伝<rt>てつだ</rt></ruby>って <strong>くれました</strong>。</div>
+                    <div class="conversation-translation" style="margin-bottom:14px;margin-left:28px;">No, Mr. Tanaka (kindly) helped me.</div>
+                    <div class="conversation-line"><span class="speaker">A:</span> いいですね。わたしも <ruby>友達<rt>ともだち</rt></ruby>に <ruby>手伝<rt>てつだ</rt></ruby>って <strong>もらいました</strong>。</div>
+                    <div class="conversation-translation" style="margin-bottom:14px;margin-left:28px;">That's nice. I also had my friend help me.</div>
+                    <div class="conversation-line"><span class="speaker b">B:</span> それから <ruby>母<rt>はは</rt></ruby>が <ruby>料理<rt>りょうり</rt></ruby>を <ruby>作<rt>つく</rt></ruby>って <strong>くれました</strong>。<ruby>田中<rt>たなか</rt></ruby>さんにも <ruby>料理<rt>りょうり</rt></ruby>を <ruby>作<rt>つく</rt></ruby>って <strong>あげました</strong>。</div>
+                    <div class="conversation-translation" style="margin-left:28px;">Then my mom kindly cooked for us. I also made food for Mr. Tanaka.</div>
+                </div>
+                <div class="key-point"><strong>🔍 All three in one conversation!</strong> てくれました (田中さんが 手伝って = he kindly helped me), てもらいました (友達に 手伝って = I had my friend help), てあげました (料理を 作って = I cooked for him). Natural Japanese constantly switches between these three perspectives!</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 14: Comprehensive Final Quiz ======================== -->
+        <div class="slide" data-slide="14">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">🏆 Final Quiz</span><h2>Lesson 24 — Comprehensive</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 3</div>
+                    <div class="question-context">"I carried the bags for the old person." (My action benefits them)</div>
+                    <div class="fill-blank">おじいさんに <ruby>荷物<rt>にもつ</rt></ruby>を <ruby>持<rt>も</rt></ruby>って <input type="text" class="blank-input" id="q8-input" placeholder="？" style="min-width:100px;">。</div>
+                    <button class="check-btn" onclick="checkFillBlank('q8',['あげました'],'あげました','I do for someone (outward) = て あげます. おじいさんに = recipient. 荷物を 持って あげました = I carried the bags for the old person (as a favor).')">Check →</button>
+                    <div class="feedback-area" id="q8-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 3</div>
+                    <div class="question-context">"My sister kindly lent me her car." (Her kind action for me)</div>
+                    <div class="fill-blank"><ruby>姉<rt>あね</rt></ruby>が <ruby>車<rt>くるま</rt></ruby>を <ruby>貸<rt>か</rt></ruby>して <input type="text" class="blank-input" id="q9-input" placeholder="？" style="min-width:100px;">。</div>
+                    <button class="check-btn" onclick="checkFillBlank('q9',['くれました'],'くれました','Someone does for ME (focus on their kindness) = て くれます. 姉が (she\'s the subject/doer) 貸して くれました = she kindly lent it to me.')">Check →</button>
+                    <div class="feedback-area" id="q9-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 3 of 3</div>
+                    <div class="question-context">"Who gave you that bag?" — Known object + agent が:</div>
+                    <div class="mc-options" id="q10-options">
+                        <div class="mc-option" onclick="checkMC('q10',this,'B')"><span class="option-letter">A</span><span><ruby>誰<rt>だれ</rt></ruby><strong>に</strong> くれましたか。</span></div>
+                        <div class="mc-option" onclick="checkMC('q10',this,'B')"><span class="option-letter">B</span><span><ruby>誰<rt>だれ</rt></ruby><strong>が</strong> くれましたか。</span></div>
+                    </div>
+                    <div class="feedback-area" id="q10-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 15: Cultural Significance ======================== -->
+        <div class="slide" data-slide="15">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Culture</span><div><h2>Why This Grammar Matters</h2><span class="jp-title"><ruby>文化的<rt>ぶんかてき</rt></ruby><ruby>背景<rt>はいけい</rt></ruby></span></div></div>
+                <div class="explanation">
+                    <h3>🌸 The heart of Japanese social awareness</h3>
+                    <p>English speakers often wonder why Japanese needs three verbs where English uses one ("give/do for"). The answer lies in Japanese culture's emphasis on <strong>awareness of social relationships and gratitude</strong>. By choosing あげます/もらいます/くれます, the speaker communicates not just what happened, but how they <strong>feel about the social exchange</strong> — who benefited, who was kind, and from whose perspective the story is told.</p>
+                </div>
+                <div class="key-point"><strong>💡 In practice:</strong> てくれます is extremely common in daily Japanese — it's how Japanese speakers express warmth and appreciation. Saying 母が 作ってくれた instead of just 母が 作った adds a layer of "and I'm grateful for it." Mastering this grammar is key to sounding natural and emotionally connected in Japanese!</div>
+                <div class="key-point"><strong>🎯 Frequency in real Japanese:</strong> てくれます is arguably the MOST culturally important grammar pattern in N5. Native speakers use it constantly — "友達が 来てくれた" (my friend came [and I appreciate it]), "先生が 教えてくれた" (the teacher taught me [and I'm thankful]). It adds emotional color to every sentence!</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 16: Bonus Quiz ======================== -->
+        <div class="slide" data-slide="16">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">🧠 Bonus Quiz</span><h2>Mixed Challenge</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Bonus 1</div>
+                    <div class="question-context">"I had the doctor examine me." (I received the benefit)</div>
+                    <div class="fill-blank"><ruby>医者<rt>いしゃ</rt></ruby>に <ruby>診<rt>み</rt></ruby>て <input type="text" class="blank-input" id="q11-input" placeholder="？" style="min-width:100px;">。</div>
+                    <button class="check-btn" onclick="checkFillBlank('q11',['もらいました'],'もらいました','I receive the benefit = て もらいます. 医者に (the doctor = doer, marked by に with もらいます). 診て もらいました = I had the doctor examine me / I received an examination from the doctor.')">Check →</button>
+                    <div class="feedback-area" id="q11-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Bonus 2</div>
+                    <div class="question-context">Your boss helps you. てあげます is patronizing. What's better?</div>
+                    <div class="mc-options" id="q12-options">
+                        <div class="mc-option" onclick="checkMC('q12',this,'B')"><span class="option-letter">A</span><span><ruby>部長<rt>ぶちょう</rt></ruby>に <ruby>手伝<rt>てつだ</rt></ruby>って <strong>あげました</strong></span></div>
+                        <div class="mc-option" onclick="checkMC('q12',this,'B')"><span class="option-letter">B</span><span><ruby>部長<rt>ぶちょう</rt></ruby>が <ruby>手伝<rt>てつだ</rt></ruby>って <strong>くれました</strong></span></div>
+                    </div>
+                    <div class="feedback-area" id="q12-feedback"></div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Bonus 3</div>
+                    <div class="question-context">"My father read a book to me." (Father's kind action for me)</div>
+                    <div class="fill-blank"><ruby>父<rt>ちち</rt></ruby>が <ruby>本<rt>ほん</rt></ruby>を <ruby>読<rt>よ</rt></ruby>んで <input type="text" class="blank-input" id="q13-input" placeholder="？" style="min-width:100px;">。</div>
+                    <button class="check-btn" onclick="checkFillBlank('q13',['くれました'],'くれました','Father (が = doer) kindly does for me = て くれます. 読んで くれました = he kindly read for me. Using くれます here expresses gratitude for the father\'s action.')">Check →</button>
+                    <div class="feedback-area" id="q13-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 17: What's Next ======================== -->
+        <div class="slide" data-slide="17">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Preview</span><div><h2>What's Coming Next?</h2><span class="jp-title"><ruby>次<rt>つぎ</rt></ruby>のレッスン</span></div></div>
+                <div class="explanation"><h3>🔮 Lesson 25 — The Final Lesson!</h3><p>The last lesson of Book 1 introduces <strong>たら</strong> (if/when — the most flexible conditional) and <strong>ても</strong> (even if/even though). These complete the conditional expression toolkit you started building in L23 (とき, と). After L25, you'll have covered all 25 lessons of Minna no Nihongo Book 1!</p></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Lesson 25 Topic</th><th>What You'll Learn</th></tr></thead>
+                        <tbody>
+                            <tr><td>V た + ら</td><td>"If/when ~" (most flexible conditional)</td></tr>
+                            <tr><td>V て + も</td><td>"Even if/even though ~"</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 18: Giving/Receiving Master Reference ======================== -->
+        <div class="slide" data-slide="18">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Reference</span><div><h2>Give/Receive — Complete Map</h2><span class="jp-title">あげる・もらう・くれる <ruby>全体図<rt>ぜんたいず</rt></ruby></span></div></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Pattern</th><th>Things (L7/L24)</th><th>Actions (L24)</th></tr></thead>
+                        <tbody>
+                            <tr><td class="ageru-col">I give to others</td><td>N を あげます</td><td>V て あげます</td></tr>
+                            <tr><td class="morau-col">I receive from others</td><td>N を もらいます</td><td>V て もらいます</td></tr>
+                            <tr><td class="kureru-col">Others give to me</td><td>N を くれます</td><td>V て くれます</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="key-point"><strong>💡 Perfect symmetry!</strong> Three verbs, two uses each (things and actions). The direction logic is always identical: あげます = outward (me → them), もらいます = I receive (them → me, my perspective), くれます = they give to me (them → me, their kindness).</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 19: て-form Power Map ======================== -->
+        <div class="slide" data-slide="19">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Reference</span><div><h2>て-form: What It Powers</h2><span class="jp-title">て<ruby>形<rt>けい</rt></ruby>の<ruby>活用<rt>かつよう</rt></ruby></span></div></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>て-form Pattern</th><th>Meaning</th><th>Lesson</th></tr></thead>
+                        <tbody>
+                            <tr><td>V て ください</td><td>"Please do ~"</td><td>L14</td></tr>
+                            <tr><td>V て います</td><td>Ongoing / state</td><td>L14–15</td></tr>
+                            <tr><td>V ても いいです</td><td>"May I ~?"</td><td>L15</td></tr>
+                            <tr><td>V ては いけません</td><td>"Must not ~"</td><td>L15</td></tr>
+                            <tr><td>V て、V て、V</td><td>Sequence</td><td>L16</td></tr>
+                            <tr><td>V てから</td><td>"After doing ~"</td><td>L16</td></tr>
+                            <tr style="background:var(--bg-light);"><td><strong>V て あげます</strong></td><td><strong>"Do for someone"</strong></td><td><strong>L24</strong></td></tr>
+                            <tr style="background:var(--bg-light);"><td><strong>V て もらいます</strong></td><td><strong>"Have someone do"</strong></td><td><strong>L24</strong></td></tr>
+                            <tr style="background:var(--bg-light);"><td><strong>V て くれます</strong></td><td><strong>"Someone does for me"</strong></td><td><strong>L24</strong></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 20: L1–24 Cumulative ======================== -->
+        <div class="slide" data-slide="20">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">L1–L24</span><div><h2>Cumulative Skills</h2><span class="jp-title">レッスン1〜24 まとめ</span></div></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Skill</th><th>Source</th></tr></thead>
+                        <tbody>
+                            <tr><td>Introduce, identify, describe basics</td><td>L1–L3</td></tr>
+                            <tr><td>Daily routines, verbs (all polite forms)</td><td>L4–L6</td></tr>
+                            <tr><td>Give/receive things, tools, adjectives, preferences</td><td>L7–L9</td></tr>
+                            <tr><td>Existence, counting, comparison, desires</td><td>L10–L13</td></tr>
+                            <tr><td>て-form: requests, states, linking, permission</td><td>L14–L16</td></tr>
+                            <tr><td>ない-form: obligations, negative requests</td><td>L17</td></tr>
+                            <tr><td>Dictionary form: abilities, hobbies, "before"</td><td>L18</td></tr>
+                            <tr><td>た-form: experience, representative actions, change</td><td>L19</td></tr>
+                            <tr><td>Plain style: casual conversation</td><td>L20</td></tr>
+                            <tr><td>Opinions, speech, confirmation</td><td>L21</td></tr>
+                            <tr><td>Noun modification (relative clauses)</td><td>L22</td></tr>
+                            <tr><td>とき (when), と (if/when)</td><td>L23</td></tr>
+                            <tr style="background:var(--bg-light);"><td><strong>Giving/receiving actions (てあげる/てもらう/てくれる)</strong></td><td><strong>L24</strong></td></tr>
+                            <tr style="background:var(--bg-light);"><td><strong>くれます (give to me), N₁は N₂が V</strong></td><td><strong>L24</strong></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 21: Common Pitfalls ======================== -->
+        <div class="slide" data-slide="21">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Caution</span><div><h2>Common Mistakes</h2><span class="jp-title">よくある<ruby>間違<rt>まちが</rt></ruby>い</span></div></div>
+                <div class="warning-box" style="margin-bottom:20px;">
+                    <strong>❌ Using あげます for giving TO me</strong>
+                    <p style="color:#991b1b;margin-top:8px;">× <ruby>友達<rt>ともだち</rt></ruby>は わたしに プレゼントを <strong>あげました</strong> → ○ … <strong>くれました</strong><br>あげます can NEVER be used when someone gives to the speaker or speaker's in-group. Always use くれます for inward giving!</p>
+                </div>
+                <div class="warning-box" style="margin-bottom:20px;">
+                    <strong>❌ Confusing に with もらいます vs あげます</strong>
+                    <p style="color:#991b1b;margin-top:8px;">てあげます: <ruby>田中<rt>たなか</rt></ruby>さん<strong>に</strong> = <strong>recipient</strong> (I do for Tanaka)<br>てもらいます: <ruby>田中<rt>たなか</rt></ruby>さん<strong>に</strong> = <strong>doer</strong> (Tanaka does for me)<br>Same particle に, different roles! Check which verb follows.</p>
+                </div>
+                <div class="warning-box">
+                    <strong>❌ Using てあげます with higher-status people</strong>
+                    <p style="color:#991b1b;margin-top:8px;">× <ruby>先生<rt>せんせい</rt></ruby>に <ruby>教<rt>おし</rt></ruby>えてあげます (patronizing!) → ○ <ruby>先生<rt>せんせい</rt></ruby>に お<ruby>教<rt>おし</rt></ruby>えします / ましょうか<br>てあげます implies "I'm doing YOU a favor" — rude to superiors. Use ましょうか (L14) or humble forms.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 22: に Particle Double Duty ======================== -->
+        <div class="slide" data-slide="22">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Key Rule</span><div><h2>に = Different Roles!</h2><span class="jp-title">「に」の<ruby>二重<rt>にじゅう</rt></ruby><ruby>役割<rt>やくわり</rt></ruby></span></div></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Pattern</th><th>に marks</th><th>Example</th></tr></thead>
+                        <tbody>
+                            <tr><td class="ageru-col">て <strong>あげます</strong></td><td>Recipient (person I do for)</td><td><ruby>友達<rt>ともだち</rt></ruby><strong>に</strong> <ruby>教<rt>おし</rt></ruby>えてあげた</td></tr>
+                            <tr><td class="morau-col">て <strong>もらいます</strong></td><td>Doer (person who does for me)</td><td><ruby>友達<rt>ともだち</rt></ruby><strong>に</strong> <ruby>教<rt>おし</rt></ruby>えてもらった</td></tr>
+                            <tr><td class="kureru-col">て <strong>くれます</strong></td><td>Beneficiary (me — often omitted)</td><td>[わたし<strong>に</strong>] <ruby>教<rt>おし</rt></ruby>えてくれた</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="key-point"><strong>💡 Same particle, three different functions!</strong> に marks the OPPOSITE person depending on the verb: with あげます = who receives; with もらいます = who does; with くれます = who benefits (usually omitted). This is the trickiest part of L24 — always check which main verb follows!</div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 23: Cheat Sheet ======================== -->
+        <div class="slide" data-slide="23">
+            <div class="content-card">
+                <div class="slide-header"><span class="grammar-badge">Cheat Sheet</span><div><h2>L24 Quick Reference</h2><span class="jp-title">クイックガイド</span></div></div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Pattern</th><th>Meaning</th><th>Quick Example</th></tr></thead>
+                        <tbody>
+                            <tr><td>N を くれます</td><td>"(Someone) gives to me"</td><td><ruby>母<rt>はは</rt></ruby>が くれた</td></tr>
+                            <tr><td>V て あげます</td><td>"I do ~ for someone"</td><td><ruby>教<rt>おし</rt></ruby>えてあげた</td></tr>
+                            <tr><td>V て もらいます</td><td>"Someone does ~ for me"</td><td><ruby>教<rt>おし</rt></ruby>えてもらった</td></tr>
+                            <tr><td>V て くれます</td><td>"Someone kindly does ~ for me"</td><td><ruby>教<rt>おし</rt></ruby>えてくれた</td></tr>
+                            <tr><td>N₁は N₂が V</td><td>Object topic, agent が</td><td>[ワインは] <ruby>佐藤<rt>さとう</rt></ruby>さんが くれた</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 24: Summary ======================== -->
+        <div class="slide" data-slide="24">
+            <div class="summary-card">
+                <h2>🎉 Lesson 24 Complete!</h2>
+                <p>おめでとうございます！ You can now express giving and receiving actions — the heart of Japanese social grammar!</p>
+                <div class="summary-points">
+                    <div class="summary-point"><h4>🎁 くれます</h4><p>Others give to me/my side</p></div>
+                    <div class="summary-point"><h4>🟣 てあげます</h4><p>I do a favor for someone</p></div>
+                    <div class="summary-point"><h4>🟢 てもらいます</h4><p>I receive the favor</p></div>
+                    <div class="summary-point"><h4>🔴 てくれます</h4><p>They kindly do for me</p></div>
+                </div>
+                <p style="margin-top:24px;opacity:0.9;">🏆 Book 1: 96% Complete! (L24 of L25) — One more to go!</p>
+                <button class="restart-btn" onclick="restartPresentation()">🔄 Start Over</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide=1;const totalSlides=24;
+        function updateSlide(){document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));const a=document.querySelector(`[data-slide="${currentSlide}"]`);if(a)a.classList.add('active');document.getElementById('currentSlide').textContent=currentSlide;document.getElementById('totalSlides').textContent=totalSlides;document.getElementById('progressFill').style.width=((currentSlide-1)/(totalSlides-1))*100+'%';document.getElementById('prevBtn').disabled=currentSlide===1;document.getElementById('nextBtn').disabled=currentSlide===totalSlides;window.scrollTo({top:0,behavior:'smooth'});}
+        function nextSlide(){if(currentSlide<totalSlides){currentSlide++;updateSlide();}}
+        function prevSlide(){if(currentSlide>1){currentSlide--;updateSlide();}}
+        function goToSlide(n){currentSlide=n;updateSlide();}
+        function restartPresentation(){currentSlide=1;updateSlide();}
+        function toggleRef(b){const c=b.nextElementSibling;b.classList.toggle('open');c.classList.toggle('open');}
+
+        const mcAnswers={
+            q4:{correct:'B',explanation:'✅ Focus on Yamada\'s KINDNESS = て くれます. 山田さんが (subject = doer) 写真を 見せて くれました = Yamada kindly showed me the photos. てくれます puts the spotlight on the other person\'s generous action. てもらいます would focus on YOUR receiving instead.'},
+            q7:{correct:'B',explanation:'✅ Your younger brother is part of YOUR in-group (family). When an outsider gives to your family member, use くれます (NOT あげます). 弟に くれました = gave to my brother. あげます can only be used for giving FROM your side outward.'},
+            q10:{correct:'B',explanation:'✅ The bag (object) is already known — it\'s the topic. So 誰 (who = the giver/agent) takes が. 誰が くれましたか = Who gave it to you? When the object is topicalized, the agent takes が (the N₁は N₂が V pattern).'},
+            q12:{correct:'B',explanation:'✅ てあげます implies "I\'m doing YOU a favor" — this sounds patronizing to a boss! 部長が 手伝って くれました = The boss kindly helped me. てくれます is appropriate because it focuses on the boss\'s kindness, not on you conferring a benefit.'}
+        };
+
+        function checkMC(qId,clicked,correctLetter){
+            const fb=document.getElementById(qId+'-feedback');const opts=document.getElementById(qId+'-options').querySelectorAll('.mc-option');const ans=mcAnswers[qId];const cl=clicked.querySelector('.option-letter').textContent;
+            opts.forEach(o=>{o.classList.add('disabled');const l=o.querySelector('.option-letter').textContent;if(l===ans.correct)o.classList.add('correct-choice');else if(o===clicked&&cl!==ans.correct)o.classList.add('incorrect-choice');});
+            const ok=cl===ans.correct;fb.className='feedback-area show '+(ok?'correct-feedback':'incorrect-feedback');
+            fb.innerHTML=`<span class="fb-icon">${ok?'🎉':'😅'}</span><span class="fb-answer">${ok?'Correct!':'Not quite!'}</span><div class="fb-explain">${ans.explanation}</div>`;
+        }
+        function checkFillBlank(qId,accepted,display,explanation){
+            const input=document.getElementById(qId+'-input');const fb=document.getElementById(qId+'-feedback');const ans=input.value.trim();
+            if(!ans){fb.className='feedback-area show incorrect-feedback';fb.innerHTML='<span class="fb-icon">✍️</span> <span class="fb-answer">Please type your answer first!</span>';return;}
+            const ok=accepted.includes(ans);input.style.borderColor=ok?'var(--success)':'var(--error)';input.style.background=ok?'var(--success-light)':'var(--error-light)';
+            fb.className='feedback-area show '+(ok?'correct-feedback':'incorrect-feedback');
+            fb.innerHTML=`<span class="fb-icon">${ok?'🎉':'😅'}</span><span class="fb-answer">${ok?'Correct!':'Not quite!'} Answer: <strong>${display}</strong></span><div class="fb-explain">${explanation}</div>`;
+        }
+
+        document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nextSlide();}else if(e.key==='ArrowLeft'){e.preventDefault();prevSlide();}});
+        let touchStartX=0;document.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].screenX;});document.addEventListener('touchend',e=>{const d=touchStartX-e.changedTouches[0].screenX;if(Math.abs(d)>50){d>0?nextSlide():prevSlide();}});
+        updateSlide();
+    </script>
+</body>
+</html>

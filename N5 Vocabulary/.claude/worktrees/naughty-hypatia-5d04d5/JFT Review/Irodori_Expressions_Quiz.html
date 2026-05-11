@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  /* ═══════════════════════════════════════════════════════════════
+     THEME — sakura (default). Swap this :root block to retheme.
+     See references/themes.md for ocean / forest / sunset alternates.
+     ═══════════════════════════════════════════════════════════════ */
+  :root {
+    --bg-base: #1a1525;
+    --bg-radial-1: rgba(232, 180, 200, 0.07);
+    --bg-radial-2: rgba(120, 100, 180, 0.07);
+    --bg-card: #221d2e;
+    --bg-input: #2a2535;
+    --bg-button: #3d3650;
+    --bg-button-hover: #302844;
+    --bg-feedback-correct: #1a3d2a;
+    --bg-feedback-wrong: #3d1a1f;
+
+    --text-primary: #e8e0f0;
+    --text-muted: #9e93b0;
+    --text-on-accent: #1a1525;
+
+    --border: #3d3650;
+    --border-active: #5c4d7a;
+
+    --accent-start: #e8b4c8;
+    --accent-end: #c89db7;
+
+    --success: #2d6a4f;
+    --success-bright: #40916c;
+    --success-text: #a7f3d0;
+    --warning: #b08d37;
+    --warning-bright: #d4a843;
+    --error: #9b2226;
+    --error-bright: #ca6702;
+    --error-text: #fca5a5;
+
+    --tag-l1-bg: #1e3a5f; --tag-l1-fg: #93c5fd;
+    --tag-l2-bg: #1e4a3a; --tag-l2-fg: #86efac;
+    --tag-l3-bg: #5a3a1e; --tag-l3-fg: #fcd34d;
+    --tag-l4-bg: #4a1e3a; --tag-l4-fg: #f9a8d4;
+    --tag-l5-bg: #3a1e4a; --tag-l5-fg: #c4b5fd;
+  }
+
+  /* ── Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, var(--bg-radial-1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, var(--bg-radial-2) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 580px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Inline Japanese helper — slightly larger, JP-first font stack */
+  .jp {
+    font-family: 'Noto Sans JP', 'Zen Kaku Gothic New', sans-serif;
+    font-size: 1.08em;
+    font-weight: 700;
+  }
+  .blank {
+    display: inline-block;
+    min-width: 28px;
+    padding: 0 6px;
+    margin: 0 2px;
+    background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+    color: var(--text-on-accent);
+    border-radius: 6px;
+    font-weight: 800;
+    text-align: center;
+  }
+  ruby rt { font-size: 0.6em; color: var(--text-muted); }
+
+  /* ── Name Screen ── */
+  #name-screen { margin-top: 50px; }
+
+  .card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 28px 20px;
+    border: 1px solid var(--border);
+  }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+    color: var(--text-on-accent);
+    font-weight: 700;
+    font-size: 12px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+
+  .title {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 14px 0 4px;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .scope-pills {
+    display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+    margin: 16px 0 4px;
+  }
+  .scope-pill {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 10px;
+  }
+
+  .name-label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 24px 0 8px;
+    text-align: left;
+  }
+
+  .name-input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .name-input:focus { border-color: var(--accent-start); }
+
+  .btn-primary {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+    border: none;
+    color: var(--text-on-accent);
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn-primary:focus-visible { outline: 3px solid var(--accent-start); outline-offset: 3px; }
+  .btn-primary:active:not(:disabled) { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.35; cursor: default; }
+
+  /* ── Quiz Screen ── */
+  #quiz-screen { display: none; }
+
+  .header { text-align: center; margin-bottom: 22px; }
+  .header .subtitle { margin-top: 2px; }
+
+  /* ── Score Banner ── */
+  .score-banner {
+    display: none;
+    border-radius: 16px;
+    padding: 22px 16px;
+    text-align: center;
+    margin-bottom: 20px;
+    animation: slideDown 0.4s ease;
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .score-number { font-size: 44px; font-weight: 800; letter-spacing: -1px; }
+  .score-label { font-size: 16px; font-weight: 600; margin-top: 4px; }
+  .lesson-breakdown {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .lesson-stat {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(4px);
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .email-row { margin-top: 12px; }
+  .email-pill {
+    display: inline-block;
+    background: var(--bg-button);
+    color: var(--text-primary);
+    font-size: 12px;
+    padding: 4px 14px;
+    border-radius: 12px;
+  }
+  .email-pill.sent { background: var(--success); color: var(--success-text); }
+  .email-pill.error { background: var(--error); color: var(--error-text); }
+
+  .end-actions {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .btn-end {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-end:hover:not(:disabled) { background: rgba(255, 255, 255, 0.25); }
+  .btn-end:disabled { opacity: 0.4; cursor: default; }
+  .btn-end:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+  /* ── Review Banner ── */
+  .review-banner {
+    display: none;
+    background: linear-gradient(135deg, var(--warning), var(--warning-bright));
+    color: #1a1525;
+    text-align: center;
+    padding: 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+
+  /* ── Progress ── */
+  .progress-row { margin-bottom: 14px; }
+  .progress-text { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px; }
+  .progress-bar { height: 4px; background: var(--bg-input); border-radius: 4px; overflow: hidden; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-start), var(--accent-end));
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  /* ── Nav Grid (adaptive — fits any question count) ── */
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .nav-dot {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 600;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .nav-dot:hover { background: var(--bg-button-hover); }
+  .nav-dot:focus-visible { outline: 2px solid var(--accent-start); outline-offset: 2px; }
+  .nav-dot.answered { background: var(--bg-button); }
+  .nav-dot.active { border-color: var(--accent-start); }
+  .nav-dot.correct { background: var(--success); }
+  .nav-dot.wrong { background: var(--error); }
+
+  /* ── Question Card ── */
+  .q-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 22px 18px;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+    animation: fadeIn 0.25s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-meta {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .q-tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 8px;
+    letter-spacing: 0.3px;
+  }
+  .q-tag.lesson-1 { background: var(--tag-l1-bg); color: var(--tag-l1-fg); }
+  .q-tag.lesson-2 { background: var(--tag-l2-bg); color: var(--tag-l2-fg); }
+  .q-tag.lesson-3 { background: var(--tag-l3-bg); color: var(--tag-l3-fg); }
+  .q-tag.lesson-4 { background: var(--tag-l4-bg); color: var(--tag-l4-fg); }
+  .q-tag.lesson-5 { background: var(--tag-l5-bg); color: var(--tag-l5-fg); }
+  .q-tag.type {
+    background: var(--bg-button);
+    color: var(--text-muted);
+  }
+
+  .q-number {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .q-stem {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    line-height: 1.45;
+  }
+
+  .choices-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .choices-grid.long { grid-template-columns: 1fr; }
+
+  .choice-btn {
+    padding: 14px 12px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    text-align: center;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    position: relative;
+    transition: all 0.15s;
+  }
+  .choices-grid.long .choice-btn { text-align: left; padding: 14px 16px; }
+  .choice-btn:hover:not(:disabled) { border-color: var(--border-active); background: var(--bg-button-hover); }
+  .choice-btn:focus-visible { outline: 2px solid var(--accent-start); outline-offset: 2px; }
+  .choice-btn.selected { background: var(--border-active); border-color: var(--accent-start); }
+  .choice-btn.correct-reveal { background: var(--success); border-color: var(--success-bright); }
+  .choice-btn.wrong-reveal { background: var(--error); border-color: var(--error-bright); }
+  .choice-btn:disabled { cursor: default; }
+  .choice-btn .mark {
+    position: absolute;
+    top: 6px; right: 8px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .choice-btn .mark.ok { color: var(--success-text); }
+  .choice-btn .mark.no { color: var(--error-text); }
+  .choice-btn .key-hint {
+    position: absolute;
+    top: 6px; left: 8px;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 700;
+    opacity: 0.7;
+  }
+
+  /* ── Feedback Card ── */
+  .feedback-card {
+    display: none;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 14px;
+    border: 1px solid;
+    font-size: 14px;
+    line-height: 1.55;
+    animation: fadeIn 0.3s ease;
+  }
+  .feedback-card.correct {
+    background: var(--bg-feedback-correct);
+    border-color: var(--success-bright);
+  }
+  .feedback-card.wrong {
+    background: var(--bg-feedback-wrong);
+    border-color: var(--error-bright);
+  }
+  .fb-header {
+    font-weight: 700;
+    margin-bottom: 6px;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+  }
+  .feedback-card.correct .fb-header { color: var(--success-text); }
+  .feedback-card.wrong .fb-header { color: var(--error-text); }
+  .fb-block { margin-top: 8px; }
+  .fb-block.connect { color: var(--text-muted); font-size: 13px; }
+  .fb-block.warn {
+    color: #fcd34d;
+    background: rgba(252, 211, 77, 0.08);
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+  /* ── Arrow Row ── */
+  .arrow-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .btn-nav {
+    flex: 1;
+    padding: 12px 0;
+    border-radius: 12px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s, background 0.15s;
+  }
+  .btn-nav:hover:not(:disabled) { background: var(--bg-button-hover); }
+  .btn-nav:focus-visible { outline: 2px solid var(--accent-start); outline-offset: 2px; }
+  .btn-nav:disabled { opacity: 0.3; cursor: default; }
+  .btn-next-primary {
+    background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+    color: var(--text-on-accent);
+    border: none;
+  }
+
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+
+  /* ── Mobile tweaks ── */
+  @media (max-width: 480px) {
+    .container { padding: 16px 12px 50px; }
+    .title { font-size: 20px; }
+    .q-stem { font-size: 16px; }
+    .choice-btn { font-size: 15px; padding: 12px 10px; }
+    .lesson-breakdown { gap: 6px; }
+    .lesson-stat { font-size: 11px; padding: 5px 9px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ════ NAME SCREEN ════ -->
+  <div id="name-screen">
+    <div class="card text-center">
+      <span class="badge" id="ns-badge"></span>
+      <h1 class="title" id="ns-title"></h1>
+      <p class="subtitle" id="ns-subtitle"></p>
+
+      <div class="scope-pills" id="scope-pills"></div>
+
+      <label class="name-label" for="name-input">おなまえは？ Enter your name</label>
+      <input class="name-input" id="name-input" type="text" placeholder="Your name..." autocomplete="off" autofocus>
+      <button class="btn-primary" id="btn-start" disabled>Start Quiz →</button>
+    </div>
+  </div>
+
+  <!-- ════ QUIZ SCREEN ════ -->
+  <div id="quiz-screen">
+    <header class="header">
+      <span class="badge" id="qs-badge"></span>
+      <h1 class="title" id="qs-title"></h1>
+      <p class="subtitle" id="quiz-subtitle"></p>
+    </header>
+
+    <div class="score-banner" id="score-banner" aria-live="polite">
+      <div class="score-number" id="score-number"></div>
+      <div class="score-label" id="score-label"></div>
+      <div class="lesson-breakdown" id="lesson-breakdown"></div>
+      <div class="email-row" id="email-row"></div>
+      <div class="end-actions">
+        <button class="btn-end" id="btn-review" disabled>📝 Review wrong answers</button>
+        <button class="btn-end" id="btn-retake">🔄 Retake quiz</button>
+      </div>
+    </div>
+
+    <div class="review-banner" id="review-banner">
+      📝 Review mode — showing only the questions you got wrong
+    </div>
+
+    <div class="progress-row">
+      <span class="progress-text" id="progress-text">0 / 0 answered</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <div class="nav-grid" id="nav-grid"></div>
+
+    <div class="q-card" id="q-card">
+      <div class="q-meta">
+        <span class="q-tag lesson-1" id="q-lesson-tag">📘 Lesson 1</span>
+        <span class="q-tag type" id="q-type-tag">Grammar</span>
+      </div>
+      <div class="q-number" id="q-number"></div>
+      <div class="q-stem" id="q-stem"></div>
+      <div class="choices-grid" id="choices-grid"></div>
+      <div class="feedback-card" id="feedback-card" aria-live="polite"></div>
+    </div>
+
+    <div class="arrow-row">
+      <button class="btn-nav" id="btn-prev">← Previous</button>
+      <button class="btn-nav btn-next-primary" id="btn-next">Next →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   QUIZ_CONFIG — edit this block to customize the quiz.
+   Everything below QUESTIONS is generic logic; do not edit unless
+   you know what you're doing.
+   ═══════════════════════════════════════════════════════════════ */
+const QUIZ_CONFIG = {
+  // Display
+  badge: "いろどり × MNN",
+  title: "Irodori 会話表現クイズ",
+  titleShort: "会話表現クイズ",
+  subtitle: "20 questions · Read the dialog, choose the expression that fits best",
+  scopePills: ["🗣️ あいさつ ×4", "🍽️ レストラン ×5", "💬 やりとり ×3", "🎪 イベント ×4", "💭 リアクション ×4"],
+
+  // Behavior
+  shuffleQuestions: true,
+  shuffleChoices: true,
+
+  // Score thresholds (PERCENTAGE, not absolute count)
+  scoreThresholds: {
+    perfect:   { min: 100, label: "完璧！ Perfect!",     gradient: "linear-gradient(135deg, var(--success), var(--success-bright))" },
+    excellent: { min: 90,  label: "すごい！ Excellent!",  gradient: "linear-gradient(135deg, var(--success), var(--success-bright))" },
+    good:      { min: 70,  label: "いいですね！ Good job!", gradient: "linear-gradient(135deg, var(--warning), var(--warning-bright))" },
+    fail:      { min: 0,   label: "もう一度！ Try again!", gradient: "linear-gradient(135deg, var(--error), var(--error-bright))" }
+  },
+
+  // EmailJS — baked in. Edit these if deploying with different credentials.
+  emailjs: {
+    publicKey:  "1oR0j0WDvUmSSYEpK",
+    serviceId:  "service_v7ifzdj",
+    templateId: "template_lb9c879",
+    timezone:   "Asia/Manila",
+    locale:     "en-PH"
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   QUESTIONS — the only block you usually edit when adding content.
+   See references/schema.md for the full field reference.
+   ═══════════════════════════════════════════════════════════════ */
+const QUESTIONS = [
+  /* ── L1: あいさつ (Greetings & Self-introduction) ── */
+  {
+    lesson: 1, type: "Expression",
+    stem: '🗣️ <ruby>自己紹介<rt>じこしょうかい</rt></ruby>の<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">はじめまして。グエン・ティ・ホアと<span class="blank">?</span>。</span><br>→ 「はじめまして。」',
+    answer: "と申します",
+    longChoices: true,
+    choices: ["と申します", "と言ってください", "と思います", "と呼んでください"],
+    correctNote: '<ruby>申<rt>もう</rt></ruby>します is the humble form of <ruby>言<rt>い</rt></ruby>います — used to introduce your OWN name in formal settings.',
+    explain: 'と<ruby>申<rt>もう</rt></ruby>します = "I am called ~" (humble). This is the go-to self-introduction phrase for business, ceremonies, and first meetings with seniors.',
+    connect: '🔗 <span class="jp">MNN L49</span> covers <ruby>謙譲語<rt>けんじょうご</rt></ruby> (humble language). <ruby>申<rt>もう</rt></ruby>す is the humble form of <ruby>言<rt>い</rt></ruby>う. Compare with と<ruby>言<rt>い</rt></ruby>います (neutral, MNN L1) and と<ruby>呼<rt>よ</rt></ruby>んでください (asking others to call you a nickname).',
+    warn: '⚠️ Never use <ruby>申<rt>もう</rt></ruby>します for someone else\'s name! Use おっしゃいます (<ruby>尊敬語<rt>そんけいご</rt></ruby>) instead.'
+  },
+  {
+    lesson: 1, type: "Expression",
+    stem: '🗣️ ニックネームを<ruby>伝<rt>つた</rt></ruby>える<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">ユーリアと<span class="blank">?</span>。</span><br>→ 「ユーリアさんですね。よろしくお<ruby>願<rt>ねが</rt></ruby>いします。」',
+    answer: "と呼んでください",
+    longChoices: true,
+    choices: ["と呼んでください", "という意味です", "と言ってください", "と申します"],
+    correctNote: 'と<ruby>呼<rt>よ</rt></ruby>んでください = "Please call me ~." Used to tell someone your preferred name or nickname.',
+    explain: '<ruby>呼<rt>よ</rt></ruby>ぶ means "to call (someone)." The て-form + ください makes it a polite request. Common when foreigners have long names and want to offer a shorter version.',
+    connect: '🔗 <span class="jp">MNN L14</span> teaches て-form + ください for polite requests. This is a specific social application: "Please call me (nickname)." Compare with Q1\'s と<ruby>申<rt>もう</rt></ruby>します for formal full-name introductions.',
+    warn: '⚠️ と<ruby>言<rt>い</rt></ruby>ってください means "please say ~" — different from と<ruby>呼<rt>よ</rt></ruby>んでください ("please call me ~"). Don\'t mix them up!'
+  },
+  {
+    lesson: 1, type: "Expression",
+    stem: '🗣️ <ruby>新<rt>あたら</rt></ruby>しい<ruby>職場<rt>しょくば</rt></ruby>でのあいさつ:<br><span class="jp">まだ、<ruby>日本<rt>にほん</rt></ruby>のことはよくわかりませんが、<ruby>一生懸命<rt>いっしょうけんめい</rt></ruby><span class="blank">?</span>。</span><br>→ 「どうぞよろしく。」',
+    answer: "がんばります",
+    longChoices: true,
+    choices: ["お世話になります", "お願いします", "がんばります", "よろしくお願いします"],
+    correctNote: 'がんばります = "I will do my best / I will work hard." A pledge of effort — perfect for workplace introductions.',
+    explain: '<ruby>一生懸命<rt>いっしょうけんめい</rt></ruby> + がんばります is a powerful combination: "I will give it my all." This is a standard expression when starting a new job or school in Japan.',
+    connect: '🔗 <span class="jp">MNN L1</span> teaches はじめまして and よろしくお<ruby>願<rt>ねが</rt></ruby>いします. This expression extends the self-introduction beyond just your name — it shows your <ruby>姿勢<rt>しせい</rt></ruby> (attitude).',
+    warn: '⚠️ お<ruby>世話<rt>せわ</rt></ruby>になります means "I will be in your care" — similar spirit but used differently. がんばります focuses on YOUR effort.'
+  },
+  {
+    lesson: 1, type: "Expression",
+    stem: '🗣️ お<ruby>正月<rt>しょうがつ</rt></ruby>のあいさつ:<br><span class="jp">「あけましておめでとう。」</span><br><span class="jp">おめでとうございます。<span class="blank">?</span>。</span>',
+    answer: "今年もよろしくお願いします",
+    longChoices: true,
+    choices: ["お幸せに", "お世話になっています", "今年もよろしくお願いします", "失礼します"],
+    correctNote: '<ruby>今年<rt>ことし</rt></ruby>もよろしくお<ruby>願<rt>ねが</rt></ruby>いします = "Please continue to treat me well this year too." The standard New Year reply.',
+    explain: 'The も adds "also/again this year" — building on the existing relationship. This is one of Japan\'s most important <ruby>季節<rt>きせつ</rt></ruby>のあいさつ (seasonal greetings).',
+    connect: '🔗 <span class="jp">MNN L1</span> teaches よろしくお<ruby>願<rt>ねが</rt></ruby>いします for first meetings. Adding <ruby>今年<rt>ことし</rt></ruby>も turns it into a New Year\'s renewal of the relationship. も = "also" from MNN L1.',
+    warn: '⚠️ お<ruby>幸<rt>しあわ</rt></ruby>せに is for weddings ("Be happy!"), not New Year\'s. お<ruby>世話<rt>せわ</rt></ruby>になっています is for ongoing work relationships.'
+  },
+
+  /* ── L2: レストラン (Restaurant & Food) ── */
+  {
+    lesson: 2, type: "Expression",
+    stem: '🍽️ おすすめを<ruby>聞<rt>き</rt></ruby>く<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「おすすめの<ruby>料理<rt>りょうり</rt></ruby>、ありますか？」</span><br><span class="jp"><ruby>親子丼<rt>おやこどん</rt></ruby>などは<span class="blank">?</span>？</span>',
+    answer: "いかがですか",
+    longChoices: true,
+    choices: ["どうなさいますか", "どうされましたか", "いかがですか", "どう思いますか"],
+    correctNote: 'いかがですか = "How about ~?" (polite). Used by staff to suggest or offer something to a customer.',
+    explain: 'いかが is the polite version of どう. ～などは adds "things like ~" to soften the recommendation. Together: "How about something like oyakodon?"',
+    connect: '🔗 <span class="jp">MNN L14</span> covers どうですか for casual suggestions. いかがですか is its <ruby>丁寧<rt>ていねい</rt></ruby> (polite) upgrade — used in service situations. どうなさいますか (next Q) is even more formal.',
+    warn: '⚠️ どうされましたか means "What happened?" (concern) — NOT suitable for offering food!'
+  },
+  {
+    lesson: 2, type: "Expression",
+    stem: '🍽️ <ruby>予約<rt>よやく</rt></ruby>の<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「ご<ruby>予約<rt>よやく</rt></ruby>ですね。お<ruby>日<rt>ひ</rt></ruby>にちは<span class="blank">?</span>？」</span><br><span class="jp">はい、<ruby>来週<rt>らいしゅう</rt></ruby>の<ruby>土曜日<rt>どようび</rt></ruby>です。</span>',
+    answer: "お決まりですか",
+    longChoices: true,
+    choices: ["何名様ですか", "お決まりですか", "以上でよろしいですか", "ご注文は"],
+    correctNote: 'お<ruby>決<rt>き</rt></ruby>まりですか = "Have you decided?" / "Is it decided?" Used by service staff to check if a customer has made a choice.',
+    explain: 'お + <ruby>決<rt>き</rt></ruby>まり (the noun form of <ruby>決<rt>き</rt></ruby>まる "to be decided") + ですか. The お adds politeness. This is standard service-industry Japanese for checking decisions about dates, orders, etc.',
+    connect: '🔗 <span class="jp">MNN L25</span> teaches <ruby>決<rt>き</rt></ruby>めます (<ruby>他動詞<rt>たどうし</rt></ruby> = transitive). <ruby>決<rt>き</rt></ruby>まります (<ruby>自動詞<rt>じどうし</rt></ruby> = intransitive) is the paired verb. <ruby>何名<rt>なんめい</rt></ruby><ruby>様<rt>さま</rt></ruby>ですか asks "How many guests?" — a different stage of the reservation.',
+    warn: '⚠️ <ruby>以上<rt>いじょう</rt></ruby>でよろしいですか = "Will that be all?" — this comes AFTER ordering, not before.'
+  },
+  {
+    lesson: 2, type: "Expression",
+    stem: '🍽️ <ruby>注文<rt>ちゅうもん</rt></ruby>の<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「ご<ruby>飯<rt>はん</rt></ruby>の<ruby>量<rt>りょう</rt></ruby>は、<span class="blank">?</span>？」</span><br><span class="jp"><ruby>大盛<rt>おおも</rt></ruby>りでお<ruby>願<rt>ねが</rt></ruby>いします。</span>',
+    answer: "どうなさいますか",
+    longChoices: true,
+    choices: ["どうしたんですか", "どうなさいますか", "どう思いますか", "どうされましたか"],
+    correctNote: 'どうなさいますか = "What would you like to do?" (honorific). The most polite way for staff to ask about a customer\'s preference.',
+    explain: 'なさる is the <ruby>尊敬語<rt>そんけいご</rt></ruby> (honorific) form of する. So どうなさいますか literally means "How will you do [it]?" — asking for the customer\'s decision with maximum respect.',
+    connect: '🔗 <span class="jp">MNN L49-50</span> covers <ruby>尊敬語<rt>そんけいご</rt></ruby> systematically. なさいます is one of the special honorific verbs. Compare the politeness ladder: どうしますか (plain) → どうされますか (regular honorific) → どうなさいますか (special honorific).',
+    warn: '⚠️ どうしたんですか = "What happened?" (casual concern). どう<ruby>思<rt>おも</rt></ruby>いますか = "What do you think?" Neither fits a restaurant order!'
+  },
+  {
+    lesson: 2, type: "Expression",
+    stem: '🍽️ メニューを<ruby>選<rt>えら</rt></ruby>ぶ<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「<ruby>焼肉<rt>やきにく</rt></ruby><ruby>定食<rt>ていしょく</rt></ruby>はいかがですか？」</span><br><span class="jp">じゃあ、<span class="blank">?</span>。</span>',
+    answer: "それにします",
+    longChoices: true,
+    choices: ["それにします", "こちらへどうぞ", "お使いください", "いただきます"],
+    correctNote: 'それにします = "I\'ll go with that." / "I\'ll have that." The standard way to confirm your choice when ordering.',
+    explain: 'それ (that) + に (particle marking the choice) + します (do/decide). This is your go-to phrase when someone suggests something and you want to accept it.',
+    connect: '🔗 <span class="jp">MNN L5</span> teaches にします for making selections (コーヒーにします). <span class="jp">MNN L3</span> teaches これ/それ/あれ. Combining them: それにします = "I\'ll take that one."',
+    warn: '⚠️ こちらへどうぞ = "This way, please" (staff guiding you). お<ruby>使<rt>つか</rt></ruby>いください = "Please use it." Neither is for ordering!'
+  },
+  {
+    lesson: 2, type: "Expression",
+    stem: '🍽️ <ruby>食<rt>た</rt></ruby>べた<ruby>感想<rt>かんそう</rt></ruby>を<ruby>伝<rt>つた</rt></ruby>える<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「<ruby>甘酒<rt>あまざけ</rt></ruby>はどうでしたか？」</span><br><span class="jp"><span class="blank">?</span><ruby>甘<rt>あま</rt></ruby>かったです。</span>',
+    answer: "思ったよりも",
+    longChoices: true,
+    choices: ["おかげさまで", "できるだけ", "思ったよりも", "それよりも"],
+    correctNote: '<ruby>思<rt>おも</rt></ruby>ったよりも = "More than I expected / thought." Used to express surprise about how something turned out.',
+    explain: '<ruby>思<rt>おも</rt></ruby>った (past tense of <ruby>思<rt>おも</rt></ruby>う "to think") + より (comparison particle) + も (emphasis). Literally: "even more than what I thought."',
+    connect: '🔗 <span class="jp">MNN L12</span> covers comparative より. <span class="jp">MNN L21</span> teaches と<ruby>思<rt>おも</rt></ruby>います. This expression combines both: your expectation (思った) compared (より) to reality.',
+    warn: '⚠️ おかげさまで = "Thanks to you" (gratitude). できるだけ = "as much as possible." Neither expresses surprise!'
+  },
+
+  /* ── L3: やりとり (Information Exchange) ── */
+  {
+    lesson: 3, type: "Expression",
+    stem: '💬 <ruby>新<rt>あたら</rt></ruby>しい<ruby>情報<rt>じょうほう</rt></ruby>を<ruby>聞<rt>き</rt></ruby>いた<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「<ruby>会社<rt>かいしゃ</rt></ruby>のすぐ<ruby>近<rt>ちか</rt></ruby>くに、フィリピン<ruby>料理<rt>りょうり</rt></ruby>の<ruby>店<rt>みせ</rt></ruby>があるそうですよ。」</span><br><span class="jp">へー、そうなんですか！<span class="blank">?</span>。</span>',
+    answer: "知りませんでした",
+    longChoices: true,
+    choices: ["知りませんでした", "ごめんください", "おすすめです", "そうですね"],
+    correctNote: '<ruby>知<rt>し</rt></ruby>りませんでした = "I didn\'t know (that)." Expresses genuine surprise upon learning new information.',
+    explain: '<ruby>知<rt>し</rt></ruby>る (to know) in the past negative = "I didn\'t know." This is a natural reaction when someone shares unexpected news. The past tense shows the state of NOT knowing has now changed.',
+    connect: '🔗 <span class="jp">MNN L15</span> teaches <ruby>知<rt>し</rt></ruby>っています/知りません for current knowledge state. Using the past tense (<ruby>知<rt>し</rt></ruby>りませんでした) emphasizes "I didn\'t know until now" — perfect for reacting to surprising news.',
+    warn: '⚠️ ごめんください is used when visiting someone\'s home ("Excuse me, anyone home?"). おすすめです = "I recommend it." Neither is a reaction to new info.'
+  },
+  {
+    lesson: 3, type: "Expression",
+    stem: '💬 アナウンスについて<ruby>聞<rt>き</rt></ruby>く<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「さっき、アナウンスがありましたよ。」</span><br><span class="jp">え、そうなんですか？<span class="blank">?</span>？</span>',
+    answer: "何て言ってましたか",
+    longChoices: true,
+    choices: ["どうなさいますか", "いかがですか", "何て言ってましたか", "どう思いますか"],
+    correctNote: '<ruby>何<rt>なん</rt></ruby>て<ruby>言<rt>い</rt></ruby>ってましたか = "What did they say?" / "What was said?" Used to ask about the content of something you missed.',
+    explain: '<ruby>何<rt>なん</rt></ruby>て is casual for <ruby>何<rt>なに</rt></ruby>と ("what"). <ruby>言<rt>い</rt></ruby>ってました = <ruby>言<rt>い</rt></ruby>っていました (was saying, in shortened form). Together: "What were they saying?"',
+    connect: '🔗 ～ていました (<span class="jp">MNN L15</span> ています progressive) + past tense = "was doing." <ruby>何<rt>なん</rt></ruby>て is a casual quoting particle vs. the formal ～と from <span class="jp">MNN L21</span>.',
+    warn: '⚠️ This question asks about CONTENT of speech. どうなさいますか asks about someone\'s decision. いかがですか offers something. Don\'t mix situational expressions!'
+  },
+  {
+    lesson: 3, type: "Expression",
+    stem: '💬 <ruby>場所<rt>ばしょ</rt></ruby>を<ruby>聞<rt>き</rt></ruby>く<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「すみません、ステージは<span class="blank">?</span>？」</span><br><span class="jp">あっちです。</span>',
+    answer: "どこかわかりますか",
+    longChoices: true,
+    choices: ["いかがなさいますか", "どこかわかりますか", "何て言ってましたか", "どう行ったらいいですか"],
+    correctNote: 'どこかわかりますか = "Do you know where (it is)?" A natural way to ask for directions without being too direct.',
+    explain: 'どこ (where) + か (question marker within the clause) + わかりますか (do you understand/know). This is softer than just asking どこですか because it checks if the person even knows, rather than demanding directions.',
+    connect: '🔗 <span class="jp">MNN L3</span> teaches どこですか for asking locations directly. どこかわかりますか is a more natural, polite alternative — it acknowledges the other person might not know either. <span class="jp">MNN L13</span> covers か inside indirect questions.',
+    warn: '⚠️ どう<ruby>行<rt>い</rt></ruby>ったらいいですか = "How should I get there?" — this asks for ROUTE, not location. Different question!'
+  },
+
+  /* ── L4: イベント (Events & Activities) ── */
+  {
+    lesson: 4, type: "Expression",
+    stem: '🎪 <ruby>旅行<rt>りょこう</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>:<br><span class="jp">「もうすぐ<ruby>沖縄<rt>おきなわ</rt></ruby><ruby>旅行<rt>りょこう</rt></ruby>ですね。」</span><br><span class="jp">そうですね。<span class="blank">?</span>。</span>',
+    answer: "楽しみですね",
+    longChoices: true,
+    choices: ["お世話になっています", "了解です", "楽しみですね", "お疲れ様です"],
+    correctNote: '<ruby>楽<rt>たの</rt></ruby>しみですね = "I\'m looking forward to it, aren\'t you?" Expresses anticipation about a future event.',
+    explain: '<ruby>楽<rt>たの</rt></ruby>しみ is the noun form meaning "something to look forward to." Adding ですね invites the listener to share the excitement. Great for building rapport!',
+    connect: '🔗 <span class="jp">MNN L25</span> covers ～たら for conditional plans. <ruby>楽<rt>たの</rt></ruby>しみ pairs naturally with future plans. Compare <ruby>楽<rt>たの</rt></ruby>しかったです ("it was fun" — past) vs. <ruby>楽<rt>たの</rt></ruby>しみです ("looking forward to it" — future).',
+    warn: '⚠️ <ruby>了解<rt>りょうかい</rt></ruby>です = "Understood/Roger that." お<ruby>疲<rt>つか</rt></ruby>れ<ruby>様<rt>さま</rt></ruby>です = "Good work." Neither expresses looking forward to something!'
+  },
+  {
+    lesson: 4, type: "Expression",
+    stem: '🎪 お<ruby>祭<rt>まつ</rt></ruby>りの<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「お<ruby>祭<rt>まつ</rt></ruby>りの<ruby>場所<rt>ばしょ</rt></ruby>は、<ruby>中央<rt>ちゅうおう</rt></ruby><ruby>公園<rt>こうえん</rt></ruby>です。もうすぐ<ruby>始<rt>はじ</rt></ruby>まりますよ。」</span><br><span class="jp">ありがとうございます。<span class="blank">?</span>。</span>',
+    answer: "行ってみます",
+    longChoices: true,
+    choices: ["お待たせしました", "行ってみます", "お越しください", "承知しました"],
+    correctNote: '<ruby>行<rt>い</rt></ruby>ってみます = "I\'ll go check it out / try going." Expresses willingness to go and see for yourself.',
+    explain: '<ruby>行<rt>い</rt></ruby>って (te-form of <ruby>行<rt>い</rt></ruby>く) + みます (try doing). The ～てみます pattern means "to try doing ~." It adds a nuance of curiosity and openness.',
+    connect: '🔗 <span class="jp">MNN L18</span> teaches ～てみます for "try doing." <ruby>行<rt>い</rt></ruby>ってみます is one of the most useful combinations — "I\'ll try going" = "I\'ll go check it out." Also see <ruby>食<rt>た</rt></ruby>べてみます ("I\'ll try eating it").',
+    warn: '⚠️ お<ruby>越<rt>こ</rt></ruby>しください = "Please come" (honorific invitation) — said BY the host, not the visitor. <ruby>承知<rt>しょうち</rt></ruby>しました = "Understood" (humble, business).'
+  },
+  {
+    lesson: 4, type: "Expression",
+    stem: '🎪 <ruby>浴衣<rt>ゆかた</rt></ruby>を<ruby>着<rt>き</rt></ruby>る<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「<ruby>浴衣<rt>ゆかた</rt></ruby>は<span class="blank">?</span><ruby>着<rt>き</rt></ruby>られますか？<ruby>着<rt>き</rt></ruby>たことないんですが…。」</span><br><span class="jp"><ruby>私<rt>わたし</rt></ruby>が<ruby>手伝<rt>てつだ</rt></ruby>うから、だいじょうぶです。</span>',
+    answer: "1人で",
+    choices: ["こちらこそ", "なるほど", "1人で", "自分で"],
+    correctNote: '<ruby>1人<rt>ひとり</rt></ruby>で = "by oneself / alone." Asking if someone can do something without help.',
+    explain: '～で here indicates means or manner. <ruby>1人<rt>ひとり</rt></ruby>で<ruby>着<rt>き</rt></ruby>られますか = "Can you put it on by yourself?" The potential form <ruby>着<rt>き</rt></ruby>られる (<span class="jp">MNN L27</span>) + the manner marker で makes this a practical question.',
+    connect: '🔗 <span class="jp">MNN L27</span> teaches potential forms (<ruby>着<rt>き</rt></ruby>られます = "can wear"). <span class="jp">MNN L18</span> teaches ～たことがある for experience. The speaker combines both: "Can you wear it alone? I\'ve never worn one..."',
+    warn: '⚠️ <ruby>自分<rt>じぶん</rt></ruby>で is similar but more emphatic ("by myself!"). <ruby>1人<rt>ひとり</rt></ruby>で is the natural, gentle way to ask.'
+  },
+  {
+    lesson: 4, type: "Expression",
+    stem: '🎪 フリーマーケットの<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「フリーマーケットは、<span class="blank">?</span>？」</span><br><span class="jp"><ruby>今日<rt>きょう</rt></ruby>は、もう<ruby>終<rt>お</rt></ruby>わりました。</span>',
+    answer: "まだやってますか",
+    longChoices: true,
+    choices: ["お決まりですか", "もう少しどうですか", "まだやってますか", "いつからですか"],
+    correctNote: 'まだやってますか = "Is it still going on?" / "Is it still open?" Used to check if an event or shop is still in operation.',
+    explain: 'まだ (still) + やっています (is doing/running) in casual contracted form → やってますか. Very common for checking store hours, event schedules, and whether services are still available.',
+    connect: '🔗 ～ています (<span class="jp">MNN L15</span>) for ongoing states + まだ (still, <span class="jp">MNN L17</span>). The casual contraction ～てます is natural in everyday speech — textbooks often use the full ～ています but real conversations drop the い.',
+    warn: '⚠️ お<ruby>決<rt>き</rt></ruby>まりですか is for checking if someone has decided (ordering). もう<ruby>少<rt>すこ</rt></ruby>しどうですか = "How about a little more?" (offering). Wrong context!'
+  },
+
+  /* ── L5: リアクション (Reactions & Feelings) ── */
+  {
+    lesson: 5, type: "Expression",
+    stem: '💭 <ruby>希望<rt>きぼう</rt></ruby>を<ruby>伝<rt>つた</rt></ruby>える<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「<ruby>日本<rt>にほん</rt></ruby>では、どんなことがしたいですか？」</span><br><span class="jp">まず、<ruby>仕事<rt>しごと</rt></ruby>をはやく<ruby>覚<rt>おぼ</rt></ruby>えたいです。それから、<span class="blank">?</span>、<ruby>富士山<rt>ふじさん</rt></ruby>に<ruby>登<rt>のぼ</rt></ruby>ってみたいですね。</span>',
+    answer: "できれば",
+    choices: ["なるほど", "確かに", "できれば", "たぶん"],
+    correctNote: 'できれば = "If possible / If I can." Used to express a wish while acknowledging it may not happen.',
+    explain: 'できる (can do) + ば (conditional) = "if it\'s possible." This softens a request or wish — showing you\'re not demanding, just hoping. Very Japanese in its indirectness!',
+    connect: '🔗 <span class="jp">MNN L25</span> teaches ば conditional forms. できれば is one of the most useful fixed expressions from this grammar. Compare with もし<ruby>可能<rt>かのう</rt></ruby>なら (more formal) or できたら (slightly softer).',
+    warn: '⚠️ なるほど = "I see!" (understanding). <ruby>確<rt>たし</rt></ruby>かに = "Indeed / Certainly." Neither expresses a conditional wish.'
+  },
+  {
+    lesson: 5, type: "Expression",
+    stem: '💭 <ruby>料理<rt>りょうり</rt></ruby>を<ruby>持<rt>も</rt></ruby>ってきた<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「みなさん、<span class="blank">?</span>。ベトナムのおいしいコーヒーですよ。」</span><br><span class="jp">いいにおい。いただきます。</span>',
+    answer: "お待たせしました",
+    longChoices: true,
+    choices: ["かしこまりました", "お待たせしました", "お待ちしております", "ごちそうさまでした"],
+    correctNote: 'お<ruby>待<rt>ま</rt></ruby>たせしました = "Sorry to have kept you waiting." Said when you\'ve made someone wait — very common in service and social settings.',
+    explain: 'お + <ruby>待<rt>ま</rt></ruby>たせ (causative of <ruby>待<rt>ま</rt></ruby>つ = "made you wait") + しました (did). The causative form acknowledges that YOU caused the wait — taking responsibility politely.',
+    connect: '🔗 <span class="jp">MNN L48</span> teaches causative forms. お<ruby>待<rt>ま</rt></ruby>たせしました is one of the most commonly heard set phrases using causative — memorize it as a fixed expression even before studying causative grammar.',
+    warn: '⚠️ お<ruby>待<rt>ま</rt></ruby>ちしております = "I will be waiting (for you)" (humble, future). Opposite timing! かしこまりました = "Understood" (humble acknowledgment).'
+  },
+  {
+    lesson: 5, type: "Expression",
+    stem: '💭 <ruby>誘<rt>さそ</rt></ruby>いを<ruby>断<rt>ことわ</rt></ruby>る<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「<ruby>北海道<rt>ほっかいどう</rt></ruby>でカニを<ruby>食<rt>た</rt></ruby>べませんか？」</span><br><span class="jp"><span class="blank">?</span>…。<ruby>私<rt>わたし</rt></ruby>、カニは<ruby>苦手<rt>にがて</rt></ruby>なんです。</span>',
+    answer: "ごめんなさい",
+    longChoices: true,
+    choices: ["ごめんください", "失礼しました", "ごめんなさい", "すみませんでした"],
+    correctNote: 'ごめんなさい = "I\'m sorry." Used for personal apologies, especially when declining invitations or causing inconvenience to friends.',
+    explain: 'ごめんなさい is more personal and emotional than すみません. Use it with friends, family, and people you\'re close to. Adding ～なんです explains the reason ("<ruby>苦手<rt>にがて</rt></ruby>なんです" = "the thing is, I\'m not good with it").',
+    connect: '🔗 <span class="jp">MNN L6</span> teaches ～ませんか for invitations. When declining, Japanese speakers often apologize first (ごめんなさい) then give a reason. Compare: すみません (lighter/public), ごめんなさい (personal/emotional), <ruby>申<rt>もう</rt></ruby>し<ruby>訳<rt>わけ</rt></ruby>ございません (very formal).',
+    warn: '⚠️ ごめんください = "Excuse me, is anyone home?" (visiting). <ruby>失礼<rt>しつれい</rt></ruby>しました = "Pardon me" (formal, past). Neither is for declining personal invitations!'
+  },
+  {
+    lesson: 5, type: "Expression",
+    stem: '💭 <ruby>申<rt>もう</rt></ruby>し<ruby>込<rt>こ</rt></ruby>みに<ruby>間<rt>ま</rt></ruby>に<ruby>合<rt>あ</rt></ruby>わなかった<ruby>場面<rt>ばめん</rt></ruby>:<br><span class="jp">「<ruby>申<rt>もう</rt></ruby>し<ruby>込<rt>こ</rt></ruby>みは、もう<ruby>終<rt>お</rt></ruby>わりました。」</span><br><span class="jp"><span class="blank">?</span>？</span>',
+    answer: "もう無理ですか",
+    longChoices: true,
+    choices: ["もう無理ですか", "どうなさいますか", "どう行ったらいいですか", "まだですか"],
+    correctNote: 'もう<ruby>無理<rt>むり</rt></ruby>ですか = "Is it impossible now?" / "Is it too late?" Used to ask if there\'s still a chance when you\'ve been told something has ended.',
+    explain: 'もう (already) + <ruby>無理<rt>むり</rt></ruby> (impossible) + ですか (question). This is a last-ditch attempt to check if there\'s any exception possible. Very natural when you arrive too late for a deadline.',
+    connect: '🔗 <ruby>無理<rt>むり</rt></ruby> is a key N5 noun meaning "impossible/unreasonable." <span class="jp">MNN L9</span> teaches もう (already). Together they create a very practical expression for real-life situations.',
+    warn: '⚠️ どう<ruby>行<rt>い</rt></ruby>ったらいいですか = "How should I get there?" (directions). まだですか = "Is it not ready yet?" (impatience). Different emotions entirely!'
+  }
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════════════════════ */
+let playerName = "";
+let quiz = [];
+let answers = {};
+let currentQ = 0;
+let submitted = false;
+let reviewMode = false;
+let reviewIndices = [];
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════════════════════════ */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickScoreTier(pct) {
+  const tiers = QUIZ_CONFIG.scoreThresholds;
+  if (pct >= tiers.perfect.min)   return tiers.perfect;
+  if (pct >= tiers.excellent.min) return tiers.excellent;
+  if (pct >= tiers.good.min)      return tiers.good;
+  return tiers.fail;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════════ */
+emailjs.init(QUIZ_CONFIG.emailjs.publicKey);
+
+/* DOM refs */
+const $nameScreen   = document.getElementById("name-screen");
+const $quizScreen   = document.getElementById("quiz-screen");
+const $nameInput    = document.getElementById("name-input");
+const $btnStart     = document.getElementById("btn-start");
+const $scopePills   = document.getElementById("scope-pills");
+const $subtitle     = document.getElementById("quiz-subtitle");
+const $scoreBanner  = document.getElementById("score-banner");
+const $scoreNum     = document.getElementById("score-number");
+const $scoreLbl     = document.getElementById("score-label");
+const $lessonBreak  = document.getElementById("lesson-breakdown");
+const $emailRow     = document.getElementById("email-row");
+const $btnReview    = document.getElementById("btn-review");
+const $btnRetake    = document.getElementById("btn-retake");
+const $reviewBanner = document.getElementById("review-banner");
+const $progText     = document.getElementById("progress-text");
+const $progFill     = document.getElementById("progress-fill");
+const $navGrid      = document.getElementById("nav-grid");
+const $qLessonTag   = document.getElementById("q-lesson-tag");
+const $qTypeTag     = document.getElementById("q-type-tag");
+const $qNumber      = document.getElementById("q-number");
+const $qStem        = document.getElementById("q-stem");
+const $choicesGrid  = document.getElementById("choices-grid");
+const $feedbackCard = document.getElementById("feedback-card");
+const $btnPrev      = document.getElementById("btn-prev");
+const $btnNext      = document.getElementById("btn-next");
+
+/* Populate header text from CONFIG */
+document.title = QUIZ_CONFIG.title;
+document.getElementById("ns-badge").textContent = QUIZ_CONFIG.badge;
+document.getElementById("ns-title").textContent = QUIZ_CONFIG.title;
+document.getElementById("ns-subtitle").textContent = QUIZ_CONFIG.subtitle;
+document.getElementById("qs-badge").textContent = QUIZ_CONFIG.badge;
+document.getElementById("qs-title").textContent = QUIZ_CONFIG.titleShort;
+
+/* Render scope pills from config */
+QUIZ_CONFIG.scopePills.forEach(text => {
+  const span = document.createElement("span");
+  span.className = "scope-pill";
+  span.textContent = text;
+  $scopePills.appendChild(span);
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   NAME SCREEN
+   ═══════════════════════════════════════════════════════════════ */
+$nameInput.addEventListener("input", () => {
+  $btnStart.disabled = !$nameInput.value.trim();
+});
+$nameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && $nameInput.value.trim()) startQuiz();
+});
+$btnStart.addEventListener("click", startQuiz);
+
+function startQuiz() {
+  playerName = $nameInput.value.trim();
+  const baseQuestions = QUIZ_CONFIG.shuffleQuestions ? shuffle(QUESTIONS) : [...QUESTIONS];
+  quiz = baseQuestions.map(q => ({
+    ...q,
+    choices: QUIZ_CONFIG.shuffleChoices ? shuffle(q.choices) : [...q.choices]
+  }));
+  answers = {};
+  currentQ = 0;
+  submitted = false;
+  reviewMode = false;
+  reviewIndices = [];
+
+  $nameScreen.style.display = "none";
+  $quizScreen.style.display = "block";
+  $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "none";
+  $subtitle.textContent = `${playerName}さん — choose the correct answer for each question`;
+
+  buildNavGrid();
+  renderQuestion();
+  updateProgress();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV GRID
+   ═══════════════════════════════════════════════════════════════ */
+function buildNavGrid() {
+  $navGrid.innerHTML = "";
+  quiz.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.className = "nav-dot";
+    btn.textContent = i + 1;
+    btn.setAttribute("aria-label", `Question ${i + 1}`);
+    btn.addEventListener("click", () => {
+      if (reviewMode) {
+        const idx = reviewIndices.indexOf(i);
+        if (idx === -1) return;
+        currentQ = idx;
+      } else {
+        currentQ = i;
+      }
+      renderQuestion();
+    });
+    $navGrid.appendChild(btn);
+  });
+}
+
+function updateNavGrid() {
+  const dots = $navGrid.querySelectorAll(".nav-dot");
+  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
+  dots.forEach((dot, i) => {
+    dot.className = "nav-dot";
+    let label = `Question ${i + 1}`;
+    if (i === realIdx) { dot.classList.add("active"); label += ", current"; }
+    if (!submitted && answers[i] !== undefined) {
+      dot.classList.add("answered"); label += ", answered";
+    }
+    if (submitted && answers[i] === quiz[i].answer) {
+      dot.classList.add("correct"); label += ", correct";
+    }
+    if (submitted && answers[i] !== undefined && answers[i] !== quiz[i].answer) {
+      dot.classList.add("wrong"); label += ", incorrect";
+    }
+    dot.setAttribute("aria-label", label);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROGRESS
+   ═══════════════════════════════════════════════════════════════ */
+function updateProgress() {
+  if (reviewMode) {
+    $progText.textContent = `Reviewing ${currentQ + 1} / ${reviewIndices.length}`;
+    $progFill.style.width = `${((currentQ + 1) / reviewIndices.length) * 100}%`;
+    return;
+  }
+  const count = Object.keys(answers).length;
+  $progText.textContent = `${count} / ${quiz.length} answered`;
+  $progFill.style.width = `${(count / quiz.length) * 100}%`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER QUESTION
+   ═══════════════════════════════════════════════════════════════ */
+function renderQuestion() {
+  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
+  const q = quiz[realIdx];
+
+  /* Lesson + type tags */
+  const lessonLabels = {1: "🗣️ あいさつ", 2: "🍽️ レストラン", 3: "💬 やりとり", 4: "🎪 イベント", 5: "💭 リアクション"};
+  $qLessonTag.className = `q-tag lesson-${q.lesson}`;
+  $qLessonTag.textContent = lessonLabels[q.lesson] || `📘 Lesson ${q.lesson}`;
+  $qTypeTag.textContent = q.type;
+
+  /* Number + stem */
+  $qNumber.textContent = reviewMode
+    ? `Review ${currentQ + 1} of ${reviewIndices.length}`
+    : `Question ${realIdx + 1} of ${quiz.length}`;
+  $qStem.innerHTML = q.stem;
+
+  /* Choices */
+  $choicesGrid.className = `choices-grid${q.longChoices ? " long" : ""}`;
+  $choicesGrid.innerHTML = "";
+  const isAnswered = answers[realIdx] !== undefined;
+
+  q.choices.forEach((c, i) => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    const selected = answers[realIdx] === c;
+    const isCorrectChoice = c === q.answer;
+
+    btn.innerHTML = `<span class="key-hint">${i + 1}</span><span>${c}</span>`;
+    btn.setAttribute("aria-pressed", selected ? "true" : "false");
+
+    if (isAnswered) {
+      btn.disabled = true;
+      if (isCorrectChoice) {
+        btn.classList.add("correct-reveal");
+        btn.innerHTML += `<span class="mark ok">✓</span>`;
+      }
+      if (selected && !isCorrectChoice) {
+        btn.classList.add("wrong-reveal");
+        btn.innerHTML += `<span class="mark no">✗</span>`;
+      }
+    } else {
+      btn.addEventListener("click", () => answerQuestion(c));
+    }
+
+    $choicesGrid.appendChild(btn);
+  });
+
+  /* Feedback card */
+  if (isAnswered) {
+    renderFeedback(q, answers[realIdx]);
+  } else {
+    $feedbackCard.style.display = "none";
+    $feedbackCard.innerHTML = "";
+  }
+
+  updateNavGrid();
+  updateProgress();
+  updateNavButtons();
+}
+
+function renderFeedback(q, given) {
+  const isCorrect = given === q.answer;
+  $feedbackCard.className = `feedback-card ${isCorrect ? "correct" : "wrong"}`;
+  $feedbackCard.style.display = "block";
+
+  let html = `<div class="fb-header">${isCorrect ? "✓ Correct" : `✗ Not quite — answer: ${q.answer}`}</div>`;
+  if (q.correctNote) html += `<div>${q.correctNote}</div>`;
+  if (q.explain)     html += `<div class="fb-block">${q.explain}</div>`;
+  if (q.connect)     html += `<div class="fb-block connect">${q.connect}</div>`;
+  if (q.warn)        html += `<div class="fb-block warn">${q.warn}</div>`;
+
+  $feedbackCard.innerHTML = html;
+}
+
+function answerQuestion(choice) {
+  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
+  if (answers[realIdx] !== undefined) return;
+  answers[realIdx] = choice;
+  renderQuestion();
+
+  /* If we just finished the last question of a fresh attempt, auto-submit */
+  if (!submitted && !reviewMode && Object.keys(answers).length === quiz.length) {
+    setTimeout(submitQuiz, 600);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV BUTTONS
+   ═══════════════════════════════════════════════════════════════ */
+function updateNavButtons() {
+  const total = reviewMode ? reviewIndices.length : quiz.length;
+  $btnPrev.disabled = currentQ === 0;
+  if (currentQ === total - 1) {
+    $btnNext.textContent = reviewMode ? "Done reviewing ✓" : "Finish →";
+  } else {
+    $btnNext.textContent = "Next →";
+  }
+  $btnNext.disabled = false;
+}
+
+$btnPrev.addEventListener("click", () => {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+});
+$btnNext.addEventListener("click", () => {
+  const total = reviewMode ? reviewIndices.length : quiz.length;
+  if (currentQ < total - 1) {
+    currentQ++; renderQuestion();
+  } else if (reviewMode) {
+    /* Exit review mode back to results */
+    reviewMode = false;
+    $reviewBanner.style.display = "none";
+    $scoreBanner.style.display = "block";
+    $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYBOARD CONTROLS
+   - Arrow Left/Right: prev/next
+   - Digits 1–9: pick that choice (when not typing in input)
+   ═══════════════════════════════════════════════════════════════ */
+document.addEventListener("keydown", (e) => {
+  /* Skip if user is typing in the name input */
+  if (document.activeElement === $nameInput) return;
+  /* Skip if name screen is still up */
+  if ($quizScreen.style.display !== "block") return;
+
+  if (e.key === "ArrowRight") { $btnNext.click(); e.preventDefault(); return; }
+  if (e.key === "ArrowLeft")  { $btnPrev.click(); e.preventDefault(); return; }
+
+  if (/^[1-9]$/.test(e.key)) {
+    const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
+    if (answers[realIdx] !== undefined) return;  // already answered
+    const idx = parseInt(e.key, 10) - 1;
+    const q = quiz[realIdx];
+    if (idx < q.choices.length) {
+      answerQuestion(q.choices[idx]);
+      e.preventDefault();
+    }
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   SUBMIT — score, render results, send email
+   ═══════════════════════════════════════════════════════════════ */
+async function submitQuiz() {
+  let correct = 0;
+  const lessonStats = {};
+
+  quiz.forEach((q, i) => {
+    const isRight = answers[i] === q.answer;
+    if (isRight) correct++;
+    if (!lessonStats[q.lesson]) lessonStats[q.lesson] = { correct: 0, total: 0 };
+    lessonStats[q.lesson].total++;
+    if (isRight) lessonStats[q.lesson].correct++;
+  });
+
+  submitted = true;
+  const pct = Math.round((correct / quiz.length) * 100);
+  const tier = pickScoreTier(pct);
+
+  $scoreNum.textContent = `${correct}/${quiz.length}`;
+  $scoreLbl.textContent = tier.label;
+  $scoreBanner.style.background = tier.gradient;
+  $scoreBanner.style.display = "block";
+
+  /* Per-lesson breakdown */
+  $lessonBreak.innerHTML = "";
+  const lessonNames = {1: "あいさつ", 2: "レストラン", 3: "やりとり", 4: "イベント", 5: "リアクション"};
+  Object.keys(lessonStats).sort((a, b) => +a - +b).forEach(l => {
+    const s = lessonStats[l];
+    const span = document.createElement("span");
+    span.className = "lesson-stat";
+    span.textContent = `${lessonNames[l] || "L"+l}: ${s.correct}/${s.total}`;
+    $lessonBreak.appendChild(span);
+  });
+
+  /* Enable review button if there are wrong answers */
+  const wrongCount = quiz.length - correct;
+  $btnReview.disabled = wrongCount === 0;
+  $btnReview.textContent = wrongCount === 0
+    ? "🎉 No mistakes!"
+    : `📝 Review ${wrongCount} wrong answer${wrongCount > 1 ? "s" : ""}`;
+
+  updateNavGrid();
+  $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  /* ── Send results via EmailJS ── */
+  const cfg = QUIZ_CONFIG.emailjs;
+  const now = new Date().toLocaleString(cfg.locale, {
+    timeZone: cfg.timezone, dateStyle: "full", timeStyle: "short"
+  });
+  const details = quiz.map((q, i) => {
+    const stripHtml = (s) => s.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+    return `${i + 1}. [L${q.lesson} ${q.type}] ${stripHtml(q.stem)} → Answer: ${answers[i] || "—"} | Correct: ${q.answer} ${answers[i] === q.answer ? "✓" : "✗"}`;
+  }).join("\n");
+
+  const emailParams = {
+    name: playerName,
+    email: "noreply@quiz.com",
+    subject: `[${playerName}] ${QUIZ_CONFIG.title} — ${pct}%`,
+    message: `${QUIZ_CONFIG.title}\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${correct}/${quiz.length} (${pct}%)\n\n--- Per-category breakdown ---\n${Object.keys(lessonStats).sort((a, b) => +a - +b).map(l => {const n={1:"あいさつ",2:"レストラン",3:"やりとり",4:"イベント",5:"リアクション"}; return `${n[l]||"L"+l}: ${lessonStats[l].correct}/${lessonStats[l].total}`}).join("\n")}\n\n--- Detailed results ---\n${details}\n\nがんばって！`,
+    time: now
+  };
+
+  $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
+  try {
+    await emailjs.send(cfg.serviceId, cfg.templateId, emailParams, cfg.publicKey);
+    $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
+  } catch (err) {
+    console.error("EmailJS error:", err);
+    $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || "Email failed"}</span>`;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REVIEW + RETAKE
+   ═══════════════════════════════════════════════════════════════ */
+$btnReview.addEventListener("click", () => {
+  reviewIndices = quiz
+    .map((q, i) => ({ i, wrong: answers[i] !== q.answer }))
+    .filter(x => x.wrong)
+    .map(x => x.i);
+  if (reviewIndices.length === 0) return;
+  reviewMode = true;
+  currentQ = 0;
+  $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "block";
+  renderQuestion();
+});
+
+$btnRetake.addEventListener("click", () => {
+  /* Re-shuffle and reset everything */
+  const baseQuestions = QUIZ_CONFIG.shuffleQuestions ? shuffle(QUESTIONS) : [...QUESTIONS];
+  quiz = baseQuestions.map(q => ({
+    ...q,
+    choices: QUIZ_CONFIG.shuffleChoices ? shuffle(q.choices) : [...q.choices]
+  }));
+  answers = {};
+  currentQ = 0;
+  submitted = false;
+  reviewMode = false;
+  reviewIndices = [];
+  $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "none";
+  buildNavGrid();
+  renderQuestion();
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+</script>
+</body>
+</html>

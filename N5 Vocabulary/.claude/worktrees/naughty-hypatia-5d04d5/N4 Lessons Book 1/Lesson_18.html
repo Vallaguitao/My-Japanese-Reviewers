@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>いろどり Irodori A2 - Lesson 18: 何かプレゼントをあげませんか？</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #db2777;
+            --primary-light: #f472b6;
+            --primary-dark: #be185d;
+            --accent: #7c3aed;
+            --accent-light: #c4b5fd;
+            --accent-dark: #6d28d9;
+            --secondary: #0891b2;
+            --secondary-light: #a5f3fc;
+            --success: #16a34a;
+            --success-light: #bbf7d0;
+            --error: #dc2626;
+            --error-light: #fecaca;
+            --warning: #ca8a04;
+            --warning-light: #fef9c3;
+            --bg-light: #fdf2f8;
+            --bg-warm: #fce7f3;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border: #fbcfe8;
+            --shadow: 0 4px 6px -1px rgba(219, 39, 119, 0.1), 0 2px 4px -1px rgba(219, 39, 119, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(219, 39, 119, 0.1), 0 4px 6px -2px rgba(219, 39, 119, 0.05);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-warm) 100%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: var(--bg-card); box-shadow: var(--shadow); padding: 12px 20px;
+        }
+        .progress-header {
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 1200px; margin: 0 auto; gap: 20px;
+        }
+        .progress-title {
+            font-size: 0.9rem; font-weight: 600; color: var(--primary);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .progress-title .lesson-badge {
+            background: var(--primary); color: white; padding: 2px 10px;
+            border-radius: 20px; font-size: 0.75rem;
+        }
+        .progress-bar-wrapper { flex: 1; max-width: 500px; }
+        .progress-bar { height: 8px; background: var(--border); border-radius: 10px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 10px; transition: width 0.5s ease; width: 0%;
+        }
+        .progress-text { font-size: 0.8rem; color: var(--text-muted); text-align: right; margin-top: 4px; }
+        .progress-nav { display: flex; gap: 8px; }
+        .nav-btn {
+            background: var(--primary); color: white; border: none; padding: 8px 16px;
+            border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 500;
+            transition: var(--transition); display: flex; align-items: center; gap: 6px;
+        }
+        .nav-btn:hover { background: var(--accent); transform: translateY(-1px); }
+        .nav-btn:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; transform: none; }
+
+        /* Slides */
+        .presentation { padding-top: 80px; min-height: 100vh; }
+        .slide { display: none; max-width: 1000px; margin: 0 auto; padding: 40px 20px; animation: fadeIn 0.5s ease; }
+        .slide.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Title Slide */
+        .title-slide { text-align: center; padding: 60px 20px; }
+        .title-slide .book-badge {
+            display: inline-block; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 8px 24px; border-radius: 30px; font-size: 0.9rem;
+            font-weight: 500; margin-bottom: 24px; letter-spacing: 1px;
+        }
+        .title-slide h1 { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 700; color: var(--primary-dark); margin-bottom: 16px; line-height: 1.3; }
+        .title-slide .lesson-title-jp { font-size: clamp(1rem, 2.5vw, 1.4rem); color: var(--primary); margin-bottom: 8px; }
+        .title-slide .lesson-subtitle { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 40px; }
+        .celebration-icons { font-size: 2.5rem; margin-bottom: 24px; }
+        .title-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); max-width: 850px; margin: 0 auto 40px; }
+        .title-card h2 { color: var(--primary-dark); font-size: 1.3rem; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .grammar-list { display: grid; gap: 10px; }
+        .grammar-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg-light); border-radius: var(--radius); border-left: 4px solid var(--primary); transition: var(--transition); font-size: 0.95rem; }
+        .grammar-item:hover { transform: translateX(8px); background: var(--bg-warm); }
+        .grammar-number { width: 26px; height: 26px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600; flex-shrink: 0; }
+        .start-btn { background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color: white; border: none; padding: 16px 48px; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 14px rgba(219, 39, 119, 0.4); }
+        .start-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(219, 39, 119, 0.5); }
+
+        /* Content Cards */
+        .content-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); margin-bottom: 24px; }
+        .slide-header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+        .grammar-badge { background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        .slide-header h2 { font-size: 1.5rem; color: var(--primary-dark); flex: 1; min-width: 200px; }
+        .slide-header .jp-title { font-size: 1rem; color: var(--primary); font-weight: 500; }
+
+        /* Ruby/Furigana */
+        ruby { ruby-position: over; }
+        ruby rt { font-size: 0.6em; color: var(--text-muted); }
+
+        /* Example Boxes */
+        .example-box { background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-warm) 100%); border-radius: var(--radius); padding: 24px; margin: 20px 0; border-left: 4px solid var(--primary); }
+        .example-box .jp { font-size: 1.3rem; color: var(--primary-dark); margin-bottom: 8px; line-height: 1.8; }
+        .example-box .en { color: var(--text-secondary); font-size: 0.95rem; }
+
+        /* Dialogue Box */
+        .dialogue-box { background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 20px 0; }
+        .dialogue-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+        .dialogue-header .icon { font-size: 1.5rem; }
+        .dialogue-header h4 { color: var(--primary-dark); font-size: 1rem; }
+        .dialogue-line { display: flex; gap: 12px; margin: 12px 0; align-items: flex-start; }
+        .dialogue-speaker { background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; white-space: nowrap; }
+        .dialogue-speaker.friend { background: var(--accent); }
+        .dialogue-text { flex: 1; }
+        .dialogue-text .jp { font-size: 1.1rem; color: var(--text-primary); margin-bottom: 4px; }
+        .dialogue-text .en { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* Formation Tables */
+        .formation-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.9rem; }
+        .formation-table th { background: var(--primary); color: white; padding: 12px; text-align: left; font-weight: 500; }
+        .formation-table td { padding: 12px; border-bottom: 1px solid var(--border); }
+        .formation-table tr:hover { background: var(--bg-light); }
+        .formation-table .pattern { font-weight: 600; color: var(--primary-dark); }
+        .formation-table .example-jp { color: var(--text-primary); }
+        .formation-table .example-en { color: var(--text-muted); font-size: 0.85rem; }
+
+        /* Vocabulary Grid */
+        .vocab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin: 24px 0; }
+        .vocab-card { background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; transition: var(--transition); }
+        .vocab-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow); }
+        .vocab-card .emoji { font-size: 2rem; margin-bottom: 8px; }
+        .vocab-card .word { font-size: 1.1rem; color: var(--primary-dark); font-weight: 600; margin-bottom: 4px; }
+        .vocab-card .reading { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
+        .vocab-card .meaning { font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* Key Points */
+        .key-point { background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%); color: white; border-radius: var(--radius); padding: 20px; margin: 20px 0; }
+        .key-point h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 1rem; }
+        .key-point ul { list-style: none; }
+        .key-point li { padding: 8px 0; padding-left: 24px; position: relative; }
+        .key-point li::before { content: "✓"; position: absolute; left: 0; }
+
+        /* Comparison Box */
+        .comparison-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 20px 0; }
+        .comparison-item { background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius); padding: 20px; }
+        .comparison-item.ageru { border-color: var(--primary); background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); }
+        .comparison-item.kureru { border-color: var(--accent); background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); }
+        .comparison-item.morau { border-color: var(--secondary); background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%); }
+        .comparison-item h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 0.95rem; }
+        .comparison-item .jp { font-size: 1.1rem; color: var(--text-primary); margin-bottom: 8px; }
+        .comparison-item .pattern { font-size: 0.9rem; color: var(--text-secondary); padding: 8px; background: rgba(255,255,255,0.5); border-radius: 6px; margin-top: 8px; }
+
+        /* Flow Diagram */
+        .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 24px; background: var(--bg-light); border-radius: var(--radius); margin: 20px 0; flex-wrap: wrap; }
+        .flow-item { text-align: center; padding: 16px 24px; background: var(--bg-card); border-radius: var(--radius); border: 2px solid var(--border); min-width: 100px; }
+        .flow-item .emoji { font-size: 2rem; margin-bottom: 8px; }
+        .flow-item .label { font-size: 0.9rem; color: var(--text-secondary); }
+        .flow-item .jp { font-size: 1rem; color: var(--primary-dark); font-weight: 500; }
+        .flow-arrow { font-size: 2rem; color: var(--primary); }
+        .flow-verb { background: var(--primary); color: white; padding: 12px 20px; border-radius: 30px; font-weight: 600; }
+
+        /* Giving Trio Visual */
+        .trio-visual { background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 20px 0; }
+        .trio-title { text-align: center; font-weight: 600; color: var(--primary-dark); margin-bottom: 20px; font-size: 1.1rem; }
+        .trio-diagram { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px; }
+        .trio-person { text-align: center; padding: 16px; }
+        .trio-person .emoji { font-size: 3rem; }
+        .trio-person .name { font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px; }
+        .trio-arrows { display: flex; flex-direction: column; gap: 12px; }
+        .trio-arrow { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; }
+        .trio-arrow.ageru { background: var(--primary-light); color: var(--primary-dark); }
+        .trio-arrow.kureru { background: var(--accent-light); color: var(--accent-dark); }
+        .trio-arrow.morau { background: var(--secondary-light); color: var(--secondary); }
+
+        /* MNN Connection */
+        .mnn-toggle { background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: var(--radius); cursor: pointer; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; margin: 20px 0; transition: var(--transition); width: 100%; justify-content: space-between; }
+        .mnn-toggle:hover { background: var(--primary); }
+        .mnn-toggle .arrow { transition: transform 0.3s ease; }
+        .mnn-toggle.open .arrow { transform: rotate(180deg); }
+        .mnn-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; background: var(--accent-light); border-radius: 0 0 var(--radius) var(--radius); }
+        .mnn-content.open { max-height: 600px; }
+        .mnn-content-inner { padding: 20px; }
+        .mnn-content h4 { color: var(--primary-dark); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .mnn-content ul { list-style: none; }
+        .mnn-content li { padding: 8px 0; padding-left: 20px; position: relative; color: var(--text-secondary); border-bottom: 1px dashed var(--border); }
+        .mnn-content li:last-child { border-bottom: none; }
+        .mnn-content li::before { content: "📖"; position: absolute; left: 0; }
+
+        /* Mini Quiz */
+        .mini-quiz { background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%); border: 2px solid var(--accent); border-radius: var(--radius); padding: 24px; margin: 24px 0; }
+        .mini-quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+        .mini-quiz-header .icon { font-size: 1.5rem; }
+        .mini-quiz-header h4 { color: var(--accent-dark); font-size: 1rem; }
+        .mini-quiz-question { font-size: 1rem; color: var(--text-primary); margin-bottom: 16px; }
+        .mini-quiz-options { display: grid; gap: 10px; }
+        .mini-quiz-option { background: var(--bg-card); border: 2px solid var(--border); border-radius: 8px; padding: 14px 18px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 12px; }
+        .mini-quiz-option:hover { border-color: var(--accent); background: var(--accent-light); }
+        .mini-quiz-option.selected { border-color: var(--accent); background: var(--accent-light); }
+        .mini-quiz-option.correct { border-color: var(--success); background: var(--success-light); }
+        .mini-quiz-option.incorrect { border-color: var(--error); background: var(--error-light); }
+        .mini-quiz-option .marker { width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0; }
+        .mini-quiz-option.correct .marker { background: var(--success); border-color: var(--success); color: white; }
+        .mini-quiz-option.incorrect .marker { background: var(--error); border-color: var(--error); color: white; }
+        .mini-quiz-feedback { margin-top: 16px; padding: 16px; border-radius: 8px; display: none; }
+        .mini-quiz-feedback.show { display: block; animation: fadeIn 0.3s ease; }
+        .mini-quiz-feedback.correct { background: var(--success-light); border-left: 4px solid var(--success); }
+        .mini-quiz-feedback.incorrect { background: var(--error-light); border-left: 4px solid var(--error); }
+        .mini-quiz-feedback h5 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .mini-quiz-feedback.correct h5 { color: var(--success); }
+        .mini-quiz-feedback.incorrect h5 { color: var(--error); }
+
+        /* Full Quiz Card */
+        .quiz-card { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); border-radius: var(--radius-lg); padding: 40px; color: white; }
+        .quiz-header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 2px solid rgba(255,255,255,0.2); }
+        .quiz-badge { background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        .quiz-header h2 { font-size: 1.4rem; }
+        .quiz-question { background: rgba(255,255,255,0.1); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+        .question-number { font-size: 0.85rem; opacity: 0.8; margin-bottom: 8px; }
+        .question-context { font-size: 0.95rem; opacity: 0.9; margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,0.1); border-radius: 8px; }
+        .question-text { font-size: 1.1rem; margin-bottom: 16px; }
+        .fill-blank { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 1.2rem; }
+        .blank-input { background: rgba(255,255,255,0.9); border: 2px solid transparent; border-radius: 8px; padding: 10px 16px; font-size: 1rem; color: var(--text-primary); width: 180px; transition: var(--transition); font-family: inherit; }
+        .blank-input:focus { outline: none; border-color: var(--primary); }
+        .check-btn { background: white; color: var(--accent-dark); border: none; padding: 14px 32px; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); margin-top: 20px; }
+        .check-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        /* Answer Card */
+        .answer-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); }
+        .answer-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--border); }
+        .answer-badge { background: var(--success); color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        .answer-header h2 { color: var(--primary-dark); font-size: 1.3rem; }
+        .answer-result { padding: 20px; border-radius: var(--radius); margin-bottom: 16px; }
+        .answer-result.correct { background: var(--success-light); border-left: 4px solid var(--success); }
+        .result-label { font-size: 0.85rem; color: var(--success); font-weight: 600; margin-bottom: 8px; }
+        .answer-text { font-size: 1.2rem; color: var(--text-primary); margin-bottom: 12px; }
+        .answer-explanation { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; }
+
+        /* Summary Card */
+        .summary-card { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: var(--radius-lg); padding: 48px; color: white; text-align: center; }
+        .summary-card h2 { font-size: 2rem; margin-bottom: 16px; }
+        .summary-card > p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 32px; }
+        .summary-points { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+        .summary-point { background: rgba(255,255,255,0.15); border-radius: var(--radius); padding: 20px; }
+        .summary-point h4 { font-size: 1rem; margin-bottom: 8px; }
+        .summary-point p { font-size: 0.85rem; opacity: 0.9; }
+        .restart-btn { background: white; color: var(--primary-dark); border: none; padding: 14px 32px; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); }
+        .restart-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        /* Highlight */
+        .highlight { background: linear-gradient(120deg, var(--primary-light) 0%, var(--primary-light) 100%); background-repeat: no-repeat; background-size: 100% 40%; background-position: 0 90%; padding: 0 4px; }
+        .grammar-highlight { color: var(--primary); font-weight: 600; }
+
+        /* Info Source Cards */
+        .info-source { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 20px 0; }
+        .info-card { background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; transition: var(--transition); }
+        .info-card:hover { border-color: var(--primary); }
+        .info-card .emoji { font-size: 2rem; margin-bottom: 8px; }
+        .info-card .source { font-weight: 600; color: var(--primary-dark); margin-bottom: 4px; }
+        .info-card .pattern { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .progress-header { flex-wrap: wrap; gap: 12px; }
+            .progress-bar-wrapper { order: 3; flex-basis: 100%; max-width: none; }
+            .progress-nav { gap: 6px; }
+            .nav-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .content-card, .quiz-card, .answer-card, .summary-card { padding: 24px 16px; }
+            .slide-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .formation-table { font-size: 0.8rem; }
+            .formation-table th, .formation-table td { padding: 8px 6px; }
+            .dialogue-line { flex-direction: column; gap: 6px; }
+            .vocab-grid { grid-template-columns: repeat(2, 1fr); }
+            .trio-diagram { flex-direction: column; }
+        }
+
+        @media (max-width: 480px) {
+            .title-slide h1 { font-size: 1.6rem; }
+            .grammar-item { font-size: 0.85rem; padding: 10px 12px; }
+            .example-box .jp { font-size: 1.1rem; }
+            .vocab-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .vocab-card { padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title">
+                <span class="lesson-badge">L18</span>
+                <span>🎀 <ruby>交際<rt>こうさい</rt></ruby></span>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <div class="progress-text"><span id="currentSlide">1</span> / <span id="totalSlides">26</span></div>
+            </div>
+            <div class="progress-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()">← <ruby>前<rt>まえ</rt></ruby></button>
+                <button class="nav-btn" id="nextBtn" onclick="nextSlide()"><ruby>次<rt>つぎ</rt></ruby> →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Presentation -->
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <div class="book-badge">いろどり IRODORI • 初級1 A2</div>
+                <div class="celebration-icons">🎉 💐 🎂 💍 👶</div>
+                <div class="lesson-title-jp">第18課 • <ruby>交際<rt>こうさい</rt></ruby></div>
+                <h1><ruby>何<rt>なに</rt></ruby>かプレゼントをあげませんか？</h1>
+                <p class="lesson-subtitle">How about giving a present?</p>
+                
+                <div class="title-card">
+                    <h2>📚 <ruby>文法<rt>ぶんぽう</rt></ruby>ポイント Grammar Points</h2>
+                    <div class="grammar-list">
+                        <div class="grammar-item"><span class="grammar-number">1</span> S (plain-form) そうです — Reporting hearsay (I heard that...)</div>
+                        <div class="grammar-item"><span class="grammar-number">2</span> [<ruby>人<rt>ひと</rt></ruby>]に[<ruby>物<rt>もの</rt></ruby>]をあげます — Giving something to someone</div>
+                        <div class="grammar-item"><span class="grammar-number">3</span> S (plain-form) と<ruby>言<rt>い</rt></ruby>っていました — Quoting what someone said</div>
+                        <div class="grammar-item"><span class="grammar-number">4</span> S (plain-form) と<ruby>思<rt>おも</rt></ruby>います — Expressing opinions/judgments</div>
+                    </div>
+                </div>
+                
+                <button class="start-btn" onclick="nextSlide()">🎀 <ruby>始<rt>はじ</rt></ruby>めましょう！Start Learning</button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Vocabulary - Celebrations -->
+        <div class="slide" data-slide="2">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">📝 VOCAB</span>
+                    <h2>Celebrations & Life Events</h2>
+                    <span class="jp-title">お<ruby>祝<rt>いわ</rt></ruby>いと<ruby>人生<rt>じんせい</rt></ruby>の<ruby>出来事<rt>できごと</rt></ruby></span>
+                </div>
+
+                <p style="margin-bottom: 20px; color: var(--text-secondary);">Let's learn vocabulary for talking about happy events and congratulations! 🎉</p>
+
+                <h4 style="color: var(--primary-dark); margin-bottom: 16px;">🎊 Life Events</h4>
+                <div class="vocab-grid">
+                    <div class="vocab-card">
+                        <div class="emoji">💍</div>
+                        <div class="word"><ruby>結婚<rt>けっこん</rt></ruby></div>
+                        <div class="meaning">marriage</div>
+                    </div>
+                    <div class="vocab-card">
+                        <div class="emoji">👶</div>
+                        <div class="word"><ruby>出産<rt>しゅっさん</rt></ruby></div>
+                        <div class="meaning">childbirth</div>
+                    </div>
+                    <div class="vocab-card">
+                        <div class="emoji">🎂</div>
+                        <div class="word"><ruby>誕生日<rt>たんじょうび</rt></ruby></div>
+                        <div class="meaning">birthday</div>
+                    </div>
+                    <div class="vocab-card">
+                        <div class="emoji">🎉</div>
+                        <div class="word">パーティー</div>
+                        <div class="meaning">party</div>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--primary-dark); margin: 24px 0 16px;">🎁 Gift Ideas</h4>
+                <div class="vocab-grid">
+                    <div class="vocab-card">
+                        <div class="emoji">💐</div>
+                        <div class="word"><ruby>花<rt>はな</rt></ruby></div>
+                        <div class="meaning">flowers</div>
+                    </div>
+                    <div class="vocab-card">
+                        <div class="emoji">🎂</div>
+                        <div class="word">ケーキ</div>
+                        <div class="meaning">cake</div>
+                    </div>
+                    <div class="vocab-card">
+                        <div class="emoji">🎁</div>
+                        <div class="word">プレゼント</div>
+                        <div class="meaning">present</div>
+                    </div>
+                    <div class="vocab-card">
+                        <div class="emoji">💝</div>
+                        <div class="word"><ruby>思<rt>おも</rt></ruby>い<ruby>出<rt>で</rt></ruby></div>
+                        <div class="meaning">memory/memento</div>
+                    </div>
+                </div>
+
+                <div class="key-point" style="margin-top: 24px;">
+                    <h4>🎊 Key Expression</h4>
+                    <ul>
+                        <li><strong>おめでとうございます</strong> — Congratulations (formal)</li>
+                        <li><strong>おめでとう</strong> — Congratulations (casual)</li>
+                    </ul>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 24px;" onclick="nextSlide()">Continue to Grammar 1 →</button>
+            </div>
+        </div>
+
+        <!-- Slide 3: Grammar 1 - そうです Introduction -->
+        <div class="slide" data-slide="3">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 1</span>
+                    <h2>S (plain-form) そうです</h2>
+                    <span class="jp-title">Hearsay — "I heard that..."</span>
+                </div>
+
+                <div class="example-box">
+                    <div class="jp">お<ruby>子<rt>こ</rt></ruby>さんが<ruby>生<rt>う</rt></ruby>まれた<span class="grammar-highlight">そうですね</span>。</div>
+                    <div class="en">I heard that you had a baby.</div>
+                </div>
+
+                <div class="key-point">
+                    <h4>💡 What is ～そうです (hearsay)?</h4>
+                    <ul>
+                        <li>Used to share <strong>something you heard or read</strong></li>
+                        <li>Perfect for confirming happy news like marriage, birth, etc.</li>
+                        <li>Connects to the <strong>plain form</strong> of sentences</li>
+                        <li>Often used with おめでとう to congratulate!</li>
+                    </ul>
+                </div>
+
+                <div class="dialogue-box">
+                    <div class="dialogue-header">
+                        <span class="icon">💍</span>
+                        <h4>Congratulating on Marriage</h4>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">A</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>来月<rt>らいげつ</rt></ruby>、<ruby>結婚<rt>けっこん</rt></ruby>する<span class="grammar-highlight">そうですね</span>。おめでとうございます。</div>
+                            <div class="en">I heard you're getting married next month. Congratulations.</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker friend">B</span>
+                        <div class="dialogue-text">
+                            <div class="jp">ありがとうございます。</div>
+                            <div class="en">Thank you.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="mnn-toggle" onclick="toggleMNN(this)">
+                    <span>📖 MNN Connection: みんなの日本語</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="mnn-content">
+                    <div class="mnn-content-inner">
+                        <h4>📚 Related MNN Lessons</h4>
+                        <ul>
+                            <li><strong>Lesson 20:</strong> Plain form basics (required for そうです)</li>
+                            <li><strong>Lesson 47:</strong> ～そうです (hearsay) main lesson</li>
+                            <li><strong>Lesson 43:</strong> ～そうです (appearance) - different meaning!</li>
+                        </ul>
+                        <p style="margin-top: 12px; font-size: 0.85rem; color: var(--text-muted);">⚠️ Don't confuse hearsay そうです (L47) with appearance そうです (L43)!</p>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">See Conjugation Table →</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Grammar 1 - Conjugation Table -->
+        <div class="slide" data-slide="4">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 1</span>
+                    <h2>Plain Form + そうです</h2>
+                    <span class="jp-title"><ruby>普通形<rt>ふつうけい</rt></ruby>の<ruby>作<rt>つく</rt></ruby>り<ruby>方<rt>かた</rt></ruby></span>
+                </div>
+
+                <p style="margin-bottom: 16px; color: var(--text-secondary);">そうです connects to the plain form of nouns, adjectives, and verbs:</p>
+
+                <table class="formation-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Non-past</th>
+                            <th>Past</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2"><strong>Noun</strong><br><ruby>名詞<rt>めいし</rt></ruby></td>
+                            <td class="pattern">N <strong>だ</strong>そうです<br><span class="example-en">〜だそうです</span></td>
+                            <td class="pattern">N <strong>だった</strong>そうです<br><span class="example-en">〜だったそうです</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="example-jp"><ruby>今日<rt>きょう</rt></ruby>は<ruby>誕生日<rt>たんじょうび</rt></ruby><strong>だ</strong>そうです</span></td>
+                            <td><span class="example-jp"><ruby>昨日<rt>きのう</rt></ruby>は<ruby>誕生日<rt>たんじょうび</rt></ruby><strong>だった</strong>そうです</span></td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>ナ-adj</strong><br><ruby>形容詞<rt>けいようし</rt></ruby></td>
+                            <td class="pattern">ナA-<strong>だ</strong>そうです</td>
+                            <td class="pattern">ナA-<strong>だった</strong>そうです</td>
+                        </tr>
+                        <tr>
+                            <td><span class="example-jp"><ruby>今日<rt>きょう</rt></ruby>は<ruby>暇<rt>ひま</rt></ruby><strong>だ</strong>そうです</span></td>
+                            <td><span class="example-jp"><ruby>昨日<rt>きのう</rt></ruby>は<ruby>暇<rt>ひま</rt></ruby><strong>だった</strong>そうです</span></td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>イ-adj</strong><br><ruby>形容詞<rt>けいようし</rt></ruby></td>
+                            <td class="pattern">イA-<strong>い</strong>そうです</td>
+                            <td class="pattern">イA-<strong>かった</strong>そうです</td>
+                        </tr>
+                        <tr>
+                            <td><span class="example-jp"><ruby>今日<rt>きょう</rt></ruby>は<ruby>暑<rt>あつ</rt></ruby><strong>い</strong>そうです</span></td>
+                            <td><span class="example-jp"><ruby>昨日<rt>きのう</rt></ruby>は<ruby>暑<rt>あつ</rt></ruby><strong>かった</strong>そうです</span></td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>Verb</strong><br><ruby>動詞<rt>どうし</rt></ruby></td>
+                            <td class="pattern">V-<strong>る</strong>そうです (dictionary)</td>
+                            <td class="pattern">V-<strong>た</strong>そうです (た-form)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="example-jp">パーティーに<ruby>行<rt>い</rt></ruby><strong>く</strong>そうです</span></td>
+                            <td><span class="example-jp">パーティーに<ruby>行<rt>い</rt></ruby><strong>った</strong>そうです</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="key-point" style="background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); margin-top: 20px;">
+                    <h4>⚠️ Important Note</h4>
+                    <ul>
+                        <li>Negative forms also work: じゃない/じゃなかった, くない/くなかった, ない/なかった</li>
+                        <li>Example: <ruby>行<rt>い</rt></ruby>かない<strong>そうです</strong> = I heard they won't go</li>
+                    </ul>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Try Mini Quiz →</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Grammar 1 - Mini Quiz -->
+        <div class="slide" data-slide="5">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 1</span>
+                    <h2>Comprehension Check</h2>
+                    <span class="jp-title">そうです</span>
+                </div>
+
+                <div class="mini-quiz" id="quiz1">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        You heard someone is getting married next month. How do you say "I heard you're getting married"?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz1', this, false)">
+                            <span class="marker">A</span>
+                            <span><ruby>結婚<rt>けっこん</rt></ruby>します<strong>そうです</strong>ね。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz1', this, true)">
+                            <span class="marker">B</span>
+                            <span><ruby>結婚<rt>けっこん</rt></ruby><strong>する</strong>そうですね。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz1', this, false)">
+                            <span class="marker">C</span>
+                            <span><ruby>結婚<rt>けっこん</rt></ruby>したそうですね。</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz1-feedback"></div>
+                </div>
+
+                <div class="mini-quiz" id="quiz1b" style="margin-top: 24px;">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check #2!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        For a noun like <ruby>誕生日<rt>たんじょうび</rt></ruby>, what comes before そうです?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz1b', this, true)">
+                            <span class="marker">A</span>
+                            <span><ruby>誕生日<rt>たんじょうび</rt></ruby><strong>だ</strong>そうです</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz1b', this, false)">
+                            <span class="marker">B</span>
+                            <span><ruby>誕生日<rt>たんじょうび</rt></ruby>そうです</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz1b', this, false)">
+                            <span class="marker">C</span>
+                            <span><ruby>誕生日<rt>たんじょうび</rt></ruby>ですそうです</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz1b-feedback"></div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 24px;" onclick="nextSlide()">Continue to Grammar 2 →</button>
+            </div>
+        </div>
+
+        <!-- Slide 6: Grammar 2 - あげます Introduction -->
+        <div class="slide" data-slide="6">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 2</span>
+                    <h2>[<ruby>人<rt>ひと</rt></ruby>]に[<ruby>物<rt>もの</rt></ruby>]をあげます</h2>
+                    <span class="jp-title">Giving to Someone</span>
+                </div>
+
+                <div class="example-box">
+                    <div class="jp">アナさんに<ruby>何<rt>なに</rt></ruby>かプレゼントを<span class="grammar-highlight">あげませんか</span>？</div>
+                    <div class="en">How about giving Ana-san something as a gift?</div>
+                </div>
+
+                <div class="key-point">
+                    <h4>💡 What is あげます?</h4>
+                    <ul>
+                        <li>Used when <strong>YOU (or someone) give to another person</strong></li>
+                        <li>The particle <strong>に</strong> marks the <strong>recipient</strong></li>
+                        <li>Never use あげます when giving to yourself!</li>
+                        <li>Completes the giving/receiving trio: あげる・もらう・くれる</li>
+                    </ul>
+                </div>
+
+                <h4 style="color: var(--primary-dark); margin: 24px 0 16px;">📊 Pattern</h4>
+                <div class="flow-diagram">
+                    <div class="flow-item">
+                        <div class="emoji">🙋</div>
+                        <div class="label">Giver</div>
+                        <div class="jp">(<ruby>私<rt>わたし</rt></ruby>は)</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-item">
+                        <div class="emoji">👤</div>
+                        <div class="label">Recipient</div>
+                        <div class="jp">[<ruby>人<rt>ひと</rt></ruby>]<strong>に</strong></div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-item">
+                        <div class="emoji">🎁</div>
+                        <div class="label">Thing</div>
+                        <div class="jp">[<ruby>物<rt>もの</rt></ruby>]<strong>を</strong></div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-verb">あげます</div>
+                </div>
+
+                <button class="mnn-toggle" onclick="toggleMNN(this)">
+                    <span>📖 MNN Connection: みんなの日本語</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="mnn-content">
+                    <div class="mnn-content-inner">
+                        <h4>📚 Related MNN Lessons</h4>
+                        <ul>
+                            <li><strong>Lesson 7:</strong> あげます、もらいます、くれます (main lesson)</li>
+                            <li><strong>Lesson 24:</strong> V-てあげます (doing favors for others)</li>
+                            <li><strong>Lesson 41:</strong> Advanced giving/receiving expressions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">See Examples →</button>
+            </div>
+        </div>
+
+        <!-- Slide 7: Grammar 2 - Examples & Dialogue -->
+        <div class="slide" data-slide="7">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 2</span>
+                    <h2>Planning a Gift</h2>
+                    <span class="jp-title">プレゼントを<ruby>決<rt>き</rt></ruby>める</span>
+                </div>
+
+                <div class="dialogue-box">
+                    <div class="dialogue-header">
+                        <span class="icon">🎂</span>
+                        <h4>Planning a Birthday Gift</h4>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">A</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>明日<rt>あした</rt></ruby>は、トアンさんの<ruby>誕生日<rt>たんじょうび</rt></ruby>ですね。みんなで、<ruby>何<rt>なに</rt></ruby>か<span class="grammar-highlight">あげませんか</span>？</div>
+                            <div class="en">Tomorrow is Toan-san's birthday. How about we give her something together?</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker friend">B</span>
+                        <div class="dialogue-text">
+                            <div class="jp">いいですね。じゃあ、ケーキと<ruby>花<rt>はな</rt></ruby>を<span class="grammar-highlight">あげましょう</span>。</div>
+                            <div class="en">Sounds good. Let's give her some cake and flowers.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--primary-dark); margin: 24px 0 16px;">🎁 More Examples</h4>
+                
+                <div class="example-box">
+                    <div class="jp"><ruby>友<rt>とも</rt></ruby>だち<strong>に</strong>プレゼント<strong>を</strong><span class="grammar-highlight">あげました</span>。</div>
+                    <div class="en">I gave my friend a present.</div>
+                </div>
+
+                <div class="example-box">
+                    <div class="jp"><ruby>母<rt>はは</rt></ruby>の<ruby>日<rt>ひ</rt></ruby>に<ruby>母<rt>はは</rt></ruby><strong>に</strong><ruby>花<rt>はな</rt></ruby><strong>を</strong><span class="grammar-highlight">あげました</span>。</div>
+                    <div class="en">I gave my mother flowers on Mother's Day.</div>
+                </div>
+
+                <div class="key-point" style="background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); margin-top: 20px;">
+                    <h4>💡 Useful Suggestion Pattern</h4>
+                    <ul>
+                        <li><strong>～をあげませんか？</strong> = How about giving ~?</li>
+                        <li><strong>～をあげましょう</strong> = Let's give ~</li>
+                    </ul>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Compare あげる・くれる・もらう →</button>
+            </div>
+        </div>
+
+        <!-- Slide 8: Grammar 2 - The Giving Trio -->
+        <div class="slide" data-slide="8">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">比較</span>
+                    <h2>あげる・くれる・もらう</h2>
+                    <span class="jp-title">The Giving/Receiving Trio</span>
+                </div>
+
+                <p style="margin-bottom: 20px; color: var(--text-secondary);">Japanese has three verbs for giving/receiving. The choice depends on <strong>who is the subject</strong> and <strong>the direction of the gift</strong>.</p>
+
+                <div class="trio-visual">
+                    <div class="trio-title">🎁 Gift Direction Diagram</div>
+                    <div class="trio-diagram">
+                        <div class="trio-person">
+                            <div class="emoji">👤</div>
+                            <div class="name">フエンさん<br>(receiver)</div>
+                        </div>
+                        <div class="trio-arrows">
+                            <div class="trio-arrow ageru">← ① あげました (gave to)</div>
+                            <div class="trio-arrow morau">③ もらいました (received from) →</div>
+                        </div>
+                        <div class="trio-person">
+                            <div class="emoji">🧑</div>
+                            <div class="name">ミゲルさん<br>(giver)</div>
+                        </div>
+                    </div>
+                    <div class="trio-diagram" style="margin-top: 16px;">
+                        <div class="trio-person">
+                            <div class="emoji">🙋</div>
+                            <div class="name"><ruby>私<rt>わたし</rt></ruby><br>(me)</div>
+                        </div>
+                        <div class="trio-arrows">
+                            <div class="trio-arrow kureru">② くれました (gave me) ←</div>
+                            <div class="trio-arrow morau">④ もらいました (received) →</div>
+                        </div>
+                        <div class="trio-person">
+                            <div class="emoji">🧑</div>
+                            <div class="name">ミゲルさん<br>(giver)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-box" style="margin-top: 24px;">
+                    <div class="comparison-item ageru">
+                        <h4>🎁 あげます</h4>
+                        <div class="jp">ミゲルさんは、フエンさん<strong>に</strong>プレゼントを<strong>あげました</strong>。</div>
+                        <div class="pattern"><strong>Subject = Giver</strong><br>Miguel gave Huen a gift.</div>
+                    </div>
+                    <div class="comparison-item kureru">
+                        <h4>💝 くれます</h4>
+                        <div class="jp">ミゲルさんは、<ruby>私<rt>わたし</rt></ruby><strong>に</strong>プレゼントを<strong>くれました</strong>。</div>
+                        <div class="pattern"><strong>Subject = Giver, Recipient = ME</strong><br>Miguel gave ME a gift.</div>
+                    </div>
+                    <div class="comparison-item morau">
+                        <h4>🙏 もらいます</h4>
+                        <div class="jp"><ruby>私<rt>わたし</rt></ruby>は、ミゲルさん<strong>に</strong>プレゼントを<strong>もらいました</strong>。</div>
+                        <div class="pattern"><strong>Subject = Receiver</strong><br>I received a gift from Miguel.</div>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Try Mini Quiz →</button>
+            </div>
+        </div>
+
+        <!-- Slide 9: Grammar 2 - Mini Quiz -->
+        <div class="slide" data-slide="9">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 2</span>
+                    <h2>Comprehension Check</h2>
+                    <span class="jp-title">あげます</span>
+                </div>
+
+                <div class="mini-quiz" id="quiz2">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        You want to suggest giving a present to Ana. Which is correct?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz2', this, false)">
+                            <span class="marker">A</span>
+                            <span>アナさん<strong>を</strong>プレゼントにあげませんか？</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz2', this, true)">
+                            <span class="marker">B</span>
+                            <span>アナさん<strong>に</strong>プレゼント<strong>を</strong>あげませんか？</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz2', this, false)">
+                            <span class="marker">C</span>
+                            <span>アナさん<strong>が</strong>プレゼント<strong>を</strong>あげませんか？</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz2-feedback"></div>
+                </div>
+
+                <div class="mini-quiz" id="quiz2b" style="margin-top: 24px;">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check #2!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        When should you use くれます instead of あげます?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz2b', this, false)">
+                            <span class="marker">A</span>
+                            <span>When I give to someone else</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz2b', this, true)">
+                            <span class="marker">B</span>
+                            <span>When someone gives to ME</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz2b', this, false)">
+                            <span class="marker">C</span>
+                            <span>When I receive from someone</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz2b-feedback"></div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 24px;" onclick="nextSlide()">Continue to Grammar 3 →</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: Grammar 3 - と言っていました Introduction -->
+        <div class="slide" data-slide="10">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 3</span>
+                    <h2>S (plain-form) と<ruby>言<rt>い</rt></ruby>っていました</h2>
+                    <span class="jp-title">Quoting What Someone Said</span>
+                </div>
+
+                <div class="example-box">
+                    <div class="jp">アナさん、<ruby>前<rt>まえ</rt></ruby>に、<ruby>焼<rt>や</rt></ruby>き<ruby>鳥<rt>とり</rt></ruby>が<ruby>大好<rt>だいす</rt></ruby>きだ<span class="grammar-highlight">と<ruby>言<rt>い</rt></ruby>っていました</span>。</div>
+                    <div class="en">Ana said before that she loves yakitori.</div>
+                </div>
+
+                <div class="key-point">
+                    <h4>💡 What is ～と言っていました?</h4>
+                    <ul>
+                        <li>Used to <strong>quote/report what someone said</strong></li>
+                        <li>と is the <strong>quotation particle</strong></li>
+                        <li>The quoted part uses <strong>plain form</strong></li>
+                        <li>Limited to things you <strong>heard directly</strong> from someone</li>
+                    </ul>
+                </div>
+
+                <div class="dialogue-box">
+                    <div class="dialogue-header">
+                        <span class="icon">📞</span>
+                        <h4>Passing on a Message</h4>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">A</span>
+                        <div class="dialogue-text">
+                            <div class="jp">さっき、<ruby>山田<rt>やまだ</rt></ruby>さんから<ruby>電話<rt>でんわ</rt></ruby>がありましたよ。</div>
+                            <div class="en">You had a phone call from Yamada-san earlier.</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker friend">B</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>何<rt>なに</rt></ruby>か<ruby>言<rt>い</rt></ruby>ってましたか？</div>
+                            <div class="en">What did he say?</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">A</span>
+                        <div class="dialogue-text">
+                            <div class="jp">またあとで<ruby>電話<rt>でんわ</rt></ruby>する<span class="grammar-highlight">と<ruby>言<rt>い</rt></ruby>ってました</span>。</div>
+                            <div class="en">He said he would call again later.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="mnn-toggle" onclick="toggleMNN(this)">
+                    <span>📖 MNN Connection: みんなの日本語</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="mnn-content">
+                    <div class="mnn-content-inner">
+                        <h4>📚 Related MNN Lessons</h4>
+                        <ul>
+                            <li><strong>Lesson 21:</strong> Plain form + と思います (prerequisite)</li>
+                            <li><strong>Lesson 33:</strong> ～と言っていました (direct quotation)</li>
+                            <li><strong>Lesson 47:</strong> ～そうです comparison (indirect hearsay)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Compare そうです vs と言っていました →</button>
+            </div>
+        </div>
+
+        <!-- Slide 11: Grammar 3 - そうです vs と言っていました -->
+        <div class="slide" data-slide="11">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">比較</span>
+                    <h2>Information Sources</h2>
+                    <span class="jp-title">そうです vs と<ruby>言<rt>い</rt></ruby>っていました</span>
+                </div>
+
+                <p style="margin-bottom: 20px; color: var(--text-secondary);">Both express hearsay, but they differ in the <strong>source</strong> of information:</p>
+
+                <div class="info-source">
+                    <div class="info-card">
+                        <div class="emoji">📺</div>
+                        <div class="source">～そうです</div>
+                        <div class="pattern">Any source: TV, news, internet, rumors...</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="emoji">👤</div>
+                        <div class="source">～と<ruby>言<rt>い</rt></ruby>っていました</div>
+                        <div class="pattern">Direct quote from a specific person</div>
+                    </div>
+                </div>
+
+                <div class="comparison-box" style="margin-top: 24px;">
+                    <div class="comparison-item" style="border-color: var(--primary);">
+                        <h4>📰 ～そうです</h4>
+                        <div class="jp"><ruby>明日<rt>あした</rt></ruby>は<ruby>雨<rt>あめ</rt></ruby>だ<span class="grammar-highlight">そうです</span>。</div>
+                        <div class="pattern">I heard it will rain tomorrow.<br><em>(from weather report, news, etc.)</em></div>
+                    </div>
+                    <div class="comparison-item" style="border-color: var(--accent);">
+                        <h4>🗣️ ～と<ruby>言<rt>い</rt></ruby>っていました</h4>
+                        <div class="jp"><ruby>田中<rt>たなか</rt></ruby>さんは<ruby>明日<rt>あした</rt></ruby><ruby>来<rt>く</rt></ruby>る<span class="grammar-highlight">と<ruby>言<rt>い</rt></ruby>っていました</span>。</div>
+                        <div class="pattern">Tanaka-san said he'll come tomorrow.<br><em>(directly from Tanaka-san)</em></div>
+                    </div>
+                </div>
+
+                <div class="key-point" style="margin-top: 20px;">
+                    <h4>💡 Key Difference</h4>
+                    <ul>
+                        <li><strong>そうです</strong> — general hearsay, source can be anything</li>
+                        <li><strong>と<ruby>言<rt>い</rt></ruby>っていました</strong> — specific person, you heard it directly from them</li>
+                    </ul>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Try Mini Quiz →</button>
+            </div>
+        </div>
+
+        <!-- Slide 12: Grammar 3 - Mini Quiz -->
+        <div class="slide" data-slide="12">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 3</span>
+                    <h2>Comprehension Check</h2>
+                    <span class="jp-title">と<ruby>言<rt>い</rt></ruby>っていました</span>
+                </div>
+
+                <div class="mini-quiz" id="quiz3">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        Yamada-san told you directly that he'll call later. How do you report this?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz3', this, false)">
+                            <span class="marker">A</span>
+                            <span><ruby>山田<rt>やまだ</rt></ruby>さんはまた<ruby>電話<rt>でんわ</rt></ruby>します<strong>と<ruby>言<rt>い</rt></ruby>っていました</strong>。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz3', this, true)">
+                            <span class="marker">B</span>
+                            <span><ruby>山田<rt>やまだ</rt></ruby>さんはまた<ruby>電話<rt>でんわ</rt></ruby><strong>する</strong>と<ruby>言<rt>い</rt></ruby>っていました。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz3', this, false)">
+                            <span class="marker">C</span>
+                            <span><ruby>山田<rt>やまだ</rt></ruby>さんはまた<ruby>電話<rt>でんわ</rt></ruby>するそうです。</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz3-feedback"></div>
+                </div>
+
+                <div class="mini-quiz" id="quiz3b" style="margin-top: 24px;">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check #2!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        You saw on the news that it will rain tomorrow. Which is more appropriate?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz3b', this, true)">
+                            <span class="marker">A</span>
+                            <span><ruby>明日<rt>あした</rt></ruby>は<ruby>雨<rt>あめ</rt></ruby>だ<strong>そうです</strong>。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz3b', this, false)">
+                            <span class="marker">B</span>
+                            <span><ruby>明日<rt>あした</rt></ruby>は<ruby>雨<rt>あめ</rt></ruby>だ<strong>と<ruby>言<rt>い</rt></ruby>っていました</strong>。</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz3b-feedback"></div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 24px;" onclick="nextSlide()">Continue to Grammar 4 →</button>
+            </div>
+        </div>
+
+        <!-- Slide 13: Grammar 4 - と思います Introduction -->
+        <div class="slide" data-slide="13">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 4</span>
+                    <h2>S (plain-form) と<ruby>思<rt>おも</rt></ruby>います</h2>
+                    <span class="jp-title">Expressing Opinions</span>
+                </div>
+
+                <div class="example-box">
+                    <div class="jp">もっと、<ruby>思<rt>おも</rt></ruby>い<ruby>出<rt>で</rt></ruby>に<ruby>残<rt>のこ</rt></ruby>るものがいい<span class="grammar-highlight">と<ruby>思<rt>おも</rt></ruby>います</span>。</div>
+                    <div class="en">I think it would be better to give her something more memorable.</div>
+                </div>
+
+                <div class="key-point">
+                    <h4>💡 What is ～と<ruby>思<rt>おも</rt></ruby>います?</h4>
+                    <ul>
+                        <li>Used to express <strong>your opinion or judgment</strong></li>
+                        <li>The particle <strong>と</strong> marks the content of your thought</li>
+                        <li>Uses <strong>plain form</strong> before と</li>
+                        <li>Very common in conversations for giving opinions!</li>
+                    </ul>
+                </div>
+
+                <div class="dialogue-box">
+                    <div class="dialogue-header">
+                        <span class="icon">🎉</span>
+                        <h4>Discussing Party Attendance</h4>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">A</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>明日<rt>あした</rt></ruby>のパーティーは<ruby>何人<rt>なんにん</rt></ruby>ぐらい<ruby>来<rt>き</rt></ruby>ますか？</div>
+                            <div class="en">How many people are coming to the party tomorrow?</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker friend">B</span>
+                        <div class="dialogue-text">
+                            <div class="jp">10<ruby>人<rt>にん</rt></ruby>ぐらいだ<span class="grammar-highlight">と<ruby>思<rt>おも</rt></ruby>います</span>。</div>
+                            <div class="en">I think about 10 people.</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">A</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>佐藤<rt>さとう</rt></ruby>さん、<ruby>来<rt>く</rt></ruby>るでしょうか？</div>
+                            <div class="en">Will Sato-san come?</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker friend">B</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>忙<rt>いそが</rt></ruby>しいと<ruby>言<rt>い</rt></ruby>っていましたから、<ruby>来<rt>こ</rt></ruby>ない<span class="grammar-highlight">と<ruby>思<rt>おも</rt></ruby>いますよ</span>。</div>
+                            <div class="en">He said he was busy, so I don't think he'll come.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="mnn-toggle" onclick="toggleMNN(this)">
+                    <span>📖 MNN Connection: みんなの日本語</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="mnn-content">
+                    <div class="mnn-content-inner">
+                        <h4>📚 Related MNN Lessons</h4>
+                        <ul>
+                            <li><strong>Lesson 20:</strong> Plain form basics (prerequisite)</li>
+                            <li><strong>Lesson 21:</strong> ～と<ruby>思<rt>おも</rt></ruby>います (main lesson)</li>
+                            <li><strong>Lesson 21:</strong> Also covers ～と<ruby>思<rt>おも</rt></ruby>いません (I don't think)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">See More Examples →</button>
+            </div>
+        </div>
+
+        <!-- Slide 14: Grammar 4 - Formation -->
+        <div class="slide" data-slide="14">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 4</span>
+                    <h2>Plain Form + と<ruby>思<rt>おも</rt></ruby>います</h2>
+                    <span class="jp-title"><ruby>普通形<rt>ふつうけい</rt></ruby>の<ruby>使<rt>つか</rt></ruby>い<ruby>方<rt>かた</rt></ruby></span>
+                </div>
+
+                <p style="margin-bottom: 16px; color: var(--text-secondary);">Just like そうです, use the plain form before と<ruby>思<rt>おも</rt></ruby>います:</p>
+
+                <table class="formation-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Example</th>
+                            <th>Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Noun</strong></td>
+                            <td class="pattern"><ruby>明日<rt>あした</rt></ruby>は<ruby>休<rt>やす</rt></ruby>み<strong>だ</strong>と<ruby>思<rt>おも</rt></ruby>います。</td>
+                            <td>I think tomorrow is a holiday.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ナ-adj</strong></td>
+                            <td class="pattern">この<ruby>店<rt>みせ</rt></ruby>は<ruby>静<rt>しず</rt></ruby>か<strong>だ</strong>と<ruby>思<rt>おも</rt></ruby>います。</td>
+                            <td>I think this shop is quiet.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>イ-adj</strong></td>
+                            <td class="pattern">このケーキは<ruby>高<rt>たか</rt></ruby><strong>い</strong>と<ruby>思<rt>おも</rt></ruby>います。</td>
+                            <td>I think this cake is expensive.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Verb (+)</strong></td>
+                            <td class="pattern"><ruby>佐藤<rt>さとう</rt></ruby>さんは<ruby>来<rt>く</rt></ruby><strong>る</strong>と<ruby>思<rt>おも</rt></ruby>います。</td>
+                            <td>I think Sato will come.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Verb (−)</strong></td>
+                            <td class="pattern"><ruby>佐藤<rt>さとう</rt></ruby>さんは<ruby>来<rt>こ</rt></ruby><strong>ない</strong>と<ruby>思<rt>おも</rt></ruby>います。</td>
+                            <td>I think Sato won't come.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="key-point" style="margin-top: 20px;">
+                    <h4>💡 Expressing Negative Opinions</h4>
+                    <ul>
+                        <li>To say "I don't think...": <strong>～ないと<ruby>思<rt>おも</rt></ruby>います</strong></li>
+                        <li>Example: <ruby>来<rt>こ</rt></ruby><strong>ない</strong>と<ruby>思<rt>おも</rt></ruby>います = I think (he) won't come</li>
+                        <li>This is more natural than ～と<ruby>思<rt>おも</rt></ruby>いません in Japanese!</li>
+                    </ul>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Try Mini Quiz →</button>
+            </div>
+        </div>
+
+        <!-- Slide 15: Grammar 4 - Mini Quiz -->
+        <div class="slide" data-slide="15">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">文法 4</span>
+                    <h2>Comprehension Check</h2>
+                    <span class="jp-title">と<ruby>思<rt>おも</rt></ruby>います</span>
+                </div>
+
+                <div class="mini-quiz" id="quiz4">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        How do you say "I think about 10 people will come"?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz4', this, false)">
+                            <span class="marker">A</span>
+                            <span>10<ruby>人<rt>にん</rt></ruby>ぐらい<ruby>来<rt>き</rt></ruby>ますと<ruby>思<rt>おも</rt></ruby>います。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz4', this, true)">
+                            <span class="marker">B</span>
+                            <span>10<ruby>人<rt>にん</rt></ruby>ぐらい<ruby>来<rt>く</rt></ruby><strong>る</strong>と<ruby>思<rt>おも</rt></ruby>います。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz4', this, false)">
+                            <span class="marker">C</span>
+                            <span>10<ruby>人<rt>にん</rt></ruby>ぐらい<ruby>来<rt>き</rt></ruby>たと<ruby>思<rt>おも</rt></ruby>います。</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz4-feedback"></div>
+                </div>
+
+                <div class="mini-quiz" id="quiz4b" style="margin-top: 24px;">
+                    <div class="mini-quiz-header">
+                        <span class="icon">🧠</span>
+                        <h4>Quick Check #2!</h4>
+                    </div>
+                    <div class="mini-quiz-question">
+                        How do you say "I think this restaurant is quiet" (しずか)?
+                    </div>
+                    <div class="mini-quiz-options">
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz4b', this, false)">
+                            <span class="marker">A</span>
+                            <span>このレストランは<ruby>静<rt>しず</rt></ruby>かと<ruby>思<rt>おも</rt></ruby>います。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz4b', this, true)">
+                            <span class="marker">B</span>
+                            <span>このレストランは<ruby>静<rt>しず</rt></ruby>か<strong>だ</strong>と<ruby>思<rt>おも</rt></ruby>います。</span>
+                        </div>
+                        <div class="mini-quiz-option" onclick="checkMiniQuiz('quiz4b', this, false)">
+                            <span class="marker">C</span>
+                            <span>このレストランは<ruby>静<rt>しず</rt></ruby>かですと<ruby>思<rt>おも</rt></ruby>います。</span>
+                        </div>
+                    </div>
+                    <div class="mini-quiz-feedback" id="quiz4b-feedback"></div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 24px;" onclick="nextSlide()">Practice Quiz →</button>
+            </div>
+        </div>
+
+        <!-- Slide 16: Full Practice Quiz 1 -->
+        <div class="slide" data-slide="16">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">🎯 Practice</span>
+                    <h2>Grammar Review Quiz</h2>
+                </div>
+                
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">💍 You heard someone is getting married. Congratulate them:</div>
+                    <div class="question-text">Complete: "<ruby>結婚<rt>けっこん</rt></ruby>する___ね。おめでとうございます。"</div>
+                    <div class="fill-blank">
+                        <ruby>結婚<rt>けっこん</rt></ruby>する<input type="text" class="blank-input" id="pq1-1" placeholder="?">ね。
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">🎂 Suggest giving a birthday gift to a colleague:</div>
+                    <div class="question-text">Complete: "トアンさん___ケーキ___あげませんか？"</div>
+                    <div class="fill-blank">
+                        トアンさん<input type="text" class="blank-input" id="pq1-2a" placeholder="?" style="width: 60px;">ケーキ<input type="text" class="blank-input" id="pq1-2b" placeholder="?" style="width: 60px;">あげませんか？
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 17: Practice Quiz 1 Answers -->
+        <div class="slide" data-slide="17">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Quiz Review</h2>
+                </div>
+                
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text"><ruby>結婚<rt>けっこん</rt></ruby>する<strong>そうです</strong>ね。</div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> To report hearsay about a future event, use the dictionary form + そうです. Since <ruby>結婚<rt>けっこん</rt></ruby>する is a verb in dictionary form, you simply add そうです after it.
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">トアンさん<strong>に</strong>ケーキ<strong>を</strong>あげませんか？</div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> With あげます, use に to mark the recipient and を to mark the thing being given. Pattern: [person]に[thing]をあげます.
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Continue Practice →</button>
+            </div>
+        </div>
+
+        <!-- Slide 18: Full Practice Quiz 2 -->
+        <div class="slide" data-slide="18">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">🎯 Practice</span>
+                    <h2>Quoting & Opinions Quiz</h2>
+                </div>
+                
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">📞 Report what Tanaka-san said (she'll come tomorrow):</div>
+                    <div class="question-text">Complete: "<ruby>田中<rt>たなか</rt></ruby>さんは<ruby>明日<rt>あした</rt></ruby><ruby>来<rt>く</rt></ruby>る___。"</div>
+                    <div class="fill-blank">
+                        <ruby>田中<rt>たなか</rt></ruby>さんは<ruby>明日<rt>あした</rt></ruby><ruby>来<rt>く</rt></ruby>る<input type="text" class="blank-input" id="pq2-1" placeholder="?">。
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">🤔 Express your opinion (I think he won't come):</div>
+                    <div class="question-text">Complete: "<ruby>佐藤<rt>さとう</rt></ruby>さんは<ruby>来<rt>こ</rt></ruby>ない___。"</div>
+                    <div class="fill-blank">
+                        <ruby>佐藤<rt>さとう</rt></ruby>さんは<ruby>来<rt>こ</rt></ruby>ない<input type="text" class="blank-input" id="pq2-2" placeholder="?">。
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 19: Practice Quiz 2 Answers -->
+        <div class="slide" data-slide="19">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Quiz Review</h2>
+                </div>
+                
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text"><ruby>田中<rt>たなか</rt></ruby>さんは<ruby>明日<rt>あした</rt></ruby><ruby>来<rt>く</rt></ruby>る<strong>と<ruby>言<rt>い</rt></ruby>っていました</strong>。</div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> When directly quoting what someone said, use plain form + と<ruby>言<rt>い</rt></ruby>っていました. The verb <ruby>来<rt>く</rt></ruby>る is already in dictionary (plain) form.
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text"><ruby>佐藤<rt>さとう</rt></ruby>さんは<ruby>来<rt>こ</rt></ruby>ない<strong>と<ruby>思<rt>おも</rt></ruby>います</strong>。</div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> To express "I think (he) won't come," use the negative plain form (<ruby>来<rt>こ</rt></ruby>ない) + と<ruby>思<rt>おも</rt></ruby>います. This is more natural than ～と<ruby>思<rt>おも</rt></ruby>いません in Japanese.
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Final Scenario →</button>
+            </div>
+        </div>
+
+        <!-- Slide 20: Comprehensive Practice -->
+        <div class="slide" data-slide="20">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">🎀 Final Practice</span>
+                    <h2>Planning a Celebration</h2>
+                </div>
+                
+                <div class="quiz-question">
+                    <div class="question-number">Putting It All Together</div>
+                    <div class="question-context">Imagine you're planning a surprise birthday party for a colleague. Let's use all 4 grammar points!</div>
+                    
+                    <div style="padding: 16px; background: rgba(255,255,255,0.1); border-radius: 8px; margin: 16px 0;">
+                        <p style="margin-bottom: 16px;"><strong>Scenario:</strong> Planning a birthday surprise</p>
+                        
+                        <p style="margin: 16px 0 8px; color: rgba(255,255,255,0.9);"><strong>1. Report hearsay (そうです):</strong></p>
+                        <p style="opacity: 0.9;"><ruby>来週<rt>らいしゅう</rt></ruby>はアナさんの<ruby>誕生日<rt>たんじょうび</rt></ruby>だ<strong>そうですね</strong>。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: rgba(255,255,255,0.9);"><strong>2. Suggest giving a gift (あげます):</strong></p>
+                        <p style="opacity: 0.9;">みんなで<ruby>何<rt>なに</rt></ruby>かアナさん<strong>に</strong>プレゼント<strong>を</strong><strong>あげませんか</strong>？</p>
+                        
+                        <p style="margin: 16px 0 8px; color: rgba(255,255,255,0.9);"><strong>3. Quote what someone said (と<ruby>言<rt>い</rt></ruby>っていました):</strong></p>
+                        <p style="opacity: 0.9;">アナさんは<ruby>前<rt>まえ</rt></ruby>に、ケーキが<ruby>大好<rt>だいす</rt></ruby>きだ<strong>と<ruby>言<rt>い</rt></ruby>っていました</strong>よ。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: rgba(255,255,255,0.9);"><strong>4. Express your opinion (と<ruby>思<rt>おも</rt></ruby>います):</strong></p>
+                        <p style="opacity: 0.9;">ケーキと<ruby>花<rt>はな</rt></ruby>がいい<strong>と<ruby>思<rt>おも</rt></ruby>います</strong>。</p>
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">See Grammar Summary →</button>
+            </div>
+        </div>
+
+        <!-- Slide 21: Grammar Comparison Table -->
+        <div class="slide" data-slide="21">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">📊 REVIEW</span>
+                    <h2>Grammar Comparison</h2>
+                    <span class="jp-title"><ruby>文法<rt>ぶんぽう</rt></ruby>の<ruby>比較<rt>ひかく</rt></ruby></span>
+                </div>
+
+                <table class="formation-table">
+                    <thead>
+                        <tr>
+                            <th>Grammar</th>
+                            <th>Form</th>
+                            <th>Use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="pattern">～そうです</td>
+                            <td>Plain form + そうです</td>
+                            <td>Report hearsay (any source)</td>
+                        </tr>
+                        <tr>
+                            <td class="pattern">[<ruby>人<rt>ひと</rt></ruby>]にあげます</td>
+                            <td>[person]に[thing]をあげます</td>
+                            <td>Give to someone</td>
+                        </tr>
+                        <tr>
+                            <td class="pattern">～と<ruby>言<rt>い</rt></ruby>っていました</td>
+                            <td>Plain form + と<ruby>言<rt>い</rt></ruby>っていました</td>
+                            <td>Quote someone directly</td>
+                        </tr>
+                        <tr>
+                            <td class="pattern">～と<ruby>思<rt>おも</rt></ruby>います</td>
+                            <td>Plain form + と<ruby>思<rt>おも</rt></ruby>います</td>
+                            <td>Express opinion</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="key-point" style="margin-top: 20px;">
+                    <h4>🔑 Plain Form Is Key!</h4>
+                    <ul>
+                        <li>All 4 patterns use <strong>plain form</strong> for the quoted/reported content</li>
+                        <li>Remember: Nouns and ナ-adjectives need <strong>だ</strong> before そうです and と<ruby>思<rt>おも</rt></ruby>います</li>
+                        <li>Verbs use dictionary form for non-past, た-form for past</li>
+                    </ul>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Continue →</button>
+            </div>
+        </div>
+
+        <!-- Slide 22: MNN Complete Reference -->
+        <div class="slide" data-slide="22">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">📖 MNN</span>
+                    <h2>Minna no Nihongo Reference</h2>
+                    <span class="jp-title">みんなの<ruby>日本語<rt>にほんご</rt></ruby></span>
+                </div>
+
+                <p style="margin-bottom: 20px; color: var(--text-secondary);">Here's how Lesson 18's grammar connects to Minna no Nihongo (N5 level, Lessons 1-25 and beyond):</p>
+
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <h4>1️⃣ ～そうです</h4>
+                        <div class="pattern">
+                            <strong>MNN L20:</strong> Plain form basics<br>
+                            <strong>MNN L47:</strong> Hearsay そうです (advanced)<br>
+                            <em>⚠️ Don't confuse with L43 appearance そうです!</em>
+                        </div>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>2️⃣ あげます</h4>
+                        <div class="pattern">
+                            <strong>MNN L7:</strong> Giving/receiving trio (あげる・もらう・くれる)<br>
+                            <strong>MNN L24:</strong> V-てあげます
+                        </div>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>3️⃣ ～と<ruby>言<rt>い</rt></ruby>っていました</h4>
+                        <div class="pattern">
+                            <strong>MNN L21:</strong> Plain form + と<ruby>思<rt>おも</rt></ruby>います (prerequisite)<br>
+                            <strong>MNN L33:</strong> ～と<ruby>言<rt>い</rt></ruby>っていました
+                        </div>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>4️⃣ ～と<ruby>思<rt>おも</rt></ruby>います</h4>
+                        <div class="pattern">
+                            <strong>MNN L20:</strong> Plain form basics<br>
+                            <strong>MNN L21:</strong> ～と<ruby>思<rt>おも</rt></ruby>います (main lesson)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-point" style="background: linear-gradient(135deg, var(--accent) 0%, #6d28d9 100%); margin-top: 24px;">
+                    <h4>📚 Study Path</h4>
+                    <ul>
+                        <li><strong>Foundation:</strong> MNN L7 (giving), L20-21 (plain form & opinions)</li>
+                        <li><strong>Intermediate:</strong> MNN L33 (quoting), L47 (hearsay)</li>
+                        <li>Master plain form conjugation to use all these patterns!</li>
+                    </ul>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Continue →</button>
+            </div>
+        </div>
+
+        <!-- Slide 23: Cultural Note -->
+        <div class="slide" data-slide="23">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">🎌 CULTURE</span>
+                    <h2>Celebrations in Japan</h2>
+                    <span class="jp-title">お<ruby>祝<rt>いわ</rt></ruby>いの<ruby>文化<rt>ぶんか</rt></ruby></span>
+                </div>
+
+                <p style="margin-bottom: 20px; color: var(--text-secondary);">Gift-giving and congratulations are important in Japanese social culture! 🎊</p>
+
+                <div class="vocab-grid">
+                    <div class="vocab-card">
+                        <div class="emoji">💍</div>
+                        <div class="word"><ruby>結婚<rt>けっこん</rt></ruby>祝い</div>
+                        <div class="meaning">Wedding gift</div>
+                    </div>
+                    <div class="vocab-card">
+                        <div class="emoji">👶</div>
+                        <div class="word"><ruby>出産<rt>しゅっさん</rt></ruby>祝い</div>
+                        <div class="meaning">Baby gift</div>
+                    </div>
+                    <div class="vocab-card">
+                        <div class="emoji">🎂</div>
+                        <div class="word"><ruby>誕生日<rt>たんじょうび</rt></ruby>プレゼント</div>
+                        <div class="meaning">Birthday present</div>
+                    </div>
+                    <div class="vocab-card">
+                        <div class="emoji">🏠</div>
+                        <div class="word"><ruby>新築<rt>しんちく</rt></ruby>祝い</div>
+                        <div class="meaning">New home gift</div>
+                    </div>
+                </div>
+
+                <div class="key-point" style="margin-top: 24px;">
+                    <h4>💡 Useful Congratulation Phrases</h4>
+                    <ul>
+                        <li><strong>ご<ruby>結婚<rt>けっこん</rt></ruby>おめでとうございます</strong> — Congratulations on your wedding</li>
+                        <li><strong>ご<ruby>出産<rt>しゅっさん</rt></ruby>おめでとうございます</strong> — Congratulations on the new baby</li>
+                        <li><strong>お<ruby>誕生日<rt>たんじょうび</rt></ruby>おめでとう</strong> — Happy birthday</li>
+                    </ul>
+                </div>
+
+                <div class="dialogue-box" style="margin-top: 20px;">
+                    <div class="dialogue-header">
+                        <span class="icon">💐</span>
+                        <h4>Typical Exchange</h4>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker">A</span>
+                        <div class="dialogue-text">
+                            <div class="jp"><ruby>結婚<rt>けっこん</rt></ruby>するそうですね。おめでとうございます！</div>
+                            <div class="en">I heard you're getting married. Congratulations!</div>
+                        </div>
+                    </div>
+                    <div class="dialogue-line">
+                        <span class="dialogue-speaker friend">B</span>
+                        <div class="dialogue-text">
+                            <div class="jp">ありがとうございます！</div>
+                            <div class="en">Thank you!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="nav-btn" style="margin-top: 20px;" onclick="nextSlide()">Final Summary →</button>
+            </div>
+        </div>
+
+        <!-- Slide 24: Summary -->
+        <div class="slide" data-slide="24">
+            <div class="summary-card">
+                <h2>🎉 Lesson 18 Complete!</h2>
+                <p>You've mastered 4 essential grammar points for celebrations and social interactions!</p>
+                
+                <div class="summary-points">
+                    <div class="summary-point">
+                        <h4>1. ～そうです</h4>
+                        <p>Report hearsay<br>"I heard that..."</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>2. ～にあげます</h4>
+                        <p>Give to someone<br>"give to [person]"</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>3. ～と<ruby>言<rt>い</rt></ruby>っていました</h4>
+                        <p>Quote someone<br>"[person] said..."</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>4. ～と<ruby>思<rt>おも</rt></ruby>います</h4>
+                        <p>Express opinion<br>"I think..."</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 32px; padding: 20px; background: rgba(255,255,255,0.2); border-radius: var(--radius);">
+                    <h3 style="margin-bottom: 12px;">🎀 Now You Can Say:</h3>
+                    <p style="font-size: 1rem; opacity: 0.95;">
+                        <ruby>結婚<rt>けっこん</rt></ruby>するそうですね。おめでとう！<br>
+                        アナさんにプレゼントをあげませんか？<br>
+                        アナさんはケーキが<ruby>好<rt>す</rt></ruby>きだと<ruby>言<rt>い</rt></ruby>っていました。<br>
+                        <ruby>花<rt>はな</rt></ruby>がいいと<ruby>思<rt>おも</rt></ruby>います。
+                    </p>
+                </div>
+
+                <button class="restart-btn" onclick="restartPresentation()">🔄 <ruby>最初<rt>さいしょ</rt></ruby>から Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 24;
+
+        function updateSlide() {
+            document.querySelectorAll('.slide').forEach(slide => slide.classList.remove('active'));
+            const activeSlide = document.querySelector(`[data-slide="${currentSlide}"]`);
+            if (activeSlide) activeSlide.classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = currentSlide;
+            document.getElementById('totalSlides').textContent = totalSlides;
+            
+            const progress = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(slideNum) {
+            currentSlide = slideNum;
+            updateSlide();
+        }
+
+        function restartPresentation() {
+            currentSlide = 1;
+            updateSlide();
+            // Reset all quizzes
+            document.querySelectorAll('.mini-quiz-option').forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+                opt.style.pointerEvents = 'auto';
+            });
+            document.querySelectorAll('.mini-quiz-feedback').forEach(fb => {
+                fb.classList.remove('show', 'correct', 'incorrect');
+                fb.innerHTML = '';
+            });
+        }
+
+        function toggleMNN(button) {
+            const content = button.nextElementSibling;
+            button.classList.toggle('open');
+            content.classList.toggle('open');
+        }
+
+        function checkMiniQuiz(quizId, selectedOption, isCorrect) {
+            const quiz = document.getElementById(quizId);
+            const options = quiz.querySelectorAll('.mini-quiz-option');
+            const feedback = document.getElementById(quizId + '-feedback');
+            
+            // Disable all options
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            
+            // Mark selected
+            selectedOption.classList.add('selected');
+            
+            // Show correct/incorrect
+            if (isCorrect) {
+                selectedOption.classList.add('correct');
+                selectedOption.querySelector('.marker').textContent = '✓';
+                feedback.className = 'mini-quiz-feedback show correct';
+                feedback.innerHTML = '<h5>✓ Correct!</h5><p>Great job! You understood this grammar point.</p>';
+            } else {
+                selectedOption.classList.add('incorrect');
+                selectedOption.querySelector('.marker').textContent = '✗';
+                // Find and highlight correct answer
+                options.forEach(opt => {
+                    if (opt !== selectedOption) {
+                        const onclickAttr = opt.getAttribute('onclick');
+                        if (onclickAttr && onclickAttr.includes('true')) {
+                            opt.classList.add('correct');
+                            opt.querySelector('.marker').textContent = '✓';
+                        }
+                    }
+                });
+                feedback.className = 'mini-quiz-feedback show incorrect';
+                feedback.innerHTML = '<h5>✗ Not quite!</h5><p>Check the correct answer highlighted above. Review the grammar explanation if needed.</p>';
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Touch/swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        }
+
+        // Initialize
+        updateSlide();
+    </script>
+</body>
+</html>

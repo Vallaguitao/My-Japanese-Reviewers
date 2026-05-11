@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>いろどり Irodori A2 - Lesson 14: 休みを取ってもいいでしょうか？</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========== CSS Variables - Teal/Cyan Professional Theme ========== */
+        :root {
+            --primary: #0d9488;
+            --primary-light: #14b8a6;
+            --primary-dark: #0f766e;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --accent-dark: #4f46e5;
+            --secondary: #f59e0b;
+            --secondary-light: #fef3c7;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --error: #ef4444;
+            --error-light: #fee2e2;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --bg-light: #f0fdfa;
+            --bg-teal: #ccfbf1;
+            --bg-card: #ffffff;
+            --text-primary: #134e4a;
+            --text-secondary: #115e59;
+            --text-muted: #5eead4;
+            --border: #99f6e4;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ========== Reset & Base ========== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-teal) 100%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== Progress Bar ========== */
+        .progress-container {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: var(--bg-card); box-shadow: var(--shadow); padding: 12px 20px;
+        }
+        .progress-header {
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 1200px; margin: 0 auto; gap: 20px;
+        }
+        .progress-title {
+            font-size: 0.9rem; font-weight: 600; color: var(--primary);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .progress-title .lesson-badge {
+            background: var(--primary); color: white; padding: 2px 10px;
+            border-radius: 20px; font-size: 0.75rem;
+        }
+        .progress-bar-wrapper { flex: 1; max-width: 500px; }
+        .progress-bar { height: 8px; background: var(--border); border-radius: 10px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 10px; transition: width 0.5s ease; width: 0%;
+        }
+        .progress-text { font-size: 0.8rem; color: var(--text-secondary); text-align: right; margin-top: 4px; }
+        .progress-nav { display: flex; gap: 8px; }
+        .nav-btn {
+            background: var(--primary); color: white; border: none; padding: 8px 16px;
+            border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 500;
+            transition: var(--transition); display: flex; align-items: center; gap: 6px;
+        }
+        .nav-btn:hover { background: var(--accent); transform: translateY(-1px); }
+        .nav-btn:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; transform: none; }
+
+        /* ========== Main Container ========== */
+        .presentation { padding-top: 80px; min-height: 100vh; }
+        .slide { display: none; max-width: 1000px; margin: 0 auto; padding: 40px 20px; animation: fadeIn 0.5s ease; }
+        .slide.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ========== Title Slide ========== */
+        .title-slide { text-align: center; padding: 60px 20px; }
+        .title-slide .book-badge {
+            display: inline-block; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 8px 24px; border-radius: 30px; font-size: 0.9rem;
+            font-weight: 500; margin-bottom: 24px; letter-spacing: 1px;
+        }
+        .title-slide h1 { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700; color: var(--primary-dark); margin-bottom: 16px; line-height: 1.2; }
+        .title-slide .lesson-title-jp { font-size: clamp(1rem, 2.5vw, 1.4rem); color: var(--primary); margin-bottom: 8px; }
+        .title-slide .lesson-subtitle { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 40px; }
+        .work-icons { font-size: 2.5rem; margin-bottom: 24px; }
+        .title-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); max-width: 900px; margin: 0 auto 40px; }
+        .title-card h2 { color: var(--primary-dark); font-size: 1.3rem; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .grammar-list { display: grid; gap: 10px; }
+        .grammar-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg-light); border-radius: var(--radius); border-left: 4px solid var(--primary); transition: var(--transition); font-size: 0.95rem; }
+        .grammar-item:hover { transform: translateX(8px); background: var(--bg-teal); }
+        .grammar-number { width: 26px; height: 26px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600; flex-shrink: 0; }
+        .start-btn { background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color: white; border: none; padding: 16px 48px; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 14px rgba(13, 148, 136, 0.4); }
+        .start-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(13, 148, 136, 0.5); }
+
+        /* ========== Content Slides ========== */
+        .content-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); margin-bottom: 24px; }
+        .slide-header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 2px solid var(--border); }
+        .grammar-badge { background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        .slide-header h2 { font-size: 1.5rem; color: var(--primary-dark); flex: 1; }
+        .slide-header .jp-title { font-size: 1rem; color: var(--primary); font-weight: 500; }
+
+        /* ========== Ruby (Furigana) ========== */
+        ruby { ruby-position: over; }
+        ruby rt { font-size: 0.6em; color: var(--text-secondary); }
+
+        /* ========== Example Boxes ========== */
+        .example-box { background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-teal) 100%); border-radius: var(--radius); padding: 24px; margin: 20px 0; border-left: 4px solid var(--primary); }
+        .example-label { font-size: 0.8rem; font-weight: 600; color: var(--primary-dark); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .example-japanese { font-size: 1.35rem; color: var(--text-primary); margin-bottom: 8px; line-height: 2; }
+        .example-english { font-size: 1rem; color: var(--text-secondary); font-style: italic; }
+
+        /* ========== Conversation Box ========== */
+        .conversation-box { background: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%); border-radius: var(--radius); padding: 24px; margin: 20px 0; border-left: 4px solid #3b82f6; }
+        .conversation-box .example-label { color: #1e40af; }
+        .speaker { font-weight: 600; color: var(--primary-dark); min-width: 24px; display: inline-block; }
+        .speaker.b { color: var(--accent-dark); }
+
+        /* ========== Comparison Boxes ========== */
+        .comparison-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 20px 0; }
+        .comparison-box { padding: 20px; border-radius: var(--radius); }
+        .cause-box { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b; }
+        .reason-box { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); border-left: 4px solid #ec4899; }
+        .permission-box { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-left: 4px solid #10b981; }
+        .polite-box { background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); border-left: 4px solid #6366f1; }
+        .must-box { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-left: 4px solid #ef4444; }
+        .explain-box { background: linear-gradient(135deg, #ecfeff 0%, #a5f3fc 100%); border-left: 4px solid #06b6d4; }
+        .box-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .cause-box .box-label { color: #92400e; }
+        .reason-box .box-label { color: #be185d; }
+        .permission-box .box-label { color: #065f46; }
+        .polite-box .box-label { color: #4338ca; }
+        .must-box .box-label { color: #b91c1c; }
+        .explain-box .box-label { color: #0e7490; }
+
+        /* ========== Explanation Sections ========== */
+        .explanation { margin: 24px 0; }
+        .explanation h3 { font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        .explanation p { color: var(--text-secondary); margin-bottom: 12px; }
+        .key-point { background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); padding: 16px 20px; border-radius: var(--radius); margin: 16px 0; border-left: 4px solid var(--accent); }
+        .key-point strong { color: var(--primary-dark); }
+        .warning-point { background: var(--warning-light); padding: 16px 20px; border-radius: var(--radius); margin: 16px 0; border-left: 4px solid var(--warning); }
+
+        /* ========== Structure Box ========== */
+        .structure-box { background: linear-gradient(135deg, #ecfeff 0%, #a5f3fc 100%); border-radius: var(--radius); padding: 20px; margin: 20px 0; border-left: 4px solid #06b6d4; }
+        .structure-box .label { font-size: 0.8rem; font-weight: 600; color: #0e7490; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .structure-formula { font-size: 1.05rem; font-family: 'Outfit', monospace; color: var(--primary-dark); background: white; padding: 12px 20px; border-radius: 8px; display: inline-block; margin: 8px 4px; }
+        .structure-formula .highlight { color: var(--primary); font-weight: 600; }
+        .structure-formula .accent { color: var(--accent); font-weight: 600; }
+
+        /* ========== Cause/Reason Table ========== */
+        .reason-table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+        .reason-table th { background: var(--primary); color: white; padding: 12px 16px; text-align: center; font-weight: 600; }
+        .reason-table td { padding: 12px 16px; text-align: center; border-bottom: 1px solid var(--border); }
+        .reason-table tr:last-child td { border-bottom: none; }
+        .reason-table tr:nth-child(even) { background: var(--bg-light); }
+        .type-label { font-weight: 600; color: var(--primary); }
+        .form-cell { color: var(--accent-dark); font-weight: 500; }
+
+        /* ========== Response Grid ========== */
+        .response-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 20px 0; }
+        .response-item { background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-teal) 100%); border-radius: var(--radius); padding: 14px; text-align: center; border-left: 3px solid var(--primary); }
+        .response-jp { font-size: 1.1rem; font-weight: 500; color: var(--primary-dark); }
+        .response-en { font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; }
+
+        /* ========== MNN Connection ========== */
+        .mnn-connection { margin: 24px 0; }
+        .mnn-toggle { width: 100%; background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%); border: none; padding: 16px 20px; border-radius: var(--radius); cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-size: 1rem; font-weight: 500; color: #b91c1c; transition: var(--transition); }
+        .mnn-toggle:hover { background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); }
+        .mnn-toggle .icon { transition: transform 0.3s ease; }
+        .mnn-toggle.open .icon { transform: rotate(180deg); }
+        .mnn-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; background: #fef2f2; border-radius: 0 0 var(--radius) var(--radius); }
+        .mnn-content.open { max-height: 500px; padding: 20px; border: 1px solid #fecaca; border-top: none; }
+        .mnn-content h4 { color: #b91c1c; font-size: 0.95rem; margin-bottom: 12px; }
+        .mnn-content p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 10px; }
+        .mnn-lesson-ref { display: inline-block; background: #b91c1c; color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.8rem; margin-right: 8px; }
+
+        /* ========== Quiz Slides ========== */
+        .quiz-card { background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-teal) 100%); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); margin-bottom: 24px; }
+        .quiz-header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+        .quiz-badge { background: var(--accent); color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        .quiz-header h2 { font-size: 1.4rem; color: var(--primary-dark); }
+        .quiz-question { background: white; padding: 24px; border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); }
+        .question-number { font-size: 0.85rem; font-weight: 600; color: var(--accent); margin-bottom: 12px; }
+        .question-text { font-size: 1.15rem; color: var(--text-primary); margin-bottom: 16px; }
+        .question-context { font-size: 0.95rem; color: var(--text-secondary); font-style: italic; margin-bottom: 16px; padding: 12px; background: var(--bg-light); border-radius: 8px; }
+        .fill-blank { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 1.25rem; margin: 20px 0; }
+        .blank-input { border: 2px dashed var(--primary); background: var(--bg-light); padding: 8px 16px; border-radius: 8px; min-width: 100px; font-size: 1.05rem; font-family: inherit; text-align: center; transition: var(--transition); }
+        .blank-input:focus { outline: none; border-color: var(--accent); background: white; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        .check-btn { background: var(--primary); color: white; border: none; padding: 12px 32px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); margin-top: 20px; }
+        .check-btn:hover { background: var(--accent); transform: translateY(-2px); }
+
+        /* ========== Answer Slides ========== */
+        .answer-card { background: white; border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); margin-bottom: 24px; }
+        .answer-header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+        .answer-badge { background: var(--success); color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        .answer-result { padding: 24px; border-radius: var(--radius); margin-bottom: 20px; }
+        .answer-result.correct { background: var(--success-light); border-left: 4px solid var(--success); }
+        .result-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; color: var(--success); }
+        .answer-text { font-size: 1.25rem; color: var(--text-primary); margin-bottom: 12px; }
+        .answer-explanation { font-size: 0.95rem; color: var(--text-secondary); padding: 16px; background: white; border-radius: 8px; margin-top: 12px; }
+
+        /* ========== Summary Slide ========== */
+        .summary-card { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: var(--radius-lg); padding: 40px; color: white; text-align: center; }
+        .summary-card h2 { font-size: 2rem; margin-bottom: 24px; }
+        .summary-points { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin: 32px 0; }
+        .summary-point { background: rgba(255,255,255,0.15); padding: 20px 16px; border-radius: var(--radius); backdrop-filter: blur(10px); }
+        .summary-point h4 { font-size: 0.9rem; margin-bottom: 8px; }
+        .summary-point p { font-size: 0.75rem; opacity: 0.9; }
+        .restart-btn { background: white; color: var(--primary); border: none; padding: 16px 48px; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: var(--transition); margin-top: 24px; }
+        .restart-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .progress-header { flex-direction: column; gap: 12px; }
+            .progress-bar-wrapper { width: 100%; max-width: none; }
+            .progress-nav { width: 100%; justify-content: space-between; }
+            .content-card, .quiz-card, .answer-card { padding: 24px; }
+            .slide-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .example-japanese { font-size: 1.15rem; }
+            .fill-blank { font-size: 1.1rem; }
+            .structure-formula { font-size: 0.95rem; padding: 10px 14px; margin: 4px 2px; }
+            .comparison-grid { grid-template-columns: 1fr; }
+            .summary-points { grid-template-columns: repeat(2, 1fr); }
+            .reason-table { font-size: 0.85rem; }
+            .reason-table th, .reason-table td { padding: 8px 10px; }
+        }
+        @media (max-width: 480px) {
+            .progress-title { font-size: 0.8rem; }
+            .nav-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .title-slide h1 { font-size: 2rem; }
+            .grammar-item { padding: 10px 12px; font-size: 0.85rem; }
+            .work-icons { font-size: 2rem; }
+            .summary-points { grid-template-columns: 1fr; }
+            .response-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .pulse { animation: pulse 2s infinite; }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title"><span class="lesson-badge">A2</span>いろどり Lesson 14</div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <div class="progress-text"><span id="currentSlide">1</span> / <span id="totalSlides">17</span></div>
+            </div>
+            <div class="progress-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()">◀ <span class="btn-text">Back</span></button>
+                <button class="nav-btn" id="nextBtn" onclick="nextSlide()"><span class="btn-text">Next</span> ▶</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Presentation -->
+    <div class="presentation">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <div class="book-badge">いろどり IRODORI • 入門 A2</div>
+                <h1>Lesson 14</h1>
+                <div class="work-icons">📅 🏥 🤒 📞 ✅</div>
+                <div class="lesson-title-jp"><ruby>休<rt>やす</rt></ruby>みを<ruby>取<rt>と</rt></ruby>ってもいいでしょうか？</div>
+                <div class="lesson-subtitle">May I take time off? • Workplace Communication</div>
+                
+                <div class="title-card">
+                    <h2>📚 <ruby>文法<rt>ぶんぽう</rt></ruby>ノート Grammar Points</h2>
+                    <div class="grammar-list">
+                        <div class="grammar-item"><span class="grammar-number">1</span><span>Nで / ナA-で / イA-くて / V-て、〜 — Cause & Reason</span></div>
+                        <div class="grammar-item"><span class="grammar-number">2</span><span>S1。それで、S2 — "So/Therefore" conjunction</span></div>
+                        <div class="grammar-item"><span class="grammar-number">3</span><span>V-てもいいですか？ — Asking for permission</span></div>
+                        <div class="grammar-item"><span class="grammar-number">4</span><span>V-てもいいでしょうか？ — Asking permission (polite)</span></div>
+                        <div class="grammar-item"><span class="grammar-number">5</span><span>V-なければなりません — "Must do V"</span></div>
+                        <div class="grammar-item"><span class="grammar-number">6</span><span>〜んです — Explaining situations</span></div>
+                    </div>
+                </div>
+                <button class="start-btn pulse" onclick="nextSlide()">📅 <ruby>始<rt>はじ</rt></ruby>めましょう！Start Learning</button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Grammar 1 - Cause/Reason -->
+        <div class="slide" data-slide="2">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 1</span>
+                    <div><h2>Nで / ナA-で / イA-くて / V-て、〜</h2><span class="jp-title">Cause & Reason (<ruby>原因<rt>げんいん</rt></ruby>・<ruby>理由<rt>りゆう</rt></ruby>)</span></div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Examples</div>
+                    <div class="example-japanese"><ruby>道<rt>みち</rt></ruby>が<ruby>混<rt>こ</rt></ruby>んでいて、ぜんぜん<ruby>動<rt>うご</rt></ruby>きません。</div>
+                    <div class="example-english">The traffic is heavy and not moving at all.</div>
+                    <div class="example-japanese" style="margin-top: 12px;"><ruby>昨日<rt>きのう</rt></ruby>は、<ruby>休<rt>やす</rt></ruby>んですみませんでした。</div>
+                    <div class="example-english">I am sorry for taking time off yesterday.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>The form "〜で/〜て、〜" is used to combine two sentences into one. Depending on the meaning relationship, the preceding sentence indicates the <strong>cause or reason</strong> for the subsequent sentence.</p>
+                    <p>Lesson 7 covered examples with nouns and verbs. This lesson covers <strong>nouns, adjectives, and verbs</strong> separately.</p>
+                </div>
+
+                <table class="reason-table">
+                    <tr>
+                        <th>Type</th>
+                        <th>Form</th>
+                        <th>Example</th>
+                        <th>Meaning</th>
+                    </tr>
+                    <tr>
+                        <td class="type-label">N (Noun)</td>
+                        <td class="form-cell">N + <strong>で</strong></td>
+                        <td><ruby>事故<rt>じこ</rt></ruby><strong>で</strong></td>
+                        <td>because of an accident</td>
+                    </tr>
+                    <tr>
+                        <td class="type-label">ナA (Na-adj)</td>
+                        <td class="form-cell">ナA + <strong>で</strong></td>
+                        <td><ruby>仕事<rt>しごと</rt></ruby>が<ruby>大変<rt>たいへん</rt></ruby><strong>で</strong></td>
+                        <td>because work is busy</td>
+                    </tr>
+                    <tr>
+                        <td class="type-label">イA (I-adj)</td>
+                        <td class="form-cell">イA-<strong>くて</strong></td>
+                        <td><ruby>体<rt>からだ</rt></ruby>の<ruby>具合<rt>ぐあい</rt></ruby>が<ruby>悪<rt>わる</rt></ruby><strong>くて</strong></td>
+                        <td>because I wasn't feeling well</td>
+                    </tr>
+                    <tr>
+                        <td class="type-label">V (Verb)</td>
+                        <td class="form-cell">V-<strong>て</strong></td>
+                        <td><ruby>道<rt>みち</rt></ruby>が<ruby>混<rt>こ</rt></ruby>んでい<strong>て</strong></td>
+                        <td>because traffic is heavy</td>
+                    </tr>
+                </table>
+
+                <div class="key-point">
+                    <strong>💡 Usage:</strong> As shown above, this form is also used to <strong>give reasons and apologize</strong>. The first part explains why, and the second part gives the result or apology.
+                </div>
+
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">📕 Minna no Nihongo Connection<span class="icon">▼</span></button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 16</span> イA-くて / ナA-で (adjective て-form)</p>
+                        <p><span class="mnn-lesson-ref">Lesson 14</span> V-て connecting sentences</p>
+                        <p><span class="mnn-lesson-ref">Lesson 9</span> Nで (reason with nouns)</p>
+                        <p><strong>Key Point:</strong> These forms combine sentences where the first indicates cause/reason. The choice between で, くて, or て depends on the word type!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Grammar 1 Examples -->
+        <div class="slide" data-slide="3">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 1</span>
+                    <div><h2>Cause/Reason Examples</h2><span class="jp-title">More Practice Sentences</span></div>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box cause-box">
+                        <div class="box-label">🟡 N + で (Noun)</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;"><ruby>事故<rt>じこ</rt></ruby><strong>で</strong>、<ruby>電車<rt>でんしゃ</rt></ruby>が<ruby>遅<rt>おく</rt></ruby>れています。<br><span class="example-english">The train is delayed because of an accident.</span></div>
+                    </div>
+                    <div class="comparison-box reason-box">
+                        <div class="box-label">🩷 ナA + で (Na-adj)</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;"><ruby>道<rt>みち</rt></ruby>が<ruby>複雑<rt>ふくざつ</rt></ruby><strong>で</strong>、よくわかりません。<br><span class="example-english">The roads are complicated, and I get lost.</span></div>
+                    </div>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box must-box">
+                        <div class="box-label">🔴 イA-くて (I-adj)</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;"><ruby>昨日<rt>きのう</rt></ruby>からせきがひど<strong>くて</strong>、これから<ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>きます。<br><span class="example-english">I have had a bad cough since yesterday, so I'm going to the hospital.</span></div>
+                    </div>
+                    <div class="comparison-box explain-box">
+                        <div class="box-label">🩵 V-て (Verb)</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;"><ruby>熱<rt>ねつ</rt></ruby>があっ<strong>て</strong>、<ruby>会社<rt>かいしゃ</rt></ruby>を<ruby>休<rt>やす</rt></ruby>みました。<br><span class="example-english">I took a day off from work because I have a fever.</span></div>
+                    </div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Apologizing for Being Late</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span>すみません。<ruby>事故<rt>じこ</rt></ruby><strong>で</strong><ruby>電車<rt>でんしゃ</rt></ruby>が<ruby>止<rt>と</rt></ruby>まっていて、<ruby>遅<rt>おく</rt></ruby>れました。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">I'm sorry. The train was stopped because of an accident, so I was late.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker b">B:</span>そうですか。<ruby>大変<rt>たいへん</rt></ruby>でしたね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">I see. That must have been tough.</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Remember the Pattern:</strong><br><br>
+                    N<strong>で</strong> ・ ナA-<strong>で</strong> ・ イA-<strong>くて</strong> ・ V-<strong>て</strong><br>
+                    All indicate <strong>cause/reason</strong> for what follows!
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Grammar 2 - S1。それで、S2 -->
+        <div class="slide" data-slide="4">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 2</span>
+                    <div><h2>S1。それで、S2</h2><span class="jp-title">"So/Therefore" Conjunction</span></div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">これから<ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>きます。<strong>それで</strong>、<ruby>少<rt>すこ</rt></ruby>し<ruby>遅刻<rt>ちこく</rt></ruby>します。</div>
+                    <div class="example-english">I am going to the hospital. So, I will be a little late.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>This expression is used to express causes or reasons. The conjunction <strong>それで</strong> (so) is used to indicate the relationship between the sentences before and after. <strong>S1 indicates the causes or reasons of S2.</strong></p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">[Reason/Cause]。<span class="highlight">それで</span>、[Result]。</div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Conversation Examples</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span>すみません。<ruby>昨日<rt>きのう</rt></ruby>から<ruby>熱<rt>ねつ</rt></ruby>があります。<strong>それで</strong>、<ruby>今日<rt>きょう</rt></ruby>は1<ruby>日<rt>にち</rt></ruby><ruby>休<rt>やす</rt></ruby>みたいんですが…。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Excuse me. I have had a fever since yesterday. So, I would like to take a day off today...</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker b">B:</span>わかりました。お<ruby>大事<rt>だいじ</rt></ruby>に。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">That's fine. I hope you get well.</span>
+                    </div>
+                    <div style="margin-top: 16px; border-top: 1px dashed #3b82f6; padding-top: 16px;">
+                        <div class="example-japanese">
+                            <ruby>家<rt>いえ</rt></ruby>に<ruby>財布<rt>さいふ</rt></ruby>を<ruby>忘<rt>わす</rt></ruby>れました。これから<ruby>取<rt>と</rt></ruby>りに<ruby>帰<rt>かえ</rt></ruby>ります。<strong>それで</strong>、<ruby>少<rt>すこ</rt></ruby>し<ruby>遅<rt>おく</rt></ruby>れます。<br>
+                            <span style="color: var(--text-secondary); font-size: 0.95rem;">I forgot my wallet at home. I will go back and get it. So, I will be a bit late.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 それで vs 〜て/で:</strong><br><br>
+                    Both express cause/reason, but:<br>
+                    • 〜て/で — connects within ONE sentence<br>
+                    • それで — connects TWO separate sentences
+                </div>
+
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">📕 Minna no Nihongo Connection<span class="icon">▼</span></button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 39</span> 〜て/〜ので (giving reasons)</p>
+                        <p><strong>Key Point:</strong> それで is a sentence connector meaning "so/therefore." It's more formal than だから and is commonly used in workplace communication to explain situations politely.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Quiz 1 & 2 -->
+        <div class="slide" data-slide="5">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Quick Check</span><h2>Grammar 1 & 2</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Say: "Because I have a fever (<ruby>熱<rt>ねつ</rt></ruby>がある), I took a day off."</div>
+                    <div class="question-text">Use V-て for cause/reason:</div>
+                    <div class="fill-blank"><ruby>熱<rt>ねつ</rt></ruby>が<input type="text" class="blank-input" id="q1-1" placeholder="？">、<ruby>会社<rt>かいしゃ</rt></ruby>を<ruby>休<rt>やす</rt></ruby>みました。</div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Connect two sentences: "I'm going to the hospital. (それで) I'll be a little late (<ruby>遅刻<rt>ちこく</rt></ruby>します)."</div>
+                    <div class="question-text">Fill in the conjunction:</div>
+                    <div class="fill-blank"><ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>きます。<input type="text" class="blank-input" id="q1-2" placeholder="？">、<ruby>少<rt>すこ</rt></ruby>し<ruby>遅刻<rt>ちこく</rt></ruby>します。</div>
+                </div>
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 6: Answers 1 & 2 -->
+        <div class="slide" data-slide="6">
+            <div class="answer-card">
+                <div class="answer-header"><span class="answer-badge">✅ Answers</span><h2>Grammar 1 & 2</h2></div>
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text"><ruby>熱<rt>ねつ</rt></ruby>が<strong>あって</strong>、<ruby>会社<rt>かいしゃ</rt></ruby>を<ruby>休<rt>やす</rt></ruby>みました。</div>
+                    <div class="answer-explanation"><strong>Explanation:</strong> ある → あって (V-て form). The て-form of verbs expresses cause/reason when connecting to a result.</div>
+                </div>
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text"><ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>きます。<strong>それで</strong>、<ruby>少<rt>すこ</rt></ruby>し<ruby>遅刻<rt>ちこく</rt></ruby>します。</div>
+                    <div class="answer-explanation"><strong>Explanation:</strong> それで connects two sentences where S1 is the reason for S2. "I'm going to the hospital. So, I'll be a little late."</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Grammar 3 - V-てもいいですか？ -->
+        <div class="slide" data-slide="7">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 3</span>
+                    <div><h2>V-てもいいですか？</h2><span class="jp-title">Asking for Permission</span></div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">トイレに<ruby>行<rt>い</rt></ruby>って<ruby>来<rt>き</rt></ruby><strong>てもいいですか</strong>？</div>
+                    <div class="example-english">May I go to the restroom?</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>This expression is used to <strong>ask for permission</strong>. It connects to the verb's <strong>テ-form</strong>.</p>
+                    <p>Expressions such as どうぞ (Sure), わかりました (All right), and いいですよ (Certainly) give permission.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">V-<span class="highlight">て</span> + <span class="accent">もいいですか</span>？</div>
+                    <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-secondary);">= "May I do V?" / "Is it okay if I do V?"</p>
+                </div>
+
+                <div class="response-grid">
+                    <div class="response-item"><div class="response-jp">どうぞ</div><div class="response-en">Sure / Go ahead</div></div>
+                    <div class="response-item"><div class="response-jp">わかりました</div><div class="response-en">All right</div></div>
+                    <div class="response-item"><div class="response-jp">いいですよ</div><div class="response-en">That's fine</div></div>
+                    <div class="response-item"><div class="response-jp">もちろん</div><div class="response-en">Of course</div></div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Conversation Examples</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span>あのう、ちょっと<ruby>休憩<rt>きゅうけい</rt></ruby>してもいいですか？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Excuse me. May I take a short break?</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 8px;">
+                        <span class="speaker b">B:</span>どうぞ。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">No problem.</span>
+                    </div>
+                    <div style="margin-top: 16px; border-top: 1px dashed #3b82f6; padding-top: 16px;">
+                        <div class="example-japanese">
+                            <span class="speaker">A:</span>ちょっと、<ruby>質問<rt>しつもん</rt></ruby>してもいいですか？<br>
+                            <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Excuse me. May I ask a question?</span>
+                        </div>
+                        <div class="example-japanese" style="margin-top: 8px;">
+                            <span class="speaker b">B:</span>すみませんが、あとにしてもらえませんか？<br>
+                            <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">I'm sorry, but could you come back later?</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">📕 Minna no Nihongo Connection<span class="icon">▼</span></button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 15</span> V-てもいいですか (permission)</p>
+                        <p><strong>Key Point:</strong> MNN Lesson 15 introduces this pattern. It's a standard way to politely ask for permission in everyday situations. The response どうぞ or いいですよ grants permission.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Grammar 4 - V-てもいいでしょうか？ -->
+        <div class="slide" data-slide="8">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 4</span>
+                    <div><h2>V-てもいいでしょうか？</h2><span class="jp-title">Asking Permission (More Polite)</span></div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese"><ruby>明日<rt>あした</rt></ruby>の<ruby>午後<rt>ごご</rt></ruby>、<ruby>早退<rt>そうたい</rt></ruby>し<strong>てもいいでしょうか</strong>？</div>
+                    <div class="example-english">May I leave early tomorrow afternoon?</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>This expression is used to ask for permission <strong>politely</strong>. The 〜ですか at the end of 〜てもいいですか is changed to <strong>〜でしょうか</strong>.</p>
+                    <p>This is more formal and appropriate when speaking to supervisors or in professional settings.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">V-て + もいい<span class="highlight">でしょうか</span>？</div>
+                    <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-secondary);">More polite than もいいですか？</p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box permission-box">
+                        <div class="box-label">🟢 Casual/Standard</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;"><ruby>質問<rt>しつもん</rt></ruby>してもいい<strong>ですか</strong>？<br><span class="example-english">May I ask a question?</span></div>
+                    </div>
+                    <div class="comparison-box polite-box">
+                        <div class="box-label">💜 More Polite</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;"><ruby>質問<rt>しつもん</rt></ruby>してもいい<strong>でしょうか</strong>？<br><span class="example-english">May I please ask a question?</span></div>
+                    </div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 At the Office</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span>すみません。ちょっと<ruby>質問<rt>しつもん</rt></ruby>してもいいでしょうか？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Excuse me. May I please ask you a question?</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker b">B:</span>はい、<ruby>何<rt>なん</rt></ruby>ですか？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Sure. How can I help you?</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 When to Use でしょうか：</strong><br><br>
+                    Use でしょうか when speaking to:<br>
+                    • Supervisors or managers<br>
+                    • Customers or clients<br>
+                    • Anyone in a formal situation
+                </div>
+
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">📕 Minna no Nihongo Connection<span class="icon">▼</span></button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 21</span> 〜でしょう (conjecture/politeness)</p>
+                        <p><span class="mnn-lesson-ref">Lesson 15</span> V-てもいいですか (permission base form)</p>
+                        <p><strong>Key Point:</strong> でしょうか adds politeness and tentativeness. It's commonly used in business Japanese when making requests to superiors.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Quiz 3 & 4 -->
+        <div class="slide" data-slide="9">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Quick Check</span><h2>Grammar 3 & 4</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Ask a coworker: "May I take a short break (<ruby>休憩<rt>きゅうけい</rt></ruby>する)?"</div>
+                    <div class="question-text">Use V-てもいいですか:</div>
+                    <div class="fill-blank">ちょっと<ruby>休憩<rt>きゅうけい</rt></ruby>し<input type="text" class="blank-input" id="q3-1" placeholder="？">？</div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Politely ask your boss: "May I take tomorrow off (<ruby>休<rt>やす</rt></ruby>む)?"</div>
+                    <div class="question-text">Use V-てもいいでしょうか:</div>
+                    <div class="fill-blank"><ruby>明日<rt>あした</rt></ruby>、<ruby>休<rt>やす</rt></ruby>ん<input type="text" class="blank-input" id="q3-2" placeholder="？">？</div>
+                </div>
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: Answers 3 & 4 -->
+        <div class="slide" data-slide="10">
+            <div class="answer-card">
+                <div class="answer-header"><span class="answer-badge">✅ Answers</span><h2>Grammar 3 & 4</h2></div>
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">ちょっと<ruby>休憩<rt>きゅうけい</rt></ruby>し<strong>てもいいですか</strong>？</div>
+                    <div class="answer-explanation"><strong>Explanation:</strong> <ruby>休憩<rt>きゅうけい</rt></ruby>する → <ruby>休憩<rt>きゅうけい</rt></ruby>して + もいいですか = "May I take a break?" This is the standard way to ask permission.</div>
+                </div>
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text"><ruby>明日<rt>あした</rt></ruby>、<ruby>休<rt>やす</rt></ruby>ん<strong>でもいいでしょうか</strong>？</div>
+                    <div class="answer-explanation"><strong>Explanation:</strong> <ruby>休<rt>やす</rt></ruby>む → <ruby>休<rt>やす</rt></ruby>んで + もいいでしょうか. Using でしょうか makes it more polite—appropriate when asking your boss!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Grammar 5 - V-なければなりません -->
+        <div class="slide" data-slide="11">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 5</span>
+                    <div><h2>V-なければなりません</h2><span class="jp-title">"Must Do V" / Obligation</span></div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">ちょっと、<ruby>役所<rt>やくしょ</rt></ruby>に<ruby>行<rt>い</rt></ruby>か<strong>なければなりません</strong>。</div>
+                    <div class="example-english">I have to go to city hall.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>This expression is used to describe something that <strong>needs to be done regardless of intention or desire</strong>. In this example, it's used to describe a reason for an absence or leaving early.</p>
+                    <p>The 〜ない of the verb's ナイ-form is changed to 〜<strong>なければなりません</strong>.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">V-ない → V-<span class="highlight">なければなりません</span></div>
+                    <div class="structure-formula">Plain: V-<span class="accent">なければならない</span></div>
+                    <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-secondary);">
+                        <ruby>行<rt>い</rt></ruby>く → <ruby>行<rt>い</rt></ruby>かない → <ruby>行<rt>い</rt></ruby>か<strong>なければなりません</strong><br>
+                        する → しない → し<strong>なければなりません</strong>
+                    </p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box must-box">
+                        <div class="box-label">🔴 Obligation Examples</div>
+                        <div class="example-japanese" style="font-size: 1.05rem;">
+                            <ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>か<strong>なければなりません</strong>。<br>
+                            <span class="example-english">I have to go to the hospital.</span>
+                        </div>
+                        <div class="example-japanese" style="font-size: 1.05rem; margin-top: 12px;">
+                            <ruby>今日<rt>きょう</rt></ruby>はガスの<ruby>点検<rt>てんけん</rt></ruby>があって、<ruby>午前中<rt>ごぜんちゅう</rt></ruby>は<ruby>家<rt>いえ</rt></ruby>にい<strong>なければなりません</strong>。<br>
+                            <span class="example-english">There's a gas inspection today, so I have to be home in the morning.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Requesting Time Off</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span>すみません。<ruby>明日<rt>あした</rt></ruby>の<ruby>午後<rt>ごご</rt></ruby>、<ruby>早退<rt>そうたい</rt></ruby>してもいいでしょうか？<ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>かなければならないんです。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Excuse me. May I leave early tomorrow afternoon? I have to go to the hospital.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker b">B:</span>わかりました。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Certainly.</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Often Used with 〜んです:</strong><br><br>
+                    In many cases, 〜んです is added to say 〜なければならない<strong>んです</strong> to explain the reasons.<br>
+                    <ruby>市役所<rt>しやくしょ</rt></ruby>に<ruby>行<rt>い</rt></ruby>かなければならない<strong>んです</strong>。<br>
+                    "I have to go to city hall." (explaining why)
+                </div>
+
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">📕 Minna no Nihongo Connection<span class="icon">▼</span></button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 17</span> ナイ-form</p>
+                        <p><span class="mnn-lesson-ref">Lesson 17</span> V-なければなりません (obligation)</p>
+                        <p><strong>Key Point:</strong> MNN Lesson 17 introduces this obligation form. It literally means "if not do V, it won't work" → "must do V." Very common in workplace situations!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Grammar 6 - 〜んです -->
+        <div class="slide" data-slide="12">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 6</span>
+                    <div><h2>〜んです</h2><span class="jp-title">Explaining Situations</span></div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese"><ruby>東京<rt>とうきょう</rt></ruby>から、<ruby>国<rt>くに</rt></ruby>の<ruby>友達<rt>ともだち</rt></ruby>が<ruby>来<rt>く</rt></ruby>る<strong>んです</strong>。</div>
+                    <div class="example-english">A friend from my home country is coming here from Tokyo.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>This expression is used to <strong>explain the situation</strong> to the other person. In this lesson, it's used to describe the reasons for asking permission for leaving early or absence.</p>
+                    <p>Previous lessons covered 〜んですが…, which explains your situation and seeks a response. This lesson covers the form 〜んです (without が…) connected to <strong>dictionary-form verbs</strong> or 〜なければならない.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">V (dictionary form) + <span class="highlight">んです</span></div>
+                    <div class="structure-formula">V-なければならない + <span class="accent">んです</span></div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Explaining Why You Need Time Off</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span>すみません。<ruby>来週<rt>らいしゅう</rt></ruby>の<ruby>月曜日<rt>げつようび</rt></ruby>、お<ruby>休<rt>やす</rt></ruby>みを<ruby>取<rt>と</rt></ruby>ってもいいでしょうか？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Excuse me. May I take a day off next Monday?</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 8px;">
+                        <span class="speaker"></span><ruby>市役所<rt>しやくしょ</rt></ruby>に<ruby>行<rt>い</rt></ruby>かなければならない<strong>んです</strong>。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">I have to go to city hall.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker b">B:</span>わかりました。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">All right.</span>
+                    </div>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box explain-box">
+                        <div class="box-label">🩵 〜んです vs 〜んですが</div>
+                        <div class="example-japanese" style="font-size: 1rem;">
+                            <strong>〜んですが…</strong> = Explain + seek response<br>
+                            <span class="example-english">I have a fever... (what should I do?)</span>
+                        </div>
+                        <div class="example-japanese" style="font-size: 1rem; margin-top: 12px;">
+                            <strong>〜んです</strong> = Explain reason/situation<br>
+                            <span class="example-english">I have to go to the hospital. (that's why)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Pattern for Requesting Time Off:</strong><br><br>
+                    1. Ask permission: V-てもいいでしょうか？<br>
+                    2. Explain reason: 〜なければならないんです。<br><br>
+                    Example: <ruby>休<rt>やす</rt></ruby>んでもいいでしょうか？<ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>かなければならないんです。
+                </div>
+
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">📕 Minna no Nihongo Connection<span class="icon">▼</span></button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 26</span> 〜んです (explanation)</p>
+                        <p><strong>Key Point:</strong> MNN Lesson 26 covers んです for explaining situations. Without the trailing が…, it provides explanation/background. Very useful when justifying requests!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Quiz 5 & 6 -->
+        <div class="slide" data-slide="13">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">✏️ Quick Check</span><h2>Grammar 5 & 6</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Say: "I have to go to the hospital (<ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>く)."</div>
+                    <div class="question-text">Use V-なければなりません:</div>
+                    <div class="fill-blank"><ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>か<input type="text" class="blank-input" id="q5-1" placeholder="？">。</div>
+                </div>
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Explain: "A friend is coming (<ruby>友達<rt>ともだち</rt></ruby>が<ruby>来<rt>く</rt></ruby>る)."</div>
+                    <div class="question-text">Use 〜んです to explain:</div>
+                    <div class="fill-blank"><ruby>友達<rt>ともだち</rt></ruby>が<ruby>来<rt>く</rt></ruby>る<input type="text" class="blank-input" id="q5-2" placeholder="？">。</div>
+                </div>
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 14: Answers 5 & 6 -->
+        <div class="slide" data-slide="14">
+            <div class="answer-card">
+                <div class="answer-header"><span class="answer-badge">✅ Answers</span><h2>Grammar 5 & 6</h2></div>
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text"><ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>か<strong>なければなりません</strong>。</div>
+                    <div class="answer-explanation"><strong>Explanation:</strong> <ruby>行<rt>い</rt></ruby>く → <ruby>行<rt>い</rt></ruby>かない → <ruby>行<rt>い</rt></ruby>か<strong>なければなりません</strong>. This expresses obligation: "I must go" / "I have to go."</div>
+                </div>
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text"><ruby>友達<rt>ともだち</rt></ruby>が<ruby>来<rt>く</rt></ruby>る<strong>んです</strong>。</div>
+                    <div class="answer-explanation"><strong>Explanation:</strong> V (dictionary form) + んです explains the situation. "A friend is coming." (That's why I need time off.)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Comprehensive Practice -->
+        <div class="slide" data-slide="15">
+            <div class="quiz-card">
+                <div class="quiz-header"><span class="quiz-badge">🎯 Final Practice</span><h2>Taking Time Off Scenario</h2></div>
+                <div class="quiz-question">
+                    <div class="question-number">Putting It All Together</div>
+                    <div class="question-context">You need to request time off from your supervisor!</div>
+                    <div style="padding: 16px; background: white; border-radius: 8px; margin: 16px 0;">
+                        <p style="margin-bottom: 16px;"><strong>Scenario:</strong> Requesting a day off because you have to go to the hospital.</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>1. Give the reason (cause):</strong></p>
+                        <p style="color: var(--text-secondary);"><ruby>昨日<rt>きのう</rt></ruby>から<ruby>熱<rt>ねつ</rt></ruby>があっ<strong>て</strong>…</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>2. Connect with それで:</strong></p>
+                        <p style="color: var(--text-secondary);"><strong>それで</strong>、<ruby>今日<rt>きょう</rt></ruby>は<ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>きたいんですが…</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>3. Ask permission politely:</strong></p>
+                        <p style="color: var(--text-secondary);"><ruby>休<rt>やす</rt></ruby>んでもいい<strong>でしょうか</strong>？</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>4. Explain the obligation:</strong></p>
+                        <p style="color: var(--text-secondary);"><ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>か<strong>なければならないんです</strong>。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>5. Full conversation:</strong></p>
+                        <p style="color: var(--text-secondary);">「すみません。<ruby>昨日<rt>きのう</rt></ruby>から<ruby>熱<rt>ねつ</rt></ruby>があります。それで、<ruby>今日<rt>きょう</rt></ruby><ruby>休<rt>やす</rt></ruby>んでもいいでしょうか？<ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>かなければならないんです。」</p>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="nextSlide()">See Summary →</button>
+            </div>
+        </div>
+
+        <!-- Slide 16: Summary -->
+        <div class="slide" data-slide="16">
+            <div class="summary-card">
+                <h2>🎉 Lesson 14 Complete!</h2>
+                <p>You've mastered 6 essential grammar points for taking time off!</p>
+                
+                <div class="summary-points">
+                    <div class="summary-point"><h4>1. N/A/V で/くて/て</h4><p>Cause & Reason<br>"because of ~"</p></div>
+                    <div class="summary-point"><h4>2. それで</h4><p>"So/Therefore"<br>conjunction</p></div>
+                    <div class="summary-point"><h4>3. てもいいですか</h4><p>Asking permission<br>"May I ~?"</p></div>
+                    <div class="summary-point"><h4>4. てもいいでしょうか</h4><p>Polite permission<br>"May I please ~?"</p></div>
+                    <div class="summary-point"><h4>5. なければなりません</h4><p>Obligation<br>"I must/have to"</p></div>
+                    <div class="summary-point"><h4>6. 〜んです</h4><p>Explanation<br>"The thing is..."</p></div>
+                </div>
+
+                <div style="margin-top: 32px; padding: 20px; background: rgba(255,255,255,0.2); border-radius: var(--radius);">
+                    <h3 style="margin-bottom: 12px;">📅 Now You Can:</h3>
+                    <p style="font-size: 1rem; opacity: 0.95;">
+                        <ruby>熱<rt>ねつ</rt></ruby>があって、<ruby>今日<rt>きょう</rt></ruby><ruby>休<rt>やす</rt></ruby>みたいんですが…<br>
+                        <ruby>休<rt>やす</rt></ruby>んでもいいでしょうか？<br>
+                        <ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>かなければならないんです。
+                    </p>
+                </div>
+
+                <button class="restart-btn" onclick="restartPresentation()">🔄 <ruby>最初<rt>さいしょ</rt></ruby>から Start Over</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 16;
+        function updateSlide() {
+            document.querySelectorAll('.slide').forEach(slide => slide.classList.remove('active'));
+            const activeSlide = document.querySelector(`[data-slide="${currentSlide}"]`);
+            if (activeSlide) activeSlide.classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide;
+            document.getElementById('totalSlides').textContent = totalSlides;
+            const progress = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateSlide(); } }
+        function prevSlide() { if (currentSlide > 1) { currentSlide--; updateSlide(); } }
+        function goToSlide(slideNum) { currentSlide = slideNum; updateSlide(); }
+        function restartPresentation() { currentSlide = 1; updateSlide(); }
+        function toggleMNN(button) {
+            const content = button.nextElementSibling;
+            button.classList.toggle('open');
+            content.classList.toggle('open');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        });
+        let touchStartX = 0, touchEndX = 0;
+        document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+        document.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); });
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > swipeThreshold) { if (diff > 0) nextSlide(); else prevSlide(); }
+        }
+        updateSlide();
+    </script>
+</body>
+</html>

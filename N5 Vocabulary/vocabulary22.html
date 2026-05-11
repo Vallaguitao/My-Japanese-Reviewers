@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>みんなの日本語 Lesson 22 — Vocabulary Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { min-height: 100vh; background: #1a1525; color: #e8e0f0; font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 20% 30%, rgba(232,180,200,0.07) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(120,100,180,0.07) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+  .container { max-width: 540px; margin: 0 auto; padding: 24px 16px 60px; position: relative; z-index: 1; }
+  #name-screen { margin-top: 50px; }
+  .card { background: #221d2e; border-radius: 16px; padding: 28px 20px; border: 1px solid #3d3650; }
+  .badge { display: inline-block; background: linear-gradient(135deg, #e8b4c8, #c89db7); color: #1a1525; font-weight: 700; font-size: 12px; padding: 4px 14px; border-radius: 20px; letter-spacing: 1px; }
+  .title { font-size: 22px; font-weight: 800; margin: 14px 0 4px; letter-spacing: -0.5px; }
+  .subtitle { font-size: 13px; color: #9e93b0; }
+  .name-label { display: block; font-size: 13px; color: #9e93b0; margin: 24px 0 8px; text-align: left; }
+  .name-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; font-size: 16px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+  .name-input:focus { border-color: #e8b4c8; }
+  .btn-primary { width: 100%; margin-top: 16px; padding: 14px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+  .btn-primary:disabled { opacity: 0.35; cursor: default; }
+  #quiz-screen { display: none; }
+  .header { text-align: center; margin-bottom: 22px; }
+  .header .subtitle { margin-top: 2px; }
+  .score-banner { display: none; border-radius: 16px; padding: 22px 16px; text-align: center; margin-bottom: 20px; animation: slideDown 0.4s ease; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+  .score-number { font-size: 44px; font-weight: 800; letter-spacing: -1px; }
+  .score-label { font-size: 16px; font-weight: 600; margin-top: 4px; }
+  .email-row { margin-top: 10px; }
+  .email-pill { display: inline-block; background: #3d3650; font-size: 12px; padding: 4px 14px; border-radius: 12px; }
+  .email-pill.sent { background: #2d6a4f; }
+  .email-pill.error { background: #9b2226; }
+  .btn-retake { margin-top: 12px; background: rgba(255,255,255,0.15); color: #fff; border: none; padding: 8px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  .progress-row { margin-bottom: 14px; }
+  .progress-text { font-size: 12px; color: #9e93b0; display: block; margin-bottom: 6px; }
+  .progress-bar { height: 4px; background: #2a2535; border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #e8b4c8, #c89db7); border-radius: 4px; width: 0%; transition: width 0.3s ease; }
+  .nav-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-bottom: 20px; }
+  .nav-dot { aspect-ratio: 1; border-radius: 8px; background: #2a2535; color: #e8e0f0; font-size: 11px; font-weight: 600; border: 2px solid transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .nav-dot.answered { background: #4a4458; }
+  .nav-dot.active { border-color: #e8b4c8; }
+  .nav-dot.correct { background: #2d6a4f; }
+  .nav-dot.wrong { background: #9b2226; }
+  .q-card { background: #221d2e; border-radius: 16px; padding: 24px 18px; border: 1px solid #3d3650; margin-bottom: 16px; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .q-number { font-size: 11px; color: #9e93b0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .q-english { font-size: 18px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; }
+  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .choice-btn { padding: 16px 8px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; text-align: center; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; font-size: 17px; font-weight: 600; position: relative; transition: all 0.15s; min-height: 64px; display: flex; align-items: center; justify-content: center; line-height: 1.3; }
+  .choice-btn:hover:not(.locked) { border-color: #5c4d7a; background: #302844; }
+  .choice-btn.selected { background: #5c4d7a; border-color: #e8b4c8; }
+  .choice-btn.correct-reveal { background: #2d6a4f; border-color: #40916c; }
+  .choice-btn.wrong-reveal { background: #9b2226; border-color: #ca6702; }
+  .choice-btn .mark { position: absolute; top: 6px; right: 8px; font-size: 14px; }
+  .choice-btn .mark.ok { color: #a7f3d0; }
+  .choice-btn .mark.no { color: #fca5a5; }
+  .choice-btn ruby { display: inline; line-height: 1.1; }
+  .choice-btn ruby rt { font-size: 0.55em; color: rgba(232,224,240,0.6); font-weight: 500; }
+  .choice-btn.correct-reveal ruby rt { color: rgba(167,243,208,0.85); }
+  .choice-btn.wrong-reveal ruby rt { color: rgba(252,165,165,0.85); }
+  .choice-btn.selected ruby rt { color: rgba(232,180,200,0.85); }
+  .arrow-row { display: flex; justify-content: space-between; gap: 12px; }
+  .btn-nav { flex: 1; padding: 12px 0; border-radius: 12px; background: #2a2535; border: 1px solid #3d3650; color: #e8e0f0; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
+  .btn-nav:disabled { opacity: 0.3; cursor: default; }
+  .btn-submit { flex: 1; padding: 12px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+  .btn-submit:disabled { opacity: 0.35; cursor: default; }
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div id="name-screen">
+    <div class="card text-center">
+      <span class="badge">みんなの日本語</span>
+      <h1 class="title">Lesson 22 — Vocabulary Exam</h1>
+      <p class="subtitle">60 multiple-choice questions · vocabulary, clothes &amp; dressing verbs</p>
+      <label class="name-label">おなまえは？ Enter your name</label>
+      <input class="name-input" id="name-input" type="text" placeholder="Your name..." autofocus>
+      <button class="btn-primary" id="btn-start" disabled>Start Exam →</button>
+    </div>
+  </div>
+
+  <div id="quiz-screen">
+    <header class="header">
+      <span class="badge">みんなの日本語</span>
+      <h1 class="title">Lesson 22 — Vocabulary Exam</h1>
+      <p class="subtitle" id="quiz-subtitle"></p>
+    </header>
+    <div class="score-banner" id="score-banner">
+      <div class="score-number" id="score-number"></div>
+      <div class="score-label" id="score-label"></div>
+      <div class="email-row" id="email-row"></div>
+      <button class="btn-retake" id="btn-retake">Retake Quiz</button>
+    </div>
+    <div class="progress-row">
+      <span class="progress-text" id="progress-text">0 / 60 answered</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <div class="nav-grid" id="nav-grid"></div>
+    <div class="q-card" id="q-card">
+      <div class="q-number" id="q-number"></div>
+      <div class="q-english" id="q-english"></div>
+      <div class="choices-grid" id="choices-grid"></div>
+    </div>
+    <div class="arrow-row">
+      <button class="btn-nav" id="btn-prev">← Previous</button>
+      <button class="btn-nav" id="btn-next">Next →</button>
+      <button class="btn-submit hidden" id="btn-submit" disabled>Submit Exam</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DISPLAY = {
+  "帽子":"<ruby>帽子<rt>ぼうし</rt></ruby>",
+  "眼鏡":"<ruby>眼鏡<rt>めがね</rt></ruby>",
+  "着物":"<ruby>着物<rt>きもの</rt></ruby>",
+  "上着":"<ruby>上着<rt>うわぎ</rt></ruby>",
+  "下着":"<ruby>下着<rt>したぎ</rt></ruby>",
+  "手袋":"<ruby>手袋<rt>てぶくろ</rt></ruby>",
+  "帯":"<ruby>帯<rt>おび</rt></ruby>",
+  "足袋":"<ruby>足袋<rt>たび</rt></ruby>",
+  "草履":"<ruby>草履<rt>ぞうり</rt></ruby>",
+  "運動靴":"<ruby>運動靴<rt>うんどうぐつ</rt></ruby>"
+};
+const READING = {
+  "帽子":"ぼうし","眼鏡":"めがね","着物":"きもの","上着":"うわぎ","下着":"したぎ",
+  "手袋":"てぶくろ","帯":"おび","足袋":"たび","草履":"ぞうり","運動靴":"うんどうぐつ"
+};
+
+const QUESTIONS = [
+  /* ═══ TIER 1: MAIN VOCABULARY ═══ */
+
+  /* ── Dressing verbs ── */
+  { english: "put on (a shirt, coat, dress — upper/full body)", answer: "きます", choices: ["きます","はきます","かぶります","かけます"] },
+  { english: "put on (shoes, trousers, skirt — lower body/feet)", answer: "はきます", choices: ["はきます","きます","かぶります","します"] },
+  { english: "put on (a hat — covering the head)", answer: "かぶります", choices: ["かぶります","かけます","きます","します"] },
+  { english: "put on (glasses — hanging on face)", answer: "かけます", choices: ["かけます","かぶります","します","きます"] },
+  { english: "put on (tie, belt, accessory — wrapping/tying)", answer: "します", choices: ["します","かけます","かぶります","はきます"] },
+  { english: "be born", answer: "うまれます", choices: ["うまれます","きます","かぶります","します"] },
+
+  /* ── Pronoun ── */
+  { english: "we", answer: "わたしたち", choices: ["わたしたち","こちら","みんなで","では"] },
+
+  /* ── Main clothing nouns ── */
+  { english: "coat", answer: "コート", choices: ["コート","セーター","スーツ","ブラウス"] },
+  { english: "sweater", answer: "セーター", choices: ["セーター","コート","ワイシャツ","ブラウス"] },
+  { english: "suit", answer: "スーツ", choices: ["スーツ","コート","セーター","ワンピース"] },
+  { english: "hat, cap", answer: "帽子", choices: ["帽子","眼鏡","手袋","帯"] },
+  { english: "glasses", answer: "眼鏡", choices: ["眼鏡","帽子","手袋","着物"] },
+
+  /* ── Food ── */
+  { english: "cake", answer: "ケーキ", choices: ["ケーキ","おべんとう","ユーモア","ロボット"] },
+  { english: "box lunch", answer: "おべんとう", choices: ["おべんとう","ケーキ","ロボット","つごう"] },
+
+  /* ── Other nouns ── */
+  { english: "robot", answer: "ロボット", choices: ["ロボット","ユーモア","ケーキ","コート"] },
+  { english: "humor", answer: "ユーモア", choices: ["ユーモア","ロボット","つごう","よく"] },
+  { english: "convenience (scheduling)", answer: "つごう", choices: ["つごう","ユーモア","やちん","よく"] },
+  { english: "often", answer: "よく", choices: ["よく","つごう","では","えーと"] },
+
+  /* ── 練習C / 会話 ── */
+  { english: "well, let me see (filler word)", answer: "えーと", choices: ["えーと","では","おめでとうございます","おさがしですか"] },
+  { english: "Congratulations!", answer: "おめでとうございます", choices: ["おめでとうございます","えーと","おさがしですか","では"] },
+  { english: "Are you looking for ~?", answer: "おさがしですか", choices: ["おさがしですか","おめでとうございます","では","こちら"] },
+  { english: "Well then, (transitional phrase)", answer: "では", choices: ["では","えーと","こちら","おさがしですか"] },
+  { english: "rent (for housing)", answer: "やちん", choices: ["やちん","つごう","ダイニングキッチン","わしつ"] },
+
+  /* ── Housing ── */
+  { english: "kitchen with a dining area", answer: "ダイニングキッチン", choices: ["ダイニングキッチン","わしつ","おしいれ","ふとん"] },
+  { english: "Japanese-style room", answer: "わしつ", choices: ["わしつ","ダイニングキッチン","おしいれ","ふとん"] },
+  { english: "Japanese-style closet", answer: "おしいれ", choices: ["おしいれ","ふとん","わしつ","ダイニングキッチン"] },
+  { english: "Japanese-style mattress and quilt", answer: "ふとん", choices: ["ふとん","おしいれ","わしつ","ダイニングキッチン"] },
+
+  /* ═══ TIER 2: CLOTHES (Useful Words) ═══ */
+
+  /* ── Upper body ── */
+  { english: "one-piece dress", answer: "ワンピース", choices: ["ワンピース","ブラウス","スカート","スーツ"] },
+  { english: "jacket, outerwear", answer: "上着", choices: ["上着","下着","コート","ワイシャツ"] },
+  { english: "blouse", answer: "ブラウス", choices: ["ブラウス","ワイシャツ","ワンピース","セーター"] },
+  { english: "white shirt (dress shirt)", answer: "ワイシャツ", choices: ["ワイシャツ","ブラウス","セーター","スーツ"] },
+
+  /* ── Lower body ── */
+  { english: "trousers, pants", answer: "ズボン", choices: ["ズボン","ジーンズ","スカート","ストッキング"] },
+  { english: "jeans", answer: "ジーンズ", choices: ["ジーンズ","ズボン","スカート","ベルト"] },
+  { english: "skirt", answer: "スカート", choices: ["スカート","ズボン","ジーンズ","ワンピース"] },
+
+  /* ── Accessories / underwear ── */
+  { english: "scarf, muffler", answer: "マフラー", choices: ["マフラー","ネクタイ","ベルト","手袋"] },
+  { english: "underwear", answer: "下着", choices: ["下着","上着","くつした","ストッキング"] },
+  { english: "socks", answer: "くつした", choices: ["くつした","ストッキング","足袋","下着"] },
+  { english: "tights, panty hose", answer: "ストッキング", choices: ["ストッキング","くつした","足袋","下着"] },
+  { english: "gloves", answer: "手袋", choices: ["手袋","マフラー","帽子","帯"] },
+  { english: "tie, necktie", answer: "ネクタイ", choices: ["ネクタイ","ベルト","マフラー","帯"] },
+  { english: "belt", answer: "ベルト", choices: ["ベルト","ネクタイ","帯","マフラー"] },
+
+  /* ── Outerwear ── */
+  { english: "overcoat", answer: "オーバーコート", choices: ["オーバーコート","レインコート","コート","上着"] },
+  { english: "raincoat", answer: "レインコート", choices: ["レインコート","オーバーコート","コート","上着"] },
+
+  /* ── Footwear ── */
+  { english: "high heels", answer: "ハイヒール", choices: ["ハイヒール","ブーツ","運動靴","草履"] },
+  { english: "boots", answer: "ブーツ", choices: ["ブーツ","ハイヒール","運動靴","草履"] },
+  { english: "trainers, sneakers", answer: "運動靴", choices: ["運動靴","ブーツ","草履","ハイヒール"] },
+
+  /* ── Traditional Japanese ── */
+  { english: "kimono (traditional Japanese attire)", answer: "着物", choices: ["着物","帯","足袋","草履"] },
+  { english: "obi (kimono sash/belt)", answer: "帯", choices: ["帯","着物","足袋","草履"] },
+  { english: "zori (Japanese sandals)", answer: "草履", choices: ["草履","足袋","運動靴","帯"] },
+  { english: "tabi (Japanese split-toe socks)", answer: "足袋", choices: ["足袋","草履","くつした","帯"] },
+
+  /* ═══ TIER 3: VERB-CLOTHING PAIRING ═══ */
+
+  { english: "Which verb? → スカート (skirt)", answer: "はきます", choices: ["はきます","きます","かぶります","します"] },
+  { english: "Which verb? → セーター (sweater)", answer: "きます", choices: ["きます","はきます","かぶります","かけます"] },
+  { english: "Which verb? → ブーツ (boots)", answer: "はきます", choices: ["はきます","きます","します","かけます"] },
+  { english: "Which verb? → 帽子 (hat)", answer: "かぶります", choices: ["かぶります","かけます","きます","します"] },
+  { english: "Which verb? → 眼鏡 (glasses)", answer: "かけます", choices: ["かけます","かぶります","します","きます"] },
+  { english: "Which verb? → ネクタイ (necktie)", answer: "します", choices: ["します","きます","かけます","かぶります"] },
+  { english: "Which verb? → ベルト (belt)", answer: "します", choices: ["します","はきます","きます","かけます"] },
+  { english: "Which verb? → 着物 (kimono)", answer: "きます", choices: ["きます","はきます","します","かぶります"] },
+  { english: "Which verb? → 草履 (zori sandals)", answer: "はきます", choices: ["はきます","きます","します","かけます"] },
+  { english: "Which verb? → 帯 (obi sash)", answer: "します", choices: ["します","きます","はきます","かぶります"] },
+];
+
+let playerName="";let quiz=[];let answers={};let currentQ=0;let submitted=false;
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function renderChoiceText(t){return DISPLAY[t]||t;}
+function plainAnswer(t){if(!t||t==="—")return"—";return READING[t]?`${t}（${READING[t]}）`:t;}
+
+emailjs.init("1oR0j0WDvUmSSYEpK");
+const $=id=>document.getElementById(id);
+const $ns=$("name-screen"),$qs=$("quiz-screen"),$ni=$("name-input"),$bs=$("btn-start");
+const $st=$("quiz-subtitle"),$sb=$("score-banner"),$sn=$("score-number"),$sl=$("score-label");
+const $er=$("email-row"),$br=$("btn-retake"),$pt=$("progress-text"),$pf=$("progress-fill");
+const $ng=$("nav-grid"),$qn=$("q-number"),$qe=$("q-english"),$cg=$("choices-grid");
+const $bp=$("btn-prev"),$bn=$("btn-next"),$bm=$("btn-submit");
+
+$ni.addEventListener("input",()=>{$bs.disabled=!$ni.value.trim();});
+$ni.addEventListener("keydown",e=>{if(e.key==="Enter"&&$ni.value.trim())go();});
+$bs.addEventListener("click",go);
+
+function go(){
+  playerName=$ni.value.trim();quiz=shuffle(QUESTIONS).map(q=>({...q,choices:shuffle(q.choices)}));
+  answers={};currentQ=0;submitted=false;$ns.style.display="none";$qs.style.display="block";$sb.style.display="none";
+  $st.textContent=`${playerName}さん — choose the correct word`;nav();rend();prog();
+}
+function nav(){$ng.innerHTML="";quiz.forEach((_,i)=>{const b=document.createElement("button");b.className="nav-dot";b.textContent=i+1;b.addEventListener("click",()=>{currentQ=i;rend();});$ng.appendChild(b);});}
+function uNav(){$ng.querySelectorAll(".nav-dot").forEach((d,i)=>{d.className="nav-dot";if(i===currentQ)d.classList.add("active");if(!submitted&&answers[i]!==undefined)d.classList.add("answered");if(submitted&&answers[i]===quiz[i].answer)d.classList.add("correct");if(submitted&&answers[i]!==undefined&&answers[i]!==quiz[i].answer)d.classList.add("wrong");});}
+function prog(){const c=Object.keys(answers).length;$pt.textContent=`${c} / ${quiz.length} answered`;$pf.style.width=`${(c/quiz.length)*100}%`;$bm.disabled=c<quiz.length;}
+function rend(){
+  const q=quiz[currentQ];$qn.textContent=`Question ${currentQ+1}`;$qe.textContent=q.english;$cg.innerHTML="";
+  q.choices.forEach(c=>{const b=document.createElement("button");b.className="choice-btn";if(submitted)b.classList.add("locked");b.innerHTML=`<span>${renderChoiceText(c)}</span>`;const sel=answers[currentQ]===c,cor=c===q.answer;
+    if(!submitted){if(sel)b.classList.add("selected");b.addEventListener("click",()=>{if(submitted)return;answers[currentQ]=c;rend();uNav();prog();});}
+    else{if(cor){b.classList.add("correct-reveal");b.innerHTML=`<span>${renderChoiceText(c)}</span><span class="mark ok">✓</span>`;}if(sel&&!cor){b.classList.add("wrong-reveal");b.innerHTML=`<span>${renderChoiceText(c)}</span><span class="mark no">✗</span>`;}}
+    $cg.appendChild(b);});
+  uNav();const last=currentQ===quiz.length-1;$bp.disabled=currentQ===0;
+  if(last&&!submitted){$bn.classList.add("hidden");$bm.classList.remove("hidden");}else{$bn.classList.remove("hidden");$bm.classList.add("hidden");$bn.disabled=last;}
+}
+$bp.addEventListener("click",()=>{if(currentQ>0){currentQ--;rend();}});
+$bn.addEventListener("click",()=>{if(currentQ<quiz.length-1){currentQ++;rend();}});
+$bm.addEventListener("click",sub);
+
+async function sub(){
+  let s=0;quiz.forEach((q,i)=>{if(answers[i]===q.answer)s++;});submitted=true;
+  const t=quiz.length,p=Math.round((s/t)*100);
+  $sn.textContent=`${s}/${t}`;
+  if(s===t)$sl.textContent="完璧！ Perfect!";else if(p>=90)$sl.textContent="すごい！ Excellent!";else if(p>=70)$sl.textContent="いいですね！ Good job!";else $sl.textContent="もう一度！ Try again!";
+  $sb.style.background=p>=90?"linear-gradient(135deg,#2d6a4f,#40916c)":p>=70?"linear-gradient(135deg,#b08d37,#d4a843)":"linear-gradient(135deg,#9b2226,#ca6702)";
+  $sb.style.display="block";currentQ=0;rend();uNav();$bm.classList.add("hidden");$bn.classList.remove("hidden");$bn.disabled=false;
+
+  const now=new Date().toLocaleString("en-PH",{timeZone:"Asia/Manila",dateStyle:"full",timeStyle:"short"});
+  const det=quiz.map((q,i)=>`${i+1}. ${q.english} → Answer: ${plainAnswer(answers[i]||"—")} | Correct: ${plainAnswer(q.answer)} ${answers[i]===q.answer?"✓":"✗"}`).join("\n");
+  const ep={name:playerName,email:"noreply@quiz.com",subject:`[${playerName}] みんなの日本語 Lesson 22 Quiz — ${p}%`,message:`Minna no Nihongo - Lesson 22 Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${t} (${p}%)\n\n--- Detailed Results ---\n${det}\n\nがんばって！`,time:now};
+  $er.innerHTML=`<span class="email-pill">📧 Sending results…</span>`;
+  try{await emailjs.send("service_v7ifzdj","template_lb9c879",ep);$er.innerHTML=`<span class="email-pill sent">✓ Results emailed!</span>`;}
+  catch(err){console.error("EmailJS error:",err);$er.innerHTML=`<span class="email-pill error">✗ ${err?.text||err?.message||'Email failed'}</span>`;}
+}
+$br.addEventListener("click",()=>{quiz=shuffle(QUESTIONS).map(q=>({...q,choices:shuffle(q.choices)}));answers={};currentQ=0;submitted=false;$sb.style.display="none";nav();rend();prog();});
+</script>
+</body>
+</html>

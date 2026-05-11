@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Irodori Grammar Practice 9</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sakura-50: #fef7f8;
+    --sakura-100: #fdeef0;
+    --sakura-200: #fbdae0;
+    --sakura-300: #f7b8c4;
+    --sakura-400: #f291a5;
+    --sakura-500: #e86b8a;
+    --sakura-600: #d44a6e;
+    --sakura-700: #b83359;
+    --sakura-800: #9a2d4e;
+    --sakura-900: #7f2944;
+    --leaf-400: #86b88a;
+    --leaf-500: #6a9e6f;
+    --leaf-600: #4f7f53;
+    --correct: #4caf7a;
+    --correct-bg: #eaf7ef;
+    --wrong: #d94f5c;
+    --wrong-bg: #fdeef0;
+    --text-primary: #3d2533;
+    --text-secondary: #6b4a5a;
+    --text-light: #9a7a8a;
+    --bg-main: #fef7f8;
+    --bg-card: #ffffff;
+    --shadow-sm: 0 2px 8px rgba(184, 51, 89, 0.08);
+    --shadow-md: 0 4px 20px rgba(184, 51, 89, 0.12);
+    --shadow-lg: 0 8px 32px rgba(184, 51, 89, 0.16);
+    --radius: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg-main);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Sakura petal background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(247, 184, 196, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(242, 145, 165, 0.10) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(253, 238, 240, 0.3) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+    animation: fadeDown 0.6s ease;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, var(--sakura-400), var(--sakura-500));
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--sakura-700);
+    margin-bottom: 4px;
+  }
+
+  .header p {
+    color: var(--text-light);
+    font-size: 0.875rem;
+  }
+
+  /* Progress bar */
+  .progress-area {
+    margin-bottom: 24px;
+    animation: fadeDown 0.6s ease 0.1s both;
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+
+  .progress-info .score {
+    font-weight: 500;
+    color: var(--sakura-600);
+  }
+
+  .progress-bar {
+    height: 8px;
+    background: var(--sakura-100);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sakura-400), var(--sakura-500));
+    border-radius: 4px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    padding: 28px 24px;
+    margin-bottom: 20px;
+    animation: slideUp 0.5s ease;
+    border: 1px solid rgba(247, 184, 196, 0.2);
+  }
+
+  .question-number {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .question-number::before {
+    content: '🌸';
+    font-size: 0.85rem;
+  }
+
+  .sentence {
+    font-size: 1.2rem;
+    line-height: 2.4;
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+
+  .sentence .speaker {
+    font-weight: 700;
+    color: var(--sakura-600);
+    margin-right: 4px;
+  }
+
+  .sentence .blank {
+    display: inline-block;
+    min-width: 100px;
+    border-bottom: 2.5px dashed var(--sakura-400);
+    text-align: center;
+    padding: 0 4px;
+    margin: 0 2px;
+    color: var(--sakura-600);
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .sentence .blank.filled {
+    border-bottom-style: solid;
+    border-color: var(--correct);
+    color: var(--correct);
+  }
+
+  .sentence .blank.wrong {
+    border-bottom-style: solid;
+    border-color: var(--wrong);
+    color: var(--wrong);
+    text-decoration: line-through;
+  }
+
+  .sentence-b {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 2.2;
+    margin-top: 8px;
+  }
+
+  .furigana-note {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  /* Options */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .option-btn {
+    display: block;
+    width: 100%;
+    padding: 14px 20px 12px;
+    border: 2px solid var(--sakura-200);
+    border-radius: 12px;
+    background: var(--sakura-50);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 1.1rem;
+    line-height: 2;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+    font-weight: 400;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--sakura-400);
+    background: var(--sakura-100);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .option-btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .option-btn:disabled {
+    cursor: default;
+  }
+
+  .option-btn.correct {
+    border-color: var(--correct);
+    background: var(--correct-bg);
+    color: var(--correct);
+    font-weight: 500;
+  }
+
+  .option-btn.correct::after {
+    content: ' ✓';
+    font-weight: 700;
+  }
+
+  .option-btn.wrong {
+    border-color: var(--wrong);
+    background: var(--wrong-bg);
+    color: var(--wrong);
+    opacity: 0.8;
+  }
+
+  .option-btn.wrong::after {
+    content: ' ✗';
+    font-weight: 700;
+  }
+
+  .option-btn.dimmed {
+    opacity: 0.45;
+    border-color: var(--sakura-100);
+  }
+
+  /* Explanation */
+  .explanation {
+    margin-top: 18px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #fef9f0, #fdf5e6);
+    border-radius: 12px;
+    border-left: 4px solid var(--sakura-400);
+    animation: fadeIn 0.4s ease;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+  }
+
+  .explanation strong {
+    color: var(--sakura-700);
+    font-weight: 700;
+  }
+
+  .explanation .grammar-point {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    color: var(--sakura-600);
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  /* Next button */
+  .next-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--sakura-500), var(--sakura-600));
+    color: white;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: fadeIn 0.4s ease;
+    margin-top: 16px;
+    box-shadow: 0 4px 15px rgba(212, 74, 110, 0.3);
+  }
+
+  .next-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 74, 110, 0.4);
+  }
+
+  .next-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Results screen */
+  .results-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 40px 24px;
+    text-align: center;
+    animation: slideUp 0.6s ease;
+    border: 1px solid rgba(247, 184, 196, 0.2);
+  }
+
+  .results-emoji {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .results-card h2 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 1.5rem;
+    color: var(--sakura-700);
+    margin-bottom: 8px;
+  }
+
+  .results-score {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--sakura-600);
+    margin: 16px 0;
+    font-family: 'Zen Maru Gothic', sans-serif;
+  }
+
+  .results-score span {
+    font-size: 1.2rem;
+    color: var(--text-light);
+    font-weight: 400;
+  }
+
+  .results-message {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.7;
+    font-size: 0.95rem;
+  }
+
+  .retry-btn {
+    display: inline-block;
+    padding: 14px 40px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--sakura-500), var(--sakura-600));
+    color: white;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(212, 74, 110, 0.3);
+    margin-top: 8px;
+  }
+
+  .retry-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 74, 110, 0.4);
+  }
+
+  .review-section {
+    margin-top: 32px;
+    text-align: left;
+  }
+
+  .review-section h3 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    color: var(--sakura-700);
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .review-item {
+    background: var(--sakura-50);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--correct);
+    font-size: 0.9rem;
+    line-height: 1.8;
+  }
+
+  .review-item.missed {
+    border-left-color: var(--wrong);
+    background: var(--wrong-bg);
+  }
+
+  .review-item .q-label {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .review-item .answer-line {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* Furigana */
+  ruby { ruby-align: center; }
+  rt {
+    font-size: 0.5em;
+    color: var(--text-light);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+  .option-btn rt { font-size: 0.5em; color: inherit; }
+  .explanation rt { font-size: 0.55em; }
+  .review-item rt { font-size: 0.55em; }
+
+  .hidden { display: none !important; }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  /* Floating petals */
+  .petal {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    background: var(--sakura-300);
+    border-radius: 50% 0 50% 50%;
+    opacity: 0.2;
+    pointer-events: none;
+    z-index: 0;
+    animation: float linear infinite;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.2; }
+    90% { opacity: 0.2; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="header-badge">IRODORI • <ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby> 9</div>
+    <h1>Practice Quiz 9</h1>
+    <p>Read each sentence and choose the best answer</p>
+  </div>
+
+  <div class="progress-area">
+    <div class="progress-info">
+      <span id="progress-text">Question 1 / 12</span>
+      <span class="score" id="score-text">Score: 0</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <div id="quiz-area"></div>
+  <div id="results-area" class="hidden"></div>
+</div>
+
+<script>
+const R = (kanji, reading) => `<ruby>${kanji}<rt>${reading}</rt></ruby>`;
+
+const questions = [
+  {
+    id: 1,
+    display: [`${R('旧','きゅう')}${R('暦','れき')}のお${R('正','しょう')}${R('月','がつ')}の${R('日','ひ')}は、${R('年','とし')}`, '___', `${R('違','ちが')}います。`],
+    sentenceB: null,
+    options: ['によって', 'において', 'になって'],
+    answer: 'によって',
+    answerRuby: 'によって',
+    explanation: {
+      point: '〜によって（depending on）',
+      text: '「によって」は「〜に応じて・〜次第で」という意味です。旧暦の正月は年ごとに日付が変わるので、「年によって違います」が正しいです。「において」は場所・場面（in/at）、「になって」は変化（become）を表します。'
+    }
+  },
+  {
+    id: 2,
+    display: [`A：アナさんはお${R('祭','まつ')}りに`, '___', '。'],
+    sentenceB: `B：そうですか。${R('残','ざん')}${R('念','ねん')}ですね。`,
+    options: [`${R('来','き')}たりしています`, `${R('来','こ')}れません`, `${R('来','き')}たばかりです`],
+    answer: `${R('来','こ')}れません`,
+    answerRuby: `${R('来','こ')}れません`,
+    explanation: {
+      point: '〜れません（can\'t ~）',
+      text: '「来れません」は可能形の否定で「来ることができない」という意味です。Bが「残念ですね」と返しているので、来られないことが分かります。「来たりしています」は繰り返しの動作、「来たばかりです」は直後を表すので文脈に合いません。'
+    }
+  },
+  {
+    id: 3,
+    display: [`${R('今','こ')}${R('年','とし')}は、クリスマスも${R('会','かい')}${R('社','しゃ')}に`, '___', 'なくちゃならないんです。'],
+    sentenceB: null,
+    options: [`${R('行','い')}か`, `${R('行','い')}く`, `${R('行','い')}け`],
+    answer: `${R('行','い')}か`,
+    answerRuby: `${R('行','い')}か`,
+    explanation: {
+      point: '〜なくちゃならない（have to ~）',
+      text: '「〜なくちゃならない」は義務を表す表現で、動詞の「ない形」の語幹に接続します。行く → 行か + なくちゃならない。「行く」は辞書形、「行け」は命令形・可能形なので、この文型には接続できません。'
+    }
+  },
+  {
+    id: 4,
+    display: [`お${R('正','しょう')}${R('月','がつ')}は、${R('親','しん')}${R('戚','せき')}が`, '___', `、${R('忙','いそが')}しかったです。`],
+    sentenceB: null,
+    options: [`${R('来','き')}ながら`, `${R('来','こ')}ないで`, `${R('来','き')}たりして`],
+    answer: `${R('来','き')}たりして`,
+    answerRuby: `${R('来','き')}たりして`,
+    explanation: {
+      point: '〜たりして（doing things like ~）',
+      text: '「〜たりして」は、複数の動作や状態の例を挙げるときに使います。親戚が来るなど色々あって忙しかった、という意味です。「来ながら」は同時進行、「来ないで」は否定の依頼で文脈に合いません。'
+    }
+  },
+  {
+    id: 5,
+    display: [`${R('今','こん')}${R('度','ど')}の${R('休','やす')}み、１${R('日','にち')}`, '___', `${R('実','じっ')}${R('家','か')}に${R('帰','かえ')}ります。`],
+    sentenceB: null,
+    options: ['しか', 'とか', 'だけ'],
+    answer: 'だけ',
+    answerRuby: 'だけ',
+    explanation: {
+      point: '〜だけ（only ~）',
+      text: '「だけ」は「only」の意味で、肯定文で使います。「しか」も「only」ですが、必ず否定形（〜ません）とセットになります。ここは「帰ります」と肯定文なので「だけ」が正解です。「とか」は例示（〜など）に使います。'
+    }
+  },
+  {
+    id: 6,
+    display: [`A：お${R('祭','まつ')}りのときは${R('特','とく')}${R('別','べつ')}な${R('料','りょう')}${R('理','り')}をたくさん`, '___', 'んです。'],
+    sentenceB: `B：そうなんですか。${R('大','たい')}${R('変','へん')}ですね。`,
+    options: [`${R('作','つく')}らなくてもいい`, `${R('作','つく')}らない`, `${R('作','つく')}らなくちゃならない`],
+    answer: `${R('作','つく')}らなくちゃならない`,
+    answerRuby: `${R('作','つく')}らなくちゃならない`,
+    explanation: {
+      point: '〜なくちゃならない（have to ~）',
+      text: 'Bが「大変ですね」と共感しているので、Aは「たくさん作らなければならない」と義務・負担を述べています。「作らなくてもいい」は「作らなくても大丈夫」（don\'t have to）、「作らない」は単純な否定なので文脈に合いません。'
+    }
+  },
+  {
+    id: 7,
+    display: [`${R('休','やす')}みは${R('友','とも')}だちと`, '___', `、${R('楽','たの')}しかったです。`],
+    sentenceB: null,
+    options: [`${R('遊','あそ')}んだりして`, `${R('遊','あそ')}んだあと`, `${R('遊','あそ')}んだほうが`],
+    answer: `${R('遊','あそ')}んだりして`,
+    answerRuby: `${R('遊','あそ')}んだりして`,
+    explanation: {
+      point: '〜たりして（doing things like ~）',
+      text: '友達と遊ぶなどして楽しかった、という例示の表現です。「遊んだあと」は時間関係（after playing）、「遊んだほうが」は比較・アドバイス（better to play）で、この文脈には合いません。'
+    }
+  },
+  {
+    id: 8,
+    display: [`A：${R('実','じっ')}${R('家','か')}で、ゆっくりテレビを`, '___', '。'],
+    sentenceB: 'B：よかったですね。',
+    options: [`${R('見','み')}ることです`, `${R('見','み')}れました`, `${R('見','み')}てください`],
+    answer: `${R('見','み')}れました`,
+    answerRuby: `${R('見','み')}れました`,
+    explanation: {
+      point: '〜れました（was able to ~）',
+      text: '「見れました」は可能形の過去で「見ることができた」という意味です。Bが「よかったですね」と返しているので、実現できたことへの感想だと分かります。「見ることです」は定義、「見てください」は依頼なので合いません。'
+    }
+  },
+  {
+    id: 9,
+    display: [`A：${R('成','せい')}${R('人','じん')}${R('式','しき')}は、${R('何','なに')}を`, '___', '？'],
+    sentenceB: `B：${R('市','し')}${R('長','ちょう')}さんの${R('話','はなし')}を${R('聞','き')}いたり、${R('写','しゃ')}${R('真','しん')}を${R('撮','と')}ったりします。`,
+    options: ['したばかりですか', 'するんですか', 'してみますか'],
+    answer: 'するんですか',
+    answerRuby: 'するんですか',
+    explanation: {
+      point: '〜するんですか（what do you do ~?）',
+      text: '「するんですか」は「〜のですか」の口語形で、説明を求める質問です。Bが具体的に活動を説明しているので、「何をするんですか」（what do people do?）が自然です。「したばかり」は直後、「してみますか」は提案・試みの意味です。'
+    }
+  },
+  {
+    id: 10,
+    display: [`${R('今','こ')}${R('年','とし')}のお${R('正','しょう')}${R('月','がつ')}は１${R('日','にち')}`, '___', `${R('休','やす')}めませんでした。`],
+    sentenceB: null,
+    options: ['だけ', 'ごろ', 'しか'],
+    answer: 'しか',
+    answerRuby: 'しか',
+    explanation: {
+      point: '〜しか＋否定（only ~ / nothing but ~）',
+      text: '「しか」は否定形とセットで「〜だけしかない」という限定を強調します。「休めませんでした」と否定形なので「しか」が正解。「だけ」は肯定文で使います。「ごろ」は時間の概算（〜頃）で意味が違います。'
+    }
+  },
+  {
+    id: 11,
+    display: [`A：「ナーダム」では、${R('何','なに')}を`, '___', '？'],
+    sentenceB: `B：パレードを${R('見','み')}たり、「ホーショール」という${R('特','とく')}${R('別','べつ')}な${R('料','りょう')}${R('理','り')}を${R('食','た')}べたりします。`,
+    options: ['するんですか', 'してくれますか', 'したらいいですか'],
+    answer: 'するんですか',
+    answerRuby: 'するんですか',
+    explanation: {
+      point: '〜するんですか（what do you do ~?）',
+      text: 'Q9と同じ文型です。イベントの内容を尋ねる質問で、「するんですか」が最も自然です。「してくれますか」は依頼（will you do for me?）、「したらいいですか」はアドバイス求め（what should I do?）なので合いません。'
+    }
+  },
+  {
+    id: 12,
+    display: [`お${R('年','とし')}${R('玉','だま')}は、500${R('円','えん')}`, '___', 'もらえませんでした。'],
+    sentenceB: null,
+    options: ['しか', 'だけ', 'は'],
+    answer: 'しか',
+    answerRuby: 'しか',
+    explanation: {
+      point: '〜しか＋否定（only ~ / nothing but ~）',
+      text: '「もらえませんでした」が否定形なので「しか」が正解です。500円しかもらえなかった＝少ないことを強調しています。「だけ」は肯定文、「は」は主題マーカーで、この文脈の限定表現には合いません。'
+    }
+  }
+];
+
+let currentQ = 0;
+let score = 0;
+let answered = [];
+
+function init() {
+  currentQ = 0;
+  score = 0;
+  answered = [];
+  document.getElementById('results-area').classList.add('hidden');
+  renderQuestion();
+  updateProgress();
+  createPetals();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const area = document.getElementById('quiz-area');
+
+  const sentenceParts = q.display.map((part, i) => {
+    if (part === '___') return '<span class="blank" id="blank-slot">　？　</span>';
+    return part;
+  }).join('');
+
+  let html = `
+    <div class="question-card" id="q-card">
+      <div class="question-number"><ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${q.id} / 12</div>
+      <div class="sentence">${sentenceParts}</div>
+      ${q.sentenceB ? `<div class="sentence-b">${q.sentenceB}</div>` : ''}
+      <div class="options" id="options-area">
+        ${q.options.map((opt, i) => `
+          <button class="option-btn" onclick="selectAnswer(${i})" data-option="${opt}">${opt}</button>
+        `).join('')}
+      </div>
+      <div id="explanation-area"></div>
+      <div id="next-area"></div>
+    </div>
+  `;
+  area.innerHTML = html;
+}
+
+function selectAnswer(idx) {
+  const q = questions[currentQ];
+  const selected = q.options[idx];
+  const isCorrect = selected === q.answer;
+  const buttons = document.querySelectorAll('.option-btn');
+  const blank = document.getElementById('blank-slot');
+
+  if (isCorrect) {
+    score++;
+    blank.innerHTML = q.answerRuby;
+    blank.classList.add('filled');
+  } else {
+    blank.innerHTML = selected;
+    blank.classList.add('wrong');
+    setTimeout(() => {
+      blank.innerHTML = q.answerRuby;
+      blank.classList.remove('wrong');
+      blank.classList.add('filled');
+    }, 800);
+  }
+
+  answered.push({ id: q.id, correct: isCorrect, selected, answer: q.answer, answerRuby: q.answerRuby });
+
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (q.options[i] === q.answer) {
+      btn.classList.add('correct');
+    } else if (i === idx && !isCorrect) {
+      btn.classList.add('wrong');
+    } else {
+      btn.classList.add('dimmed');
+    }
+  });
+
+  // Show explanation
+  const expArea = document.getElementById('explanation-area');
+  expArea.innerHTML = `
+    <div class="explanation">
+      <span class="grammar-point">${q.explanation.point}</span>
+      ${q.explanation.text}
+    </div>
+  `;
+
+  // Show next button
+  const nextArea = document.getElementById('next-area');
+  const isLast = currentQ >= questions.length - 1;
+  nextArea.innerHTML = `
+    <button class="next-btn" onclick="${isLast ? 'showResults()' : 'nextQuestion()'}">
+      ${isLast ? '<ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby>を<ruby>見<rt>み</rt></ruby>る →' : '<ruby>次<rt>つぎ</rt></ruby>の<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> →'}
+    </button>
+  `;
+
+  updateProgress();
+}
+
+function nextQuestion() {
+  currentQ++;
+  renderQuestion();
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+  const answered_count = answered.length;
+  document.getElementById('progress-text').textContent = `Question ${currentQ + 1} / 12`;
+  document.getElementById('score-text').textContent = `Score: ${score}`;
+  document.getElementById('progress-fill').style.width = `${(answered_count / 12) * 100}%`;
+}
+
+function showResults() {
+  document.getElementById('quiz-area').innerHTML = '';
+  document.getElementById('progress-fill').style.width = '100%';
+
+  const pct = Math.round((score / 12) * 100);
+  let emoji, msg;
+  if (pct === 100) { emoji = '🌸✨'; msg = '<ruby>満<rt>まん</rt></ruby><ruby>点<rt>てん</rt></ruby>！パーフェクト！<ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby>の<ruby>理<rt>り</rt></ruby><ruby>解<rt>かい</rt></ruby>が<ruby>素<rt>す</rt></ruby><ruby>晴<rt>ば</rt></ruby>らしいです。'; }
+  else if (pct >= 80) { emoji = '🌸'; msg = 'よくできました！あと<ruby>少<rt>すこ</rt></ruby>しで<ruby>完<rt>かん</rt></ruby><ruby>璧<rt>ぺき</rt></ruby>です。'; }
+  else if (pct >= 60) { emoji = '🌱'; msg = 'まあまあです。<ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>えた<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>を<ruby>復<rt>ふく</rt></ruby><ruby>習<rt>しゅう</rt></ruby>しましょう。'; }
+  else { emoji = '📖'; msg = 'もう<ruby>少<rt>すこ</rt></ruby>し<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>しましょう。<ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby>のポイントを<ruby>確<rt>かく</rt></ruby><ruby>認<rt>にん</rt></ruby>してみてください。'; }
+
+  const missed = answered.filter(a => !a.correct);
+
+  let reviewHTML = '';
+  if (missed.length > 0) {
+    reviewHTML = `
+      <div class="review-section">
+        <h3><ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>えた<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby></h3>
+        ${missed.map(m => {
+          const q = questions.find(qq => qq.id === m.id);
+          return `
+            <div class="review-item missed">
+              <div class="q-label"><ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${m.id}</div>
+              <div>${q.display.join('').replace('___', `<strong>${q.answerRuby}</strong>`)}</div>
+              <div class="answer-line">あなたの<ruby>答<rt>こた</rt></ruby>え：${m.selected}　→　<ruby>正<rt>せい</rt></ruby><ruby>解<rt>かい</rt></ruby>：${m.answerRuby}</div>
+              <div style="margin-top:6px;font-size:0.8rem;color:var(--text-light)">${q.explanation.point}：${q.explanation.text.substring(0, 80)}…</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  const resultsArea = document.getElementById('results-area');
+  resultsArea.classList.remove('hidden');
+  resultsArea.innerHTML = `
+    <div class="results-card">
+      <span class="results-emoji">${emoji}</span>
+      <h2>クイズ<ruby>完<rt>かん</rt></ruby><ruby>了<rt>りょう</rt></ruby>！</h2>
+      <div class="results-score">${score} <span>/ 12</span></div>
+      <div class="results-message">${msg}</div>
+      <button class="retry-btn" onclick="init()">もう<ruby>一<rt>いち</rt></ruby><ruby>度<rt>ど</rt></ruby>チャレンジ →</button>
+      ${reviewHTML}
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function createPetals() {
+  document.querySelectorAll('.petal').forEach(p => p.remove());
+  for (let i = 0; i < 6; i++) {
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    petal.style.left = Math.random() * 100 + '%';
+    petal.style.animationDuration = (8 + Math.random() * 12) + 's';
+    petal.style.animationDelay = Math.random() * 10 + 's';
+    petal.style.width = (8 + Math.random() * 8) + 'px';
+    petal.style.height = petal.style.width;
+    document.body.appendChild(petal);
+  }
+}
+
+init();
+</script>
+</body>
+</html>

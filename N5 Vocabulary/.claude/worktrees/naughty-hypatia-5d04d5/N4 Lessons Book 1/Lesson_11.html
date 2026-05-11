@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>いろどり Irodori A2 - Lesson 11: 肉と野菜は私が買って行きます</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========== CSS Variables - Coral/Orange Food Theme ========== */
+        :root {
+            --primary: #ea580c;
+            --primary-light: #fb923c;
+            --primary-dark: #c2410c;
+            --accent: #0891b2;
+            --accent-light: #22d3ee;
+            --accent-dark: #0e7490;
+            --secondary: #f97316;
+            --secondary-light: #fed7aa;
+            --success: #16a34a;
+            --success-light: #bbf7d0;
+            --error: #dc2626;
+            --error-light: #fecaca;
+            --warning: #eab308;
+            --warning-light: #fef9c3;
+            --bg-light: #fff7ed;
+            --bg-orange: #ffedd5;
+            --bg-card: #ffffff;
+            --text-primary: #7c2d12;
+            --text-secondary: #9a3412;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ========== Reset & Base ========== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-orange) 100%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== Progress Bar ========== */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--bg-card);
+            box-shadow: var(--shadow);
+            padding: 12px 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .progress-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-title .lesson-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .progress-bar-wrapper {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .progress-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:disabled {
+            background: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ========== Main Container ========== */
+        .presentation {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        /* ========== Slides ========== */
+        .slide {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== Title Slide ========== */
+        .title-slide {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .title-slide .book-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+
+        .title-slide h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .title-slide .lesson-title-jp {
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .title-slide .lesson-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .food-icons {
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+        }
+
+        .title-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            max-width: 850px;
+            margin: 0 auto 40px;
+        }
+
+        .title-card h2 {
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .grammar-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .grammar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-light);
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .grammar-item:hover {
+            transform: translateX(8px);
+            background: var(--secondary-light);
+        }
+
+        .grammar-number {
+            width: 26px;
+            height: 26px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(234, 88, 12, 0.5);
+        }
+
+        /* ========== Content Slides ========== */
+        .content-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .slide-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .grammar-badge {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .slide-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            flex: 1;
+        }
+
+        .slide-header .jp-title {
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* ========== Ruby (Furigana) Styling ========== */
+        ruby {
+            ruby-position: over;
+        }
+
+        ruby rt {
+            font-size: 0.6em;
+            color: var(--text-muted);
+        }
+
+        /* ========== Example Boxes ========== */
+        .example-box {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #fdba74 100%);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .example-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-japanese {
+            font-size: 1.35rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 2;
+        }
+
+        .example-english {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* ========== Conversation Box ========== */
+        .conversation-box {
+            background: linear-gradient(135deg, #ecfdf5 0%, #a7f3d0 100%);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 20px 0;
+            border-left: 4px solid var(--success);
+        }
+
+        .conversation-box .example-label {
+            color: #166534;
+        }
+
+        .speaker {
+            font-weight: 600;
+            color: var(--primary-dark);
+            min-width: 24px;
+            display: inline-block;
+        }
+
+        .speaker.b {
+            color: var(--accent-dark);
+        }
+
+        /* ========== Comparison Boxes ========== */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-box {
+            padding: 20px;
+            border-radius: var(--radius);
+        }
+
+        .go-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .come-box {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            border-left: 4px solid #ec4899;
+        }
+
+        .two-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+        }
+
+        .three-box {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left: 4px solid #10b981;
+        }
+
+        .prefer-box {
+            background: linear-gradient(135deg, #f5f3ff 0%, #ddd6fe 100%);
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .any-box {
+            background: linear-gradient(135deg, #ecfeff 0%, #a5f3fc 100%);
+            border-left: 4px solid #06b6d4;
+        }
+
+        .box-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .go-box .box-label { color: #1e40af; }
+        .come-box .box-label { color: #be185d; }
+        .two-box .box-label { color: #92400e; }
+        .three-box .box-label { color: #065f46; }
+        .prefer-box .box-label { color: #6d28d9; }
+        .any-box .box-label { color: #0e7490; }
+
+        /* ========== Explanation Sections ========== */
+        .explanation {
+            margin: 24px 0;
+        }
+
+        .explanation h3 {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .explanation p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .key-point {
+            background: var(--secondary-light);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 16px 0;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .key-point strong {
+            color: var(--primary-dark);
+        }
+
+        .warning-point {
+            background: var(--warning-light);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 16px 0;
+            border-left: 4px solid var(--warning);
+        }
+
+        /* ========== Structure Box ========== */
+        .structure-box {
+            background: linear-gradient(135deg, #ecfeff 0%, #a5f3fc 100%);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #06b6d4;
+        }
+
+        .structure-box .label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #0e7490;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .structure-formula {
+            font-size: 1.05rem;
+            font-family: 'Outfit', monospace;
+            color: var(--primary-dark);
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 8px 4px;
+        }
+
+        .structure-formula .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .structure-formula .accent {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* ========== Verb Grid ========== */
+        .verb-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .verb-item {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .verb-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .verb-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .verb-jp {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+
+        .verb-en {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ========== Interrogative Grid ========== */
+        .interrogative-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .interrogative-item {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #fdba74 100%);
+            border-radius: var(--radius);
+            padding: 14px;
+            text-align: center;
+            border-left: 3px solid var(--primary);
+        }
+
+        .interrogative-jp {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+
+        .interrogative-en {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* ========== Collapsible MNN Notes ========== */
+        .mnn-connection {
+            margin: 24px 0;
+        }
+
+        .mnn-toggle {
+            width: 100%;
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            border: none;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #b91c1c;
+            transition: var(--transition);
+        }
+
+        .mnn-toggle:hover {
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+        }
+
+        .mnn-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .mnn-toggle.open .icon {
+            transform: rotate(180deg);
+        }
+
+        .mnn-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            background: #fef2f2;
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .mnn-content.open {
+            max-height: 500px;
+            padding: 20px;
+            border: 1px solid #fecaca;
+            border-top: none;
+        }
+
+        .mnn-content h4 {
+            color: #b91c1c;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .mnn-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .mnn-lesson-ref {
+            display: inline-block;
+            background: #b91c1c;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+
+        /* ========== Quiz Slides ========== */
+        .quiz-card {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #fdba74 100%);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .quiz-badge {
+            background: var(--accent);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .quiz-header h2 {
+            font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        .quiz-question {
+            background: white;
+            padding: 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .question-number {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .question-context {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+
+        .fill-blank {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 1.25rem;
+            margin: 20px 0;
+        }
+
+        .blank-input {
+            border: 2px dashed var(--primary);
+            background: var(--bg-light);
+            padding: 8px 16px;
+            border-radius: 8px;
+            min-width: 100px;
+            font-size: 1.05rem;
+            font-family: inherit;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .blank-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.2);
+        }
+
+        .check-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+        }
+
+        .check-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* ========== Answer Slides ========== */
+        .answer-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .answer-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .answer-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .answer-result {
+            padding: 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+
+        .answer-result.correct {
+            background: var(--success-light);
+            border-left: 4px solid var(--success);
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--success);
+        }
+
+        .answer-text {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .answer-explanation {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        /* ========== Summary Slide ========== */
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            color: white;
+            text-align: center;
+        }
+
+        .summary-card h2 {
+            font-size: 2rem;
+            margin-bottom: 24px;
+        }
+
+        .summary-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 32px 0;
+        }
+
+        .summary-point {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            border-radius: var(--radius);
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-point h4 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .summary-point p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .restart-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 16px 48px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 24px;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        /* ========== Responsive Design ========== */
+        @media (max-width: 768px) {
+            .progress-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .progress-bar-wrapper {
+                width: 100%;
+                max-width: none;
+            }
+
+            .progress-nav {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .content-card, .quiz-card, .answer-card {
+                padding: 24px;
+            }
+
+            .slide-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .example-japanese {
+                font-size: 1.15rem;
+            }
+
+            .fill-blank {
+                font-size: 1.1rem;
+            }
+
+            .structure-formula {
+                font-size: 0.95rem;
+                padding: 10px 14px;
+                margin: 4px 2px;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-points {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .progress-title {
+                font-size: 0.8rem;
+            }
+
+            .nav-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .title-slide h1 {
+                font-size: 2rem;
+            }
+
+            .grammar-item {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+
+            .food-icons {
+                font-size: 2rem;
+            }
+
+            .summary-points {
+                grid-template-columns: 1fr;
+            }
+
+            .interrogative-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ========== Animations ========== */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title">
+                <span class="lesson-badge">A2</span>
+                いろどり Lesson 11
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text"><span id="currentSlide">1</span> / <span id="totalSlides">14</span></div>
+            </div>
+            <div class="progress-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()">
+                    ◀ <span class="btn-text">Back</span>
+                </button>
+                <button class="nav-btn" id="nextBtn" onclick="nextSlide()">
+                    <span class="btn-text">Next</span> ▶
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Presentation -->
+    <div class="presentation">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <div class="book-badge">いろどり IRODORI • 入門 A2</div>
+                <h1>Lesson 11</h1>
+                <div class="food-icons">🍖 🥬 🍰 🍵 🍳</div>
+                <div class="lesson-title-jp"><ruby>肉<rt>にく</rt></ruby>と<ruby>野菜<rt>やさい</rt></ruby>は<ruby>私<rt>わたし</rt></ruby>が<ruby>買<rt>か</rt></ruby>って<ruby>行<rt>い</rt></ruby>きます</div>
+                <div class="lesson-subtitle">I will buy meat and vegetables and bring them • Delicious Food</div>
+                
+                <div class="title-card">
+                    <h2>📚 <ruby>文法<rt>ぶんぽう</rt></ruby>ノート Grammar Points</h2>
+                    <div class="grammar-list">
+                        <div class="grammar-item">
+                            <span class="grammar-number">1</span>
+                            <span>V-て<ruby>行<rt>い</rt></ruby>きます / V-て<ruby>来<rt>き</rt></ruby>ます — Do V and go/come</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">2</span>
+                            <span>N1とN2(と)、どっちがいいですか？ — Which do you prefer?</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">3</span>
+                            <span>Nのほうがいいです — Expressing preference</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">4</span>
+                            <span><ruby>疑問詞<rt>ぎもんし</rt></ruby>+でもいいです — Anything/anyone is fine</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="start-btn pulse" onclick="nextSlide()">
+                    🍴 <ruby>始<rt>はじ</rt></ruby>めましょう！Start Learning
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Grammar 1 - V-て行きます/来ます -->
+        <div class="slide" data-slide="2">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 1</span>
+                    <div>
+                        <h2>V-て<ruby>行<rt>い</rt></ruby>きます / V-て<ruby>来<rt>き</rt></ruby>ます</h2>
+                        <span class="jp-title">Do V First, Then Go/Come</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        <ruby>肉<rt>にく</rt></ruby>と<ruby>野菜<rt>やさい</rt></ruby>は、<ruby>私<rt>わたし</rt></ruby>が<ruby>買<rt>か</rt></ruby>っ<strong>て<ruby>行<rt>い</rt></ruby>きます</strong>よ。
+                    </div>
+                    <div class="example-english">I will buy meat and vegetables and bring them over.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>V-て<ruby>行<rt>い</rt></ruby>く/<ruby>来<rt>く</rt></ruby>る describes doing something <strong>first</strong> and then going or coming somewhere. In this lesson, it's used to discuss who will bring what items to a barbecue or party.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        V-<span class="highlight">て</span> + <ruby>行<rt>い</rt></ruby>きます (do V and go)
+                    </div>
+                    <div class="structure-formula">
+                        V-<span class="accent">て</span> + <ruby>来<rt>き</rt></ruby>ます (do V and come)
+                    </div>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box go-box">
+                        <div class="box-label">🔵 V-て<ruby>行<rt>い</rt></ruby>きます (do and GO)</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            デザートを<ruby>持<rt>も</rt></ruby>って<ruby>行<rt>い</rt></ruby>きます。<br>
+                            <span class="example-english">I will bring a dessert (and go there).</span>
+                        </div>
+                    </div>
+                    <div class="comparison-box come-box">
+                        <div class="box-label">🩷 V-て<ruby>来<rt>き</rt></ruby>ます (do and COME)</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            <ruby>国<rt>くに</rt></ruby>の<ruby>料理<rt>りょうり</rt></ruby>を<ruby>作<rt>つく</rt></ruby>って<ruby>来<rt>き</rt></ruby>ました。<br>
+                            <span class="example-english">I made a dish from my country (and came here).</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="verb-grid">
+                    <div class="verb-item">
+                        <div class="verb-icon">🛍️</div>
+                        <div class="verb-jp"><ruby>買<rt>か</rt></ruby>って<ruby>行<rt>い</rt></ruby>く</div>
+                        <div class="verb-en">buy and bring</div>
+                    </div>
+                    <div class="verb-item">
+                        <div class="verb-icon">📦</div>
+                        <div class="verb-jp"><ruby>持<rt>も</rt></ruby>って<ruby>行<rt>い</rt></ruby>く</div>
+                        <div class="verb-en">take/bring (go)</div>
+                    </div>
+                    <div class="verb-item">
+                        <div class="verb-icon">👨‍🍳</div>
+                        <div class="verb-jp"><ruby>作<rt>つく</rt></ruby>って<ruby>行<rt>い</rt></ruby>く</div>
+                        <div class="verb-en">make and bring</div>
+                    </div>
+                    <div class="verb-item">
+                        <div class="verb-icon">🏠</div>
+                        <div class="verb-jp"><ruby>持<rt>も</rt></ruby>って<ruby>来<rt>く</rt></ruby>る</div>
+                        <div class="verb-en">bring (come)</div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">💬 More Examples</div>
+                    <div class="example-japanese">
+                        <ruby>明日<rt>あした</rt></ruby>のパーティー、<ruby>私<rt>わたし</rt></ruby>はデザートを<ruby>持<rt>も</rt></ruby>って<ruby>行<rt>い</rt></ruby>きます。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">I will bring a dessert to tomorrow's party.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        <ruby>飲<rt>の</rt></ruby>み<ruby>物<rt>もの</rt></ruby>を<ruby>買<rt>か</rt></ruby>って<ruby>来<rt>き</rt></ruby>ましたよ。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">I bought drinks and brought them here.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        どうぞ、<ruby>食<rt>た</rt></ruby>べてください。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">Please enjoy it. (Said when offering food you brought)</span>
+                    </div>
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 29</span> V-て<ruby>行<rt>い</rt></ruby>きます / V-て<ruby>来<rt>き</rt></ruby>ます</p>
+                        <p><span class="mnn-lesson-ref">Lesson 16</span> V-て connecting actions</p>
+                        <p><strong>Key Point:</strong> MNN Lesson 29 introduces this pattern for sequential actions involving movement. The te-form connects the first action to the movement verb. <ruby>行<rt>い</rt></ruby>く = speaker goes away; <ruby>来<rt>く</rt></ruby>る = speaker comes toward the reference point.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Grammar 2 - どっち/どれがいいですか？ -->
+        <div class="slide" data-slide="3">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 2</span>
+                    <div>
+                        <h2>N1とN2(と)、どっちがいいですか？</h2>
+                        <span class="jp-title">Which Do You Prefer?</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        チョコレートケーキとチーズケーキ、<strong>どっちがいいですか</strong>？
+                    </div>
+                    <div class="example-english">Which do you like, chocolate cake or cheesecake?</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>どれ and どっち are used to ask someone to choose from a limited number of options. Use <strong>どっち</strong> when there are <strong>two options</strong>, and <strong>どれ</strong> when there are <strong>three or more options</strong>.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        N1とN2(と)、<span class="highlight">どっち</span>がいいですか？ (2 options)
+                    </div>
+                    <div class="structure-formula">
+                        S。<span class="accent">どれ</span>がいいですか？ (3+ options)
+                    </div>
+                    <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-muted);">
+                        どっち is a casual way of saying どちら (which).<br>
+                        N1とN2と can also be written as N1とN2.
+                    </p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box two-box">
+                        <div class="box-label">🟡 Two Options → どっち</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            ジュースとお<ruby>茶<rt>ちゃ</rt></ruby>と、どちらがいいですか？<br>
+                            <span class="example-english">Which do you like, juice or tea?</span>
+                        </div>
+                    </div>
+                    <div class="comparison-box three-box">
+                        <div class="box-label">🟢 Three+ Options → どれ</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            アイスはチョコとバニラとストロベリー<ruby>味<rt>あじ</rt></ruby>があります。どれがいいですか？<br>
+                            <span class="example-english">Ice cream flavors are chocolate, vanilla, and strawberry. Which one would you like?</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Conversation Example</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span>お<ruby>茶<rt>ちゃ</rt></ruby>、いろいろありますね。どれがいいですか？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">There are various types of tea. Which one would you like?</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker b">B:</span>じゃあ、これをお<ruby>願<rt>ねが</rt></ruby>いします。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Then, I'll take this one, please.</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Quick Reference:</strong><br><br>
+                    🔸 <strong>2 choices</strong> → どっち / どちら<br>
+                    🔹 <strong>3+ choices</strong> → どれ
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 12</span> どちら for comparing two things</p>
+                        <p><span class="mnn-lesson-ref">Lesson 8</span> どれ for choosing from multiple items</p>
+                        <p><strong>Key Point:</strong> MNN distinguishes どちら (polite) and どっち (casual) for two options. Both ask "which one" but どれ is specifically for three or more options.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Quiz 1 & 2 -->
+        <div class="slide" data-slide="4">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 1 & 2</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Say you will make a salad and bring it to the party.</div>
+                    <div class="question-text">Use V-て<ruby>行<rt>い</rt></ruby>きます:</div>
+                    <div class="fill-blank">
+                        サラダを<ruby>作<rt>つく</rt></ruby>っ
+                        <input type="text" class="blank-input" id="q1-1" placeholder="？">
+                        。
+                    </div>
+                    <div class="example-english">"I will make a salad and bring it."</div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Ask which someone prefers: coffee or tea (2 options).</div>
+                    <div class="question-text">Use the correct question word:</div>
+                    <div class="fill-blank">
+                        コーヒーとお<ruby>茶<rt>ちゃ</rt></ruby>、
+                        <input type="text" class="blank-input" id="q1-2" placeholder="？">
+                        がいいですか？
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Answers 1 & 2 -->
+        <div class="slide" data-slide="5">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 1 & 2</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        サラダを<ruby>作<rt>つく</rt></ruby>っ<strong>て<ruby>行<rt>い</rt></ruby>きます</strong>。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> <ruby>作<rt>つく</rt></ruby>る → <ruby>作<rt>つく</rt></ruby>って + <ruby>行<rt>い</rt></ruby>きます. This means you will do the action (make a salad) first and then go somewhere with it.
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        コーヒーとお<ruby>茶<rt>ちゃ</rt></ruby>、<strong>どっち</strong>がいいですか？
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> Since there are only <strong>two options</strong> (coffee and tea), use どっち (or どちら for formal). どれ is only used for 3 or more options.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Grammar 3 - Nのほうがいいです -->
+        <div class="slide" data-slide="6">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 3</span>
+                    <div>
+                        <h2>Nのほうがいいです</h2>
+                        <span class="jp-title">Expressing Preference</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        <ruby>塩<rt>しお</rt></ruby><strong>のほうがいいです</strong>。
+                    </div>
+                    <div class="example-english">I prefer salt.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>This expression is used to <strong>choose one out of two options</strong>. N is the option chosen by the person. This is the natural answer to a どっちがいいですか question.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        N<span class="highlight">のほうが</span>いいです
+                    </div>
+                    <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-muted);">
+                        のほうが can be omitted: Nがいいです is also correct.<br>
+                        のほう literally means "the direction of" → implies preference
+                    </p>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Conversation Example</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span><ruby>肉<rt>にく</rt></ruby>と<ruby>魚<rt>さかな</rt></ruby>、どっちがいいですか？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Which do you like, meat or fish?</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker b">B:</span><ruby>肉<rt>にく</rt></ruby>のほうがいいです。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">I prefer meat.</span>
+                    </div>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box prefer-box">
+                        <div class="box-label">💜 Full Form</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            <ruby>肉<rt>にく</rt></ruby><strong>のほうが</strong>いいです。<br>
+                            <span class="example-english">I prefer meat (more emphatically).</span>
+                        </div>
+                    </div>
+                    <div class="comparison-box any-box">
+                        <div class="box-label">🩵 Short Form</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            <ruby>肉<rt>にく</rt></ruby><strong>が</strong>いいです。<br>
+                            <span class="example-english">I'll take meat. / Meat is fine.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Q&A Pattern:</strong><br><br>
+                    <strong>Q:</strong> AとB、どっちがいいですか？<br>
+                    <strong>A:</strong> Aのほうがいいです。 or simply Aがいいです。
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 12</span> Nのほうが〜 for comparisons</p>
+                        <p><strong>Key Point:</strong> MNN Lesson 12 introduces comparative structures. Nのほうが literally means "N's side/direction" and implies that N is preferred when comparing two things. It's the standard response to a どちら/どっち question.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Grammar 4 - 疑問詞+でもいいです -->
+        <div class="slide" data-slide="7">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 4</span>
+                    <div>
+                        <h2><ruby>疑問詞<rt>ぎもんし</rt></ruby>+でもいいです</h2>
+                        <span class="jp-title">"Anything/Anyone/Anywhere Is Fine"</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        A: <ruby>何<rt>なに</rt></ruby>が<ruby>食<rt>た</rt></ruby>べたいですか？<br>
+                        B: <strong><ruby>何<rt>なん</rt></ruby>でもいいです</strong>。
+                    </div>
+                    <div class="example-english">A: What would you like to eat? B: I am fine with anything.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>This expression is used when the person <strong>does not have any particular preference</strong> or request. By adding でも to an interrogative word (question word), you express that any option is acceptable.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        <ruby>疑問詞<rt>ぎもんし</rt></ruby> + <span class="highlight">でも</span>いいです
+                    </div>
+                    <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-muted);">
+                        <ruby>疑問詞<rt>ぎもんし</rt></ruby> = interrogative/question word (何, どっち, いつ, だれ, etc.)<br>
+                        でも = "even" → でもいいです = "even ~ is fine"
+                    </p>
+                </div>
+
+                <div class="interrogative-grid">
+                    <div class="interrogative-item">
+                        <div class="interrogative-jp"><ruby>何<rt>なん</rt></ruby>でも</div>
+                        <div class="interrogative-en">anything</div>
+                    </div>
+                    <div class="interrogative-item">
+                        <div class="interrogative-jp">どっちでも</div>
+                        <div class="interrogative-en">either way</div>
+                    </div>
+                    <div class="interrogative-item">
+                        <div class="interrogative-jp">いつでも</div>
+                        <div class="interrogative-en">anytime</div>
+                    </div>
+                    <div class="interrogative-item">
+                        <div class="interrogative-jp">だれでも</div>
+                        <div class="interrogative-en">anyone</div>
+                    </div>
+                    <div class="interrogative-item">
+                        <div class="interrogative-jp">どこでも</div>
+                        <div class="interrogative-en">anywhere</div>
+                    </div>
+                    <div class="interrogative-item">
+                        <div class="interrogative-jp">いくつでも</div>
+                        <div class="interrogative-en">as many as</div>
+                    </div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Conversation Examples</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span>チョコレートケーキとチーズケーキ、どっちがいいですか？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Which do you like, chocolate cake or cheesecake?</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 8px;">
+                        <span class="speaker b">B:</span>どっちでもいいです。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Either way.</span>
+                    </div>
+                    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px dashed #16a34a;">
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span>からあげは、いくつ<ruby>買<rt>か</rt></ruby>いましょうか？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">How many fried chicken should I buy?</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 8px;">
+                        <span class="speaker b">B:</span>いくつでもいいです。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">As many as you like.</span>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 15</span> V-てもいいです (permission)</p>
+                        <p><span class="mnn-lesson-ref">Lesson 23</span> <ruby>疑問詞<rt>ぎもんし</rt></ruby>+でも (indefinite)</p>
+                        <p><strong>Key Point:</strong> Adding でも to question words creates indefinite expressions: 何でも (anything), いつでも (anytime), etc. This is different from the permission pattern V-てもいいです (may I do V?).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Quiz 3 & 4 -->
+        <div class="slide" data-slide="8">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 3 & 4</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">You're asked: ビールとワイン、どっちがいいですか？ You prefer wine.</div>
+                    <div class="question-text">Express your preference:</div>
+                    <div class="fill-blank">
+                        ワイン
+                        <input type="text" class="blank-input" id="q3-1" placeholder="？">
+                        いいです。
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Someone asks: いつ<ruby>会<rt>あ</rt></ruby>いましょうか？ You're free anytime.</div>
+                    <div class="question-text">Say "anytime is fine":</div>
+                    <div class="fill-blank">
+                        <input type="text" class="blank-input" id="q3-2" placeholder="？">
+                        いいです。
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 9: Answers 3 & 4 -->
+        <div class="slide" data-slide="9">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 3 & 4</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        ワイン<strong>のほうが</strong>いいです。 (or ワイン<strong>が</strong>いいです。)
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> Nのほうがいいです expresses preference when choosing between two options. The shorter form Nがいいです also works and is commonly used.
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        <strong>いつでも</strong>いいです。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> いつ (when) + でも = いつでも (anytime). Adding でも to a question word creates an indefinite meaning: "any-" (time/thing/where/one).
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Comprehensive Practice -->
+        <div class="slide" data-slide="10">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">🎯 Final Practice</span>
+                    <h2>Putting It All Together</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">BBQ Planning Scenario</div>
+                    <div class="question-context">You're planning a barbecue with friends. Practice all the grammar!</div>
+                    <div style="padding: 16px; background: white; border-radius: 8px; margin: 16px 0;">
+                        <p style="margin-bottom: 16px;"><strong>Scenario:</strong> Planning who brings what to a barbecue.</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>1. Say what you'll bring:</strong></p>
+                        <p style="color: var(--text-muted);"><ruby>肉<rt>にく</rt></ruby>は、<ruby>私<rt>わたし</rt></ruby>が<ruby>買<rt>か</rt></ruby>っ<strong>て<ruby>行<rt>い</rt></ruby>きます</strong>。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>2. Ask about drink preference (2 options):</strong></p>
+                        <p style="color: var(--text-muted);">ビールとジュース、<strong>どっち</strong>がいいですか？</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>3. Express your preference:</strong></p>
+                        <p style="color: var(--text-muted);">ビール<strong>のほうが</strong>いいです。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>4. Say you're fine with anything:</strong></p>
+                        <p style="color: var(--text-muted);"><ruby>何<rt>なん</rt></ruby><strong>でも</strong>いいですよ。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>5. Friend brings food they made:</strong></p>
+                        <p style="color: var(--text-muted);"><ruby>国<rt>くに</rt></ruby>の<ruby>料理<rt>りょうり</rt></ruby>を<ruby>作<rt>つく</rt></ruby>っ<strong>て<ruby>来<rt>き</rt></ruby>ました</strong>。どうぞ！</p>
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">See Summary →</button>
+            </div>
+        </div>
+
+        <!-- Slide 11: Summary -->
+        <div class="slide" data-slide="11">
+            <div class="summary-card">
+                <h2>🎉 Lesson 11 Complete!</h2>
+                <p>You've mastered 4 essential grammar points for food and preferences!</p>
+                
+                <div class="summary-points">
+                    <div class="summary-point">
+                        <h4>1. V-て<ruby>行<rt>い</rt></ruby>きます/<ruby>来<rt>き</rt></ruby>ます</h4>
+                        <p>Do V and go/come<br>"I'll buy and bring it"</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>2. どっち/どれがいいですか</h4>
+                        <p>Which do you prefer?<br>(2 vs 3+ options)</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>3. Nのほうがいいです</h4>
+                        <p>Expressing preference<br>"I prefer N"</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>4. <ruby>疑問詞<rt>ぎもんし</rt></ruby>+でもいいです</h4>
+                        <p>Anything is fine<br>"何でも、いつでも..."</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 32px; padding: 20px; background: rgba(255,255,255,0.2); border-radius: var(--radius);">
+                    <h3 style="margin-bottom: 12px;">🍴 Now You Can:</h3>
+                    <p style="font-size: 1rem; opacity: 0.95;">
+                        デザートを<ruby>持<rt>も</rt></ruby>って<ruby>行<rt>い</rt></ruby>きます！<br>
+                        チョコとバニラ、どっちがいいですか？<br>
+                        <ruby>何<rt>なん</rt></ruby>でもいいですよ。🍰
+                    </p>
+                </div>
+
+                <button class="restart-btn" onclick="restartPresentation()">
+                    🔄 <ruby>最初<rt>さいしょ</rt></ruby>から Start Over
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ========== Slide Navigation ==========
+        let currentSlide = 1;
+        const totalSlides = 11;
+
+        function updateSlide() {
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            const activeSlide = document.querySelector(`[data-slide="${currentSlide}"]`);
+            if (activeSlide) {
+                activeSlide.classList.add('active');
+            }
+            
+            document.getElementById('currentSlide').textContent = currentSlide;
+            document.getElementById('totalSlides').textContent = totalSlides;
+            
+            const progress = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(slideNum) {
+            currentSlide = slideNum;
+            updateSlide();
+        }
+
+        function restartPresentation() {
+            currentSlide = 1;
+            updateSlide();
+        }
+
+        // ========== MNN Toggle ==========
+        function toggleMNN(button) {
+            const content = button.nextElementSibling;
+            button.classList.toggle('open');
+            content.classList.toggle('open');
+        }
+
+        // ========== Keyboard Navigation ==========
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // ========== Touch/Swipe Navigation (Mobile) ==========
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+
+        // ========== Initialize ==========
+        updateSlide();
+    </script>
+</body>
+</html>

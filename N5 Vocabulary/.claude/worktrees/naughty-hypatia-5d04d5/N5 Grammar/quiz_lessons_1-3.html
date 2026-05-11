@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>みんなの日本語 Lessons 1–3 — Cumulative Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: #1a1525;
+    color: #e8e0f0;
+    font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(232,180,200,0.07) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(120,100,180,0.07) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 580px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Name Screen ── */
+  #name-screen { margin-top: 50px; }
+
+  .card {
+    background: #221d2e;
+    border-radius: 16px;
+    padding: 28px 20px;
+    border: 1px solid #3d3650;
+  }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #e8b4c8, #c89db7);
+    color: #1a1525;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+
+  .title {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 14px 0 4px;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: #9e93b0;
+    line-height: 1.5;
+  }
+
+  .scope-pills {
+    display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+    margin: 16px 0 4px;
+  }
+  .scope-pill {
+    background: #2a2535;
+    border: 1px solid #3d3650;
+    color: #c5b8d6;
+    padding: 5px 11px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .name-label {
+    display: block;
+    font-size: 13px;
+    color: #9e93b0;
+    margin: 24px 0 8px;
+    text-align: left;
+  }
+
+  .name-input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 2px solid #3d3650;
+    background: #2a2535;
+    color: #e8e0f0;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .name-input:focus { border-color: #e8b4c8; }
+
+  .btn-primary {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #e8b4c8, #c89db7);
+    border: none;
+    color: #1a1525;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover:not(:disabled) { transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.35; cursor: default; }
+
+  /* ── Quiz Screen ── */
+  #quiz-screen { display: none; }
+
+  .header { text-align: center; margin-bottom: 18px; }
+  .header .title { font-size: 18px; }
+  .header .subtitle { margin-top: 2px; }
+
+  /* Score Banner */
+  .score-banner {
+    display: none;
+    border-radius: 16px;
+    padding: 22px 16px;
+    text-align: center;
+    margin-bottom: 20px;
+    animation: slideDown 0.4s ease;
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .score-number { font-size: 44px; font-weight: 800; letter-spacing: -1px; color: #fff; }
+  .score-label { font-size: 16px; font-weight: 600; margin-top: 4px; color: #fff; }
+
+  .lesson-breakdown {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .lesson-stat {
+    background: rgba(255,255,255,0.15);
+    padding: 8px 6px;
+    border-radius: 10px;
+    color: #fff;
+  }
+  .lesson-stat .ls-label { font-size: 11px; opacity: 0.85; font-weight: 600; }
+  .lesson-stat .ls-score { font-size: 18px; font-weight: 800; margin-top: 2px; }
+
+  .email-row { margin-top: 12px; }
+  .email-pill {
+    display: inline-block;
+    background: #3d3650;
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 14px;
+    border-radius: 12px;
+  }
+  .email-pill.sent { background: #2d6a4f; }
+  .email-pill.error { background: #9b2226; }
+
+  .end-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .btn-end {
+    flex: 1; min-width: 130px;
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-end:hover { background: rgba(255,255,255,0.28); }
+  .btn-end:disabled { opacity: 0.4; cursor: default; }
+
+  /* Progress */
+  .progress-row { margin-bottom: 14px; }
+  .progress-text { font-size: 12px; color: #9e93b0; display: block; margin-bottom: 6px; }
+  .progress-bar { height: 4px; background: #2a2535; border-radius: 4px; overflow: hidden; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #e8b4c8, #c89db7);
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  /* Nav Grid (30 dots, 10 per row × 3) */
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    margin-bottom: 18px;
+  }
+  .nav-dot {
+    aspect-ratio: 1;
+    border-radius: 7px;
+    background: #2a2535;
+    color: #e8e0f0;
+    font-size: 10px;
+    font-weight: 600;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    padding: 0;
+  }
+  .nav-dot:hover { transform: scale(1.05); }
+  .nav-dot.active { border-color: #e8b4c8; }
+  .nav-dot.correct { background: #2d6a4f; color: #fff; }
+  .nav-dot.wrong { background: #9b2226; color: #fff; }
+
+  /* Question Card */
+  .q-card {
+    background: #221d2e;
+    border-radius: 16px;
+    padding: 22px 18px;
+    border: 1px solid #3d3650;
+    margin-bottom: 14px;
+    animation: fadeIn 0.25s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; gap: 8px;
+  }
+  .q-tag {
+    font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 10px;
+    letter-spacing: 0.3px;
+  }
+  .q-tag.lesson-1 { background: #1e3a5f; color: #93c5fd; }
+  .q-tag.lesson-2 { background: #1e4a3a; color: #86efac; }
+  .q-tag.lesson-3 { background: #5a3a1e; color: #fcd34d; }
+  .q-tag.type {
+    background: #3d3650; color: #d4c5e8;
+  }
+
+  .q-number {
+    font-size: 11px;
+    color: #9e93b0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .q-stem {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    line-height: 1.5;
+    color: #f3ecfa;
+  }
+  .q-stem .jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 700;
+  }
+  .q-stem .blank {
+    display: inline-block;
+    min-width: 36px;
+    border-bottom: 2px dashed #e8b4c8;
+    margin: 0 2px;
+    color: #e8b4c8;
+    text-align: center;
+    font-weight: 800;
+  }
+
+  .choices-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .choice-btn {
+    padding: 14px 10px;
+    border-radius: 12px;
+    border: 2px solid #3d3650;
+    background: #2a2535;
+    color: #e8e0f0;
+    text-align: center;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    position: relative;
+    transition: all 0.15s;
+    line-height: 1.3;
+    min-height: 52px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .choice-btn:hover:not(.locked) { border-color: #5c4d7a; background: #302844; }
+  .choice-btn.locked { cursor: default; }
+  .choice-btn.correct-reveal {
+    background: #2d6a4f; border-color: #40916c; color: #fff;
+    animation: pulseG 0.4s ease;
+  }
+  .choice-btn.wrong-reveal {
+    background: #9b2226; border-color: #ca6702; color: #fff;
+    animation: shake 0.4s ease;
+  }
+  @keyframes pulseG {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  .choice-btn .mark {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 14px;
+  }
+
+  /* Span full width for translation choices that are long */
+  .choices-grid.full-width { grid-template-columns: 1fr; }
+
+  /* ── Feedback Card (instant feedback) ── */
+  .feedback-card {
+    margin-top: 14px;
+    border-radius: 14px;
+    padding: 16px 16px;
+    animation: feedbackIn 0.3s ease;
+    display: none;
+  }
+  @keyframes feedbackIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .feedback-card.correct {
+    background: linear-gradient(135deg, rgba(45,106,79,0.25), rgba(64,145,108,0.15));
+    border: 1px solid #40916c;
+  }
+  .feedback-card.wrong {
+    background: linear-gradient(135deg, rgba(155,34,38,0.25), rgba(202,103,2,0.15));
+    border: 1px solid #ca6702;
+  }
+  .fb-header {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 15px; font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .feedback-card.correct .fb-header { color: #a7f3d0; }
+  .feedback-card.wrong .fb-header { color: #fca5a5; }
+  .fb-correct-line {
+    font-size: 13px; color: #d4c5e8;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .fb-correct-line .ans {
+    color: #fff; font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+  .fb-explanation {
+    font-size: 13.5px;
+    color: #e8e0f0;
+    line-height: 1.65;
+  }
+  .fb-explanation .jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    color: #f3ecfa;
+    font-weight: 600;
+  }
+  .fb-explanation .connect {
+    display: block;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(232,180,200,0.3);
+    color: #c5b8d6;
+    font-size: 12.5px;
+    font-style: italic;
+  }
+  .fb-explanation .warn {
+    display: block;
+    margin-top: 6px;
+    color: #fcd34d;
+    font-size: 12.5px;
+  }
+
+  /* Arrow Row */
+  .arrow-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .btn-nav {
+    flex: 1;
+    padding: 12px 0;
+    border-radius: 12px;
+    background: #2a2535;
+    border: 1px solid #3d3650;
+    color: #e8e0f0;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s, background 0.2s;
+  }
+  .btn-nav:hover:not(:disabled) { background: #302844; }
+  .btn-nav:disabled { opacity: 0.3; cursor: default; }
+  .btn-next-primary {
+    background: linear-gradient(135deg, #e8b4c8, #c89db7);
+    color: #1a1525;
+    border: none;
+    font-weight: 700;
+  }
+  .btn-next-primary:hover:not(:disabled) { transform: translateY(-1px); }
+
+  /* Review mode banner */
+  .review-banner {
+    display: none;
+    background: linear-gradient(135deg, #5a3a1e, #7c4a20);
+    border: 1px solid #ca6702;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #fcd34d;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .container { padding: 18px 14px 50px; }
+    .q-stem { font-size: 17px; }
+    .choice-btn { font-size: 15px; padding: 12px 8px; }
+  }
+  @media (max-width: 480px) {
+    .container { padding: 14px 12px 40px; }
+    .card { padding: 22px 16px; }
+    .title { font-size: 20px; }
+    .q-card { padding: 18px 14px; }
+    .q-stem { font-size: 16px; }
+    .choices-grid { gap: 8px; }
+    .choice-btn { font-size: 14px; min-height: 46px; padding: 10px 6px; }
+    .nav-dot { font-size: 9px; border-radius: 6px; }
+    .nav-grid { gap: 4px; }
+    .lesson-breakdown { gap: 6px; }
+    .lesson-stat { padding: 6px 4px; }
+    .lesson-stat .ls-score { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ════ NAME SCREEN ════ -->
+  <div id="name-screen">
+    <div class="card text-center">
+      <span class="badge">みんなの日本語</span>
+      <h1 class="title">Lessons 1–3 · Cumulative Quiz</h1>
+      <p class="subtitle">30 multiple-choice questions · grammar, vocab, こそあど &amp; translation</p>
+
+      <div class="scope-pills">
+        <span class="scope-pill">📘 L1 ×7</span>
+        <span class="scope-pill">📗 L2 ×10</span>
+        <span class="scope-pill">📙 L3 ×13</span>
+      </div>
+
+      <label class="name-label">おなまえは？ Enter your name</label>
+      <input class="name-input" id="name-input" type="text" placeholder="Your name..." autofocus>
+      <button class="btn-primary" id="btn-start" disabled>Start Quiz →</button>
+    </div>
+  </div>
+
+  <!-- ════ QUIZ SCREEN ════ -->
+  <div id="quiz-screen">
+    <header class="header">
+      <span class="badge">みんなの日本語</span>
+      <h1 class="title">Lessons 1–3 · Cumulative</h1>
+      <p class="subtitle" id="quiz-subtitle"></p>
+    </header>
+
+    <div class="score-banner" id="score-banner">
+      <div class="score-number" id="score-number"></div>
+      <div class="score-label" id="score-label"></div>
+      <div class="lesson-breakdown" id="lesson-breakdown"></div>
+      <div class="email-row" id="email-row"></div>
+      <div class="end-actions">
+        <button class="btn-end" id="btn-review" disabled>📝 Review wrong answers</button>
+        <button class="btn-end" id="btn-retake">🔄 Retake quiz</button>
+      </div>
+    </div>
+
+    <div class="review-banner" id="review-banner">
+      📝 Review mode — showing only the questions you got wrong
+    </div>
+
+    <div class="progress-row">
+      <span class="progress-text" id="progress-text">0 / 30 answered</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <div class="nav-grid" id="nav-grid"></div>
+
+    <div class="q-card" id="q-card">
+      <div class="q-meta">
+        <span class="q-tag lesson-1" id="q-lesson-tag">📘 Lesson 1</span>
+        <span class="q-tag type" id="q-type-tag">Grammar</span>
+      </div>
+      <div class="q-number" id="q-number"></div>
+      <div class="q-stem" id="q-stem"></div>
+      <div class="choices-grid" id="choices-grid"></div>
+      <div class="feedback-card" id="feedback-card"></div>
+    </div>
+
+    <div class="arrow-row">
+      <button class="btn-nav" id="btn-prev">← Previous</button>
+      <button class="btn-nav btn-next-primary" id="btn-next">Next →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   QUESTION BANK — 30 questions covering Minna no Nihongo L1–3
+   Strictly using vocabulary & grammar patterns from those lessons.
+   ═══════════════════════════════════════════════════════════════ */
+const QUESTIONS = [
+  /* ────────────── LESSON 1 (7 questions) ────────────── */
+  {
+    lesson: 1, type: "Grammar",
+    stem: 'Choose the correct particle: <span class="jp">わたし<span class="blank">?</span> ミラーです。</span>',
+    answer: "は",
+    choices: ["は","の","も","か"],
+    correctNote: 'は marks the topic — "as for me, (I am) Mira."',
+    explain: 'は (read "wa" when used as a particle) is the foundation of every <span class="jp">です</span> sentence in L1–25.',
+    connect: '🔗 You\'ll meet the same は in L2 (これは…), L3 (ここは…), and onward through every lesson.',
+    warn: '⚠️ Pronounced "wa" not "ha" when used as a particle.'
+  },
+  {
+    lesson: 1, type: "Grammar",
+    stem: 'Make this NEGATIVE: <span class="jp">アンナさんは がくせいです。</span>',
+    answer: "アンナさんは がくせいじゃありません",
+    choices: [
+      "アンナさんは がくせいですか",
+      "アンナさんは がくせいじゃありません",
+      "アンナさんは がくせいでした",
+      "アンナさんは がくせいも"
+    ],
+    longChoices: true,
+    correctNote: 'Negative of <span class="jp">です</span> = <span class="jp">じゃありません</span>.',
+    explain: 'In casual speech this becomes <span class="jp">じゃない</span>. The polite formal version is <span class="jp">ではありません</span>.',
+    connect: '🔗 This pattern grows: L12 adds past negative <span class="jp">じゃありませんでした</span>; L8 uses the same <span class="jp">じゃ</span>-ending to negate な-adjectives.'
+  },
+  {
+    lesson: 1, type: "Grammar",
+    stem: 'Pick the right particle: <span class="jp">わたしは アメリカじんです。マイクさん<span class="blank">?</span> アメリカじんです。</span>',
+    answer: "も",
+    choices: ["は","も","の","と"],
+    correctNote: '<span class="jp">も</span> means "also/too" — replaces <span class="jp">は</span> when stating something true for an additional subject.',
+    explain: 'Memory tip: think of <span class="jp">も</span> as an "echo" of <span class="jp">は</span>.',
+    connect: '🔗 You\'ll meet <span class="jp">も</span> again in L9 (with quantities) and L13 (with question words like <span class="jp">どこへも</span>).'
+  },
+  {
+    lesson: 1, type: "Grammar",
+    stem: '<span class="jp">ミラーさんは IMC<span class="blank">?</span> しゃいんです。</span> (Mira is an IMC employee.)',
+    answer: "の",
+    choices: ["は","の","と","で"],
+    correctNote: 'NのN here means "N of N" — "an employee OF IMC" (affiliation).',
+    explain: 'This は a particle that "links" two nouns. Think of it as the glue between Owner/Group and Member/Item.',
+    connect: '🔗 The same <span class="jp">の</span> reappears in L2 (<span class="jp">わたしのほん</span> — possession), L3 (<span class="jp">ドイツのくるま</span> — country of origin), and grows into noun-modifying clauses by L22.'
+  },
+  {
+    lesson: 1, type: "Vocab",
+    stem: '<span class="jp">せんせい</span> means…',
+    answer: "teacher",
+    choices: ["student","company employee","teacher","doctor"],
+    correctNote: '先生(せんせい) = teacher (or any respected professional).',
+    explain: 'Used for teachers, doctors, lawyers, and other respected professionals.',
+    connect: '🔗 Compare with <span class="jp">きょうし</span> (teacher as a job title — used to describe one\'s own profession). You say <span class="jp">わたしはきょうしです</span> but address others as <span class="jp">〜せんせい</span>.',
+    warn: '⚠️ Never use <span class="jp">さん</span> with <span class="jp">せんせい</span>. Say <span class="jp">たなかせんせい</span>, not <span class="jp">たなかさん</span>.'
+  },
+  {
+    lesson: 1, type: "Vocab",
+    stem: '<span class="jp">いしゃ</span> means…',
+    answer: "[medical] doctor",
+    choices: ["bank employee","[medical] doctor","researcher","university"],
+    correctNote: '医者(いしゃ) = a medical doctor (the profession).',
+    explain: 'Use <span class="jp">いしゃ</span> when stating someone\'s job: <span class="jp">ちちはいしゃです</span> ("My father is a doctor").',
+    connect: '🔗 But when ADDRESSING a doctor directly, use <span class="jp">せんせい</span> — same politeness rule as for teachers. You\'ll need this contrast in L9 (giving/receiving).'
+  },
+  {
+    lesson: 1, type: "Translation",
+    stem: 'Translate: "I am a student."',
+    answer: "わたしは がくせいです",
+    choices: [
+      "わたしは がくせいです",
+      "わたしも がくせいです",
+      "わたしは がくせいじゃありません",
+      "わたしは がくせいですか"
+    ],
+    longChoices: true,
+    correctNote: 'The basic L1 pattern: <span class="jp">[topic]は [predicate]です</span>.',
+    explain: 'The other choices mean: "I am also a student" (<span class="jp">も</span>), "I am NOT a student" (negative), and "Am I a student?" (question).',
+    connect: '🔗 This sentence shape is the backbone of L1–6 before verbs take over from L6 onward.'
+  },
+
+  /* ────────────── LESSON 2 (10 questions) ────────────── */
+  {
+    lesson: 2, type: "こそあど",
+    stem: 'You\'re holding a book. You say to someone across the room: <span class="jp"><span class="blank">?</span> は ほんです。</span>',
+    answer: "これ",
+    choices: ["これ","それ","あれ","どれ"],
+    correctNote: '<span class="jp">これ</span> = "this" — something close to ME (the speaker).',
+    explain: 'The こ-そ-あ-ど system follows distance from the speaker:<br>• <span class="jp">これ</span> — near me<br>• <span class="jp">それ</span> — near YOU (listener)<br>• <span class="jp">あれ</span> — far from both<br>• <span class="jp">どれ</span> — which?',
+    connect: '🔗 Same こ-そ-あ-ど logic extends to PLACES in L3 (<span class="jp">ここ／そこ／あそこ</span>) and DIRECTIONS in L3 (<span class="jp">こちら／そちら／あちら</span>).'
+  },
+  {
+    lesson: 2, type: "こそあど",
+    stem: 'Pointing at a book in your hand: <span class="jp"><span class="blank">?</span> ほんは わたしのです。</span> (THIS book is mine.)',
+    answer: "この",
+    choices: ["これ","この","それ","その"],
+    correctNote: '<span class="jp">この</span> attaches to a noun ("this book"); <span class="jp">これ</span> stands alone ("this one").',
+    explain: 'Rule of thumb:<br>• <span class="jp">これ／それ／あれ／どれ</span> = pronouns (no noun follows)<br>• <span class="jp">この／その／あの／どの</span> = adnominals (noun MUST follow)',
+    connect: '🔗 This split mirrors English "this" (pronoun: "This is mine") vs "this book" (adnominal).',
+    warn: '⚠️ Mixing <span class="jp">これ</span> + noun (e.g., <span class="jp">これ ほん</span>) is the #1 L2 mistake.'
+  },
+  {
+    lesson: 2, type: "Grammar",
+    stem: '<span class="jp">これは ミラーさん<span class="blank">?</span> かばんです。</span> (This is Mr. Mira\'s bag.)',
+    answer: "の",
+    choices: ["は","の","も","と"],
+    correctNote: 'NのN here = possession ("Mira\'s bag").',
+    explain: 'The <span class="jp">の</span> particle connects two nouns where the first owns/describes the second.',
+    connect: '🔗 Same <span class="jp">の</span> from L1 (<span class="jp">IMCのしゃいん</span> — affiliation), now expressing OWNERSHIP. In L3 it stretches to ORIGIN (<span class="jp">ドイツのくるま</span> — German car).'
+  },
+  {
+    lesson: 2, type: "Grammar",
+    stem: '<span class="jp">それは じしょですか。</span> → No, it isn\'t.',
+    answer: "いいえ、そうじゃありません",
+    choices: [
+      "はい、そうです",
+      "いいえ、そうじゃありません",
+      "いいえ、わかりません",
+      "はい、わかりました"
+    ],
+    longChoices: true,
+    correctNote: '<span class="jp">そうじゃありません</span> = "that\'s not right" (negative reply).',
+    explain: '<span class="jp">そうです</span> = "that\'s right" / <span class="jp">そうじゃありません</span> = "that\'s not right" — quick yes/no replies for noun-です questions.',
+    connect: '🔗 <span class="jp">そうですか</span> (with falling tone) means "Oh, I see" — a useful follow-up appearing throughout L1–25.',
+    warn: '⚠️ <span class="jp">そうです</span> works ONLY for noun sentences — never reply to a verb question (L6+) with <span class="jp">そうです</span>.'
+  },
+  {
+    lesson: 2, type: "Grammar",
+    stem: '<span class="jp">これは「９」ですか、「７」です<span class="blank">?</span>。</span>',
+    answer: "か",
+    choices: ["の","か","も","と"],
+    correctNote: 'A〜ですか、B〜ですか pattern offers an "A or B?" choice.',
+    explain: 'Notice BOTH clauses end in <span class="jp">か</span>. The reply is the chosen option, not <span class="jp">はい／いいえ</span>: <span class="jp">「９」です</span>.',
+    connect: '🔗 You\'ll see this expand in L8 (asking about preferences with adjectives) and L16 (sequenced か questions for choice).'
+  },
+  {
+    lesson: 2, type: "Grammar",
+    stem: '<span class="jp">それはなん<span class="blank">?</span> か。</span>',
+    answer: "です",
+    choices: ["で","は","です","の"],
+    correctNote: '<span class="jp">なんですか</span> = "what is it?" — full structure: <span class="jp">[topic]は なんですか</span>.',
+    explain: '<span class="jp">なん</span> ("what") needs <span class="jp">です</span> + <span class="jp">か</span> to form a complete question.',
+    connect: '🔗 Compare with L3\'s <span class="jp">どこですか</span> ("where") and L4\'s <span class="jp">なんじですか</span> ("what time") — same <span class="jp">は + question word + ですか</span> pattern across lessons.'
+  },
+  {
+    lesson: 2, type: "Vocab",
+    stem: '<span class="jp">ざっし</span> means…',
+    answer: "magazine",
+    choices: ["newspaper","magazine","dictionary","notebook"],
+    correctNote: '雑誌(ざっし) = magazine.',
+    explain: 'The L2 reading-material set: <span class="jp">ざっし</span> (magazine) / <span class="jp">しんぶん</span> (newspaper) / <span class="jp">ほん</span> (book) / <span class="jp">じしょ</span> (dictionary).',
+    connect: '🔗 They all return in L6 with the verb <span class="jp">よみます</span> (to read) — e.g., <span class="jp">ほんを よみます</span>.'
+  },
+  {
+    lesson: 2, type: "Vocab",
+    stem: '<span class="jp">かぎ</span> means…',
+    answer: "key",
+    choices: ["umbrella","key","clock","bag"],
+    correctNote: '鍵(かぎ) = key.',
+    explain: 'Easy to confuse with <span class="jp">かさ</span> (umbrella) and <span class="jp">かばん</span> (bag) — all three start with <span class="jp">か</span>.',
+    connect: '🔗 Memory hook: <span class="jp">かぎ</span> has a "g" like "<u>g</u>ate" — keys open gates. All three appear together as L2 belongings vocabulary.'
+  },
+  {
+    lesson: 2, type: "Vocab",
+    stem: '<span class="jp">ボールペン</span> means…',
+    answer: "ballpoint pen",
+    choices: ["pencil","mechanical pencil","ballpoint pen","notebook"],
+    correctNote: 'From English "ball pen" — written in katakana as a loanword.',
+    explain: 'Compare: <span class="jp">えんぴつ</span> = pencil (native word, hiragana) / <span class="jp">シャープペンシル</span> = mechanical pencil (loanword, katakana).',
+    connect: '🔗 Katakana words in L2 are mostly tools and electronics (<span class="jp">テレビ／ラジオ／カメラ／コンピューター</span>) — a pattern that continues throughout N5.'
+  },
+  {
+    lesson: 2, type: "Translation",
+    stem: 'Translate: "What is that (thing far away)?"',
+    answer: "あれはなんですか",
+    choices: [
+      "これはなんですか",
+      "それはなんですか",
+      "あれはなんですか",
+      "どれはなんですか"
+    ],
+    longChoices: true,
+    correctNote: '<span class="jp">あれ</span> = far from BOTH speakers ("that over there").',
+    explain: 'If it were near the listener, you\'d use <span class="jp">それ</span>. If it were near you, <span class="jp">これ</span>.',
+    connect: '🔗 The structure <span class="jp">[こそあ]れは なんですか</span> is the most-used L2 question pattern.',
+    warn: '⚠️ <span class="jp">どれ</span> ("which one") never combines with <span class="jp">は</span> the same way — it appears in different question patterns ("Which is yours?").'
+  },
+
+  /* ────────────── LESSON 3 (13 questions) ────────────── */
+  {
+    lesson: 3, type: "こそあど",
+    stem: 'Pointing far away: <span class="jp">トイレは <span class="blank">?</span> です。</span> (The toilet is OVER THERE.)',
+    answer: "あそこ",
+    choices: ["ここ","そこ","あそこ","どこ"],
+    correctNote: '<span class="jp">あそこ</span> = far from BOTH speaker and listener.',
+    explain: 'L3 place trio mirrors L2\'s thing trio:<br>• <span class="jp">これ → ここ</span><br>• <span class="jp">それ → そこ</span><br>• <span class="jp">あれ → あそこ</span> (note: extra <span class="jp">そ</span>)',
+    connect: '🔗 Same こ-そ-あ logic, just applied to PLACES instead of things.'
+  },
+  {
+    lesson: 3, type: "こそあど",
+    stem: '<span class="jp">しょくどうは <span class="blank">?</span> ですか。</span> (WHERE is the dining hall?)',
+    answer: "どこ",
+    choices: ["ここ","そこ","どれ","どこ"],
+    correctNote: '<span class="jp">どこ</span> = "where (place)?"',
+    explain: 'Don\'t confuse the L1-3 question words:<br>• <span class="jp">どこ</span> = where (L3, place)<br>• <span class="jp">どれ</span> = which one (L2, thing)<br>• <span class="jp">だれ</span> = who (L1, person)',
+    connect: '🔗 All three are L1–3 question words ending in -<span class="jp">れ</span>/-<span class="jp">こ</span> — easy mix-up territory. The polite versions: <span class="jp">どちら／どなた</span>.'
+  },
+  {
+    lesson: 3, type: "こそあど",
+    stem: 'Polite tour-guide style: <span class="jp"><span class="blank">?</span> は しょくどうです、<span class="blank">?</span> は きょうしつです。</span> (Over there is the dining hall; this way is the classroom.)',
+    answer: "あちら / こちら",
+    choices: [
+      "ここ / あそこ",
+      "そちら / あちら",
+      "あちら / こちら",
+      "どちら / こちら"
+    ],
+    longChoices: true,
+    correctNote: 'Polite forms: <span class="jp">こちら／そちら／あちら／どちら</span>.',
+    explain: 'These are the polite/refined version of <span class="jp">ここ／そこ／あそこ／どこ</span>. Use them in formal settings — receptionists, hotel staff, business introductions.',
+    connect: '🔗 They also double as "this/that PERSON" in polite introductions: <span class="jp">こちらは ミラーさんです</span> ("This [person] is Mr. Mira"), shown in L3 textbook examples.'
+  },
+  {
+    lesson: 3, type: "Grammar",
+    stem: 'Polite: <span class="jp">ミラーさんは <span class="blank">?</span> ですか。</span> (Where are you from, Mr. Mira?)',
+    answer: "どちら",
+    choices: ["どこ","どれ","どちら","どなた"],
+    correctNote: '<span class="jp">どちら</span> = polite version of <span class="jp">どこ</span> — used to ask country/company politely.',
+    explain: 'Reply: <span class="jp">アメリカです</span> / <span class="jp">IMCです</span>.',
+    connect: '🔗 Politeness upgrade pattern: <span class="jp">どこ→どちら</span> mirrors L1\'s <span class="jp">だれ→どなた</span>. Same logic — softer, more respectful question words.'
+  },
+  {
+    lesson: 3, type: "Grammar",
+    stem: '<span class="jp">それ<span class="blank">?</span> ください。</span> (Please give me that.)',
+    answer: "を",
+    choices: ["は","の","を","も"],
+    correctNote: '<span class="jp">を</span> marks the direct object of an action.',
+    explain: 'In L3, <span class="jp">を</span> appears only with <span class="jp">ください</span> ("please give me ___"). Pronounced "o" not "wo."',
+    connect: '🔗 Your first taste of a particle that EXPLODES in L6 onward (<span class="jp">たべます／みます／よみます</span> — all take <span class="jp">を</span>). L3 is just the warm-up.'
+  },
+  {
+    lesson: 3, type: "Grammar",
+    stem: '<span class="jp">これは <span class="blank">?</span> ですか。</span> (How much is this?)',
+    answer: "いくら",
+    choices: ["なん","どこ","いくら","どちら"],
+    correctNote: '<span class="jp">いくら</span> is the ONLY way to ask "how much" for prices.',
+    explain: 'Reply uses <span class="jp">ひゃく</span>(100) / <span class="jp">せん</span>(1,000) / <span class="jp">まん</span>(10,000) — the L3 number set.',
+    connect: '🔗 Counter words for other "how many" questions (<span class="jp">なんにん／なんさつ</span>) arrive in L11.'
+  },
+  {
+    lesson: 3, type: "Grammar",
+    stem: '<span class="jp">これは <span class="blank">?</span> コンピューターですか。</span> (Where is this computer FROM? / Which company\'s?)',
+    answer: "どこの",
+    choices: ["どこ","どこの","どちら","なん"],
+    correctNote: '<span class="jp">どこ</span> (where) + <span class="jp">の</span> (of) = "of where" → asking origin/maker.',
+    explain: 'Reply: <span class="jp">アメリカの コンピューターです</span> / <span class="jp">IBMの です</span>.',
+    connect: '🔗 A beautiful combination of L1\'s <span class="jp">の</span> (affiliation) + L3\'s <span class="jp">どこ</span> (where). Two L1-3 grammar points stacking together.'
+  },
+  {
+    lesson: 3, type: "Vocab",
+    stem: '<span class="jp">かいだん</span> means…',
+    answer: "staircase",
+    choices: ["elevator","escalator","staircase","lobby"],
+    correctNote: '階段(かいだん) = staircase / stairs.',
+    explain: 'Compare: <span class="jp">かいだん</span> (stairs) / <span class="jp">エレベーター</span> (elevator) / <span class="jp">エスカレーター</span> (escalator).',
+    connect: '🔗 All three appear together when asking <span class="jp">どこですか</span> about building features in L3 dialogues.'
+  },
+  {
+    lesson: 3, type: "Vocab",
+    stem: '<span class="jp">うけつけ</span> means…',
+    answer: "reception desk",
+    choices: ["office","dining hall","reception desk","classroom"],
+    correctNote: '受付(うけつけ) = the front desk where you check in.',
+    explain: 'Often paired with <span class="jp">すみません</span> ("excuse me") and <span class="jp">いらっしゃいませ</span> ("welcome").',
+    connect: '🔗 All three appear together in the L3 building/shopping context — receptionist phrases you\'ll hear immediately upon entering any Japanese hotel or company.'
+  },
+  {
+    lesson: 3, type: "Vocab",
+    stem: '<span class="jp">いくら</span> means…',
+    answer: "how much (price)",
+    choices: ["how much (price)","how many","where","which"],
+    correctNote: '<span class="jp">いくら</span> = "how much?" — reserved specifically for asking PRICE.',
+    explain: 'Useful pair: <span class="jp">なんがい</span> ("which floor") — both shopping-related questions.',
+    connect: '🔗 Memory tip: "ikura?" sounds like "ee, kuh-rah" — think 💴 "kuh-rah-ching!" of a cash register.'
+  },
+  {
+    lesson: 3, type: "Vocab",
+    stem: '<span class="jp">いらっしゃいませ</span> means…',
+    answer: "Welcome! May I help you?",
+    choices: ["Excuse me","Thank you","Welcome! May I help you?","Goodbye"],
+    correctNote: 'Said by store/restaurant staff to greet customers entering.',
+    explain: 'You don\'t reply with anything — just nod or say <span class="jp">すみません</span> if you need help.',
+    connect: '🔗 You\'ll hear it the moment you step into ANY Japanese shop. Connect to L3\'s shopping context (<span class="jp">デパート, レストラン, うりば</span>).'
+  },
+  {
+    lesson: 3, type: "Vocab",
+    stem: '<span class="jp">ちか</span> means…',
+    answer: "basement",
+    choices: ["floor (above)","basement","department","counter"],
+    correctNote: '地下(ちか) = below ground / basement.',
+    explain: 'In Japanese department stores, the <span class="jp">ちか</span> (basement) is usually the food hall — famously called 🍱 "デパちか" culture.',
+    connect: '🔗 Combine with <span class="jp">かい</span> (floor): <span class="jp">ちか いっかい</span> = "B1." Number-counter combinations like this start in L3 and expand massively in L11.'
+  },
+  {
+    lesson: 3, type: "Translation",
+    stem: 'Translate: "How much is this?"',
+    answer: "これは いくらですか",
+    choices: [
+      "これは なんですか",
+      "これは どこですか",
+      "これは いくらですか",
+      "これは どちらですか"
+    ],
+    longChoices: true,
+    correctNote: 'The prototypical L3 shopping question.',
+    explain: 'Compare the三つ (three) <span class="jp">これは…ですか</span> patterns:<br>• <span class="jp">これは なんですか</span> — what is it? (L2)<br>• <span class="jp">これは どこですか</span> — where is it? (L3)<br>• <span class="jp">これは いくらですか</span> — how much? (L3)',
+    connect: '🔗 Same <span class="jp">は + question word + ですか</span> pattern across all three — only the question word changes.'
+  },
+];
+
+/* ── State ── */
+let playerName = "";
+let quiz = [];
+let answers = {};        // index -> chosen choice text
+let currentQ = 0;
+let submitted = false;
+let reviewMode = false;
+let reviewIndices = [];  // when in review mode, the list of original indices we're walking through
+
+/* ── Helpers ── */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ── Initialize EmailJS ── */
+emailjs.init("1oR0j0WDvUmSSYEpK");
+
+/* ── DOM refs ── */
+const $nameScreen   = document.getElementById("name-screen");
+const $quizScreen   = document.getElementById("quiz-screen");
+const $nameInput    = document.getElementById("name-input");
+const $btnStart     = document.getElementById("btn-start");
+const $subtitle     = document.getElementById("quiz-subtitle");
+const $scoreBanner  = document.getElementById("score-banner");
+const $scoreNum     = document.getElementById("score-number");
+const $scoreLbl     = document.getElementById("score-label");
+const $lessonBreak  = document.getElementById("lesson-breakdown");
+const $emailRow     = document.getElementById("email-row");
+const $btnReview    = document.getElementById("btn-review");
+const $btnRetake    = document.getElementById("btn-retake");
+const $reviewBanner = document.getElementById("review-banner");
+const $progText     = document.getElementById("progress-text");
+const $progFill     = document.getElementById("progress-fill");
+const $navGrid      = document.getElementById("nav-grid");
+const $qCard        = document.getElementById("q-card");
+const $qLessonTag   = document.getElementById("q-lesson-tag");
+const $qTypeTag     = document.getElementById("q-type-tag");
+const $qNumber      = document.getElementById("q-number");
+const $qStem        = document.getElementById("q-stem");
+const $choicesGrid  = document.getElementById("choices-grid");
+const $feedbackCard = document.getElementById("feedback-card");
+const $btnPrev      = document.getElementById("btn-prev");
+const $btnNext      = document.getElementById("btn-next");
+
+/* ── Name Screen ── */
+$nameInput.addEventListener("input", () => {
+  $btnStart.disabled = !$nameInput.value.trim();
+});
+$nameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && $nameInput.value.trim()) startQuiz();
+});
+$btnStart.addEventListener("click", startQuiz);
+
+function startQuiz() {
+  playerName = $nameInput.value.trim();
+  // Shuffle questions across all lessons; shuffle choices within each
+  quiz = shuffle(QUESTIONS).map(q => ({ ...q, choices: shuffle(q.choices) }));
+  answers = {};
+  currentQ = 0;
+  submitted = false;
+  reviewMode = false;
+
+  $nameScreen.style.display = "none";
+  $quizScreen.style.display = "block";
+  $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "none";
+  $subtitle.textContent = `${playerName}さん — pick the best answer · instant feedback`;
+
+  buildNavGrid();
+  renderQuestion();
+  updateProgress();
+}
+
+/* ── Nav Grid ── */
+function buildNavGrid() {
+  $navGrid.innerHTML = "";
+  const indices = reviewMode ? reviewIndices : quiz.map((_, i) => i);
+  indices.forEach((origIdx, displayIdx) => {
+    const btn = document.createElement("button");
+    btn.className = "nav-dot";
+    btn.textContent = displayIdx + 1;
+    btn.addEventListener("click", () => { currentQ = displayIdx; renderQuestion(); });
+    $navGrid.appendChild(btn);
+  });
+}
+
+function updateNavGrid() {
+  const dots = $navGrid.querySelectorAll(".nav-dot");
+  const indices = reviewMode ? reviewIndices : quiz.map((_, i) => i);
+  dots.forEach((dot, displayIdx) => {
+    const origIdx = indices[displayIdx];
+    dot.className = "nav-dot";
+    if (displayIdx === currentQ) dot.classList.add("active");
+    if (answers[origIdx] !== undefined) {
+      if (answers[origIdx] === quiz[origIdx].answer) dot.classList.add("correct");
+      else dot.classList.add("wrong");
+    }
+  });
+}
+
+/* ── Progress ── */
+function updateProgress() {
+  if (reviewMode) {
+    $progText.textContent = `Reviewing ${currentQ + 1} / ${reviewIndices.length}`;
+    $progFill.style.width = `${((currentQ + 1) / reviewIndices.length) * 100}%`;
+  } else {
+    const count = Object.keys(answers).length;
+    $progText.textContent = `${count} / ${quiz.length} answered`;
+    $progFill.style.width = `${(count / quiz.length) * 100}%`;
+  }
+}
+
+/* ── Render Question (with instant feedback) ── */
+function renderQuestion() {
+  const indices = reviewMode ? reviewIndices : quiz.map((_, i) => i);
+  const origIdx = indices[currentQ];
+  const q = quiz[origIdx];
+
+  // Lesson tag
+  $qLessonTag.className = `q-tag lesson-${q.lesson}`;
+  const lessonEmoji = q.lesson === 1 ? "📘" : q.lesson === 2 ? "📗" : "📙";
+  $qLessonTag.textContent = `${lessonEmoji} Lesson ${q.lesson}`;
+
+  // Type tag
+  $qTypeTag.textContent = q.type;
+
+  $qNumber.textContent = reviewMode
+    ? `Review ${currentQ + 1} of ${reviewIndices.length}`
+    : `Question ${currentQ + 1} of ${quiz.length}`;
+  $qStem.innerHTML = q.stem;
+
+  // Determine grid layout (long-text choices get full width)
+  $choicesGrid.className = q.longChoices ? "choices-grid full-width" : "choices-grid";
+  $choicesGrid.innerHTML = "";
+
+  const userAnswer = answers[origIdx];
+  const isAnswered = userAnswer !== undefined;
+
+  q.choices.forEach(c => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    btn.innerHTML = `<span>${c}</span>`;
+
+    if (isAnswered) {
+      btn.classList.add("locked");
+      const isCorrectChoice = (c === q.answer);
+      const isUserChoice = (c === userAnswer);
+      if (isCorrectChoice) {
+        btn.classList.add("correct-reveal");
+        btn.innerHTML += `<span class="mark">✓</span>`;
+      }
+      if (isUserChoice && !isCorrectChoice) {
+        btn.classList.add("wrong-reveal");
+        btn.innerHTML += `<span class="mark">✗</span>`;
+      }
+    } else {
+      btn.addEventListener("click", () => {
+        answers[origIdx] = c;
+        renderQuestion();
+        updateNavGrid();
+        updateProgress();
+      });
+    }
+
+    $choicesGrid.appendChild(btn);
+  });
+
+  // Feedback card
+  if (isAnswered) {
+    const isCorrect = (userAnswer === q.answer);
+    $feedbackCard.className = `feedback-card ${isCorrect ? "correct" : "wrong"}`;
+    $feedbackCard.style.display = "block";
+
+    let feedbackHTML = `
+      <div class="fb-header">${isCorrect ? "✅ Correct!" : "❌ Not quite"}</div>
+    `;
+    if (!isCorrect) {
+      feedbackHTML += `<div class="fb-correct-line">Correct answer: <span class="ans">${q.answer}</span></div>`;
+    } else if (q.correctNote) {
+      feedbackHTML += `<div class="fb-correct-line">${q.correctNote}</div>`;
+    }
+    feedbackHTML += `<div class="fb-explanation">${q.explain || ""}`;
+    if (!isCorrect && q.correctNote) {
+      feedbackHTML = feedbackHTML.replace(
+        '<div class="fb-explanation">',
+        `<div class="fb-explanation"><div style="margin-bottom:6px;color:#a7f3d0;font-weight:600;font-size:13px;">${q.correctNote}</div>`
+      );
+    }
+    if (q.connect) feedbackHTML += `<span class="connect">${q.connect}</span>`;
+    if (q.warn) feedbackHTML += `<span class="warn">${q.warn}</span>`;
+    feedbackHTML += `</div>`;
+    $feedbackCard.innerHTML = feedbackHTML;
+  } else {
+    $feedbackCard.style.display = "none";
+    $feedbackCard.innerHTML = "";
+  }
+
+  updateNavGrid();
+
+  /* Navigation buttons */
+  const total = indices.length;
+  const isLast = currentQ === total - 1;
+  $btnPrev.disabled = (currentQ === 0);
+
+  if (isLast) {
+    if (!reviewMode && Object.keys(answers).length === quiz.length) {
+      // All answered, last question -> show "Finish" 
+      $btnNext.textContent = "Finish & See Score 🎉";
+      $btnNext.disabled = false;
+    } else if (reviewMode) {
+      $btnNext.textContent = "Done reviewing ✓";
+      $btnNext.disabled = false;
+    } else {
+      $btnNext.textContent = "Next →";
+      $btnNext.disabled = !isAnswered;
+    }
+  } else {
+    $btnNext.textContent = "Next →";
+    $btnNext.disabled = !isAnswered;
+  }
+}
+
+/* ── Navigation ── */
+$btnPrev.addEventListener("click", () => {
+  if (currentQ > 0) { currentQ--; renderQuestion(); updateProgress(); }
+});
+
+$btnNext.addEventListener("click", () => {
+  const indices = reviewMode ? reviewIndices : quiz.map((_, i) => i);
+  const isLast = currentQ === indices.length - 1;
+
+  if (isLast) {
+    if (reviewMode) {
+      // Exit review mode back to score screen
+      reviewMode = false;
+      $reviewBanner.style.display = "none";
+      $scoreBanner.style.display = "block";
+      $qCard.style.display = "none";
+      $btnPrev.style.display = "none";
+      $btnNext.style.display = "none";
+      $navGrid.style.display = "none";
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (Object.keys(answers).length === quiz.length && !submitted) {
+      finishQuiz();
+    } else {
+      // Move to first unanswered
+      for (let i = 0; i < quiz.length; i++) {
+        if (answers[i] === undefined) { currentQ = i; break; }
+      }
+      renderQuestion(); updateProgress();
+    }
+  } else {
+    currentQ++; renderQuestion(); updateProgress();
+  }
+});
+
+/* ── Finish quiz ── */
+async function finishQuiz() {
+  submitted = true;
+
+  // Compute scores
+  let totalCorrect = 0;
+  const lessonStats = { 1: { correct: 0, total: 0 }, 2: { correct: 0, total: 0 }, 3: { correct: 0, total: 0 } };
+  const wrongIdxs = [];
+
+  quiz.forEach((q, i) => {
+    lessonStats[q.lesson].total++;
+    if (answers[i] === q.answer) {
+      lessonStats[q.lesson].correct++;
+      totalCorrect++;
+    } else {
+      wrongIdxs.push(i);
+    }
+  });
+
+  reviewIndices = wrongIdxs;
+
+  const pct = Math.round((totalCorrect / quiz.length) * 100);
+  $scoreNum.textContent = `${totalCorrect}/${quiz.length}`;
+
+  if (totalCorrect === 30)        $scoreLbl.textContent = "完璧！ Perfect score! 🌟";
+  else if (totalCorrect >= 27)    $scoreLbl.textContent = "すごい！ Excellent! 🎉";
+  else if (totalCorrect >= 21)    $scoreLbl.textContent = "いいですね！ Good job! 👏";
+  else if (totalCorrect >= 15)    $scoreLbl.textContent = "もうすこし！ Keep going! 💪";
+  else                             $scoreLbl.textContent = "もう一度！ Review and try again! 📚";
+
+  const gradient = totalCorrect >= 27
+    ? "linear-gradient(135deg,#2d6a4f,#40916c)"
+    : totalCorrect >= 21
+      ? "linear-gradient(135deg,#b08d37,#d4a843)"
+      : "linear-gradient(135deg,#9b2226,#ca6702)";
+  $scoreBanner.style.background = gradient;
+
+  // Lesson breakdown
+  const lessonEmoji = { 1: "📘", 2: "📗", 3: "📙" };
+  $lessonBreak.innerHTML = [1, 2, 3].map(L => `
+    <div class="lesson-stat">
+      <div class="ls-label">${lessonEmoji[L]} L${L}</div>
+      <div class="ls-score">${lessonStats[L].correct}/${lessonStats[L].total}</div>
+    </div>
+  `).join("");
+
+  $scoreBanner.style.display = "block";
+
+  // Hide the question card and nav buttons (results page view)
+  $qCard.style.display = "none";
+  $btnPrev.style.display = "none";
+  $btnNext.style.display = "none";
+  $navGrid.style.display = "none";
+  document.querySelector(".progress-row").style.display = "none";
+
+  // Enable / disable review button
+  $btnReview.disabled = wrongIdxs.length === 0;
+  if (wrongIdxs.length === 0) {
+    $btnReview.textContent = "🌟 Nothing to review!";
+  } else {
+    $btnReview.textContent = `📝 Review ${wrongIdxs.length} wrong answer${wrongIdxs.length === 1 ? "" : "s"}`;
+  }
+
+  // Scroll to top to show score
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  /* ════ EmailJS submission ════ */
+  const EMAILJS_PUBLIC_KEY  = "1oR0j0WDvUmSSYEpK";
+  const EMAILJS_SERVICE_ID  = "service_v7ifzdj";
+  const EMAILJS_TEMPLATE_ID = "template_lb9c879";
+
+  const now = new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", dateStyle: "full", timeStyle: "short" });
+  const stripHTML = (s) => s.replace(/<[^>]+>/g, "");
+  const details = quiz.map((q, i) =>
+    `${i+1}. [L${q.lesson} ${q.type}] ${stripHTML(q.stem)}\n    Your answer: ${answers[i] || "—"} | Correct: ${q.answer} ${answers[i] === q.answer ? "✓" : "✗"}`
+  ).join("\n");
+
+  const breakdownText = `📘 L1: ${lessonStats[1].correct}/${lessonStats[1].total}  |  📗 L2: ${lessonStats[2].correct}/${lessonStats[2].total}  |  📙 L3: ${lessonStats[3].correct}/${lessonStats[3].total}`;
+
+  const emailParams = {
+    name: playerName,
+    email: "noreply@quiz.com",
+    subject: `[${playerName}] みんなの日本語 L1–3 Cumulative Quiz — ${pct}%`,
+    message: `Minna no Nihongo - Lessons 1-3 Cumulative Quiz\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${totalCorrect}/${quiz.length} (${pct}%)\n\nLesson Breakdown:\n${breakdownText}\n\n--- Detailed Results ---\n${details}\n\nがんばって！`,
+    time: now
+  };
+
+  if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
+    $emailRow.innerHTML = `<span class="email-pill error">⚠ EmailJS not configured</span>`;
+  } else {
+    $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams, EMAILJS_PUBLIC_KEY);
+      $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || 'Email failed'}</span>`;
+    }
+  }
+}
+
+/* ── Review Wrong Answers ── */
+$btnReview.addEventListener("click", () => {
+  if (reviewIndices.length === 0) return;
+  reviewMode = true;
+  currentQ = 0;
+  $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "block";
+  $qCard.style.display = "block";
+  $btnPrev.style.display = "block";
+  $btnNext.style.display = "block";
+  $navGrid.style.display = "grid";
+  document.querySelector(".progress-row").style.display = "block";
+  buildNavGrid();
+  renderQuestion();
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+/* ── Retake ── */
+$btnRetake.addEventListener("click", () => {
+  $qCard.style.display = "block";
+  $btnPrev.style.display = "block";
+  $btnNext.style.display = "block";
+  $navGrid.style.display = "grid";
+  document.querySelector(".progress-row").style.display = "block";
+  $reviewBanner.style.display = "none";
+  startQuiz();
+});
+
+/* ── Keyboard navigation ── */
+document.addEventListener("keydown", (e) => {
+  if ($quizScreen.style.display !== "block") return;
+  if ($qCard.style.display === "none") return; // on score screen
+  if (e.key === "ArrowLeft" && !$btnPrev.disabled) { e.preventDefault(); $btnPrev.click(); }
+  else if (e.key === "ArrowRight" && !$btnNext.disabled) { e.preventDefault(); $btnNext.click(); }
+});
+</script>
+</body>
+</html>

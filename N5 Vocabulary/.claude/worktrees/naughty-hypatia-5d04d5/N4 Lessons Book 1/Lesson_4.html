@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>いろどり Irodori A2 - Lesson 4: 昨日はすごい雨でしたね</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========== CSS Variables - Sky Blue Weather Theme ========== */
+        :root {
+            --primary: #0284c7;
+            --primary-light: #38bdf8;
+            --primary-dark: #0369a1;
+            --accent: #7c3aed;
+            --accent-light: #c4b5fd;
+            --accent-dark: #5b21b6;
+            --secondary: #06b6d4;
+            --secondary-light: #a5f3fc;
+            --success: #10b981;
+            --success-light: #a7f3d0;
+            --error: #ef4444;
+            --error-light: #fecaca;
+            --warning: #f59e0b;
+            --warning-light: #fde68a;
+            --bg-light: #f0f9ff;
+            --bg-sky: #e0f2fe;
+            --bg-card: #ffffff;
+            --text-primary: #0c4a6e;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ========== Reset & Base ========== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-sky) 100%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== Progress Bar ========== */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--bg-card);
+            box-shadow: var(--shadow);
+            padding: 12px 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .progress-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-title .lesson-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .progress-bar-wrapper {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .progress-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:disabled {
+            background: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ========== Main Container ========== */
+        .presentation {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        /* ========== Slides ========== */
+        .slide {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== Title Slide ========== */
+        .title-slide {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .title-slide .book-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+
+        .title-slide h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .title-slide .lesson-title-jp {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .title-slide .lesson-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .weather-icons {
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+        }
+
+        .title-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+
+        .title-card h2 {
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .grammar-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .grammar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--bg-light);
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .grammar-item:hover {
+            transform: translateX(8px);
+            background: var(--secondary-light);
+        }
+
+        .grammar-number {
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+        }
+
+        /* ========== Content Slides ========== */
+        .content-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .slide-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .grammar-badge {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .slide-header h2 {
+            font-size: 1.7rem;
+            color: var(--primary-dark);
+            flex: 1;
+        }
+
+        .slide-header .jp-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* ========== Ruby (Furigana) Styling ========== */
+        ruby {
+            ruby-position: over;
+        }
+
+        ruby rt {
+            font-size: 0.6em;
+            color: var(--text-muted);
+        }
+
+        /* ========== Example Boxes ========== */
+        .example-box {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #bae6fd 100%);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .example-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-japanese {
+            font-size: 1.4rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 2;
+        }
+
+        .example-english {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* ========== Conversation Box ========== */
+        .conversation-box {
+            background: linear-gradient(135deg, #fefce8 0%, #fef08a 100%);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 20px 0;
+            border-left: 4px solid var(--warning);
+        }
+
+        .conversation-box .example-label {
+            color: #92400e;
+        }
+
+        .speaker {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-right: 8px;
+        }
+
+        .speaker.b {
+            color: var(--accent-dark);
+        }
+
+        /* ========== Explanation Sections ========== */
+        .explanation {
+            margin: 24px 0;
+        }
+
+        .explanation h3 {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .explanation p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .key-point {
+            background: var(--secondary-light);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 16px 0;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .key-point strong {
+            color: var(--primary-dark);
+        }
+
+        .warning-point {
+            background: var(--warning-light);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 16px 0;
+            border-left: 4px solid var(--warning);
+        }
+
+        /* ========== Structure Box ========== */
+        .structure-box {
+            background: linear-gradient(135deg, #f5f3ff 0%, #ddd6fe 100%);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent);
+        }
+
+        .structure-box .label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .structure-formula {
+            font-size: 1.15rem;
+            font-family: 'Outfit', monospace;
+            color: var(--primary-dark);
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 8px 0;
+        }
+
+        .structure-formula .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .structure-formula .accent {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* ========== Pronunciation Guide ========== */
+        .pronunciation-guide {
+            background: linear-gradient(135deg, #ecfdf5 0%, #a7f3d0 100%);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--success);
+        }
+
+        .pronunciation-guide .label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #065f46;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pronunciation-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 8px 0;
+            border-bottom: 1px dashed #6ee7b7;
+        }
+
+        .pronunciation-item:last-child {
+            border-bottom: none;
+        }
+
+        .pronunciation-jp {
+            font-size: 1.3rem;
+            min-width: 180px;
+        }
+
+        .pronunciation-phonetic {
+            font-family: 'Outfit', sans-serif;
+            color: #047857;
+            font-weight: 500;
+            background: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        /* ========== Collapsible MNN Notes ========== */
+        .mnn-connection {
+            margin: 24px 0;
+        }
+
+        .mnn-toggle {
+            width: 100%;
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            border: none;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #b91c1c;
+            transition: var(--transition);
+        }
+
+        .mnn-toggle:hover {
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+        }
+
+        .mnn-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .mnn-toggle.open .icon {
+            transform: rotate(180deg);
+        }
+
+        .mnn-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            background: #fef2f2;
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .mnn-content.open {
+            max-height: 500px;
+            padding: 20px;
+            border: 1px solid #fecaca;
+            border-top: none;
+        }
+
+        .mnn-content h4 {
+            color: #b91c1c;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .mnn-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .mnn-lesson-ref {
+            display: inline-block;
+            background: #b91c1c;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+
+        /* ========== Conjugation Table ========== */
+        .conjugation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        .conjugation-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 16px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .conjugation-table th:first-child {
+            text-align: left;
+        }
+
+        .conjugation-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .conjugation-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+            color: var(--primary-dark);
+            background: var(--bg-light);
+        }
+
+        .conjugation-table tr:nth-child(even) {
+            background: var(--bg-light);
+        }
+
+        .conjugation-table tr:nth-child(even) td:first-child {
+            background: var(--bg-sky);
+        }
+
+        .conjugation-table tr:hover {
+            background: var(--secondary-light);
+        }
+
+        .table-example {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ========== Weather Vocabulary ========== */
+        .weather-vocab {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .weather-item {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .weather-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .weather-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .weather-jp {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+
+        .weather-en {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ========== Quiz Slides ========== */
+        .quiz-card {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #bae6fd 100%);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .quiz-badge {
+            background: var(--accent);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .quiz-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+        }
+
+        .quiz-question {
+            background: white;
+            padding: 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .question-number {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .question-context {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+
+        .fill-blank {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 1.3rem;
+            margin: 20px 0;
+        }
+
+        .blank-input {
+            border: 2px dashed var(--primary);
+            background: var(--bg-light);
+            padding: 8px 16px;
+            border-radius: 8px;
+            min-width: 100px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .blank-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+
+        .check-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+        }
+
+        .check-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* ========== Answer Slides ========== */
+        .answer-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .answer-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .answer-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .answer-result {
+            padding: 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+
+        .answer-result.correct {
+            background: var(--success-light);
+            border-left: 4px solid var(--success);
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--success);
+        }
+
+        .answer-text {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .answer-explanation {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        /* ========== Summary Slide ========== */
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            color: white;
+            text-align: center;
+        }
+
+        .summary-card h2 {
+            font-size: 2rem;
+            margin-bottom: 24px;
+        }
+
+        .summary-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 32px 0;
+        }
+
+        .summary-point {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            border-radius: var(--radius);
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-point h4 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .summary-point p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .restart-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 16px 48px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 24px;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        /* ========== Responsive Design ========== */
+        @media (max-width: 768px) {
+            .progress-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .progress-bar-wrapper {
+                width: 100%;
+                max-width: none;
+            }
+
+            .progress-nav {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .content-card, .quiz-card, .answer-card {
+                padding: 24px;
+            }
+
+            .slide-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .example-japanese {
+                font-size: 1.2rem;
+            }
+
+            .fill-blank {
+                font-size: 1.1rem;
+            }
+
+            .structure-formula {
+                font-size: 1rem;
+                padding: 10px 14px;
+            }
+
+            .conjugation-table {
+                font-size: 0.85rem;
+            }
+
+            .conjugation-table th, .conjugation-table td {
+                padding: 10px 8px;
+            }
+
+            .weather-vocab {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .progress-title {
+                font-size: 0.8rem;
+            }
+
+            .nav-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .title-slide h1 {
+                font-size: 2rem;
+            }
+
+            .grammar-item {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+
+            .weather-icons {
+                font-size: 2rem;
+            }
+
+            .weather-vocab {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .weather-item {
+                padding: 12px;
+            }
+        }
+
+        /* ========== Animations ========== */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title">
+                <span class="lesson-badge">A2</span>
+                いろどり Lesson 4
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text"><span id="currentSlide">1</span> / <span id="totalSlides">14</span></div>
+            </div>
+            <div class="progress-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()">
+                    ◀ <span class="btn-text">Back</span>
+                </button>
+                <button class="nav-btn" id="nextBtn" onclick="nextSlide()">
+                    <span class="btn-text">Next</span> ▶
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Presentation -->
+    <div class="presentation">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <div class="book-badge">いろどり IRODORI • 入門 A2</div>
+                <h1>Lesson 4</h1>
+                <div class="weather-icons float">🌤️ 🌧️ ☀️ ⛈️ ❄️</div>
+                <div class="lesson-title-jp"><ruby>昨日<rt>きのう</rt></ruby>はすごい<ruby>雨<rt>あめ</rt></ruby>でしたね</div>
+                <div class="lesson-subtitle">It rained heavily yesterday • Weather Conversations</div>
+                
+                <div class="title-card">
+                    <h2>📚 <ruby>文法<rt>ぶんぽう</rt></ruby>ノート Grammar Points</h2>
+                    <div class="grammar-list">
+                        <div class="grammar-item">
+                            <span class="grammar-number">1</span>
+                            <span>S ね 〈<ruby>共感<rt>きょうかん</rt></ruby>〉 — Seeking/Expressing Sympathy</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">2</span>
+                            <span><ruby>非過去<rt>ひかこ</rt></ruby>・<ruby>過去<rt>かこ</rt></ruby> — Non-past & Past Conjugation</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">3</span>
+                            <span>V-ています ③ — Describing Current Weather</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">4</span>
+                            <span>〜でしょう — Weather Forecasts & Predictions</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="start-btn pulse" onclick="nextSlide()">
+                    🌈 <ruby>始<rt>はじ</rt></ruby>めましょう！Start Learning
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Grammar 1 - Sね (Sympathy) -->
+        <div class="slide" data-slide="2">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 1</span>
+                    <div>
+                        <h2>S ね 〈<ruby>共感<rt>きょうかん</rt></ruby>〉</h2>
+                        <span class="jp-title">Seeking/Expressing Sympathy</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        <ruby>今日<rt>きょう</rt></ruby>はいい<ruby>天気<rt>てんき</rt></ruby>ですね。
+                    </div>
+                    <div class="example-english">It is a beautiful day today, isn't it?</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>The particle ね at the end of a sentence is used to <strong>seek sympathy</strong> from the listener or to <strong>express sympathy</strong> with them. It shows you're sharing a feeling or observation that you both know to be true.</p>
+                    
+                    <div class="key-point">
+                        <strong>💡 Weather as Conversation Starter:</strong><br>
+                        Topics about weather, temperature, and climate are often used as conversation starters because they're easy to discuss with anyone. The speaker uses ね because both people can observe the same weather!
+                    </div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Conversation Examples</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span><ruby>今日<rt>きょう</rt></ruby>はいい<ruby>天気<rt>てんき</rt></ruby>ですね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 24px;">It is a beautiful day today.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker b">B:</span>そうですね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 24px;">Yes, it is.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        <span class="speaker">A:</span>だいぶ<ruby>暖<rt>あたた</rt></ruby>かくなりましたね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 24px;">It got much warmer, didn't it?</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker b">B:</span><ruby>本当<rt>ほんとう</rt></ruby>ですね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 24px;">That's true.</span>
+                    </div>
+                </div>
+
+                <div class="warning-point">
+                    <strong>⚠️ Different from 入門 (A1):</strong><br>
+                    In A1, you learned ね for confirmation (like コピー20<ruby>枚<rt>まい</rt></ruby>ですね "20 copies, right?"). Here, ね is used to share feelings and observations, not to confirm information.
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 1</span> Basic use of ね for agreement</p>
+                        <p><span class="mnn-lesson-ref">Lesson 8</span> Adjectives with ね for shared opinions</p>
+                        <p><strong>Key Point:</strong> MNN introduces ね early but often in the context of agreement. Irodori highlights its use specifically in weather small talk, which is extremely common in Japanese daily conversation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Quiz 1 -->
+        <div class="slide" data-slide="3">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 1: Sね (Sympathy)</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">You meet a coworker and want to comment that it's raining a lot.</div>
+                    <div class="question-text">Add the particle to seek agreement:</div>
+                    <div class="fill-blank">
+                        <ruby>毎日<rt>まいにち</rt></ruby>、よく<ruby>降<rt>ふ</rt></ruby>ります
+                        <input type="text" class="blank-input" id="q1-1" placeholder="？" style="min-width: 50px;">
+                        。
+                    </div>
+                    <div class="example-english">"It rains a lot every day, doesn't it?"</div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Someone says "It got warmer." How do you agree?</div>
+                    <div class="question-text">Complete the response:</div>
+                    <div class="fill-blank">
+                        <input type="text" class="blank-input" id="q1-2" placeholder="？">
+                        ですね。
+                    </div>
+                    <div class="example-english">"That's true." / "Yes, it is."</div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Answers 1 -->
+        <div class="slide" data-slide="4">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 1: Sね (Sympathy)</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        <ruby>毎日<rt>まいにち</rt></ruby>、よく<ruby>降<rt>ふ</rt></ruby>ります<strong>ね</strong>。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> Adding ね at the end invites the listener to agree with your observation about the weather. It creates a sense of shared experience.
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        <strong>そう</strong>ですね。 / <strong><ruby>本当<rt>ほんとう</rt></ruby></strong>ですね。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> そうですね (Yes, that's right) and <ruby>本当<rt>ほんとう</rt></ruby>ですね (That's true) are both natural ways to express agreement. The ね shows you share the same feeling.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Grammar 2 - Non-past/Past -->
+        <div class="slide" data-slide="5">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 2</span>
+                    <div>
+                        <h2><ruby>非過去<rt>ひかこ</rt></ruby>・<ruby>過去<rt>かこ</rt></ruby></h2>
+                        <span class="jp-title">Non-past & Past Forms</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        <ruby>昨日<rt>きのう</rt></ruby>はすごい<ruby>雨<rt>あめ</rt></ruby>でしたね。
+                    </div>
+                    <div class="example-english">It rained heavily yesterday, didn't it?</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>When talking about weather, you use <strong>non-past forms</strong> for current weather and <strong>past forms</strong> for yesterday's weather or weather changes. This is a review from 入門 level.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Conjugation Table (Affirmative Forms)</div>
+                    <table class="conjugation-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Non-past (<ruby>非過去<rt>ひかこ</rt></ruby>)</th>
+                                <th>Past (<ruby>過去<rt>かこ</rt></ruby>)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><ruby>名詞<rt>めいし</rt></ruby><br><span class="table-example">Noun</span></td>
+                                <td>N です<br><span class="table-example"><ruby>雨<rt>あめ</rt></ruby>です</span></td>
+                                <td>N でした<br><span class="table-example"><ruby>雨<rt>あめ</rt></ruby>でした</span></td>
+                            </tr>
+                            <tr>
+                                <td>ナ<ruby>形容詞<rt>けいようし</rt></ruby><br><span class="table-example">ナ-adjective</span></td>
+                                <td>ナA-です<br><span class="table-example"><ruby>大変<rt>たいへん</rt></ruby>です</span></td>
+                                <td>ナA-でした<br><span class="table-example"><ruby>大変<rt>たいへん</rt></ruby>でした</span></td>
+                            </tr>
+                            <tr>
+                                <td>イ<ruby>形容詞<rt>けいようし</rt></ruby><br><span class="table-example">イ-adjective</span></td>
+                                <td>イA-いです<br><span class="table-example"><ruby>暑<rt>あつ</rt></ruby>いです</span></td>
+                                <td>イA-かったです<br><span class="table-example"><ruby>暑<rt>あつ</rt></ruby>かったです</span></td>
+                            </tr>
+                            <tr>
+                                <td><ruby>動詞<rt>どうし</rt></ruby><br><span class="table-example">Verb</span></td>
+                                <td>V-ます<br><span class="table-example"><ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>ります</span></td>
+                                <td>V-ました<br><span class="table-example"><ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>りました</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Example Conversations</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span>おはようございます。<ruby>朝<rt>あさ</rt></ruby>から<ruby>暑<rt>あつ</rt></ruby>いですね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 24px;">Good morning. It is a hot morning.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker b">B:</span>そうですね。ゆうべも<ruby>暑<rt>あつ</rt></ruby>かったですね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 24px;">Yes, it is. It was hot last night, too.</span>
+                    </div>
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 4</span> Verb past tense (V-ました)</p>
+                        <p><span class="mnn-lesson-ref">Lesson 8</span> Adjective conjugation (イA-い/ナA-です)</p>
+                        <p><span class="mnn-lesson-ref">Lesson 12</span> Past tense of adjectives (イA-かったです/ナA-でした)</p>
+                        <p><strong>Key Point:</strong> This is a comprehensive review of past tense forms. MNN covers these across multiple lessons, while Irodori consolidates them for practical weather conversations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Quiz 2 -->
+        <div class="slide" data-slide="6">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 2: Non-past & Past</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Yesterday was cold. (<ruby>寒<rt>さむ</rt></ruby>い = cold)</div>
+                    <div class="question-text">Convert to past tense:</div>
+                    <div class="fill-blank">
+                        <ruby>昨日<rt>きのう</rt></ruby>は<ruby>寒<rt>さむ</rt></ruby>
+                        <input type="text" class="blank-input" id="q2-1" placeholder="？">
+                        です。
+                    </div>
+                    <div class="example-english">"Yesterday was cold."</div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Last week was rainy. (<ruby>雨<rt>あめ</rt></ruby> = rain, noun)</div>
+                    <div class="question-text">Convert to past tense:</div>
+                    <div class="fill-blank">
+                        <ruby>先週<rt>せんしゅう</rt></ruby>は<ruby>雨<rt>あめ</rt></ruby>
+                        <input type="text" class="blank-input" id="q2-2" placeholder="？">
+                        。
+                    </div>
+                    <div class="example-english">"Last week was rainy."</div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 7: Answers 2 -->
+        <div class="slide" data-slide="7">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 2: Non-past & Past</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        <ruby>昨日<rt>きのう</rt></ruby>は<ruby>寒<rt>さむ</rt></ruby><strong>かった</strong>です。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> イ-adjectives form past tense by changing い to かった. <ruby>寒<rt>さむ</rt></ruby>い → <ruby>寒<rt>さむ</rt></ruby>かった + です = "was cold."
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        <ruby>先週<rt>せんしゅう</rt></ruby>は<ruby>雨<rt>あめ</rt></ruby><strong>でした</strong>。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> Nouns form past tense by changing です to でした. <ruby>雨<rt>あめ</rt></ruby>です → <ruby>雨<rt>あめ</rt></ruby>でした = "was rain/rainy."
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Grammar 3 - V-ています③ -->
+        <div class="slide" data-slide="8">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 3</span>
+                    <div>
+                        <h2>V-ています ③</h2>
+                        <span class="jp-title">Describing Current Weather</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        <ruby>今<rt>いま</rt></ruby>も<ruby>少<rt>すこ</rt></ruby>し<ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>っています。
+                    </div>
+                    <div class="example-english">It is still raining a little.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>The pattern V-ています expresses the <strong>present situation</strong>. You've seen this pattern before:</p>
+                    
+                    <div class="key-point">
+                        <strong>🔄 Three Uses of V-ています So Far:</strong><br><br>
+                        <strong>Lesson 1:</strong> Occupation → レストランで<ruby>働<rt>はたら</rt></ruby>いています<br>
+                        <span style="color: var(--text-muted);">(I work at a restaurant)</span><br><br>
+                        <strong>Lesson 2:</strong> Ongoing habits → <ruby>空手<rt>からて</rt></ruby>を<ruby>習<rt>なら</rt></ruby>っています<br>
+                        <span style="color: var(--text-muted);">(I'm learning karate)</span><br><br>
+                        <strong>Lesson 4:</strong> Current weather → <ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>っています<br>
+                        <span style="color: var(--text-muted);">(It is raining)</span>
+                    </div>
+                </div>
+
+                <div class="weather-vocab">
+                    <div class="weather-item">
+                        <div class="weather-icon">☀️</div>
+                        <div class="weather-jp"><ruby>晴<rt>は</rt></ruby>れています</div>
+                        <div class="weather-en">It is sunny</div>
+                    </div>
+                    <div class="weather-item">
+                        <div class="weather-icon">☁️</div>
+                        <div class="weather-jp">くもっています</div>
+                        <div class="weather-en">It is cloudy</div>
+                    </div>
+                    <div class="weather-item">
+                        <div class="weather-icon">🌧️</div>
+                        <div class="weather-jp"><ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>っています</div>
+                        <div class="weather-en">It is raining</div>
+                    </div>
+                    <div class="weather-item">
+                        <div class="weather-icon">❄️</div>
+                        <div class="weather-jp"><ruby>雪<rt>ゆき</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>っています</div>
+                        <div class="weather-en">It is snowing</div>
+                    </div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 More Examples</div>
+                    <div class="example-japanese">
+                        <ruby>今朝<rt>けさ</rt></ruby>は、よく<ruby>晴<rt>は</rt></ruby>れていますね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">It is nice and sunny this morning.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        <ruby>外<rt>そと</rt></ruby>は、<ruby>風<rt>かぜ</rt></ruby>が<ruby>吹<rt>ふ</rt></ruby>いています。<ruby>注意<rt>ちゅうい</rt></ruby>してください。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">It is windy outside. Please be careful.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        <ruby>今日<rt>きょう</rt></ruby>はくもっていて、あまり<ruby>天気<rt>てんき</rt></ruby>がよくないですね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">It is cloudy and not very fine today.</span>
+                    </div>
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 15</span> V-ています for states and ongoing actions</p>
+                        <p><span class="mnn-lesson-ref">Lesson 14</span> Te-form conjugation</p>
+                        <p><strong>Key Point:</strong> MNN Lesson 15 teaches V-ています for describing states. Weather expressions like <ruby>晴<rt>は</rt></ruby>れています, くもっています, and <ruby>降<rt>ふ</rt></ruby>っています are perfect examples of this "current state" usage.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Quiz 3 -->
+        <div class="slide" data-slide="9">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 3: V-ています③</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Describe that it's currently snowing.</div>
+                    <div class="question-text">Complete the sentence:</div>
+                    <div class="fill-blank">
+                        <ruby>今<rt>いま</rt></ruby>、<ruby>雪<rt>ゆき</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>
+                        <input type="text" class="blank-input" id="q3-1" placeholder="？">
+                        。
+                    </div>
+                    <div class="example-english">"It is snowing now."</div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Say it's sunny today.</div>
+                    <div class="question-text">Complete the sentence:</div>
+                    <div class="fill-blank">
+                        <ruby>今日<rt>きょう</rt></ruby>は<ruby>晴<rt>は</rt></ruby>れ
+                        <input type="text" class="blank-input" id="q3-2" placeholder="？">
+                        ね。
+                    </div>
+                    <div class="example-english">"It's sunny today, isn't it?"</div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: Answers 3 -->
+        <div class="slide" data-slide="10">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 3: V-ています③</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        <ruby>今<rt>いま</rt></ruby>、<ruby>雪<rt>ゆき</rt></ruby>が<ruby>降<rt>ふ</rt></ruby><strong>っています</strong>。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> <ruby>降<rt>ふ</rt></ruby>る (to fall/rain/snow) becomes <ruby>降<rt>ふ</rt></ruby>っています to describe current weather. <ruby>雪<rt>ゆき</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>っています = "It is snowing."
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        <ruby>今日<rt>きょう</rt></ruby>は<ruby>晴<rt>は</rt></ruby>れ<strong>ています</strong>ね。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> <ruby>晴<rt>は</rt></ruby>れる (to clear up/be sunny) becomes <ruby>晴<rt>は</rt></ruby>れています. This describes the current sunny state. Note: くもっています for cloudy works the same way.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Grammar 4 - ～でしょう -->
+        <div class="slide" data-slide="11">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 4</span>
+                    <div>
+                        <h2>〜でしょう</h2>
+                        <span class="jp-title">Weather Forecasts & Predictions</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        <ruby>明日<rt>あした</rt></ruby>は<ruby>晴<rt>は</rt></ruby>れるでしょう。
+                    </div>
+                    <div class="example-english">It will clear up tomorrow.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>〜でしょう is used in <strong>weather forecasts</strong> to express a prediction. It means "probably" or "it will likely be." This is the language you hear on TV weather reports!</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 How to Form 〜でしょう</div>
+                    <table class="conjugation-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Formation</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><ruby>名詞<rt>めいし</rt></ruby><br><span class="table-example">Noun</span></td>
+                                <td>N + でしょう<br><span class="table-example">(です → でしょう)</span></td>
+                                <td><ruby>雨<rt>あめ</rt></ruby><strong>でしょう</strong></td>
+                            </tr>
+                            <tr>
+                                <td>ナ<ruby>形容詞<rt>けいようし</rt></ruby><br><span class="table-example">ナ-adjective</span></td>
+                                <td>ナA + でしょう<br><span class="table-example">(です → でしょう)</span></td>
+                                <td><ruby>大変<rt>たいへん</rt></ruby><strong>でしょう</strong></td>
+                            </tr>
+                            <tr>
+                                <td>イ<ruby>形容詞<rt>けいようし</rt></ruby><br><span class="table-example">イ-adjective</span></td>
+                                <td>イA-い + でしょう</td>
+                                <td><ruby>寒<rt>さむ</rt></ruby>い<strong>でしょう</strong></td>
+                            </tr>
+                            <tr>
+                                <td><ruby>動詞<rt>どうし</rt></ruby><br><span class="table-example">Verb</span></td>
+                                <td>V-る + でしょう<br><span class="table-example">(dictionary form)</span></td>
+                                <td><ruby>晴<rt>は</rt></ruby>れる<strong>でしょう</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">📺 Weather Forecast Examples</div>
+                    <div class="example-japanese">
+                        <ruby>明日<rt>あした</rt></ruby>は<ruby>晴<rt>は</rt></ruby>れるでしょう。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">It will be sunny tomorrow.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        <ruby>明日<rt>あした</rt></ruby>も<ruby>寒<rt>さむ</rt></ruby>いでしょう。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">It will be cold again tomorrow.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        <ruby>雨<rt>あめ</rt></ruby>は、<ruby>今日<rt>きょう</rt></ruby>の<ruby>夕方<rt>ゆうがた</rt></ruby>にはやむでしょう。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">The rain will stop in the early evening today.</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Usage Note:</strong><br>
+                    〜でしょう for predictions is mainly used in <strong>weather forecasts and formal announcements</strong>. In daily conversation, it's not used as often for guessing. The goal here is to understand weather forecasts, not necessarily to use でしょう yourself.
+                </div>
+
+                <div class="pronunciation-guide">
+                    <div class="label">🔊 Pronunciation Guide</div>
+                    <div class="pronunciation-item">
+                        <span class="pronunciation-jp">やむ</span>
+                        <span class="pronunciation-phonetic">ya-mu (to stop [rain])</span>
+                    </div>
+                    <div class="pronunciation-item">
+                        <span class="pronunciation-jp"><ruby>夕方<rt>ゆうがた</rt></ruby></span>
+                        <span class="pronunciation-phonetic">yuu-ga-ta (early evening)</span>
+                    </div>
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 32</span> でしょう for conjecture/probability</p>
+                        <p><strong>Key Difference:</strong> MNN introduces でしょう later (Lesson 32) for expressing probability and conjecture. Irodori introduces it specifically for weather forecasts at an earlier stage, focusing on comprehension rather than production. Note that verbs connect in plain form (dictionary form), which you'll learn more about later.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Quiz 4 -->
+        <div class="slide" data-slide="12">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 4: 〜でしょう</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Weather forecast: "Tomorrow will be hot."</div>
+                    <div class="question-text">Complete the prediction:</div>
+                    <div class="fill-blank">
+                        <ruby>明日<rt>あした</rt></ruby>は<ruby>暑<rt>あつ</rt></ruby>い
+                        <input type="text" class="blank-input" id="q4-1" placeholder="？">
+                        。
+                    </div>
+                    <div class="example-english">"Tomorrow will (probably) be hot."</div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Weather forecast: "It will rain tomorrow."</div>
+                    <div class="question-text">Complete using the verb (<ruby>降<rt>ふ</rt></ruby>る):</div>
+                    <div class="fill-blank">
+                        <ruby>明日<rt>あした</rt></ruby>は<ruby>雨<rt>あめ</rt></ruby>が
+                        <input type="text" class="blank-input" id="q4-2" placeholder="？">
+                        でしょう。
+                    </div>
+                    <div class="example-english">"It will probably rain tomorrow."</div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 13: Answers 4 -->
+        <div class="slide" data-slide="13">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 4: 〜でしょう</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        <ruby>明日<rt>あした</rt></ruby>は<ruby>暑<rt>あつ</rt></ruby>い<strong>でしょう</strong>。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> For イ-adjectives, simply add でしょう after the adjective (keep the い). <ruby>暑<rt>あつ</rt></ruby>い + でしょう = "will probably be hot."
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        <ruby>明日<rt>あした</rt></ruby>は<ruby>雨<rt>あめ</rt></ruby>が<strong><ruby>降<rt>ふ</rt></ruby>る</strong>でしょう。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> For verbs, use the dictionary form (plain non-past form) before でしょう. <ruby>降<rt>ふ</rt></ruby>ります → <ruby>降<rt>ふ</rt></ruby>る + でしょう = "will probably fall/rain."
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Summary -->
+        <div class="slide" data-slide="14">
+            <div class="summary-card">
+                <h2>🎉 Lesson 4 Complete!</h2>
+                <p>You've mastered 4 grammar points for weather conversations!</p>
+                
+                <div class="summary-points">
+                    <div class="summary-point">
+                        <h4>1. Sね (<ruby>共感<rt>きょうかん</rt></ruby>)</h4>
+                        <p>Seek/express sympathy about weather</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>2. <ruby>非過去<rt>ひかこ</rt></ruby>・<ruby>過去<rt>かこ</rt></ruby></h4>
+                        <p>Current vs. past weather descriptions</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>3. V-ています③</h4>
+                        <p>Describe current weather states</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>4. 〜でしょう</h4>
+                        <p>Understand weather forecasts</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 32px; padding: 20px; background: rgba(255,255,255,0.2); border-radius: var(--radius);">
+                    <h3 style="margin-bottom: 12px;">🌤️ Weather Vocabulary Review</h3>
+                    <p style="font-size: 1.1rem; opacity: 0.95;">
+                        ☀️ <ruby>晴<rt>は</rt></ruby>れています &nbsp;|&nbsp;
+                        ☁️ くもっています &nbsp;|&nbsp;
+                        🌧️ <ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>っています &nbsp;|&nbsp;
+                        ❄️ <ruby>雪<rt>ゆき</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>っています
+                    </p>
+                </div>
+
+                <p style="margin-top: 24px; opacity: 0.9;">
+                    Now you can chat about the weather!<br>
+                    <ruby>今日<rt>きょう</rt></ruby>はいい<ruby>天気<rt>てんき</rt></ruby>ですね。🌈
+                </p>
+
+                <button class="restart-btn" onclick="restartPresentation()">
+                    🔄 <ruby>最初<rt>さいしょ</rt></ruby>から Start Over
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ========== Slide Navigation ==========
+        let currentSlide = 1;
+        const totalSlides = 14;
+
+        function updateSlide() {
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            const activeSlide = document.querySelector(`[data-slide="${currentSlide}"]`);
+            if (activeSlide) {
+                activeSlide.classList.add('active');
+            }
+            
+            document.getElementById('currentSlide').textContent = currentSlide;
+            document.getElementById('totalSlides').textContent = totalSlides;
+            
+            const progress = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(slideNum) {
+            currentSlide = slideNum;
+            updateSlide();
+        }
+
+        function restartPresentation() {
+            currentSlide = 1;
+            updateSlide();
+        }
+
+        // ========== MNN Toggle ==========
+        function toggleMNN(button) {
+            const content = button.nextElementSibling;
+            button.classList.toggle('open');
+            content.classList.toggle('open');
+        }
+
+        // ========== Keyboard Navigation ==========
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // ========== Touch/Swipe Navigation (Mobile) ==========
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+
+        // ========== Initialize ==========
+        updateSlide();
+    </script>
+</body>
+</html>

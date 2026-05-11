@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>みんなの日本語 Lesson 21 — Vocabulary Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { min-height: 100vh; background: #1a1525; color: #e8e0f0; font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 20% 30%, rgba(232,180,200,0.07) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(120,100,180,0.07) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+  .container { max-width: 540px; margin: 0 auto; padding: 24px 16px 60px; position: relative; z-index: 1; }
+  #name-screen { margin-top: 50px; }
+  .card { background: #221d2e; border-radius: 16px; padding: 28px 20px; border: 1px solid #3d3650; }
+  .badge { display: inline-block; background: linear-gradient(135deg, #e8b4c8, #c89db7); color: #1a1525; font-weight: 700; font-size: 12px; padding: 4px 14px; border-radius: 20px; letter-spacing: 1px; }
+  .title { font-size: 22px; font-weight: 800; margin: 14px 0 4px; letter-spacing: -0.5px; }
+  .subtitle { font-size: 13px; color: #9e93b0; }
+  .name-label { display: block; font-size: 13px; color: #9e93b0; margin: 24px 0 8px; text-align: left; }
+  .name-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; font-size: 16px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+  .name-input:focus { border-color: #e8b4c8; }
+  .btn-primary { width: 100%; margin-top: 16px; padding: 14px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+  .btn-primary:disabled { opacity: 0.35; cursor: default; }
+  #quiz-screen { display: none; }
+  .header { text-align: center; margin-bottom: 22px; }
+  .header .subtitle { margin-top: 2px; }
+  .score-banner { display: none; border-radius: 16px; padding: 22px 16px; text-align: center; margin-bottom: 20px; animation: slideDown 0.4s ease; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+  .score-number { font-size: 44px; font-weight: 800; letter-spacing: -1px; }
+  .score-label { font-size: 16px; font-weight: 600; margin-top: 4px; }
+  .email-row { margin-top: 10px; }
+  .email-pill { display: inline-block; background: #3d3650; font-size: 12px; padding: 4px 14px; border-radius: 12px; }
+  .email-pill.sent { background: #2d6a4f; }
+  .email-pill.error { background: #9b2226; }
+  .btn-retake { margin-top: 12px; background: rgba(255,255,255,0.15); color: #fff; border: none; padding: 8px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  .progress-row { margin-bottom: 14px; }
+  .progress-text { font-size: 12px; color: #9e93b0; display: block; margin-bottom: 6px; }
+  .progress-bar { height: 4px; background: #2a2535; border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #e8b4c8, #c89db7); border-radius: 4px; width: 0%; transition: width 0.3s ease; }
+  .nav-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-bottom: 20px; }
+  .nav-dot { aspect-ratio: 1; border-radius: 8px; background: #2a2535; color: #e8e0f0; font-size: 10px; font-weight: 600; border: 2px solid transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .nav-dot.answered { background: #4a4458; }
+  .nav-dot.active { border-color: #e8b4c8; }
+  .nav-dot.correct { background: #2d6a4f; }
+  .nav-dot.wrong { background: #9b2226; }
+  .q-card { background: #221d2e; border-radius: 16px; padding: 24px 18px; border: 1px solid #3d3650; margin-bottom: 16px; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .q-number { font-size: 11px; color: #9e93b0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .q-english { font-size: 18px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; }
+  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .choice-btn { padding: 16px 8px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; text-align: center; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; font-size: 16px; font-weight: 600; position: relative; transition: all 0.15s; min-height: 64px; display: flex; align-items: center; justify-content: center; line-height: 1.3; }
+  .choice-btn:hover:not(.locked) { border-color: #5c4d7a; background: #302844; }
+  .choice-btn.selected { background: #5c4d7a; border-color: #e8b4c8; }
+  .choice-btn.correct-reveal { background: #2d6a4f; border-color: #40916c; }
+  .choice-btn.wrong-reveal { background: #9b2226; border-color: #ca6702; }
+  .choice-btn .mark { position: absolute; top: 6px; right: 8px; font-size: 14px; }
+  .choice-btn .mark.ok { color: #a7f3d0; }
+  .choice-btn .mark.no { color: #fca5a5; }
+  .choice-btn ruby { display: inline; line-height: 1.1; }
+  .choice-btn ruby rt { font-size: 0.5em; color: rgba(232,224,240,0.6); font-weight: 500; }
+  .choice-btn.correct-reveal ruby rt { color: rgba(167,243,208,0.85); }
+  .choice-btn.wrong-reveal ruby rt { color: rgba(252,165,165,0.85); }
+  .choice-btn.selected ruby rt { color: rgba(232,180,200,0.85); }
+  .arrow-row { display: flex; justify-content: space-between; gap: 12px; }
+  .btn-nav { flex: 1; padding: 12px 0; border-radius: 12px; background: #2a2535; border: 1px solid #3d3650; color: #e8e0f0; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
+  .btn-nav:disabled { opacity: 0.3; cursor: default; }
+  .btn-submit { flex: 1; padding: 12px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+  .btn-submit:disabled { opacity: 0.35; cursor: default; }
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div id="name-screen">
+    <div class="card text-center">
+      <span class="badge">みんなの日本語</span>
+      <h1 class="title">Lesson 21 — Vocabulary Exam</h1>
+      <p class="subtitle">72 multiple-choice questions · vocabulary &amp; positions in society</p>
+      <label class="name-label">おなまえは？ Enter your name</label>
+      <input class="name-input" id="name-input" type="text" placeholder="Your name..." autofocus>
+      <button class="btn-primary" id="btn-start" disabled>Start Exam →</button>
+    </div>
+  </div>
+
+  <div id="quiz-screen">
+    <header class="header">
+      <span class="badge">みんなの日本語</span>
+      <h1 class="title">Lesson 21 — Vocabulary Exam</h1>
+      <p class="subtitle" id="quiz-subtitle"></p>
+    </header>
+    <div class="score-banner" id="score-banner">
+      <div class="score-number" id="score-number"></div>
+      <div class="score-label" id="score-label"></div>
+      <div class="email-row" id="email-row"></div>
+      <button class="btn-retake" id="btn-retake">Retake Quiz</button>
+    </div>
+    <div class="progress-row">
+      <span class="progress-text" id="progress-text">0 / 72 answered</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <div class="nav-grid" id="nav-grid"></div>
+    <div class="q-card" id="q-card">
+      <div class="q-number" id="q-number"></div>
+      <div class="q-english" id="q-english"></div>
+      <div class="choices-grid" id="choices-grid"></div>
+    </div>
+    <div class="arrow-row">
+      <button class="btn-nav" id="btn-prev">← Previous</button>
+      <button class="btn-nav" id="btn-next">Next →</button>
+      <button class="btn-submit hidden" id="btn-submit" disabled>Submit Exam</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DISPLAY = {
+  /* Abstract nouns */
+  "自動車":"<ruby>自動車<rt>じどうしゃ</rt></ruby>",
+  "交通":"<ruby>交通<rt>こうつう</rt></ruby>",
+  "物価":"<ruby>物価<rt>ぶっか</rt></ruby>",
+  "放送":"<ruby>放送<rt>ほうそう</rt></ruby>",
+  "試合":"<ruby>試合<rt>しあい</rt></ruby>",
+  "意見":"<ruby>意見<rt>いけん</rt></ruby>",
+  "地球":"<ruby>地球<rt>ちきゅう</rt></ruby>",
+  "月":"<ruby>月<rt>つき</rt></ruby>",
+  /* Government levels */
+  "都道府県":"<ruby>都道府県<rt>とどうふけん</rt></ruby>",
+  /* Government leaders */
+  "首相":"<ruby>首相<rt>しゅしょう</rt></ruby>",
+  "知事":"<ruby>知事<rt>ちじ</rt></ruby>",
+  "市長":"<ruby>市長<rt>しちょう</rt></ruby>",
+  "町長":"<ruby>町長<rt>ちょうちょう</rt></ruby>",
+  "村長":"<ruby>村長<rt>そんちょう</rt></ruby>",
+  /* Education */
+  "高等学校":"<ruby>高等学校<rt>こうとうがっこう</rt></ruby>",
+  "中学校":"<ruby>中学校<rt>ちゅうがっこう</rt></ruby>",
+  "小学校":"<ruby>小学校<rt>しょうがっこう</rt></ruby>",
+  "幼稚園":"<ruby>幼稚園<rt>ようちえん</rt></ruby>",
+  "学長":"<ruby>学長<rt>がくちょう</rt></ruby>",
+  "校長":"<ruby>校長<rt>こうちょう</rt></ruby>",
+  "園長":"<ruby>園長<rt>えんちょう</rt></ruby>",
+  /* Company */
+  "会長":"<ruby>会長<rt>かいちょう</rt></ruby>",
+  "社長":"<ruby>社長<rt>しゃちょう</rt></ruby>",
+  "重役":"<ruby>重役<rt>じゅうやく</rt></ruby>",
+  "部長":"<ruby>部長<rt>ぶちょう</rt></ruby>",
+  "課長":"<ruby>課長<rt>かちょう</rt></ruby>",
+  /* Bank */
+  "頭取":"<ruby>頭取<rt>とうどり</rt></ruby>",
+  "支店長":"<ruby>支店長<rt>してんちょう</rt></ruby>",
+  /* Hospital */
+  "院長":"<ruby>院長<rt>いんちょう</rt></ruby>",
+  "看護師長":"<ruby>看護師長<rt>かんごしちょう</rt></ruby>",
+  /* Station / Police */
+  "駅長":"<ruby>駅長<rt>えきちょう</rt></ruby>",
+  "署長":"<ruby>署長<rt>しょちょう</rt></ruby>"
+};
+
+const READING = {};
+for (const [k,v] of Object.entries(DISPLAY)) {
+  READING[k] = v.replace(/<ruby>/g,"").replace(/<\/ruby>/g,"").replace(/<rt>/g,"（").replace(/<\/rt>/g,"）");
+}
+
+const QUESTIONS = [
+  /* ═══ MAIN VOCABULARY ═══ */
+
+  /* ── Verbs ── */
+  { english: "think", answer: "おもいます", choices: ["おもいます","いいます","かちます","まけます"] },
+  { english: "say", answer: "いいます", choices: ["いいます","おもいます","かちます","やめます"] },
+  { english: "win", answer: "かちます", choices: ["かちます","まけます","おもいます","うごきます"] },
+  { english: "lose, be beaten", answer: "まけます", choices: ["まけます","かちます","やめます","うごきます"] },
+  { english: "(a festival) be held, take place", answer: "あります", choices: ["あります","やくにたちます","うごきます","りゅうがくします"] },
+  { english: "be useful", answer: "やくにたちます", choices: ["やくにたちます","うごきます","あります","きをつけます"] },
+  { english: "move, work (machine)", answer: "うごきます", choices: ["うごきます","やくにたちます","やめます","きをつけます"] },
+  { english: "quit, retire, stop, give up", answer: "やめます", choices: ["やめます","うごきます","まけます","りゅうがくします"] },
+  { english: "pay attention, take care", answer: "きをつけます", choices: ["きをつけます","やくにたちます","りゅうがくします","おもいます"] },
+  { english: "study abroad", answer: "りゅうがくします", choices: ["りゅうがくします","きをつけます","やめます","うごきます"] },
+
+  /* ── Adjectives ── */
+  { english: "wasteful", answer: "むだ", choices: ["むだ","ふべん","すごい","ほんとう"] },
+  { english: "inconvenient", answer: "ふべん", choices: ["ふべん","むだ","すごい","うそ"] },
+  { english: "awful, great (astonishment or admiration)", answer: "すごい", choices: ["すごい","むだ","ふべん","ほんとう"] },
+
+  /* ── Nouns: truth / lies ── */
+  { english: "true, real", answer: "ほんとう", choices: ["ほんとう","うそ","すごい","むだ"] },
+  { english: "lie", answer: "うそ", choices: ["うそ","ほんとう","ふべん","むだ"] },
+
+  /* ── Nouns: transport / economy (kanji + furigana) ── */
+  { english: "car, automobile", answer: "自動車", choices: ["自動車","交通","物価","放送"] },
+  { english: "transport, traffic", answer: "交通", choices: ["交通","自動車","物価","放送"] },
+  { english: "(commodity) prices", answer: "物価", choices: ["物価","交通","放送","自動車"] },
+  { english: "announcement, broadcast", answer: "放送", choices: ["放送","物価","交通","自動車"] },
+  { english: "news", answer: "ニュース", choices: ["ニュース","放送","アニメ","デザイン"] },
+
+  /* ── Nouns: pop culture ── */
+  { english: "anime (Japanese animated film)", answer: "アニメ", choices: ["アニメ","マンガ","デザイン","ニュース"] },
+  { english: "comic book, manga", answer: "マンガ", choices: ["マンガ","アニメ","デザイン","ニュース"] },
+  { english: "design, artwork", answer: "デザイン", choices: ["デザイン","アニメ","マンガ","ニュース"] },
+  { english: "dream", answer: "ゆめ", choices: ["ゆめ","てんさい","はなし","いろいろ"] },
+  { english: "genius", answer: "てんさい", choices: ["てんさい","ゆめ","すごい","デザイン"] },
+
+  /* ── Nouns: abstract (kanji + furigana) ── */
+  { english: "game, match", answer: "試合", choices: ["試合","意見","放送","交通"] },
+  { english: "opinion", answer: "意見", choices: ["意見","試合","放送","物価"] },
+  { english: "talk, speech, story", answer: "はなし", choices: ["はなし","意見","ゆめ","ニュース"] },
+  { english: "earth (planet)", answer: "地球", choices: ["地球","月","交通","放送"] },
+  { english: "moon", answer: "月", choices: ["月","地球","ゆめ","てんさい"] },
+
+  /* ── Adverbs ── */
+  { english: "recently, these days", answer: "さいきん", choices: ["さいきん","たぶん","きっと","そんなに"] },
+  { english: "probably, perhaps, maybe", answer: "たぶん", choices: ["たぶん","きっと","さいきん","ほんとうに"] },
+  { english: "surely, definitely", answer: "きっと", choices: ["きっと","たぶん","ほんとうに","そんなに"] },
+  { english: "really, truly (adverb)", answer: "ほんとうに", choices: ["ほんとうに","きっと","たぶん","そんなに"] },
+  { english: "not so (used with negatives)", answer: "そんなに", choices: ["そんなに","ほんとうに","きっと","さいきん"] },
+
+  /* ── Grammar ── */
+  { english: "about ~, concerning ~", answer: "～について", choices: ["～について","～けど","もちろん","さいきん"] },
+
+  /* ── 会話 ── */
+  { english: "It's been a long time (since we last met)", answer: "おひさしぶりですね", choices: ["おひさしぶりですね","もちろん","もうかえらないと","～でものみませんか"] },
+  { english: "How about drinking ~ or something?", answer: "～でものみませんか", choices: ["～でものみませんか","おひさしぶりですね","もちろん","もうかえらないと"] },
+  { english: "of course", answer: "もちろん", choices: ["もちろん","きっと","ほんとうに","おひさしぶりですね"] },
+  { english: "I have to get home now...", answer: "もうかえらないと", choices: ["もうかえらないと","おひさしぶりですね","～でものみませんか","もちろん"] },
+
+  /* ═══ POSITIONS IN SOCIETY ═══ */
+
+  /* ── Government levels ── */
+  { english: "prefecture (administrative region)", answer: "都道府県", choices: ["都道府県","市長","知事","首相"] },
+
+  /* ── Government leaders ── */
+  { english: "prime minister", answer: "首相", choices: ["首相","知事","市長","村長"] },
+  { english: "governor (of a prefecture)", answer: "知事", choices: ["知事","首相","市長","町長"] },
+  { english: "city mayor", answer: "市長", choices: ["市長","町長","村長","知事"] },
+  { english: "town mayor", answer: "町長", choices: ["町長","市長","村長","知事"] },
+  { english: "village headman, chief of the village", answer: "村長", choices: ["村長","町長","市長","署長"] },
+
+  /* ── Education ── */
+  { english: "upper secondary (senior high) school", answer: "高等学校", choices: ["高等学校","中学校","小学校","幼稚園"] },
+  { english: "lower secondary (junior high) school", answer: "中学校", choices: ["中学校","高等学校","小学校","幼稚園"] },
+  { english: "primary (elementary) school", answer: "小学校", choices: ["小学校","中学校","高等学校","幼稚園"] },
+  { english: "kindergarten", answer: "幼稚園", choices: ["幼稚園","小学校","中学校","高等学校"] },
+  { english: "university president", answer: "学長", choices: ["学長","校長","園長","院長"] },
+  { english: "head teacher, school principal", answer: "校長", choices: ["校長","学長","園長","署長"] },
+  { english: "kindergarten head teacher / principal", answer: "園長", choices: ["園長","校長","学長","院長"] },
+
+  /* ── Company ── */
+  { english: "chairman (of a company)", answer: "会長", choices: ["会長","社長","重役","部長"] },
+  { english: "company president", answer: "社長", choices: ["社長","会長","重役","部長"] },
+  { english: "director (of a company)", answer: "重役", choices: ["重役","会長","社長","部長"] },
+  { english: "department head", answer: "部長", choices: ["部長","課長","重役","社長"] },
+  { english: "section head", answer: "課長", choices: ["課長","部長","重役","支店長"] },
+
+  /* ── Bank ── */
+  { english: "bank president", answer: "頭取", choices: ["頭取","支店長","会長","社長"] },
+  { english: "branch manager", answer: "支店長", choices: ["支店長","頭取","課長","部長"] },
+
+  /* ── Hospital ── */
+  { english: "hospital director", answer: "院長", choices: ["院長","看護師長","学長","署長"] },
+  { english: "head nurse", answer: "看護師長", choices: ["看護師長","院長","園長","校長"] },
+
+  /* ── Station / Police ── */
+  { english: "stationmaster", answer: "駅長", choices: ["駅長","署長","支店長","院長"] },
+  { english: "officer in charge (police chief)", answer: "署長", choices: ["署長","駅長","院長","村長"] },
+
+  /* ═══ INSTITUTION → LEADER MATCHING ═══ */
+
+  { english: "the head of a 国 (nation)", answer: "首相", choices: ["首相","知事","市長","学長"] },
+  { english: "the head of a 都道府県 (prefecture)", answer: "知事", choices: ["知事","首相","市長","署長"] },
+  { english: "the head of a 大学 (university)", answer: "学長", choices: ["学長","校長","園長","院長"] },
+  { english: "the head of a 小学校 / 中学校 / 高等学校", answer: "校長", choices: ["校長","学長","園長","駅長"] },
+  { english: "the head of a 銀行 (bank)", answer: "頭取", choices: ["頭取","支店長","会長","社長"] },
+  { english: "the head of a 病院 (hospital)", answer: "院長", choices: ["院長","看護師長","署長","学長"] },
+  { english: "the head of a 駅 (station)", answer: "駅長", choices: ["駅長","署長","支店長","課長"] },
+  { english: "the head of a 警察 (police station)", answer: "署長", choices: ["署長","駅長","院長","村長"] },
+];
+
+let playerName="";let quiz=[];let answers={};let currentQ=0;let submitted=false;
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function renderChoiceText(t){return DISPLAY[t]||t;}
+function plainAnswer(t){if(!t||t==="—")return"—";const r=READING[t];return r||t;}
+
+emailjs.init("1oR0j0WDvUmSSYEpK");
+const $=id=>document.getElementById(id);
+const $ns=$("name-screen"),$qs=$("quiz-screen"),$ni=$("name-input"),$bs=$("btn-start");
+const $st=$("quiz-subtitle"),$sb=$("score-banner"),$sn=$("score-number"),$sl=$("score-label");
+const $er=$("email-row"),$br=$("btn-retake"),$pt=$("progress-text"),$pf=$("progress-fill");
+const $ng=$("nav-grid"),$qn=$("q-number"),$qe=$("q-english"),$cg=$("choices-grid");
+const $bp=$("btn-prev"),$bn=$("btn-next"),$bm=$("btn-submit");
+
+$ni.addEventListener("input",()=>{$bs.disabled=!$ni.value.trim();});
+$ni.addEventListener("keydown",e=>{if(e.key==="Enter"&&$ni.value.trim())go();});
+$bs.addEventListener("click",go);
+
+function go(){
+  playerName=$ni.value.trim();quiz=shuffle(QUESTIONS).map(q=>({...q,choices:shuffle(q.choices)}));
+  answers={};currentQ=0;submitted=false;$ns.style.display="none";$qs.style.display="block";$sb.style.display="none";
+  $st.textContent=`${playerName}さん — choose the correct word`;nav();rend();prog();
+}
+function nav(){$ng.innerHTML="";quiz.forEach((_,i)=>{const b=document.createElement("button");b.className="nav-dot";b.textContent=i+1;b.addEventListener("click",()=>{currentQ=i;rend();});$ng.appendChild(b);});}
+function uNav(){$ng.querySelectorAll(".nav-dot").forEach((d,i)=>{d.className="nav-dot";if(i===currentQ)d.classList.add("active");if(!submitted&&answers[i]!==undefined)d.classList.add("answered");if(submitted&&answers[i]===quiz[i].answer)d.classList.add("correct");if(submitted&&answers[i]!==undefined&&answers[i]!==quiz[i].answer)d.classList.add("wrong");});}
+function prog(){const c=Object.keys(answers).length;$pt.textContent=`${c} / ${quiz.length} answered`;$pf.style.width=`${(c/quiz.length)*100}%`;$bm.disabled=c<quiz.length;}
+function rend(){
+  const q=quiz[currentQ];$qn.textContent=`Question ${currentQ+1}`;$qe.textContent=q.english;$cg.innerHTML="";
+  q.choices.forEach(c=>{const b=document.createElement("button");b.className="choice-btn";if(submitted)b.classList.add("locked");b.innerHTML=`<span>${renderChoiceText(c)}</span>`;const sel=answers[currentQ]===c,cor=c===q.answer;
+    if(!submitted){if(sel)b.classList.add("selected");b.addEventListener("click",()=>{if(submitted)return;answers[currentQ]=c;rend();uNav();prog();});}
+    else{if(cor){b.classList.add("correct-reveal");b.innerHTML=`<span>${renderChoiceText(c)}</span><span class="mark ok">✓</span>`;}if(sel&&!cor){b.classList.add("wrong-reveal");b.innerHTML=`<span>${renderChoiceText(c)}</span><span class="mark no">✗</span>`;}}
+    $cg.appendChild(b);});
+  uNav();const last=currentQ===quiz.length-1;$bp.disabled=currentQ===0;
+  if(last&&!submitted){$bn.classList.add("hidden");$bm.classList.remove("hidden");}else{$bn.classList.remove("hidden");$bm.classList.add("hidden");$bn.disabled=last;}
+}
+$bp.addEventListener("click",()=>{if(currentQ>0){currentQ--;rend();}});
+$bn.addEventListener("click",()=>{if(currentQ<quiz.length-1){currentQ++;rend();}});
+$bm.addEventListener("click",sub);
+
+async function sub(){
+  let s=0;quiz.forEach((q,i)=>{if(answers[i]===q.answer)s++;});submitted=true;
+  const t=quiz.length,p=Math.round((s/t)*100);
+  $sn.textContent=`${s}/${t}`;
+  if(s===t)$sl.textContent="完璧！ Perfect!";else if(p>=90)$sl.textContent="すごい！ Excellent!";else if(p>=70)$sl.textContent="いいですね！ Good job!";else $sl.textContent="もう一度！ Try again!";
+  $sb.style.background=p>=90?"linear-gradient(135deg,#2d6a4f,#40916c)":p>=70?"linear-gradient(135deg,#b08d37,#d4a843)":"linear-gradient(135deg,#9b2226,#ca6702)";
+  $sb.style.display="block";currentQ=0;rend();uNav();$bm.classList.add("hidden");$bn.classList.remove("hidden");$bn.disabled=false;
+
+  const now=new Date().toLocaleString("en-PH",{timeZone:"Asia/Manila",dateStyle:"full",timeStyle:"short"});
+  const det=quiz.map((q,i)=>`${i+1}. ${q.english} → Answer: ${plainAnswer(answers[i]||"—")} | Correct: ${plainAnswer(q.answer)} ${answers[i]===q.answer?"✓":"✗"}`).join("\n");
+  const ep={name:playerName,email:"noreply@quiz.com",subject:`[${playerName}] みんなの日本語 Lesson 21 Quiz — ${p}%`,message:`Minna no Nihongo - Lesson 21 Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${t} (${p}%)\n\n--- Detailed Results ---\n${det}\n\nがんばって！`,time:now};
+  $er.innerHTML=`<span class="email-pill">📧 Sending results…</span>`;
+  try{await emailjs.send("service_v7ifzdj","template_lb9c879",ep);$er.innerHTML=`<span class="email-pill sent">✓ Results emailed!</span>`;}
+  catch(err){console.error("EmailJS error:",err);$er.innerHTML=`<span class="email-pill error">✗ ${err?.text||err?.message||'Email failed'}</span>`;}
+}
+$br.addEventListener("click",()=>{quiz=shuffle(QUESTIONS).map(q=>({...q,choices:shuffle(q.choices)}));answers={};currentQ=0;submitted=false;$sb.style.display="none";nav();rend();prog();});
+</script>
+</body>
+</html>

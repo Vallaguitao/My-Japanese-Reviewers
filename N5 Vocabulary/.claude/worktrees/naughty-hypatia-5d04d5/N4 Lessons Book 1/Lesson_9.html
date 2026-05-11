@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>いろどり Irodori A2 - Lesson 9: 読み方を教えてもらえませんか？</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========== CSS Variables - Amber/Gold Learning Theme ========== */
+        :root {
+            --primary: #d97706;
+            --primary-light: #fbbf24;
+            --primary-dark: #b45309;
+            --accent: #7c3aed;
+            --accent-light: #a78bfa;
+            --accent-dark: #5b21b6;
+            --secondary: #f59e0b;
+            --secondary-light: #fde68a;
+            --success: #10b981;
+            --success-light: #a7f3d0;
+            --error: #ef4444;
+            --error-light: #fecaca;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --bg-light: #fffbeb;
+            --bg-amber: #fef3c7;
+            --bg-card: #ffffff;
+            --text-primary: #78350f;
+            --text-secondary: #92400e;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ========== Reset & Base ========== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-amber) 100%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== Progress Bar ========== */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--bg-card);
+            box-shadow: var(--shadow);
+            padding: 12px 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .progress-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-title .lesson-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .progress-bar-wrapper {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .progress-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:disabled {
+            background: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ========== Main Container ========== */
+        .presentation {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        /* ========== Slides ========== */
+        .slide {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== Title Slide ========== */
+        .title-slide {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .title-slide .book-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+
+        .title-slide h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .title-slide .lesson-title-jp {
+            font-size: clamp(1.1rem, 2.8vw, 1.5rem);
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .title-slide .lesson-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .learning-icons {
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+        }
+
+        .title-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            max-width: 850px;
+            margin: 0 auto 40px;
+        }
+
+        .title-card h2 {
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .grammar-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .grammar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-light);
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .grammar-item:hover {
+            transform: translateX(8px);
+            background: var(--secondary-light);
+        }
+
+        .grammar-number {
+            width: 26px;
+            height: 26px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(217, 119, 6, 0.5);
+        }
+
+        /* ========== Content Slides ========== */
+        .content-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .slide-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .grammar-badge {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .slide-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            flex: 1;
+        }
+
+        .slide-header .jp-title {
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* ========== Ruby (Furigana) Styling ========== */
+        ruby {
+            ruby-position: over;
+        }
+
+        ruby rt {
+            font-size: 0.6em;
+            color: var(--text-muted);
+        }
+
+        /* ========== Example Boxes ========== */
+        .example-box {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #fcd34d 100%);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .example-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-japanese {
+            font-size: 1.35rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 2;
+        }
+
+        .example-english {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* ========== Conversation Box ========== */
+        .conversation-box {
+            background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 20px 0;
+            border-left: 4px solid var(--success);
+        }
+
+        .conversation-box .example-label {
+            color: #166534;
+        }
+
+        .speaker {
+            font-weight: 600;
+            color: var(--primary-dark);
+            min-width: 24px;
+            display: inline-block;
+        }
+
+        .speaker.b {
+            color: var(--accent-dark);
+        }
+
+        .speaker.c {
+            color: #059669;
+        }
+
+        /* ========== Comparison Boxes ========== */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-box {
+            padding: 20px;
+            border-radius: var(--radius);
+        }
+
+        .means-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .place-box {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            border-left: 4px solid #ec4899;
+        }
+
+        .topic-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+        }
+
+        .element-box {
+            background: linear-gradient(135deg, #f5f3ff 0%, #ddd6fe 100%);
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .polite-box {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left: 4px solid #10b981;
+        }
+
+        .casual-box {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-left: 4px solid #ef4444;
+        }
+
+        .box-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .means-box .box-label { color: #1e40af; }
+        .place-box .box-label { color: #be185d; }
+        .topic-box .box-label { color: #92400e; }
+        .element-box .box-label { color: #6d28d9; }
+        .polite-box .box-label { color: #065f46; }
+        .casual-box .box-label { color: #b91c1c; }
+
+        /* ========== Explanation Sections ========== */
+        .explanation {
+            margin: 24px 0;
+        }
+
+        .explanation h3 {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .explanation p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .key-point {
+            background: var(--secondary-light);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 16px 0;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .key-point strong {
+            color: var(--primary-dark);
+        }
+
+        .warning-point {
+            background: var(--warning-light);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 16px 0;
+            border-left: 4px solid var(--warning);
+        }
+
+        /* ========== Structure Box ========== */
+        .structure-box {
+            background: linear-gradient(135deg, #ecfeff 0%, #a5f3fc 100%);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #06b6d4;
+        }
+
+        .structure-box .label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #0e7490;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .structure-formula {
+            font-size: 1.05rem;
+            font-family: 'Outfit', monospace;
+            color: var(--primary-dark);
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 8px 4px;
+        }
+
+        .structure-formula .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .structure-formula .accent {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* ========== Method/Means Grid ========== */
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .method-item {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .method-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .method-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .method-jp {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+
+        .method-en {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ========== Kata Grid ========== */
+        .kata-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .kata-item {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #fcd34d 100%);
+            border-radius: var(--radius);
+            padding: 14px;
+            text-align: center;
+            border-left: 3px solid var(--primary);
+        }
+
+        .kata-jp {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+
+        .kata-en {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* ========== Collapsible MNN Notes ========== */
+        .mnn-connection {
+            margin: 24px 0;
+        }
+
+        .mnn-toggle {
+            width: 100%;
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            border: none;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #b91c1c;
+            transition: var(--transition);
+        }
+
+        .mnn-toggle:hover {
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+        }
+
+        .mnn-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .mnn-toggle.open .icon {
+            transform: rotate(180deg);
+        }
+
+        .mnn-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            background: #fef2f2;
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .mnn-content.open {
+            max-height: 500px;
+            padding: 20px;
+            border: 1px solid #fecaca;
+            border-top: none;
+        }
+
+        .mnn-content h4 {
+            color: #b91c1c;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .mnn-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .mnn-lesson-ref {
+            display: inline-block;
+            background: #b91c1c;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+
+        /* ========== Quiz Slides ========== */
+        .quiz-card {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #fcd34d 100%);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .quiz-badge {
+            background: var(--accent);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .quiz-header h2 {
+            font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        .quiz-question {
+            background: white;
+            padding: 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .question-number {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .question-context {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+
+        .fill-blank {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 1.25rem;
+            margin: 20px 0;
+        }
+
+        .blank-input {
+            border: 2px dashed var(--primary);
+            background: var(--bg-light);
+            padding: 8px 16px;
+            border-radius: 8px;
+            min-width: 100px;
+            font-size: 1.05rem;
+            font-family: inherit;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .blank-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+
+        .check-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+        }
+
+        .check-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* ========== Answer Slides ========== */
+        .answer-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .answer-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .answer-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .answer-result {
+            padding: 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+
+        .answer-result.correct {
+            background: var(--success-light);
+            border-left: 4px solid var(--success);
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--success);
+        }
+
+        .answer-text {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .answer-explanation {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        /* ========== Summary Slide ========== */
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            color: white;
+            text-align: center;
+        }
+
+        .summary-card h2 {
+            font-size: 2rem;
+            margin-bottom: 24px;
+        }
+
+        .summary-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 32px 0;
+        }
+
+        .summary-point {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            border-radius: var(--radius);
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-point h4 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .summary-point p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .restart-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 16px 48px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 24px;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        /* ========== Responsive Design ========== */
+        @media (max-width: 768px) {
+            .progress-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .progress-bar-wrapper {
+                width: 100%;
+                max-width: none;
+            }
+
+            .progress-nav {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .content-card, .quiz-card, .answer-card {
+                padding: 24px;
+            }
+
+            .slide-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .example-japanese {
+                font-size: 1.15rem;
+            }
+
+            .fill-blank {
+                font-size: 1.1rem;
+            }
+
+            .structure-formula {
+                font-size: 0.95rem;
+                padding: 10px 14px;
+                margin: 4px 2px;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .method-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .summary-points {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .progress-title {
+                font-size: 0.8rem;
+            }
+
+            .nav-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .title-slide h1 {
+                font-size: 2rem;
+            }
+
+            .grammar-item {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+
+            .learning-icons {
+                font-size: 2rem;
+            }
+
+            .summary-points {
+                grid-template-columns: 1fr;
+            }
+
+            .kata-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ========== Animations ========== */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title">
+                <span class="lesson-badge">A2</span>
+                いろどり Lesson 9
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text"><span id="currentSlide">1</span> / <span id="totalSlides">17</span></div>
+            </div>
+            <div class="progress-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()">
+                    ◀ <span class="btn-text">Back</span>
+                </button>
+                <button class="nav-btn" id="nextBtn" onclick="nextSlide()">
+                    <span class="btn-text">Next</span> ▶
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Presentation -->
+    <div class="presentation">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <div class="book-badge">いろどり IRODORI • 入門 A2</div>
+                <h1>Lesson 9</h1>
+                <div class="learning-icons">📚 🎌 📱 ✍️ 🗣️</div>
+                <div class="lesson-title-jp"><ruby>読<rt>よ</rt></ruby>み<ruby>方<rt>かた</rt></ruby>を<ruby>教<rt>おし</rt></ruby>えてもらえませんか？</div>
+                <div class="lesson-subtitle">Could you teach me how to read this? • Japanese Learning</div>
+                
+                <div class="title-card">
+                    <h2>📚 <ruby>文法<rt>ぶんぽう</rt></ruby>ノート Grammar Points</h2>
+                    <div class="grammar-list">
+                        <div class="grammar-item">
+                            <span class="grammar-number">1</span>
+                            <span>Nで (<ruby>手段<rt>しゅだん</rt></ruby>) — Means/Method</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">2</span>
+                            <span>N1はN2が ナA/イA — Describing Characteristics</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">3</span>
+                            <span>N1は〜。(でも、) N2は〜。— Comparison (<ruby>対比<rt>たいひ</rt></ruby>)</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">4</span>
+                            <span>V-てもらえませんか？ — Polite Requests</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">5</span>
+                            <span>V-<ruby>方<rt>かた</rt></ruby> — "How to do ~"</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="start-btn pulse" onclick="nextSlide()">
+                    📖 <ruby>始<rt>はじ</rt></ruby>めましょう！Start Learning
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Grammar 1 - Nで (Means) -->
+        <div class="slide" data-slide="2">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 1</span>
+                    <div>
+                        <h2>Nで (<ruby>手段<rt>しゅだん</rt></ruby>)</h2>
+                        <span class="jp-title">Means / Method</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        アニメ<strong>で</strong><ruby>日本語<rt>にほんご</rt></ruby>を<ruby>勉強<rt>べんきょう</rt></ruby>しました。
+                    </div>
+                    <div class="example-english">I studied Japanese by watching anime.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>You learned で to indicate place (<ruby>学校<rt>がっこう</rt></ruby>で = at school) in earlier lessons. Here, で also indicates the <strong>means or method</strong> of doing something. In this lesson, we use it to describe <strong>how you studied Japanese</strong>.</p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box place-box">
+                        <div class="box-label">📍 で = Place</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            <ruby>学校<rt>がっこう</rt></ruby><strong>で</strong><ruby>勉強<rt>べんきょう</rt></ruby>しました。
+                        </div>
+                        <div class="example-english" style="margin-top: 8px;">I studied at school.</div>
+                    </div>
+                    <div class="comparison-box means-box">
+                        <div class="box-label">🔧 で = Means/Method</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            アプリ<strong>で</strong><ruby>勉強<rt>べんきょう</rt></ruby>しました。
+                        </div>
+                        <div class="example-english" style="margin-top: 8px;">I studied with an app.</div>
+                    </div>
+                </div>
+
+                <div class="method-grid">
+                    <div class="method-item">
+                        <div class="method-icon">📖</div>
+                        <div class="method-jp"><ruby>本<rt>ほん</rt></ruby>で</div>
+                        <div class="method-en">from a book</div>
+                    </div>
+                    <div class="method-item">
+                        <div class="method-icon">📻</div>
+                        <div class="method-jp">ラジオで</div>
+                        <div class="method-en">on the radio</div>
+                    </div>
+                    <div class="method-item">
+                        <div class="method-icon">🌐</div>
+                        <div class="method-jp">ネットで</div>
+                        <div class="method-en">on the Internet</div>
+                    </div>
+                    <div class="method-item">
+                        <div class="method-icon">📱</div>
+                        <div class="method-jp">アプリで</div>
+                        <div class="method-en">with an app</div>
+                    </div>
+                    <div class="method-item">
+                        <div class="method-icon">🎬</div>
+                        <div class="method-jp">アニメで</div>
+                        <div class="method-en">through anime</div>
+                    </div>
+                    <div class="method-item">
+                        <div class="method-icon">🎵</div>
+                        <div class="method-jp"><ruby>歌<rt>うた</rt></ruby>で</div>
+                        <div class="method-en">through songs</div>
+                    </div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Conversation Example</div>
+                    <div class="example-japanese">
+                        <span class="speaker">A:</span>どこで<ruby>日本語<rt>にほんご</rt></ruby>を<ruby>勉強<rt>べんきょう</rt></ruby>しましたか？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">Where did you study Japanese?</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker b">B:</span><ruby>日本語学校<rt>にほんごがっこう</rt></ruby>で<ruby>勉強<rt>べんきょう</rt></ruby>しました。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">I studied at a Japanese-language school.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 12px;">
+                        <span class="speaker c">C:</span><ruby>私<rt>わたし</rt></ruby>はネットで<ruby>勉強<rt>べんきょう</rt></ruby>しました。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem; margin-left: 30px;">I studied on the Internet.</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 To Ask About Method Specifically:</strong><br>
+                    Use <strong>どうやって</strong> (how) instead of どこで (where):<br><br>
+                    「どうやって<ruby>日本語<rt>にほんご</rt></ruby>を<ruby>勉強<rt>べんきょう</rt></ruby>しましたか？」= "How did you study Japanese?"
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 7</span> で for means/instrument (はしで<ruby>食<rt>た</rt></ruby>べます)</p>
+                        <p><span class="mnn-lesson-ref">Lesson 5</span> で for transportation (バスで<ruby>行<rt>い</rt></ruby>きます)</p>
+                        <p><strong>Key Point:</strong> MNN introduces で for instruments/means in Lesson 7. The same particle で is used for place, transportation, tools, and methods. Context determines the meaning!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Grammar 2 - N1はN2が -->
+        <div class="slide" data-slide="3">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 2</span>
+                    <div>
+                        <h2>N1はN2が ナA/イA</h2>
+                        <span class="jp-title">Describing Specific Characteristics</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        <ruby>日本語<rt>にほんご</rt></ruby>は<ruby>文字<rt>もじ</rt></ruby>が<ruby>難<rt>むずか</rt></ruby>しいです。
+                    </div>
+                    <div class="example-english">The characters are a difficult part of Japanese.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>This expression clarifies <strong>which specific element</strong> of something has a certain characteristic. Instead of simply saying "Japanese is difficult," you specify <strong>what part</strong> of Japanese is difficult (characters, grammar, pronunciation, etc.).</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        N1<span class="highlight">は</span> + N2<span class="accent">が</span> + ナA-です / イA-いです
+                    </div>
+                    <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-muted);">
+                        N1 = topic (e.g., <ruby>日本語<rt>にほんご</rt></ruby>) | N2 = specific element (e.g., <ruby>文字<rt>もじ</rt></ruby>, <ruby>文法<rt>ぶんぽう</rt></ruby>, <ruby>発音<rt>はつおん</rt></ruby>)<br>
+                        When N2 is a verb, add の: N1は V-るの が〜
+                    </p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box topic-box">
+                        <div class="box-label">🟡 N1 = Topic</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            <ruby>日本語<rt>にほんご</rt></ruby>は…<br>
+                            <ruby>英語<rt>えいご</rt></ruby>は…<br>
+                            タイ<ruby>語<rt>ご</rt></ruby>は…
+                        </div>
+                    </div>
+                    <div class="comparison-box element-box">
+                        <div class="box-label">💜 N2 = Specific Element</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            …<ruby>文字<rt>もじ</rt></ruby>が (characters)<br>
+                            …<ruby>文法<rt>ぶんぽう</rt></ruby>が (grammar)<br>
+                            …<ruby>発音<rt>はつおん</rt></ruby>が (pronunciation)<br>
+                            …<ruby>読<rt>よ</rt></ruby>むのが (reading)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">💬 More Examples</div>
+                    <div class="example-japanese">
+                        <ruby>日本語<rt>にほんご</rt></ruby>は<ruby>話<rt>はな</rt></ruby>す<strong>のが</strong><ruby>大変<rt>たいへん</rt></ruby>です。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">Speaking Japanese is hard.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        <ruby>英語<rt>えいご</rt></ruby>は<ruby>文法<rt>ぶんぽう</rt></ruby>が<ruby>簡単<rt>かんたん</rt></ruby>です。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">English grammar is easy.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        タイ<ruby>語<rt>ご</rt></ruby>は<ruby>文字<rt>もじ</rt></ruby>を<ruby>覚<rt>おぼ</rt></ruby>える<strong>のが</strong><ruby>難<rt>むずか</rt></ruby>しいです。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">Memorizing Thai characters is a difficult part of learning Thai.</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 When N2 is a Verb:</strong><br>
+                    Add の to nominalize the verb:<br><br>
+                    <ruby>話<rt>はな</rt></ruby>す<strong>のが</strong><ruby>難<rt>むずか</rt></ruby>しい = Speaking is difficult<br>
+                    <ruby>読<rt>よ</rt></ruby>む<strong>のが</strong><ruby>簡単<rt>かんたん</rt></ruby> = Reading is easy
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 9</span> N1はN2が好きです/上手です</p>
+                        <p><span class="mnn-lesson-ref">Lesson 38</span> V-るのが + adjective</p>
+                        <p><strong>Key Point:</strong> MNN Lesson 9 introduces this は〜が pattern for preferences and abilities (私は音楽が好きです). Irodori extends it to describe characteristics of things. When a verb is involved, の nominalizes the action (Lesson 38).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Quiz 1 & 2 -->
+        <div class="slide" data-slide="4">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 1 & 2</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Say you studied Japanese using YouTube.</div>
+                    <div class="question-text">Complete with the means particle:</div>
+                    <div class="fill-blank">
+                        YouTube
+                        <input type="text" class="blank-input" id="q1-1" placeholder="？" style="min-width: 60px;">
+                        <ruby>日本語<rt>にほんご</rt></ruby>を<ruby>勉強<rt>べんきょう</rt></ruby>しました。
+                    </div>
+                    <div class="example-english">"I studied Japanese through YouTube."</div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Say that Korean (<ruby>韓国語<rt>かんこくご</rt></ruby>) pronunciation (<ruby>発音<rt>はつおん</rt></ruby>) is difficult.</div>
+                    <div class="question-text">Use the N1はN2が pattern:</div>
+                    <div class="fill-blank">
+                        <ruby>韓国語<rt>かんこくご</rt></ruby>は<ruby>発音<rt>はつおん</rt></ruby>
+                        <input type="text" class="blank-input" id="q1-2" placeholder="？" style="min-width: 60px;">
+                        <ruby>難<rt>むずか</rt></ruby>しいです。
+                    </div>
+                    <div class="example-english">"Korean pronunciation is difficult."</div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Answers 1 & 2 -->
+        <div class="slide" data-slide="5">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 1 & 2</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        YouTube<strong>で</strong><ruby>日本語<rt>にほんご</rt></ruby>を<ruby>勉強<rt>べんきょう</rt></ruby>しました。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> で indicates the means or method. YouTubeで = "through/using YouTube." This is different from で for place (学校で = at school).
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        <ruby>韓国語<rt>かんこくご</rt></ruby>は<ruby>発音<rt>はつおん</rt></ruby><strong>が</strong><ruby>難<rt>むずか</rt></ruby>しいです。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> N1は marks the topic (<ruby>韓国語<rt>かんこくご</rt></ruby>), and N2が marks the specific element being described (<ruby>発音<rt>はつおん</rt></ruby>). "As for Korean, pronunciation is difficult."
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Grammar 3 - Comparison -->
+        <div class="slide" data-slide="6">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 3</span>
+                    <div>
+                        <h2>N1は〜。(でも、) N2は〜。</h2>
+                        <span class="jp-title">Comparison (<ruby>対比<rt>たいひ</rt></ruby>)</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        <ruby>日本語<rt>にほんご</rt></ruby>は、<ruby>読<rt>よ</rt></ruby>むの<strong>は</strong><ruby>少<rt>すこ</rt></ruby>し<ruby>難<rt>むずか</rt></ruby>しいです。でも、<ruby>会話<rt>かいわ</rt></ruby><strong>は</strong><ruby>得意<rt>とくい</rt></ruby>です。
+                    </div>
+                    <div class="example-english">Reading Japanese is a bit difficult. But I am good at speaking in Japanese.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>This expression compares <strong>two aspects</strong> of something. The particle は is used to mark both items being contrasted. When comparing, が changes to は to emphasize the contrast.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        N1<span class="highlight">は</span>〜。(でも、) N2<span class="highlight">は</span>〜。
+                    </div>
+                    <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-muted);">
+                        When contrasting, が → は to emphasize the comparison<br>
+                        でも adds emphasis to the contrast but can be omitted
+                    </p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box topic-box">
+                        <div class="box-label">🔸 Without Comparison</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            <ruby>日本語<rt>にほんご</rt></ruby>は、<ruby>読<rt>よ</rt></ruby>むの<strong>が</strong><ruby>難<rt>むずか</rt></ruby>しいです。<br>
+                            <span class="example-english">Reading Japanese is difficult.</span>
+                        </div>
+                    </div>
+                    <div class="comparison-box element-box">
+                        <div class="box-label">🔹 With Comparison</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            <ruby>読<rt>よ</rt></ruby>むの<strong>は</strong><ruby>難<rt>むずか</rt></ruby>しいです。でも、<ruby>会話<rt>かいわ</rt></ruby><strong>は</strong><ruby>得意<rt>とくい</rt></ruby>です。<br>
+                            <span class="example-english">Reading is difficult, but conversation I'm good at.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">💬 More Examples</div>
+                    <div class="example-japanese">
+                        ひらがな<strong>は</strong><ruby>好<rt>す</rt></ruby>きです。カタカナ<strong>は</strong><ruby>苦手<rt>にがて</rt></ruby>です。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">I like hiragana, but I am not good at katakana.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        <ruby>英語<rt>えいご</rt></ruby><strong>は</strong><ruby>文法<rt>ぶんぽう</rt></ruby>が<ruby>簡単<rt>かんたん</rt></ruby>です。でも、<ruby>単語<rt>たんご</rt></ruby>を<ruby>覚<rt>おぼ</rt></ruby>えるの<strong>は</strong><ruby>大変<rt>たいへん</rt></ruby>です。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">English grammar is easy, but it is difficult to memorize words.</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Point:</strong><br>
+                    When contrasting two things, both items use は (not が) to emphasize the comparison. The second は implies "but as for THIS..."
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 8</span> は for contrast (でもはは not used)</p>
+                        <p><span class="mnn-lesson-ref">Lesson 17</span> は vs が in subordinate clauses</p>
+                        <p><strong>Key Point:</strong> MNN explains that は marks topics, but when two things are being compared, は emphasizes each item in the contrast. This contrastive は is one of the most important uses of the particle.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Quiz 3 -->
+        <div class="slide" data-slide="7">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 3: Comparison</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Compare: Kanji is difficult, but hiragana is easy.</div>
+                    <div class="question-text">Use は for contrast:</div>
+                    <div class="fill-blank">
+                        <ruby>漢字<rt>かんじ</rt></ruby>
+                        <input type="text" class="blank-input" id="q3-1" placeholder="？" style="min-width: 50px;">
+                        <ruby>難<rt>むずか</rt></ruby>しいです。でも、ひらがな
+                        <input type="text" class="blank-input" id="q3-1b" placeholder="？" style="min-width: 50px;">
+                        <ruby>簡単<rt>かんたん</rt></ruby>です。
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Compare: Listening is good, but writing is not good (<ruby>苦手<rt>にがて</rt></ruby>).</div>
+                    <div class="question-text">Use contrastive は:</div>
+                    <div class="fill-blank">
+                        <ruby>聞<rt>き</rt></ruby>くの
+                        <input type="text" class="blank-input" id="q3-2" placeholder="？" style="min-width: 50px;">
+                        <ruby>得意<rt>とくい</rt></ruby>です。でも、<ruby>書<rt>か</rt></ruby>くの
+                        <input type="text" class="blank-input" id="q3-2b" placeholder="？" style="min-width: 50px;">
+                        <ruby>苦手<rt>にがて</rt></ruby>です。
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 8: Answers 3 -->
+        <div class="slide" data-slide="8">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 3: Comparison</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        <ruby>漢字<rt>かんじ</rt></ruby><strong>は</strong><ruby>難<rt>むずか</rt></ruby>しいです。でも、ひらがな<strong>は</strong><ruby>簡単<rt>かんたん</rt></ruby>です。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> Both <ruby>漢字<rt>かんじ</rt></ruby> and ひらがな take は because they are being contrasted. The second は implies "but as for hiragana..."
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        <ruby>聞<rt>き</rt></ruby>くの<strong>は</strong><ruby>得意<rt>とくい</rt></ruby>です。でも、<ruby>書<rt>か</rt></ruby>くの<strong>は</strong><ruby>苦手<rt>にがて</rt></ruby>です。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> When comparing skills, both use は. の nominalizes the verbs (<ruby>聞<rt>き</rt></ruby>くの = listening, <ruby>書<rt>か</rt></ruby>くの = writing), and は marks the contrast.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Grammar 4 - V-てもらえませんか？ -->
+        <div class="slide" data-slide="9">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 4</span>
+                    <div>
+                        <h2>V-てもらえませんか？</h2>
+                        <span class="jp-title">Polite Requests</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        <ruby>日本語<rt>にほんご</rt></ruby>をチェックし<strong>てもらえませんか</strong>？
+                    </div>
+                    <div class="example-english">Will you check my Japanese?</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>This expression is used to <strong>politely request something</strong> from another person. While V-てください can be used for requests, V-てもらえませんか is a <strong>more polite</strong> way of asking.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        V-<span class="highlight">て</span> + もらえませんか？
+                    </div>
+                    <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-muted);">
+                        もらう = to receive (a favor) | もらえませんか = "could you (do this for me)?"<br>
+                        Literally: "Could I receive the favor of you doing V?"
+                    </p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-box casual-box">
+                        <div class="box-label">⚪ Standard: V-てください</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            <ruby>教<rt>おし</rt></ruby>えてください。<br>
+                            <span class="example-english">Please teach me.</span>
+                        </div>
+                    </div>
+                    <div class="comparison-box polite-box">
+                        <div class="box-label">🟢 More Polite: V-てもらえませんか</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            <ruby>教<rt>おし</rt></ruby>えてもらえませんか？<br>
+                            <span class="example-english">Could you teach me?</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">💬 Common Request Verbs</div>
+                    <div class="example-japanese">
+                        この<ruby>漢字<rt>かんじ</rt></ruby>の<ruby>読<rt>よ</rt></ruby>み<ruby>方<rt>かた</rt></ruby>を<ruby>教<rt>おし</rt></ruby>え<strong>てもらえませんか</strong>？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">Will you teach me how to read this kanji character?</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        <ruby>新<rt>あたら</rt></ruby>しい<ruby>教科書<rt>きょうかしょ</rt></ruby>、ちょっと<ruby>見<rt>み</rt></ruby>せ<strong>てもらえませんか</strong>？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">Will you quickly show me a new textbook?</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Useful Verbs with てもらえませんか:</strong><br><br>
+                    <ruby>教<rt>おし</rt></ruby>えて (teach) &nbsp;|&nbsp; <ruby>見<rt>み</rt></ruby>せて (show) &nbsp;|&nbsp; <ruby>貸<rt>か</rt></ruby>して (lend/borrow)<br>
+                    <ruby>説明<rt>せつめい</rt></ruby>して (explain) &nbsp;|&nbsp; <ruby>書<rt>か</rt></ruby>いて (write) &nbsp;|&nbsp; <ruby>言<rt>い</rt></ruby>って (say)<br>
+                    <ruby>話<rt>はな</rt></ruby>して (talk/speak)
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 14</span> V-てください (requests)</p>
+                        <p><span class="mnn-lesson-ref">Lesson 24</span> V-てもらいます (receiving favors)</p>
+                        <p><span class="mnn-lesson-ref">Lesson 26</span> V-てもらえませんか (polite requests)</p>
+                        <p><strong>Key Point:</strong> V-てもらう means "to receive the favor of someone doing V." V-てもらえませんか is the potential negative question form, making it even more polite: "Is it possible for me to receive...?"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Grammar 5 - V-方 -->
+        <div class="slide" data-slide="10">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 5</span>
+                    <div>
+                        <h2>V-<ruby>方<rt>かた</rt></ruby></h2>
+                        <span class="jp-title">"How to do ~"</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        この<ruby>書類<rt>しょるい</rt></ruby>の<ruby>書<rt>か</rt></ruby>き<strong><ruby>方<rt>かた</rt></ruby></strong>がよくわかりません。
+                    </div>
+                    <div class="example-english">I do not know how to fill out this paperwork.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>〜<ruby>方<rt>かた</rt></ruby> indicates <strong>"how to do ~"</strong> or <strong>"the way of doing ~"</strong>. Attach <ruby>方<rt>かた</rt></ruby> to the masu-stem of the verb (remove ます, add <ruby>方<rt>かた</rt></ruby>).</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        V-<span class="highlight">ます</span> → V-<span class="accent"><ruby>方<rt>かた</rt></ruby></span>
+                    </div>
+                    <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-muted);">
+                        <ruby>書<rt>か</rt></ruby>きます → <ruby>書<rt>か</rt></ruby>き<ruby>方<rt>かた</rt></ruby> (how to write)<br>
+                        <ruby>読<rt>よ</rt></ruby>みます → <ruby>読<rt>よ</rt></ruby>み<ruby>方<rt>かた</rt></ruby> (how to read)
+                    </p>
+                </div>
+
+                <div class="kata-grid">
+                    <div class="kata-item">
+                        <div class="kata-jp"><ruby>読<rt>よ</rt></ruby>み<ruby>方<rt>かた</rt></ruby></div>
+                        <div class="kata-en">how to read</div>
+                    </div>
+                    <div class="kata-item">
+                        <div class="kata-jp"><ruby>書<rt>か</rt></ruby>き<ruby>方<rt>かた</rt></ruby></div>
+                        <div class="kata-en">how to write</div>
+                    </div>
+                    <div class="kata-item">
+                        <div class="kata-jp">し<ruby>方<rt>かた</rt></ruby></div>
+                        <div class="kata-en">how to do</div>
+                    </div>
+                    <div class="kata-item">
+                        <div class="kata-jp">やり<ruby>方<rt>かた</rt></ruby></div>
+                        <div class="kata-en">how to do (casual)</div>
+                    </div>
+                    <div class="kata-item">
+                        <div class="kata-jp"><ruby>行<rt>い</rt></ruby>き<ruby>方<rt>かた</rt></ruby></div>
+                        <div class="kata-en">how to go</div>
+                    </div>
+                    <div class="kata-item">
+                        <div class="kata-jp"><ruby>使<rt>つか</rt></ruby>い<ruby>方<rt>かた</rt></ruby></div>
+                        <div class="kata-en">how to use</div>
+                    </div>
+                    <div class="kata-item">
+                        <div class="kata-jp"><ruby>食<rt>た</rt></ruby>べ<ruby>方<rt>かた</rt></ruby></div>
+                        <div class="kata-en">how to eat</div>
+                    </div>
+                    <div class="kata-item">
+                        <div class="kata-jp"><ruby>作<rt>つく</rt></ruby>り<ruby>方<rt>かた</rt></ruby></div>
+                        <div class="kata-en">how to make</div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">💬 More Examples</div>
+                    <div class="example-japanese">
+                        <ruby>日本語<rt>にほんご</rt></ruby>のいい<ruby>練習<rt>れんしゅう</rt></ruby>のし<ruby>方<rt>かた</rt></ruby>がありますか？<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">Do you have tips on how to practice Japanese effectively?</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        この<ruby>辞書<rt>じしょ</rt></ruby>の<ruby>使<rt>つか</rt></ruby>い<ruby>方<rt>かた</rt></ruby>を<ruby>教<rt>おし</rt></ruby>えてください。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">Will you teach me how to use this dictionary?</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Combining with てもらえませんか:</strong><br><br>
+                    「この<ruby>漢字<rt>かんじ</rt></ruby>の<ruby>読<rt>よ</rt></ruby>み<ruby>方<rt>かた</rt></ruby>を<ruby>教<rt>おし</rt></ruby>えてもらえませんか？」<br>
+                    = "Could you teach me how to read this kanji?"<br><br>
+                    This combines Grammar 4 and 5 perfectly!
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 14</span> V-方 introduced briefly</p>
+                        <p><span class="mnn-lesson-ref">Lesson 34</span> V-方 expanded usage</p>
+                        <p><strong>Key Point:</strong> MNN introduces V-方 to express "how to do something." It's formed from the masu-stem + 方. This turns verbs into nouns describing the method or way of doing.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Quiz 4 & 5 -->
+        <div class="slide" data-slide="11">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 4 & 5</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Politely ask someone to lend you a dictionary. (<ruby>辞書<rt>じしょ</rt></ruby>を<ruby>貸<rt>か</rt></ruby>す)</div>
+                    <div class="question-text">Use the polite request form:</div>
+                    <div class="fill-blank">
+                        <ruby>辞書<rt>じしょ</rt></ruby>を<ruby>貸<rt>か</rt></ruby>し
+                        <input type="text" class="blank-input" id="q4-1" placeholder="？">
+                        ？
+                    </div>
+                    <div class="example-english">"Could you lend me a dictionary?"</div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Say "I don't know how to use this machine." (<ruby>使<rt>つか</rt></ruby>う = to use)</div>
+                    <div class="question-text">Use V-<ruby>方<rt>かた</rt></ruby>:</div>
+                    <div class="fill-blank">
+                        この<ruby>機械<rt>きかい</rt></ruby>の<ruby>使<rt>つか</rt></ruby>い
+                        <input type="text" class="blank-input" id="q4-2" placeholder="？">
+                        がわかりません。
+                    </div>
+                    <div class="example-english">"I don't know how to use this machine."</div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 12: Answers 4 & 5 -->
+        <div class="slide" data-slide="12">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 4 & 5</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        <ruby>辞書<rt>じしょ</rt></ruby>を<ruby>貸<rt>か</rt></ruby>し<strong>てもらえませんか</strong>？
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> <ruby>貸<rt>か</rt></ruby>します → <ruby>貸<rt>か</rt></ruby>して + もらえませんか. This is a polite way to request something, literally "Could I receive the favor of you lending...?"
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        この<ruby>機械<rt>きかい</rt></ruby>の<ruby>使<rt>つか</rt></ruby>い<strong><ruby>方<rt>かた</rt></ruby></strong>がわかりません。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> <ruby>使<rt>つか</rt></ruby>います → <ruby>使<rt>つか</rt></ruby>い (masu-stem) + <ruby>方<rt>かた</rt></ruby> = <ruby>使<rt>つか</rt></ruby>い<ruby>方<rt>かた</rt></ruby> (how to use). V-<ruby>方<rt>かた</rt></ruby> creates a noun meaning "the way of doing V."
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Comprehensive Practice -->
+        <div class="slide" data-slide="13">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">🎯 Final Practice</span>
+                    <h2>Combining All Grammar Points</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Putting It Together</div>
+                    <div class="question-context">You're asking a Japanese friend for help with kanji readings.</div>
+                    <div style="padding: 16px; background: white; border-radius: 8px; margin: 16px 0;">
+                        <p style="margin-bottom: 16px;"><strong>Scenario:</strong> You studied Japanese with an app, but kanji reading is difficult for you. You want to politely ask your friend to teach you how to read a specific kanji.</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>1. How you studied:</strong></p>
+                        <p style="color: var(--text-muted);">アプリ<strong>で</strong><ruby>日本語<rt>にほんご</rt></ruby>を<ruby>勉強<rt>べんきょう</rt></ruby>しました。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>2. What's difficult:</strong></p>
+                        <p style="color: var(--text-muted);"><ruby>日本語<rt>にほんご</rt></ruby>は<ruby>漢字<rt>かんじ</rt></ruby><strong>が</strong><ruby>難<rt>むずか</rt></ruby>しいです。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>3. Contrast:</strong></p>
+                        <p style="color: var(--text-muted);"><ruby>聞<rt>き</rt></ruby>くの<strong>は</strong><ruby>得意<rt>とくい</rt></ruby>ですが、<ruby>読<rt>よ</rt></ruby>むの<strong>は</strong><ruby>苦手<rt>にがて</rt></ruby>です。</p>
+                        
+                        <p style="margin: 16px 0 8px; color: var(--primary-dark);"><strong>4. Polite request:</strong></p>
+                        <p style="color: var(--text-muted);">この<ruby>漢字<rt>かんじ</rt></ruby>の<ruby>読<rt>よ</rt></ruby>み<strong><ruby>方<rt>かた</rt></ruby></strong>を<ruby>教<rt>おし</rt></ruby>え<strong>てもらえませんか</strong>？</p>
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">See Summary →</button>
+            </div>
+        </div>
+
+        <!-- Slide 14: Summary -->
+        <div class="slide" data-slide="14">
+            <div class="summary-card">
+                <h2>🎉 Lesson 9 Complete!</h2>
+                <p>You've mastered 5 essential grammar points for talking about learning!</p>
+                
+                <div class="summary-points">
+                    <div class="summary-point">
+                        <h4>1. Nで</h4>
+                        <p>Means/Method<br>"studied with apps"</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>2. N1はN2が</h4>
+                        <p>Characteristics<br>"kanji is difficult"</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>3. N1は〜N2は〜</h4>
+                        <p>Comparison<br>"reading vs speaking"</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>4. V-てもらえませんか</h4>
+                        <p>Polite requests<br>"could you teach me?"</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>5. V-<ruby>方<rt>かた</rt></ruby></h4>
+                        <p>How to do<br>"how to read/write"</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 32px; padding: 20px; background: rgba(255,255,255,0.2); border-radius: var(--radius);">
+                    <h3 style="margin-bottom: 12px;">📚 Now You Can Ask:</h3>
+                    <p style="font-size: 1rem; opacity: 0.95;">
+                        この<ruby>漢字<rt>かんじ</rt></ruby>の<ruby>読<rt>よ</rt></ruby>み<ruby>方<rt>かた</rt></ruby>を<ruby>教<rt>おし</rt></ruby>えてもらえませんか？<br>
+                        <ruby>日本語<rt>にほんご</rt></ruby>は<ruby>文法<rt>ぶんぽう</rt></ruby>が<ruby>難<rt>むずか</rt></ruby>しいです。<br>
+                        アニメで<ruby>日本語<rt>にほんご</rt></ruby>を<ruby>勉強<rt>べんきょう</rt></ruby>しました！
+                    </p>
+                </div>
+
+                <button class="restart-btn" onclick="restartPresentation()">
+                    🔄 <ruby>最初<rt>さいしょ</rt></ruby>から Start Over
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ========== Slide Navigation ==========
+        let currentSlide = 1;
+        const totalSlides = 14;
+
+        function updateSlide() {
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            const activeSlide = document.querySelector(`[data-slide="${currentSlide}"]`);
+            if (activeSlide) {
+                activeSlide.classList.add('active');
+            }
+            
+            document.getElementById('currentSlide').textContent = currentSlide;
+            document.getElementById('totalSlides').textContent = totalSlides;
+            
+            const progress = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(slideNum) {
+            currentSlide = slideNum;
+            updateSlide();
+        }
+
+        function restartPresentation() {
+            currentSlide = 1;
+            updateSlide();
+        }
+
+        // ========== MNN Toggle ==========
+        function toggleMNN(button) {
+            const content = button.nextElementSibling;
+            button.classList.toggle('open');
+            content.classList.toggle('open');
+        }
+
+        // ========== Keyboard Navigation ==========
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // ========== Touch/Swipe Navigation (Mobile) ==========
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+
+        // ========== Initialize ==========
+        updateSlide();
+    </script>
+</body>
+</html>

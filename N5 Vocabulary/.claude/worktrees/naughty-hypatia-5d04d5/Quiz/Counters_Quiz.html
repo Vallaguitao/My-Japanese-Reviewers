@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Counter Quiz - じょすうし れんしゅう</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', 'Zen Maru Gothic', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: clamp(10px, 3vw, 20px);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: clamp(15px, 3vw, 30px);
+            padding: clamp(15px, 3vw, 25px);
+            background: rgba(255,255,255,0.1);
+            border-radius: clamp(15px, 2vw, 20px);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: clamp(24px, 5vw, 40px);
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            font-size: clamp(14px, 2.5vw, 18px);
+            opacity: 0.9;
+        }
+        
+        /* Score Board */
+        .score-board {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: clamp(12px, 2vw, 20px);
+            padding: clamp(15px, 3vw, 25px);
+            margin-bottom: clamp(15px, 2vw, 20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .score-item {
+            text-align: center;
+            min-width: 80px;
+        }
+        
+        .score-label {
+            font-size: clamp(11px, 1.8vw, 14px);
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .score-value {
+            font-size: clamp(22px, 4vw, 32px);
+            font-weight: bold;
+            color: #0f3460;
+        }
+        
+        .progress-container {
+            width: clamp(120px, 20vw, 200px);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            border-radius: 6px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        /* Section Tabs */
+        .section-tabs {
+            display: flex;
+            gap: clamp(8px, 1.5vw, 12px);
+            margin-bottom: clamp(15px, 2vw, 20px);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab-btn {
+            padding: clamp(10px, 2vw, 14px) clamp(16px, 3vw, 28px);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: clamp(13px, 2vw, 16px);
+            font-weight: 600;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            position: relative;
+        }
+        
+        .tab-btn:hover:not(.completed):not(.locked) {
+            background: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+        }
+        
+        .tab-btn.active {
+            background: white;
+            color: #0f3460;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .tab-btn.completed {
+            background: #4caf50;
+            color: white;
+            cursor: default;
+        }
+        
+        .tab-btn.completed::after {
+            content: ' ✓';
+        }
+        
+        .tab-btn.locked {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.4);
+            cursor: not-allowed;
+        }
+        
+        /* Reference Toggle */
+        .reference-toggle {
+            text-align: center;
+            margin-bottom: clamp(12px, 2vw, 20px);
+        }
+        
+        .reference-btn {
+            padding: clamp(10px, 2vw, 12px) clamp(20px, 4vw, 30px);
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 25px;
+            font-size: clamp(13px, 2vw, 15px);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .reference-btn:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+        
+        /* Reference Card */
+        .reference-card {
+            display: none;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: clamp(12px, 2vw, 20px);
+            padding: clamp(15px, 3vw, 25px);
+            margin-bottom: clamp(15px, 2vw, 20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .reference-card.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .ref-title {
+            font-size: clamp(18px, 3vw, 24px);
+            color: #0f3460;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #e94560;
+        }
+        
+        .ref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .ref-box {
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+            background: #f8f9ff;
+            border-left: 4px solid;
+        }
+        
+        .ref-box.time { border-color: #e94560; background: linear-gradient(135deg, #ffe0e6 0%, #fff 100%); }
+        .ref-box.things { border-color: #48dbfb; background: linear-gradient(135deg, #e0f7ff 0%, #fff 100%); }
+        .ref-box.people { border-color: #ff9f43; background: linear-gradient(135deg, #fff3e0 0%, #fff 100%); }
+        .ref-box.objects { border-color: #26de81; background: linear-gradient(135deg, #e0ffe6 0%, #fff 100%); }
+        .ref-box.animals { border-color: #a55eea; background: linear-gradient(135deg, #f3e5f5 0%, #fff 100%); }
+        
+        .ref-box-title {
+            font-size: clamp(14px, 2vw, 16px);
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ref-box-content {
+            font-size: clamp(12px, 1.8vw, 14px);
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .counter-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+            margin: 2px;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        
+        /* Quiz Section */
+        .quiz-section {
+            display: none;
+        }
+        
+        .quiz-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Card */
+        .card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: clamp(15px, 2.5vw, 25px);
+            padding: clamp(20px, 4vw, 35px);
+            margin-bottom: clamp(15px, 2vw, 20px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #e94560, #ff6b6b, #feca57, #48dbfb);
+        }
+        
+        .card-title {
+            font-size: clamp(18px, 3vw, 24px);
+            color: #0f3460;
+            margin-bottom: clamp(15px, 2.5vw, 25px);
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e94560;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Question Box */
+        .question-box {
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+            border-radius: clamp(12px, 2vw, 18px);
+            padding: clamp(18px, 3vw, 30px);
+            margin-bottom: 15px;
+            border: 2px solid #e0e5f0;
+        }
+        
+        .question-number {
+            font-size: clamp(12px, 1.8vw, 14px);
+            color: #e94560;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .question-context {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(10px, 2vw, 20px);
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .counter-emoji {
+            font-size: clamp(40px, 8vw, 60px);
+        }
+        
+        .question-text {
+            font-size: clamp(15px, 2.5vw, 20px);
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .japanese-prompt {
+            font-size: clamp(28px, 6vw, 44px);
+            color: #0f3460;
+            font-weight: bold;
+            text-align: center;
+            margin: clamp(15px, 3vw, 25px) 0;
+        }
+        
+        .number-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .number-badge {
+            font-size: clamp(32px, 6vw, 48px);
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            width: clamp(60px, 12vw, 80px);
+            height: clamp(60px, 12vw, 80px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+        }
+        
+        .counter-indicator {
+            display: inline-block;
+            padding: clamp(6px, 1.5vw, 10px) clamp(12px, 2.5vw, 20px);
+            border-radius: 20px;
+            font-size: clamp(13px, 2vw, 16px);
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        .counter-indicator.time { background: #ffe0e6; color: #c62828; }
+        .counter-indicator.things { background: #e0f7ff; color: #0277bd; }
+        .counter-indicator.people { background: #fff3e0; color: #e65100; }
+        .counter-indicator.objects { background: #e0ffe6; color: #2e7d32; }
+        .counter-indicator.animals { background: #f3e5f5; color: #6a1b9a; }
+        
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: clamp(10px, 2vw, 15px);
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 500px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .option-btn {
+            padding: clamp(14px, 3vw, 20px);
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-size: clamp(18px, 3.5vw, 24px);
+            font-family: 'Noto Sans JP', sans-serif;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .option-btn:hover:not(:disabled) {
+            border-color: #e94560;
+            background: #fff5f7;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.2);
+        }
+        
+        .option-btn.correct {
+            border-color: #4caf50;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .option-btn.incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        
+        /* Feedback */
+        .feedback {
+            padding: clamp(12px, 2.5vw, 18px);
+            border-radius: 12px;
+            margin-top: 15px;
+            display: none;
+            font-size: clamp(14px, 2.2vw, 17px);
+        }
+        
+        .feedback.correct {
+            display: block;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 5px solid #4caf50;
+            color: #2e7d32;
+        }
+        
+        .feedback.incorrect {
+            display: block;
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 5px solid #f44336;
+            color: #c62828;
+        }
+        
+        .feedback .correct-answer {
+            font-size: clamp(20px, 3.5vw, 26px);
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .next-btn {
+            padding: clamp(10px, 2vw, 14px) clamp(24px, 4vw, 35px);
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: clamp(14px, 2.2vw, 17px);
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .next-btn:hover {
+            background: linear-gradient(135deg, #43a047, #5cb85c);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+        
+        /* Results Section */
+        .results-card {
+            text-align: center;
+            padding: clamp(30px, 5vw, 50px);
+        }
+        
+        .results-icon {
+            font-size: clamp(60px, 12vw, 90px);
+            margin-bottom: 20px;
+        }
+        
+        .results-title {
+            font-size: clamp(24px, 5vw, 36px);
+            color: #0f3460;
+            margin-bottom: 15px;
+        }
+        
+        .results-score {
+            font-size: clamp(40px, 8vw, 60px);
+            font-weight: bold;
+            color: #e94560;
+            margin-bottom: 25px;
+        }
+        
+        .results-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: clamp(10px, 2vw, 15px);
+            margin: 25px 0;
+        }
+        
+        .breakdown-item {
+            background: #f8f9ff;
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+            border-left: 4px solid #e94560;
+        }
+        
+        .breakdown-label {
+            font-size: clamp(11px, 1.8vw, 14px);
+            color: #666;
+        }
+        
+        .breakdown-value {
+            font-size: clamp(20px, 3.5vw, 28px);
+            font-weight: bold;
+            color: #0f3460;
+        }
+        
+        .retry-btn {
+            padding: clamp(14px, 2.5vw, 18px) clamp(35px, 6vw, 50px);
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: clamp(16px, 2.5vw, 20px);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+        
+        .retry-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+        }
+        
+        /* Notes Box */
+        .note-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+            font-size: clamp(12px, 1.8vw, 15px);
+        }
+        
+        .note-box::before {
+            content: '📝 ';
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #ffe0e6 0%, #ffd1d9 100%);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+            margin: 15px 0;
+            border-left: 4px solid #e94560;
+            font-size: clamp(12px, 1.8vw, 15px);
+        }
+        
+        .warning-box::before {
+            content: '⚠️ ';
+        }
+        
+        .tip-box {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            padding: clamp(12px, 2vw, 18px);
+            border-radius: 12px;
+            margin: 15px 0;
+            border-left: 4px solid #28a745;
+            font-size: clamp(12px, 1.8vw, 15px);
+        }
+        
+        .tip-box::before {
+            content: '💡 ';
+        }
+        
+        /* Irregular highlight */
+        .irregular {
+            color: #e94560;
+            font-weight: bold;
+        }
+        
+        /* Mobile touch feedback */
+        @media (hover: none) {
+            .option-btn:active {
+                transform: scale(0.98);
+            }
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔢 じょすうし れんしゅう</h1>
+            <p>Japanese Counter Practice Quiz • 50 Questions</p>
+        </div>
+        
+        <!-- Score Board -->
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">てんすう</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">しつもん</div>
+                <div class="score-value"><span id="answered">0</span>/<span id="total">50</span></div>
+            </div>
+            <div class="score-item progress-container">
+                <div class="score-label">しんど</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section Tabs -->
+        <div class="section-tabs">
+            <button class="tab-btn active" id="tab-basic" onclick="handleTabClick('basic')">📦 きほん</button>
+            <button class="tab-btn locked" id="tab-time" onclick="handleTabClick('time')">⏰ じかん</button>
+            <button class="tab-btn locked" id="tab-advanced" onclick="handleTabClick('advanced')">📚 おうよう</button>
+            <button class="tab-btn locked" id="tab-mixed" onclick="handleTabClick('mixed')">🎯 そうごう</button>
+        </div>
+        
+        <!-- Reference Toggle -->
+        <div class="reference-toggle">
+            <button class="reference-btn" onclick="toggleReference()">📖 じょすうし ひょう をみる</button>
+        </div>
+        
+        <!-- Reference Card -->
+        <div class="reference-card" id="referenceCard">
+            <div class="ref-title">📊 じょすうし さんこう ひょう (Counter Reference)</div>
+            
+            <div class="ref-grid">
+                <div class="ref-box time">
+                    <div class="ref-box-title">⏰ じかん (Time)</div>
+                    <div class="ref-box-content">
+                        <span class="counter-tag">〜じかん (hours)</span>
+                        <span class="counter-tag">〜ふん/ぷん (minutes)</span>
+                        <span class="counter-tag">〜にち (days)</span>
+                        <span class="counter-tag">〜しゅうかん (weeks)</span>
+                        <span class="counter-tag">〜かげつ (months)</span>
+                        <span class="counter-tag">〜ねん (years)</span>
+                    </div>
+                    <div class="note-box" style="margin-top: 10px; font-size: 12px;">
+                        <strong>ふきそく:</strong> いっぷん、ろっぷん、はっぷん、じゅっぷん
+                    </div>
+                </div>
+                
+                <div class="ref-box things">
+                    <div class="ref-box-title">📦 もの (Things)</div>
+                    <div class="ref-box-content">
+                        <span class="counter-tag">〜つ (general)</span>
+                        <span class="counter-tag">〜こ (small items)</span>
+                        <span class="counter-tag">〜まい (flat things)</span>
+                        <span class="counter-tag">〜ほん/ぼん/ぽん (long things)</span>
+                        <span class="counter-tag">〜さつ (books)</span>
+                        <span class="counter-tag">〜だい (machines)</span>
+                    </div>
+                </div>
+                
+                <div class="ref-box people">
+                    <div class="ref-box-title">👥 ひと (People)</div>
+                    <div class="ref-box-content">
+                        <span class="counter-tag">〜にん (people)</span>
+                        <span class="counter-tag">〜さい (age)</span>
+                        <span class="counter-tag">〜ばん (order)</span>
+                    </div>
+                    <div class="warning-box" style="margin-top: 10px; font-size: 12px;">
+                        <strong>ふきそく:</strong> ひとり、ふたり (not いちにん、ににん)
+                    </div>
+                </div>
+                
+                <div class="ref-box objects">
+                    <div class="ref-box-title">🏠 たてもの・のりもの (Buildings & Vehicles)</div>
+                    <div class="ref-box-content">
+                        <span class="counter-tag">〜かい (floors)</span>
+                        <span class="counter-tag">〜けん (houses)</span>
+                        <span class="counter-tag">〜そく (shoes/socks)</span>
+                        <span class="counter-tag">〜ちゃく (clothes)</span>
+                        <span class="counter-tag">〜はい/ぱい/ばい (cups)</span>
+                        <span class="counter-tag">〜かい (frequency)</span>
+                    </div>
+                </div>
+                
+                <div class="ref-box animals">
+                    <div class="ref-box-title">🐱 どうぶつ (Animals)</div>
+                    <div class="ref-box-content">
+                        <span class="counter-tag">〜ひき/びき/ぴき (small animals)</span>
+                    </div>
+                    <div class="tip-box" style="margin-top: 10px; font-size: 12px;">
+                        <strong>ルール:</strong> 1,6,8,10 → ぴき | 3 → びき | others → ひき
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Basic Section (Things, People, General) -->
+        <div class="quiz-section active" id="basic-section">
+            <div class="card">
+                <div class="card-title">📦 きほん じょすうし (Basic Counters)</div>
+                <div id="basic-question"></div>
+            </div>
+        </div>
+        
+        <!-- Time Section -->
+        <div class="quiz-section" id="time-section">
+            <div class="card">
+                <div class="card-title">⏰ じかん の じょすうし (Time Counters)</div>
+                <div id="time-question"></div>
+            </div>
+        </div>
+        
+        <!-- Advanced Section -->
+        <div class="quiz-section" id="advanced-section">
+            <div class="card">
+                <div class="card-title">📚 おうよう じょすうし (Advanced Counters)</div>
+                <div id="advanced-question"></div>
+            </div>
+        </div>
+        
+        <!-- Mixed Section -->
+        <div class="quiz-section" id="mixed-section">
+            <div class="card">
+                <div class="card-title">🎯 そうごう もんだい (Mixed Questions)</div>
+                <div id="mixed-question"></div>
+            </div>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="quiz-section" id="results-section">
+            <div class="card results-card">
+                <div class="results-icon" id="results-icon">🎉</div>
+                <div class="results-title" id="results-title">すばらしい！</div>
+                <div class="results-score" id="final-score">0%</div>
+                
+                <div class="results-breakdown">
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">📦 きほん</div>
+                        <div class="breakdown-value" id="basic-score">0/0</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">⏰ じかん</div>
+                        <div class="breakdown-value" id="time-score">0/0</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">📚 おうよう</div>
+                        <div class="breakdown-value" id="advanced-score">0/0</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">🎯 そうごう</div>
+                        <div class="breakdown-value" id="mixed-score">0/0</div>
+                    </div>
+                </div>
+                
+                <button class="retry-btn" onclick="restartQuiz()">🔄 もういちど</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ==================== COUNTER DATA ====================
+        
+        // General counter (つ)
+        const tsuCounter = {
+            name: 'つ',
+            emoji: '📦',
+            category: 'things',
+            readings: {
+                1: 'ひとつ', 2: 'ふたつ', 3: 'みっつ', 4: 'よっつ', 5: 'いつつ',
+                6: 'むっつ', 7: 'ななつ', 8: 'やっつ', 9: 'ここのつ', 10: 'とお', '?': 'いくつ'
+            },
+            irregulars: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        };
+        
+        // People counter (人)
+        const ninCounter = {
+            name: 'にん',
+            emoji: '👥',
+            category: 'people',
+            readings: {
+                1: 'ひとり', 2: 'ふたり', 3: 'さんにん', 4: 'よにん', 5: 'ごにん',
+                6: 'ろくにん', 7: 'ななにん / しちにん', 8: 'はちにん', 9: 'きゅうにん', 10: 'じゅうにん', '?': 'なんにん'
+            },
+            irregulars: [1, 2, 4, 7]
+        };
+        
+        // Order counter (番)
+        const banCounter = {
+            name: 'ばん',
+            emoji: '🏆',
+            category: 'people',
+            readings: {
+                1: 'いちばん', 2: 'にばん', 3: 'さんばん', 4: 'よんばん', 5: 'ごばん',
+                6: 'ろくばん', 7: 'ななばん', 8: 'はちばん', 9: 'きゅうばん', 10: 'じゅうばん', '?': 'なんばん'
+            },
+            irregulars: []
+        };
+        
+        // Flat things counter (枚)
+        const maiCounter = {
+            name: 'まい',
+            emoji: '📄',
+            category: 'things',
+            readings: {
+                1: 'いちまい', 2: 'にまい', 3: 'さんまい', 4: 'よんまい', 5: 'ごまい',
+                6: 'ろくまい', 7: 'ななまい', 8: 'はちまい', 9: 'きゅうまい', 10: 'じゅうまい', '?': 'なんまい'
+            },
+            irregulars: []
+        };
+        
+        // Machines/vehicles counter (台)
+        const daiCounter = {
+            name: 'だい',
+            emoji: '🚗',
+            category: 'objects',
+            readings: {
+                1: 'いちだい', 2: 'にだい', 3: 'さんだい', 4: 'よんだい', 5: 'ごだい',
+                6: 'ろくだい', 7: 'ななだい', 8: 'はちだい', 9: 'きゅうだい', 10: 'じゅうだい', '?': 'なんだい'
+            },
+            irregulars: []
+        };
+        
+        // Age counter (歳)
+        const saiCounter = {
+            name: 'さい',
+            emoji: '🎂',
+            category: 'people',
+            readings: {
+                1: 'いっさい', 2: 'にさい', 3: 'さんさい', 4: 'よんさい', 5: 'ごさい',
+                6: 'ろくさい', 7: 'ななさい', 8: 'はっさい', 9: 'きゅうさい', 10: 'じゅっさい / じっさい', '?': 'なんさい'
+            },
+            irregulars: [1, 8, 10]
+        };
+        
+        // Books counter (冊)
+        const satsuCounter = {
+            name: 'さつ',
+            emoji: '📚',
+            category: 'things',
+            readings: {
+                1: 'いっさつ', 2: 'にさつ', 3: 'さんさつ', 4: 'よんさつ', 5: 'ごさつ',
+                6: 'ろくさつ', 7: 'ななさつ', 8: 'はっさつ', 9: 'きゅうさつ', 10: 'じゅっさつ', '?': 'なんさつ'
+            },
+            irregulars: [1, 8, 10]
+        };
+        
+        // Clothes counter (着)
+        const chakuCounter = {
+            name: 'ちゃく',
+            emoji: '👔',
+            category: 'objects',
+            readings: {
+                1: 'いっちゃく', 2: 'にちゃく', 3: 'さんちゃく', 4: 'よんちゃく', 5: 'ごちゃく',
+                6: 'ろくちゃく', 7: 'ななちゃく', 8: 'はっちゃく', 9: 'きゅうちゃく', 10: 'じゅっちゃく / じっちゃく', '?': 'なんちゃく'
+            },
+            irregulars: [1, 8, 10]
+        };
+        
+        // Hours counter (時間)
+        const jikanCounter = {
+            name: 'じかん',
+            emoji: '⏰',
+            category: 'time',
+            readings: {
+                1: 'いちじかん', 2: 'にじかん', 3: 'さんじかん', 4: 'よじかん', 5: 'ごじかん',
+                6: 'ろくじかん', 7: 'ななじかん / しちじかん', 8: 'はちじかん', 9: 'くじかん', 10: 'じゅうじかん', '?': 'なんじかん'
+            },
+            irregulars: [4, 7, 9]
+        };
+        
+        // Minutes counter (分)
+        const funCounter = {
+            name: 'ふん / ぷん',
+            emoji: '⏱️',
+            category: 'time',
+            readings: {
+                1: 'いっぷん', 2: 'にふん', 3: 'さんぷん', 4: 'よんぷん', 5: 'ごふん',
+                6: 'ろっぷん', 7: 'ななふん', 8: 'はっぷん', 9: 'きゅうふん', 10: 'じゅっぷん / じっぷん', '?': 'なんぷん'
+            },
+            irregulars: [1, 3, 4, 6, 8, 10]
+        };
+        
+        // Days counter (日)
+        const nichiCounter = {
+            name: 'にち',
+            emoji: '📅',
+            category: 'time',
+            readings: {
+                1: 'いちにち', 2: 'ふつか', 3: 'みっか', 4: 'よっか', 5: 'いつか',
+                6: 'むいか', 7: 'なのか', 8: 'ようか', 9: 'ここのか', 10: 'とおか', '?': 'なんにち'
+            },
+            irregulars: [2, 3, 4, 5, 6, 7, 8, 9, 10]
+        };
+        
+        // Weeks counter (週間)
+        const shukanCounter = {
+            name: 'しゅうかん',
+            emoji: '📆',
+            category: 'time',
+            readings: {
+                1: 'いっしゅうかん', 2: 'にしゅうかん', 3: 'さんしゅうかん', 4: 'よんしゅうかん', 5: 'ごしゅうかん',
+                6: 'ろくしゅうかん', 7: 'ななしゅうかん', 8: 'はっしゅうかん', 9: 'きゅうしゅうかん', 10: 'じゅっしゅうかん', '?': 'なんしゅうかん'
+            },
+            irregulars: [1, 8, 10]
+        };
+        
+        // Months counter (か月)
+        const kagetsuCounter = {
+            name: 'かげつ',
+            emoji: '🗓️',
+            category: 'time',
+            readings: {
+                1: 'いっかげつ', 2: 'にかげつ', 3: 'さんかげつ', 4: 'よんかげつ', 5: 'ごかげつ',
+                6: 'ろっかげつ', 7: 'ななかげつ', 8: 'はちかげつ / はっかげつ', 9: 'きゅうかげつ', 10: 'じゅっかげつ', '?': 'なんかげつ'
+            },
+            irregulars: [1, 6, 8, 10]
+        };
+        
+        // Years counter (年)
+        const nenCounter = {
+            name: 'ねん',
+            emoji: '📅',
+            category: 'time',
+            readings: {
+                1: 'いちねん', 2: 'にねん', 3: 'さんねん', 4: 'よねん', 5: 'ごねん',
+                6: 'ろくねん', 7: 'ななねん / しちねん', 8: 'はちねん', 9: 'きゅうねん', 10: 'じゅうねん', '?': 'なんねん'
+            },
+            irregulars: [4, 7]
+        };
+        
+        // Frequency counter (回)
+        const kaiCounter = {
+            name: 'かい',
+            emoji: '🔄',
+            category: 'objects',
+            readings: {
+                1: 'いっかい', 2: 'にかい', 3: 'さんかい', 4: 'よんかい', 5: 'ごかい',
+                6: 'ろっかい', 7: 'ななかい', 8: 'はっかい', 9: 'きゅうかい', 10: 'じゅっかい', '?': 'なんかい'
+            },
+            irregulars: [1, 6, 8, 10]
+        };
+        
+        // Small things counter (個)
+        const koCounter = {
+            name: 'こ',
+            emoji: '🔵',
+            category: 'things',
+            readings: {
+                1: 'いっこ', 2: 'にこ', 3: 'さんこ', 4: 'よんこ', 5: 'ごこ',
+                6: 'ろっこ', 7: 'ななこ', 8: 'はっこ', 9: 'きゅうこ', 10: 'じゅっこ', '?': 'なんこ'
+            },
+            irregulars: [1, 6, 8, 10]
+        };
+        
+        // Shoes/socks counter (足)
+        const sokuCounter = {
+            name: 'そく',
+            emoji: '👟',
+            category: 'objects',
+            readings: {
+                1: 'いっそく', 2: 'にそく', 3: 'さんぞく', 4: 'よんそく', 5: 'ごそく',
+                6: 'ろくそく', 7: 'ななそく', 8: 'はっそく', 9: 'きゅうそく', 10: 'じゅっそく / じっそく', '?': 'なんそく'
+            },
+            irregulars: [1, 3, 8, 10]
+        };
+        
+        // Houses counter (軒)
+        const kenCounter = {
+            name: 'けん',
+            emoji: '🏠',
+            category: 'objects',
+            readings: {
+                1: 'いっけん', 2: 'にけん', 3: 'さんげん', 4: 'よんけん', 5: 'ごけん',
+                6: 'ろっけん', 7: 'ななけん', 8: 'はっけん', 9: 'きゅうけん', 10: 'じゅっけん / じっけん', '?': 'なんげん'
+            },
+            irregulars: [1, 3, 6, 8, 10]
+        };
+        
+        // Floors counter (階)
+        const kaiFloorCounter = {
+            name: 'かい (floors)',
+            emoji: '🏢',
+            category: 'objects',
+            readings: {
+                1: 'いっかい', 2: 'にかい', 3: 'さんがい', 4: 'よんかい', 5: 'ごかい',
+                6: 'ろっかい', 7: 'ななかい', 8: 'はっかい', 9: 'きゅうかい', 10: 'じゅっかい / じっかい', '?': 'なんがい'
+            },
+            irregulars: [1, 3, 6, 8, 10]
+        };
+        
+        // Long things counter (本)
+        const honCounter = {
+            name: 'ほん / ぼん / ぽん',
+            emoji: '🖊️',
+            category: 'things',
+            readings: {
+                1: 'いっぽん', 2: 'にほん', 3: 'さんぼん', 4: 'よんほん', 5: 'ごほん',
+                6: 'ろっぽん', 7: 'ななほん', 8: 'はっぽん / はちほん', 9: 'きゅうほん', 10: 'じゅっぽん', '?': 'なんぼん'
+            },
+            irregulars: [1, 3, 6, 8, 10]
+        };
+        
+        // Cups counter (杯)
+        const haiCounter = {
+            name: 'はい / ばい / ぱい',
+            emoji: '☕',
+            category: 'objects',
+            readings: {
+                1: 'いっぱい', 2: 'にはい', 3: 'さんばい', 4: 'よんはい', 5: 'ごはい',
+                6: 'ろっぱい', 7: 'ななはい', 8: 'はっぱい / はちはい', 9: 'きゅうはい', 10: 'じゅっぱい', '?': 'なんばい'
+            },
+            irregulars: [1, 3, 6, 8, 10]
+        };
+        
+        // Small animals counter (匹)
+        const hikiCounter = {
+            name: 'ひき / びき / ぴき',
+            emoji: '🐱',
+            category: 'animals',
+            readings: {
+                1: 'いっぴき', 2: 'にひき', 3: 'さんびき', 4: 'よんひき', 5: 'ごひき',
+                6: 'ろっぴき', 7: 'ななひき', 8: 'はっぴき', 9: 'きゅうひき', 10: 'じゅっぴき', '?': 'なんびき'
+            },
+            irregulars: [1, 3, 6, 8, 10]
+        };
+        
+        // Group counters by section
+        const basicCounters = [tsuCounter, ninCounter, koCounter, maiCounter, banCounter];
+        const timeCounters = [jikanCounter, funCounter, nichiCounter, shukanCounter, kagetsuCounter, nenCounter];
+        const advancedCounters = [satsuCounter, daiCounter, saiCounter, chakuCounter, honCounter, haiCounter, hikiCounter, sokuCounter, kenCounter, kaiFloorCounter, kaiCounter];
+        const allCounters = [...basicCounters, ...timeCounters, ...advancedCounters];
+        
+        // ==================== GAME STATE ====================
+        
+        let currentSection = 'basic';
+        let currentQuestion = 0;
+        let score = 0;
+        let questionsAnswered = 0;
+        const totalQuestions = 50;
+        
+        let sectionStatus = {
+            basic: { completed: false, correct: 0, total: 12 },
+            time: { completed: false, correct: 0, total: 14 },
+            advanced: { completed: false, correct: 0, total: 12 },
+            mixed: { completed: false, correct: 0, total: 12 }
+        };
+        
+        let basicQuestions = [];
+        let timeQuestions = [];
+        let advancedQuestions = [];
+        let mixedQuestions = [];
+        
+        // ==================== QUESTION GENERATION ====================
+        
+        function generateQuestion(counter, number) {
+            const correctAnswer = counter.readings[number];
+            const isIrregular = counter.irregulars.includes(number);
+            
+            // Generate wrong answers
+            const wrongAnswers = [];
+            const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            const shuffledNumbers = numbers.filter(n => n !== number).sort(() => Math.random() - 0.5);
+            
+            for (let i = 0; i < 3 && i < shuffledNumbers.length; i++) {
+                wrongAnswers.push(counter.readings[shuffledNumbers[i]]);
+            }
+            
+            return {
+                counter: counter,
+                number: number,
+                correctAnswer: correctAnswer,
+                wrongAnswers: wrongAnswers,
+                isIrregular: isIrregular
+            };
+        }
+        
+        function generateSectionQuestions(counters, count) {
+            const questions = [];
+            const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            
+            while (questions.length < count) {
+                const counter = counters[Math.floor(Math.random() * counters.length)];
+                const number = numbers[Math.floor(Math.random() * numbers.length)];
+                
+                // Avoid too many duplicates
+                const existingCount = questions.filter(q => 
+                    q.counter.name === counter.name && q.number === number
+                ).length;
+                
+                if (existingCount < 1) {
+                    questions.push(generateQuestion(counter, number));
+                }
+            }
+            
+            return questions.sort(() => Math.random() - 0.5);
+        }
+        
+        function init() {
+            // Generate questions for each section
+            basicQuestions = generateSectionQuestions(basicCounters, sectionStatus.basic.total);
+            timeQuestions = generateSectionQuestions(timeCounters, sectionStatus.time.total);
+            advancedQuestions = generateSectionQuestions(advancedCounters, sectionStatus.advanced.total);
+            mixedQuestions = generateSectionQuestions(allCounters, sectionStatus.mixed.total);
+            
+            document.getElementById('total').textContent = totalQuestions;
+            updateScoreBoard();
+            loadQuestion();
+        }
+        
+        // ==================== QUESTION LOADING ====================
+        
+        function loadQuestion() {
+            let questions, elementId;
+            
+            switch (currentSection) {
+                case 'basic':
+                    questions = basicQuestions;
+                    elementId = 'basic-question';
+                    break;
+                case 'time':
+                    questions = timeQuestions;
+                    elementId = 'time-question';
+                    break;
+                case 'advanced':
+                    questions = advancedQuestions;
+                    elementId = 'advanced-question';
+                    break;
+                case 'mixed':
+                    questions = mixedQuestions;
+                    elementId = 'mixed-question';
+                    break;
+            }
+            
+            if (currentQuestion >= questions.length) {
+                showSectionComplete();
+                return;
+            }
+            
+            const q = questions[currentQuestion];
+            const allOptions = [q.correctAnswer, ...q.wrongAnswers].sort(() => Math.random() - 0.5);
+            
+            const irregularNote = q.isIrregular ? 
+                `<div class="warning-box" style="text-align: center; margin: 10px 0;">ふきそく けい (Irregular Form)</div>` : '';
+            
+            document.getElementById(elementId).innerHTML = `
+                <div class="question-box">
+                    <div class="question-number">もんだい ${currentQuestion + 1} / ${questions.length}</div>
+                    
+                    <div class="question-context">
+                        <span class="counter-emoji">${q.counter.emoji}</span>
+                        <div>
+                            <div class="question-text">${getCounterDescription(q.counter)}</div>
+                            <span class="counter-indicator ${q.counter.category}">${q.counter.name}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="number-display">
+                        <div class="number-badge">${q.number}</div>
+                    </div>
+                    
+                    ${irregularNote}
+                    
+                    <div class="question-text">この すうじ は なんと よみますか？</div>
+                    
+                    <div class="options-grid" id="options-${currentSection}">
+                        ${allOptions.map(opt => `
+                            <button class="option-btn" data-answer="${opt}">${opt}</button>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="feedback" id="feedback-${currentSection}"></div>
+                </div>
+            `;
+            
+            // Add event listeners
+            document.querySelectorAll(`#options-${currentSection} .option-btn`).forEach(btn => {
+                btn.addEventListener('click', function() {
+                    checkAnswer(this, this.dataset.answer, q.correctAnswer);
+                });
+            });
+        }
+        
+        function getCounterDescription(counter) {
+            const descriptions = {
+                'つ': 'General things',
+                'にん': 'People',
+                'ばん': 'Order/Ranking',
+                'まい': 'Flat things (paper, shirts)',
+                'だい': 'Machines & vehicles',
+                'さい': 'Age',
+                'さつ': 'Books & notebooks',
+                'ちゃく': 'Clothes',
+                'じかん': 'Hours (duration)',
+                'ふん / ぷん': 'Minutes',
+                'にち': 'Days',
+                'しゅうかん': 'Weeks',
+                'かげつ': 'Months',
+                'ねん': 'Years',
+                'かい': 'Frequency (times)',
+                'こ': 'Small things',
+                'そく': 'Pairs (shoes, socks)',
+                'けん': 'Houses & buildings',
+                'かい (floors)': 'Floors of a building',
+                'ほん / ぼん / ぽん': 'Long thin things',
+                'はい / ばい / ぱい': 'Cups & glasses',
+                'ひき / びき / ぴき': 'Small animals'
+            };
+            return descriptions[counter.name] || counter.name;
+        }
+        
+        // ==================== ANSWER CHECKING ====================
+        
+        function checkAnswer(btn, selected, correct) {
+            const buttons = document.querySelectorAll(`#options-${currentSection} .option-btn`);
+            buttons.forEach(b => b.disabled = true);
+            
+            // Handle answers that might have multiple correct forms (e.g., "じゅっさい / じっさい")
+            const correctAnswers = correct.split(' / ').map(a => a.trim());
+            const isCorrect = correctAnswers.some(ans => selected.includes(ans) || ans.includes(selected)) || selected === correct;
+            
+            if (isCorrect) {
+                btn.classList.add('correct');
+                score += 10;
+                sectionStatus[currentSection].correct++;
+            } else {
+                btn.classList.add('incorrect');
+                buttons.forEach(b => {
+                    if (b.dataset.answer === correct) {
+                        b.classList.add('correct');
+                    }
+                });
+            }
+            
+            questionsAnswered++;
+            updateScoreBoard();
+            
+            const feedback = document.getElementById(`feedback-${currentSection}`);
+            if (isCorrect) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = `
+                    ✅ せいかい！よくできました！
+                    <button class="next-btn" onclick="nextQuestion()">つぎへ →</button>
+                `;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = `
+                    ❌ ざんねん！
+                    <div class="correct-answer">こたえ: ${correct}</div>
+                    <button class="next-btn" onclick="nextQuestion()">つぎへ →</button>
+                `;
+            }
+        }
+        
+        function nextQuestion() {
+            currentQuestion++;
+            loadQuestion();
+        }
+        
+        // ==================== SECTION MANAGEMENT ====================
+        
+        function showSectionComplete() {
+            sectionStatus[currentSection].completed = true;
+            document.getElementById(`tab-${currentSection}`).classList.remove('active');
+            document.getElementById(`tab-${currentSection}`).classList.add('completed');
+            
+            const nextSection = getNextSection();
+            
+            if (nextSection) {
+                // Show completion message then move to next section
+                const elementId = `${currentSection}-question`;
+                const sectionCorrect = sectionStatus[currentSection].correct;
+                const sectionTotal = sectionStatus[currentSection].total;
+                
+                document.getElementById(elementId).innerHTML = `
+                    <div style="text-align: center; padding: 30px;">
+                        <div style="font-size: 60px; margin-bottom: 15px;">🎊</div>
+                        <div style="font-size: 24px; color: #4caf50; margin-bottom: 10px;">セクション かんりょう！</div>
+                        <div style="font-size: 18px; color: #666; margin-bottom: 20px;">
+                            ${sectionCorrect} / ${sectionTotal} せいかい
+                        </div>
+                        <button class="next-btn" onclick="switchToSection('${nextSection}')" style="font-size: 18px; padding: 15px 35px;">
+                            つぎの セクションへ →
+                        </button>
+                    </div>
+                `;
+            } else {
+                showResults();
+            }
+        }
+        
+        function getNextSection() {
+            const sections = ['basic', 'time', 'advanced', 'mixed'];
+            const currentIndex = sections.indexOf(currentSection);
+            
+            for (let i = currentIndex + 1; i < sections.length; i++) {
+                if (!sectionStatus[sections[i]].completed) {
+                    return sections[i];
+                }
+            }
+            return null;
+        }
+        
+        function handleTabClick(section) {
+            const tab = document.getElementById('tab-' + section);
+            if (tab.classList.contains('completed') || tab.classList.contains('locked')) {
+                return;
+            }
+        }
+        
+        function switchToSection(section) {
+            // Update tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('tab-' + section).classList.add('active');
+            document.getElementById('tab-' + section).classList.remove('locked');
+            
+            // Update sections
+            document.querySelectorAll('.quiz-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(section + '-section').classList.add('active');
+            
+            currentSection = section;
+            currentQuestion = 0;
+            loadQuestion();
+        }
+        
+        // ==================== RESULTS ====================
+        
+        function showResults() {
+            document.querySelectorAll('.quiz-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('results-section').classList.add('active');
+            
+            const totalCorrect = sectionStatus.basic.correct + sectionStatus.time.correct + 
+                                sectionStatus.advanced.correct + sectionStatus.mixed.correct;
+            const percentage = Math.round((totalCorrect / totalQuestions) * 100);
+            
+            document.getElementById('final-score').textContent = percentage + '%';
+            document.getElementById('basic-score').textContent = `${sectionStatus.basic.correct}/${sectionStatus.basic.total}`;
+            document.getElementById('time-score').textContent = `${sectionStatus.time.correct}/${sectionStatus.time.total}`;
+            document.getElementById('advanced-score').textContent = `${sectionStatus.advanced.correct}/${sectionStatus.advanced.total}`;
+            document.getElementById('mixed-score').textContent = `${sectionStatus.mixed.correct}/${sectionStatus.mixed.total}`;
+            
+            if (percentage >= 80) {
+                document.getElementById('results-icon').textContent = '🎉';
+                document.getElementById('results-title').textContent = 'すばらしい！ Excellent!';
+            } else if (percentage >= 60) {
+                document.getElementById('results-icon').textContent = '👍';
+                document.getElementById('results-title').textContent = 'よくできました！ Good Job!';
+            } else {
+                document.getElementById('results-icon').textContent = '📚';
+                document.getElementById('results-title').textContent = 'もっと れんしゅう しましょう！';
+            }
+        }
+        
+        function restartQuiz() {
+            currentSection = 'basic';
+            currentQuestion = 0;
+            score = 0;
+            questionsAnswered = 0;
+            
+            sectionStatus = {
+                basic: { completed: false, correct: 0, total: 12 },
+                time: { completed: false, correct: 0, total: 14 },
+                advanced: { completed: false, correct: 0, total: 12 },
+                mixed: { completed: false, correct: 0, total: 12 }
+            };
+            
+            // Regenerate questions (randomized)
+            basicQuestions = generateSectionQuestions(basicCounters, sectionStatus.basic.total);
+            timeQuestions = generateSectionQuestions(timeCounters, sectionStatus.time.total);
+            advancedQuestions = generateSectionQuestions(advancedCounters, sectionStatus.advanced.total);
+            mixedQuestions = generateSectionQuestions(allCounters, sectionStatus.mixed.total);
+            
+            // Reset tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'completed', 'locked');
+            });
+            document.getElementById('tab-basic').classList.add('active');
+            document.getElementById('tab-time').classList.add('locked');
+            document.getElementById('tab-advanced').classList.add('locked');
+            document.getElementById('tab-mixed').classList.add('locked');
+            
+            // Reset sections
+            document.querySelectorAll('.quiz-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('basic-section').classList.add('active');
+            
+            updateScoreBoard();
+            loadQuestion();
+        }
+        
+        // ==================== UI UPDATES ====================
+        
+        function updateScoreBoard() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('answered').textContent = questionsAnswered;
+            
+            const progress = (questionsAnswered / totalQuestions) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+        
+        function toggleReference() {
+            const card = document.getElementById('referenceCard');
+            card.classList.toggle('show');
+            const btn = document.querySelector('.reference-btn');
+            btn.textContent = card.classList.contains('show') ? '📖 じょすうし ひょう をかくす' : '📖 じょすうし ひょう をみる';
+        }
+        
+        // ==================== KEYBOARD & TOUCH ====================
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '1' && e.key <= '4') {
+                const optionBtns = document.querySelectorAll(`#options-${currentSection} .option-btn:not(:disabled)`);
+                const index = parseInt(e.key) - 1;
+                if (optionBtns[index]) {
+                    optionBtns[index].click();
+                }
+            }
+            if (e.key === 'Enter') {
+                const nextBtn = document.querySelector('.next-btn');
+                if (nextBtn) nextBtn.click();
+            }
+        });
+        
+        // Touch swipe for reference card
+        let touchStartY = 0;
+        document.getElementById('referenceCard').addEventListener('touchstart', e => {
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+        
+        document.getElementById('referenceCard').addEventListener('touchend', e => {
+            const touchEndY = e.changedTouches[0].screenY;
+            if (touchStartY - touchEndY > 50) {
+                toggleReference();
+            }
+        }, { passive: true });
+        
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>

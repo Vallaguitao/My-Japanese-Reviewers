@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 2 — これ / それ / あれ | Minna no Nihongo N5</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ========== CSS Variables — Teal/Cyan (Identifying, Professional) ========== */
+        :root {
+            --primary: #0d9488;
+            --primary-light: #14b8a6;
+            --primary-dark: #0f766e;
+            --accent: #8b5cf6;
+            --accent-light: #ede9fe;
+            --accent-dark: #6d28d9;
+            --success: #38a169;
+            --success-light: #c6f6d5;
+            --error: #e53e3e;
+            --error-light: #fed7d7;
+            --warning: #f59e0b;
+            --warning-light: #fde68a;
+            --bg-light: #f0fdfa;
+            --bg-card: #ffffff;
+            --text-primary: #134e4a;
+            --text-secondary: #3f6f6b;
+            --text-muted: #718096;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ========== Reset & Base ========== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, #e6fffa 100%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== Progress Bar ========== */
+        .progress-container {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: var(--bg-card); box-shadow: var(--shadow); padding: 12px 20px;
+        }
+        .progress-header {
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 1200px; margin: 0 auto; gap: 20px;
+        }
+        .progress-title {
+            font-size: 0.9rem; font-weight: 600; color: var(--primary);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .progress-title .lesson-badge {
+            background: var(--primary); color: white; padding: 2px 10px;
+            border-radius: 20px; font-size: 0.75rem;
+        }
+        .progress-bar-wrapper { flex: 1; max-width: 500px; }
+        .progress-bar {
+            height: 8px; background: var(--border); border-radius: 10px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 10px; transition: width 0.5s ease; width: 0%;
+        }
+        .progress-text {
+            font-size: 0.8rem; color: var(--text-muted); text-align: right; margin-top: 4px;
+        }
+        .progress-nav { display: flex; gap: 8px; }
+        .nav-btn {
+            background: var(--primary); color: white; border: none; padding: 8px 16px;
+            border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 500;
+            transition: var(--transition); display: flex; align-items: center; gap: 6px;
+        }
+        .nav-btn:hover { background: var(--primary-light); transform: translateY(-1px); }
+        .nav-btn:disabled {
+            background: var(--border); color: var(--text-muted);
+            cursor: not-allowed; transform: none;
+        }
+
+        /* ========== Main Container ========== */
+        .presentation { padding-top: 80px; min-height: 100vh; }
+
+        /* ========== Slides ========== */
+        .slide {
+            display: none; max-width: 1000px; margin: 0 auto;
+            padding: 40px 20px; animation: fadeIn 0.5s ease;
+        }
+        .slide.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== Title Slide ========== */
+        .title-slide { text-align: center; padding: 60px 20px; }
+        .title-slide .book-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white; padding: 8px 24px; border-radius: 30px;
+            font-size: 0.9rem; font-weight: 500; margin-bottom: 24px; letter-spacing: 1px;
+        }
+        .title-slide h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700;
+            color: var(--primary); margin-bottom: 16px; line-height: 1.2;
+        }
+        .title-slide .lesson-title-jp {
+            font-size: clamp(1.5rem, 4vw, 2.5rem); color: var(--accent); margin-bottom: 8px;
+        }
+        .title-slide .lesson-subtitle {
+            font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 40px;
+        }
+        .title-card {
+            background: var(--bg-card); border-radius: var(--radius-lg); padding: 40px;
+            box-shadow: var(--shadow-lg); max-width: 700px; margin: 0 auto 40px;
+        }
+        .title-card h2 {
+            color: var(--primary); font-size: 1.3rem; margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .grammar-list { display: grid; gap: 12px; }
+        .grammar-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            background: var(--bg-light); border-radius: var(--radius);
+            border-left: 4px solid var(--accent); transition: var(--transition);
+        }
+        .grammar-item:hover { transform: translateX(8px); background: var(--accent-light); }
+        .grammar-number {
+            width: 28px; height: 28px; background: var(--primary); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; font-weight: 600; flex-shrink: 0;
+        }
+        .start-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            color: white; border: none; padding: 16px 48px; border-radius: 30px;
+            font-size: 1.1rem; font-weight: 600; cursor: pointer;
+            transition: var(--transition); box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+        }
+        .start-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+
+        /* ========== Content Slides ========== */
+        .content-card {
+            background: var(--bg-card); border-radius: var(--radius-lg); padding: 40px;
+            box-shadow: var(--shadow-lg); margin-bottom: 24px;
+        }
+        .slide-header {
+            display: flex; align-items: center; gap: 16px; margin-bottom: 32px;
+            padding-bottom: 20px; border-bottom: 2px solid var(--border);
+        }
+        .grammar-badge {
+            background: var(--primary); color: white; padding: 8px 16px;
+            border-radius: 8px; font-size: 0.85rem; font-weight: 600; white-space: nowrap;
+        }
+        .slide-header h2 { font-size: 1.8rem; color: var(--primary); flex: 1; }
+        .slide-header .jp-title { font-size: 1.3rem; color: var(--accent); font-weight: 500; }
+
+        /* ========== Ruby (Furigana) ========== */
+        ruby { ruby-position: over; }
+        ruby rt { font-size: 0.6em; color: var(--text-muted); }
+
+        /* ========== Example Boxes ========== */
+        .example-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+            border-radius: var(--radius); padding: 24px; margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+        .example-label {
+            font-size: 0.8rem; font-weight: 600; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .example-japanese { font-size: 1.4rem; color: var(--text-primary); margin-bottom: 8px; line-height: 2; }
+        .example-english { font-size: 1rem; color: var(--text-secondary); font-style: italic; }
+
+        .example-comparison {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;
+        }
+        .polite-box, .plain-box { padding: 20px; border-radius: var(--radius); }
+        .polite-box {
+            background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
+            border-left: 4px solid #38b2ac;
+        }
+        .plain-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #d69e2e;
+        }
+        .style-label {
+            font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .polite-box .style-label { color: #234e52; }
+        .plain-box .style-label { color: #744210; }
+
+        /* ========== Structure Box ========== */
+        .structure-box {
+            background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%);
+            border-radius: var(--radius); padding: 20px; margin: 20px 0;
+            border-left: 4px solid var(--accent);
+        }
+        .structure-box .label {
+            font-size: 0.8rem; font-weight: 600; color: var(--accent);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+        }
+        .structure-formula {
+            font-size: 1.15rem; font-family: 'Outfit', monospace;
+            color: var(--primary-dark); background: white;
+            padding: 12px 20px; border-radius: 8px; display: inline-block; margin: 8px 0;
+        }
+        .structure-formula .highlight { color: var(--primary); font-weight: 600; }
+        .structure-formula .accent { color: var(--accent); font-weight: 600; }
+
+        /* ========== Explanation Sections ========== */
+        .explanation { margin: 24px 0; }
+        .explanation h3 {
+            font-size: 1.1rem; color: var(--primary); margin-bottom: 12px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .explanation p { color: var(--text-secondary); margin-bottom: 12px; }
+
+        .key-point {
+            background: var(--accent-light); padding: 16px 20px;
+            border-radius: var(--radius); margin: 16px 0;
+            border-left: 4px solid var(--accent);
+        }
+        .key-point strong { color: var(--primary-dark); }
+
+        /* ========== Visual Diagram Box ========== */
+        .visual-diagram {
+            background: linear-gradient(135deg, #faf5ff 0%, #ede9fe 100%);
+            border-radius: var(--radius); padding: 28px; margin: 24px 0;
+            border: 2px solid #ddd6fe; text-align: center;
+        }
+        .visual-diagram .label {
+            font-size: 0.8rem; font-weight: 600; color: var(--accent-dark);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .distance-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+            margin: 16px 0;
+        }
+        .distance-item {
+            background: white; padding: 20px 12px; border-radius: var(--radius);
+            box-shadow: var(--shadow); transition: var(--transition);
+        }
+        .distance-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .distance-emoji { font-size: 2.2rem; margin-bottom: 8px; display: block; }
+        .distance-jp { font-size: 1.5rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px; }
+        .distance-en { font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 4px; }
+        .distance-desc { font-size: 0.78rem; color: var(--text-muted); display: block; }
+
+        /* ========== Pronunciation Guide ========== */
+        .pronunciation-guide {
+            background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%);
+            border-radius: var(--radius); padding: 20px; margin: 20px 0;
+            border-left: 4px solid #805ad5;
+        }
+        .pronunciation-guide .label {
+            font-size: 0.8rem; font-weight: 600; color: #553c9a;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .pronunciation-item {
+            display: flex; align-items: center; gap: 16px; padding: 8px 0;
+            border-bottom: 1px dashed #d6bcfa;
+        }
+        .pronunciation-item:last-child { border-bottom: none; }
+        .pronunciation-jp { font-size: 1.3rem; min-width: 120px; }
+        .pronunciation-phonetic {
+            font-family: 'Outfit', sans-serif; color: #6b46c1; font-weight: 500;
+            background: white; padding: 4px 12px; border-radius: 20px; font-size: 0.95rem;
+        }
+
+        /* ========== Conversation Box ========== */
+        .conversation-box {
+            background: linear-gradient(135deg, #fefce8 0%, #fef08a 100%);
+            border-radius: var(--radius); padding: 24px; margin: 20px 0;
+            border-left: 4px solid var(--warning);
+        }
+        .conversation-box .example-label { color: #92400e; }
+        .conversation-line { margin-bottom: 12px; font-size: 1.2rem; line-height: 2; }
+        .conversation-line:last-child { margin-bottom: 0; }
+        .speaker { font-weight: 600; color: var(--primary-dark); min-width: 24px; display: inline-block; }
+        .speaker.b { color: var(--accent); }
+        .conversation-translation { font-size: 0.9rem; color: var(--text-muted); margin-top: 4px; font-style: italic; }
+
+        /* ========== Comparison Grid ========== */
+        .comparison-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px; margin: 20px 0;
+        }
+        .comparison-box { padding: 20px; border-radius: var(--radius); }
+        .box-label {
+            font-size: 0.85rem; font-weight: 600; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .formal-box {
+            background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
+            border-left: 4px solid #38b2ac;
+        }
+        .formal-box .box-label { color: #234e52; }
+        .casual-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #d69e2e;
+        }
+        .casual-box .box-label { color: #744210; }
+
+        /* Three-column comparison for ko-so-a */
+        .triple-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0;
+        }
+        .ko-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6; padding: 20px; border-radius: var(--radius);
+        }
+        .ko-box .box-label { color: #1e40af; }
+        .so-box {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left: 4px solid #10b981; padding: 20px; border-radius: var(--radius);
+        }
+        .so-box .box-label { color: #065f46; }
+        .a-box {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            border-left: 4px solid #ec4899; padding: 20px; border-radius: var(--radius);
+        }
+        .a-box .box-label { color: #9d174d; }
+
+        /* ========== Collapsible Reference Notes ========== */
+        .ref-connection { margin: 24px 0; }
+        .ref-toggle {
+            width: 100%; background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border: none; padding: 16px 20px; border-radius: var(--radius); cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 1rem; font-weight: 500; color: #c53030; transition: var(--transition);
+        }
+        .ref-toggle:hover { background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%); }
+        .ref-toggle .icon { transition: transform 0.3s ease; }
+        .ref-toggle.open .icon { transform: rotate(180deg); }
+        .ref-content {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            background: #fffafa; border-radius: 0 0 var(--radius) var(--radius);
+        }
+        .ref-content.open {
+            max-height: 800px; padding: 20px;
+            border: 1px solid #fed7d7; border-top: none;
+        }
+        .ref-content h4 { color: #c53030; font-size: 0.95rem; margin-bottom: 12px; }
+        .ref-content p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 10px; }
+        .ref-badge {
+            display: inline-block; background: #c53030; color: white;
+            padding: 2px 10px; border-radius: 20px; font-size: 0.8rem; margin-right: 8px;
+        }
+
+        /* ========== Data Tables ========== */
+        .table-container { overflow-x: auto; margin: 24px 0; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+        .data-table th {
+            background: var(--primary); color: white; padding: 14px 16px;
+            text-align: left; font-weight: 500;
+        }
+        .data-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+        .data-table tr:nth-child(even) { background: var(--bg-light); }
+        .data-table tr:hover { background: #ccfbf1; }
+        .arrow { color: var(--accent); font-weight: bold; margin: 0 8px; }
+
+        /* ========== Quiz Slides ========== */
+        .quiz-card {
+            background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+            border-radius: var(--radius-lg); padding: 40px;
+            box-shadow: var(--shadow-lg); margin-bottom: 24px;
+        }
+        .quiz-header {
+            display: flex; align-items: center; gap: 16px; margin-bottom: 32px;
+        }
+        .quiz-badge {
+            background: var(--accent); color: white; padding: 8px 16px;
+            border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+        }
+        .quiz-header h2 { font-size: 1.5rem; color: var(--primary); }
+        .quiz-question {
+            background: white; padding: 24px; border-radius: var(--radius);
+            margin-bottom: 20px; box-shadow: var(--shadow);
+        }
+        .question-number { font-size: 0.85rem; font-weight: 600; color: var(--accent); margin-bottom: 12px; }
+        .question-context {
+            font-size: 0.95rem; color: var(--text-secondary); font-style: italic;
+            margin-bottom: 16px; padding: 12px; background: var(--bg-light); border-radius: 8px;
+        }
+        .question-text { font-size: 1.2rem; color: var(--text-primary); margin-bottom: 16px; }
+        .fill-blank {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            font-size: 1.3rem; margin: 20px 0;
+        }
+        .blank-input {
+            border: 2px dashed var(--primary); background: #f0fdfa;
+            padding: 8px 16px; border-radius: 8px; min-width: 120px;
+            font-size: 1.1rem; font-family: inherit; text-align: center;
+            transition: var(--transition);
+        }
+        .blank-input:focus {
+            outline: none; border-color: var(--accent); background: white;
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.2);
+        }
+        .check-btn {
+            background: var(--success); color: white; border: none; padding: 12px 32px;
+            border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer;
+            transition: var(--transition); margin-top: 20px;
+        }
+        .check-btn:hover { background: #2f855a; transform: translateY(-2px); }
+
+        /* ========== Instant Feedback ========== */
+        .feedback-area {
+            margin-top: 16px; padding: 16px 20px; border-radius: var(--radius);
+            display: none; font-size: 1rem; line-height: 1.6;
+        }
+        .feedback-area.show { display: block; animation: fadeIn 0.3s ease; }
+        .feedback-area.correct-feedback {
+            background: var(--success-light); border-left: 4px solid var(--success); color: #22543d;
+        }
+        .feedback-area.incorrect-feedback {
+            background: var(--error-light); border-left: 4px solid var(--error); color: #742a2a;
+        }
+        .feedback-area .fb-icon { font-size: 1.3rem; margin-right: 8px; }
+        .feedback-area .fb-answer { font-weight: 700; }
+        .feedback-area .fb-explain { margin-top: 8px; font-size: 0.95rem; opacity: 0.9; }
+
+        /* ========== Multiple Choice ========== */
+        .mc-options { display: grid; gap: 12px; margin: 16px 0; }
+        .mc-option {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 20px; border-radius: var(--radius);
+            border: 2px solid var(--border); background: white;
+            cursor: pointer; transition: var(--transition); font-size: 1.1rem;
+        }
+        .mc-option:hover { border-color: var(--primary); background: #f0fdfa; transform: translateX(4px); }
+        .mc-option.selected { border-color: var(--primary); background: #ccfbf1; }
+        .mc-option.correct-choice { border-color: var(--success); background: var(--success-light); }
+        .mc-option.incorrect-choice { border-color: var(--error); background: var(--error-light); }
+        .mc-option.disabled { pointer-events: none; opacity: 0.7; }
+        .mc-option .option-letter {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--bg-light); display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 0.9rem; color: var(--primary); flex-shrink: 0;
+        }
+        .mc-option.correct-choice .option-letter { background: var(--success); color: white; }
+        .mc-option.incorrect-choice .option-letter { background: var(--error); color: white; }
+
+        /* ========== Summary Slide ========== */
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: var(--radius-lg); padding: 40px; color: white; text-align: center;
+        }
+        .summary-card h2 { font-size: 2rem; margin-bottom: 24px; }
+        .summary-card > p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 12px; }
+        .summary-points {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px; margin: 32px 0;
+        }
+        .summary-point {
+            background: rgba(255,255,255,0.15); padding: 20px;
+            border-radius: var(--radius); backdrop-filter: blur(10px);
+        }
+        .summary-point h4 { font-size: 1.1rem; margin-bottom: 8px; }
+        .summary-point p { font-size: 0.9rem; opacity: 0.9; }
+        .restart-btn {
+            background: white; color: var(--primary); border: none; padding: 16px 48px;
+            border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer;
+            transition: var(--transition); margin-top: 24px;
+        }
+        .restart-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+
+        /* ========== Animations ========== */
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .slide-in-left { animation: slideInLeft 0.5s ease forwards; }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .progress-header { flex-direction: column; gap: 12px; }
+            .progress-bar-wrapper { width: 100%; max-width: none; }
+            .progress-nav { width: 100%; justify-content: space-between; }
+            .content-card, .quiz-card { padding: 24px; }
+            .slide-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .example-japanese { font-size: 1.2rem; }
+            .example-comparison { grid-template-columns: 1fr; }
+            .comparison-grid { grid-template-columns: 1fr; }
+            .triple-grid { grid-template-columns: 1fr; }
+            .distance-grid { grid-template-columns: 1fr; gap: 12px; }
+            .fill-blank { font-size: 1.1rem; }
+            .data-table { font-size: 0.85rem; }
+            .data-table th, .data-table td { padding: 10px 12px; }
+            .conversation-line { font-size: 1.05rem; }
+            .title-card { padding: 24px; }
+            .summary-points { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .progress-title { font-size: 0.8rem; }
+            .nav-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .title-slide h1 { font-size: 2rem; }
+            .grammar-item { padding: 10px 12px; font-size: 0.9rem; }
+            .summary-points { grid-template-columns: 1fr; }
+            .mc-option { padding: 12px 16px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title">
+                <span class="lesson-badge">L2</span>
+                MNN Lesson 2 — これ/それ/あれ
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text"><span id="currentSlide">1</span> / <span id="totalSlides">20</span></div>
+            </div>
+            <div class="progress-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()">◀ <span class="btn-text">Back</span></button>
+                <button class="nav-btn" id="nextBtn" onclick="nextSlide()"><span class="btn-text">Next</span> ▶</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Presentation -->
+    <div class="presentation">
+
+        <!-- ======================== SLIDE 1: Title ======================== -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <div class="book-badge">みんなの<ruby>日本語<rt>にほんご</rt></ruby> <ruby>初級<rt>しょきゅう</rt></ruby> I — <ruby>第<rt>だい</rt></ruby>2<ruby>版<rt>はん</rt></ruby></div>
+                <h1>Lesson 2</h1>
+                <div class="lesson-title-jp">これ・それ・あれ — Demonstratives</div>
+                <div class="lesson-subtitle">Learn to identify objects, ask "what is this?", and confirm or deny information</div>
+
+                <div class="title-card">
+                    <h2>📚 Grammar Points</h2>
+                    <div class="grammar-list">
+                        <div class="grammar-item">
+                            <span class="grammar-number">1</span>
+                            <span><strong>これ / それ / あれ</strong> — This / That / That over there</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">2</span>
+                            <span><strong>この / その / あの</strong> + N — This ~ / That ~ / That ~ over there</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">3</span>
+                            <span><strong>そうです / ちがいます</strong> — Confirming &amp; denying</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">4</span>
+                            <span><strong>〜か、〜か</strong> — Alternative questions ("A or B?")</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">5</span>
+                            <span><strong>N₁ の N₂</strong> — Expanding の (what/whose)</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">6</span>
+                            <span><strong>の</strong> as a noun substitute + <strong>お〜</strong> polite prefix + <strong>そうですか</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="start-btn pulse" onclick="nextSlide()">
+                    🎯 Let's Begin!
+                </button>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 2: これ / それ / あれ ======================== -->
+        <div class="slide" data-slide="2">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 1</span>
+                    <div>
+                        <h2>これ / それ / あれ</h2>
+                        <span class="jp-title">Demonstrative Pronouns</span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How it works</h3>
+                    <p><strong>これ</strong>, <strong>それ</strong>, and <strong>あれ</strong> are demonstrative pronouns — they stand in for a noun and point to things. Japanese uses a <strong>three-way system</strong> based on the distance between the speaker, the listener, and the object.</p>
+                    <p>Unlike English (which has just "this" and "that"), Japanese distinguishes between something near the listener (それ) and something far from both people (あれ). This system is called the <strong>こ-そ-あ (ko-so-a)</strong> system and is one of the most important patterns in the language.</p>
+                </div>
+
+                <div class="visual-diagram">
+                    <div class="label">👆 Distance Diagram — Ko-So-A System</div>
+                    <div class="distance-grid">
+                        <div class="distance-item">
+                            <span class="distance-emoji">🙋‍♂️📦</span>
+                            <span class="distance-jp">これ</span>
+                            <span class="distance-en">this (thing)</span>
+                            <span class="distance-desc">Near the <strong>speaker</strong></span>
+                        </div>
+                        <div class="distance-item">
+                            <span class="distance-emoji">🙋‍♂️ ↔ 📦🙋‍♀️</span>
+                            <span class="distance-jp">それ</span>
+                            <span class="distance-en">that (thing)</span>
+                            <span class="distance-desc">Near the <strong>listener</strong></span>
+                        </div>
+                        <div class="distance-item">
+                            <span class="distance-emoji">🙋‍♂️ 🙋‍♀️ ↔ ↔ 📦</span>
+                            <span class="distance-jp">あれ</span>
+                            <span class="distance-en">that over there</span>
+                            <span class="distance-desc">Far from <strong>both</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example ①</div>
+                    <div class="example-japanese">
+                        それは <ruby>辞書<rt>じしょ</rt></ruby>ですか。
+                    </div>
+                    <div class="example-english">Is that a dictionary? (object near the listener)</div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example ②</div>
+                    <div class="example-japanese">
+                        これは だれの <ruby>傘<rt>かさ</rt></ruby>ですか。
+                    </div>
+                    <div class="example-english">Whose umbrella is this? (object near the speaker)</div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Point:</strong> これ/それ/あれ work as <em>complete nouns</em> — they replace the name of the thing entirely. You can say これは ～です just like わたしは ～です from Lesson 1!
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">
+                        📘 Minna no Nihongo Connections (Lessons 1–25)
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="ref-content">
+                        <h4>Building on Lesson 1 &amp; Looking Ahead:</h4>
+                        <p><span class="ref-badge">L1</span> You already know N₁ は N₂ です. Now これ/それ/あれ slot into N₁'s position perfectly!</p>
+                        <p><span class="ref-badge">L3</span> The ko-so-a system expands to <strong>places</strong>: ここ/そこ/あそこ ("here/there/over there").</p>
+                        <p><span class="ref-badge">L14</span> You'll meet これ/それ again with て-form: これを <ruby>見<rt>み</rt></ruby>てください ("Please look at this").</p>
+                        <p><span class="ref-badge">L16</span> Object descriptions expand: これは <ruby>新<rt>あたら</rt></ruby>しくて <ruby>便利<rt>べんり</rt></ruby>です ("This is new and convenient").</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 3: Quiz 1 — これ/それ/あれ ======================== -->
+        <div class="slide" data-slide="3">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>これ / それ / あれ — Comprehension</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">You're holding a pen and want to say: "This is a pen."</div>
+                    <div class="question-text">Which demonstrative do you use?</div>
+                    <div class="mc-options" id="q1-options">
+                        <div class="mc-option" onclick="checkMC('q1', this, 'A')">
+                            <span class="option-letter">A</span>
+                            <span>これ — near the speaker</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q1', this, 'A')">
+                            <span class="option-letter">B</span>
+                            <span>それ — near the listener</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q1', this, 'A')">
+                            <span class="option-letter">C</span>
+                            <span>あれ — far from both</span>
+                        </div>
+                    </div>
+                    <div class="feedback-area" id="q1-feedback"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">You and your friend are in a park. You both see a building far away. Which word do you use to say "that over there"?</div>
+                    <div class="question-text">Choose the correct demonstrative:</div>
+                    <div class="mc-options" id="q2-options">
+                        <div class="mc-option" onclick="checkMC('q2', this, 'C')">
+                            <span class="option-letter">A</span>
+                            <span>これ</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q2', this, 'C')">
+                            <span class="option-letter">B</span>
+                            <span>それ</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q2', this, 'C')">
+                            <span class="option-letter">C</span>
+                            <span>あれ</span>
+                        </div>
+                    </div>
+                    <div class="feedback-area" id="q2-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 4: この / その / あの N ======================== -->
+        <div class="slide" data-slide="4">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 2</span>
+                    <div>
+                        <h2>この N / その N / あの N</h2>
+                        <span class="jp-title">Demonstrative Modifiers</span>
+                    </div>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        <span class="highlight">この / その / あの</span> + <span class="accent">Noun</span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How it works</h3>
+                    <p>While これ/それ/あれ stand alone as pronouns, <strong>この/その/あの</strong> must always be followed by a noun — they <em>modify</em> the noun that comes after them. Think of them as "this ~", "that ~", and "that ~ over there."</p>
+                    <p>The distance rules are exactly the same as for これ/それ/あれ: この (near speaker), その (near listener), あの (far from both).</p>
+                </div>
+
+                <div class="triple-grid">
+                    <div class="ko-box">
+                        <div class="box-label">🔵 この + N</div>
+                        <div class="example-japanese" style="font-size: 1.15rem;">この <ruby>本<rt>ほん</rt></ruby></div>
+                        <div class="example-english" style="margin-top: 6px;">this book</div>
+                        <div style="font-size: 0.8rem; color: #3b82f6; margin-top: 8px;">Near speaker</div>
+                    </div>
+                    <div class="so-box">
+                        <div class="box-label">🟢 その + N</div>
+                        <div class="example-japanese" style="font-size: 1.15rem;">その かばん</div>
+                        <div class="example-english" style="margin-top: 6px;">that bag</div>
+                        <div style="font-size: 0.8rem; color: #10b981; margin-top: 8px;">Near listener</div>
+                    </div>
+                    <div class="a-box">
+                        <div class="box-label">🩷 あの + N</div>
+                        <div class="example-japanese" style="font-size: 1.15rem;">あの <ruby>方<rt>かた</rt></ruby></div>
+                        <div class="example-english" style="margin-top: 6px;">that person (over there)</div>
+                        <div style="font-size: 0.8rem; color: #ec4899; margin-top: 8px;">Far from both</div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example ③</div>
+                    <div class="example-japanese">
+                        この <ruby>本<rt>ほん</rt></ruby>は わたしのです。
+                    </div>
+                    <div class="example-english">This book is mine.</div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example ④</div>
+                    <div class="example-japanese">
+                        あの <ruby>方<rt>かた</rt></ruby>は どなたですか。
+                    </div>
+                    <div class="example-english">Who is that person (over there)?</div>
+                </div>
+
+                <div class="example-comparison">
+                    <div class="polite-box">
+                        <div class="style-label">📌 Pronoun (stands alone)</div>
+                        <div class="example-japanese" style="font-size: 1.15rem;">
+                            <strong>これ</strong>は <ruby>本<rt>ほん</rt></ruby>です。
+                        </div>
+                        <div class="example-english">This is a book.</div>
+                    </div>
+                    <div class="plain-box">
+                        <div class="style-label">📌 Modifier (+ noun)</div>
+                        <div class="example-japanese" style="font-size: 1.15rem;">
+                            <strong>この <ruby>本<rt>ほん</rt></ruby></strong>は わたしのです。
+                        </div>
+                        <div class="example-english">This book is mine.</div>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Point:</strong> Never use この/その/あの without a noun after it!
+                    <br>✅ この<ruby>本<rt>ほん</rt></ruby> → ❌ この は <ruby>本<rt>ほん</rt></ruby>です (wrong — use これ instead)
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">
+                        📘 Minna no Nihongo Connections (Lessons 1–25)
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="ref-content">
+                        <h4>The ko-so-a pattern repeats everywhere:</h4>
+                        <p><span class="ref-badge">L1</span> あの <ruby>方<rt>かた</rt></ruby>は どなたですか — you already saw this pattern!</p>
+                        <p><span class="ref-badge">L3</span> Place modifiers: この/その/あの <ruby>部屋<rt>へや</rt></ruby> ("this/that room").</p>
+                        <p><span class="ref-badge">L8</span> With adjectives: この <ruby>映画<rt>えいが</rt></ruby>は おもしろいです ("This movie is interesting").</p>
+                        <p><span class="ref-badge">L15</span> Expanded descriptions: あの <ruby>背<rt>せ</rt></ruby>が <ruby>高<rt>たか</rt></ruby>い <ruby>人<rt>ひと</rt></ruby> ("That tall person over there").</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 5: Quiz 2 — この/その/あの ======================== -->
+        <div class="slide" data-slide="5">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>この / その / あの — Comprehension</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">You want to ask "Who is that person?" about someone standing far from both you and the listener.</div>
+                    <div class="question-text">Fill in the blank:</div>
+                    <div class="fill-blank">
+                        <input type="text" class="blank-input" id="q3-input" placeholder="？" style="min-width: 80px;">
+                        <ruby>方<rt>かた</rt></ruby>は どなたですか。
+                    </div>
+                    <button class="check-btn" onclick="checkFillBlank('q3', ['あの'], 'あの', 'Since the person is far from BOTH the speaker and listener, we use あの (that ~ over there). Remember: あの must be followed by a noun — here it\'s 方 (person).')">Check →</button>
+                    <div class="feedback-area" id="q3-feedback"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">What's the difference between これ and この?</div>
+                    <div class="question-text">Choose the correct explanation:</div>
+                    <div class="mc-options" id="q4-options">
+                        <div class="mc-option" onclick="checkMC('q4', this, 'B')">
+                            <span class="option-letter">A</span>
+                            <span>They mean the same thing and are interchangeable.</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q4', this, 'B')">
+                            <span class="option-letter">B</span>
+                            <span>これ stands alone as a pronoun; この must be followed by a noun.</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q4', this, 'B')">
+                            <span class="option-letter">C</span>
+                            <span>これ is polite and この is casual.</span>
+                        </div>
+                    </div>
+                    <div class="feedback-area" id="q4-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 6: そうです / ちがいます ======================== -->
+        <div class="slide" data-slide="6">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 3</span>
+                    <div>
+                        <h2>そうです / ちがいます</h2>
+                        <span class="jp-title">Confirming &amp; Denying</span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How it works</h3>
+                    <p>When answering a yes/no question about an object (like "Is that a dictionary?"), you can confirm with <strong>はい、そうです</strong> ("Yes, that's right") or deny with <strong>いいえ、ちがいます</strong> ("No, that's wrong/different").</p>
+                    <p>Notice that the negative answer does NOT usually use そう — instead, Japanese speakers say <strong>ちがいます</strong> (literally "it differs/it's wrong") and then give the correct answer.</p>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Example ⑤ — Affirmative (Yes)</div>
+                    <div class="conversation-line">
+                        <span class="speaker">A:</span> それは <ruby>辞書<rt>じしょ</rt></ruby>ですか。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:12px; margin-left: 28px;">Is that a dictionary?</div>
+                    <div class="conversation-line">
+                        <span class="speaker b">B:</span> はい、<strong>そうです</strong>。
+                    </div>
+                    <div class="conversation-translation" style="margin-left: 28px;">Yes, it is. (lit. "Yes, that's right.")</div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Example ⑥ — Negative (Correcting)</div>
+                    <div class="conversation-line">
+                        <span class="speaker">A:</span> それは ミラーさんのですか。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:12px; margin-left: 28px;">Is that Mr. Miller's?</div>
+                    <div class="conversation-line">
+                        <span class="speaker b">B:</span> いいえ、<strong>ちがいます</strong>。
+                    </div>
+                    <div class="conversation-translation" style="margin-left: 28px;">No, it isn't. (lit. "No, it's different.")</div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Example ⑦ — Correcting with the right answer</div>
+                    <div class="conversation-line">
+                        <span class="speaker">A:</span> それは シャープペンシルですか。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:12px; margin-left: 28px;">Is that a mechanical pencil?</div>
+                    <div class="conversation-line">
+                        <span class="speaker b">B:</span> いいえ、ボールペンです。
+                    </div>
+                    <div class="conversation-translation" style="margin-left: 28px;">No, it's a ballpoint pen.</div>
+                </div>
+
+                <div class="example-comparison">
+                    <div class="polite-box">
+                        <div class="style-label">✅ Confirm</div>
+                        <div class="example-japanese" style="font-size: 1.15rem;">
+                            はい、<strong>そうです</strong>。
+                        </div>
+                        <div class="example-english">Yes, that's right.</div>
+                    </div>
+                    <div class="plain-box">
+                        <div class="style-label">❌ Deny</div>
+                        <div class="example-japanese" style="font-size: 1.15rem;">
+                            いいえ、<strong>ちがいます</strong>。
+                        </div>
+                        <div class="example-english">No, that's wrong.</div>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Point:</strong> そう is NOT usually used in the negative. Don't say "そうじゃ ありません" — say <strong>ちがいます</strong> instead, then state the correct answer.
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">
+                        📘 Minna no Nihongo Connections (Lessons 1–25)
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="ref-content">
+                        <h4>Confirming and denying patterns grow:</h4>
+                        <p><span class="ref-badge">L1</span> はい/いいえ for simple yes/no answers — そうです adds a more natural confirmation layer.</p>
+                        <p><span class="ref-badge">L8</span> Adjective confirmation: 「おいしいですか。」「はい、とても おいしいです。」</p>
+                        <p><span class="ref-badge">L12</span> Past confirmation: 「<ruby>昨日<rt>きのう</rt></ruby>は <ruby>暇<rt>ひま</rt></ruby>でしたか。」「はい、そうです。」</p>
+                        <p><span class="ref-badge">L25</span> Conditional: ～たら、そうします ("If so, I'll do that").</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 7: Quiz 3 — そうです ======================== -->
+        <div class="slide" data-slide="7">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>そうです / ちがいます — Comprehension</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Someone asks: これは <ruby>辞書<rt>じしょ</rt></ruby>ですか。 It IS a dictionary.</div>
+                    <div class="question-text">How do you confirm?</div>
+                    <div class="mc-options" id="q5-options">
+                        <div class="mc-option" onclick="checkMC('q5', this, 'A')">
+                            <span class="option-letter">A</span>
+                            <span>はい、そうです。</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q5', this, 'A')">
+                            <span class="option-letter">B</span>
+                            <span>はい、ちがいます。</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q5', this, 'A')">
+                            <span class="option-letter">C</span>
+                            <span>いいえ、そうです。</span>
+                        </div>
+                    </div>
+                    <div class="feedback-area" id="q5-feedback"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Someone asks: それは ノートですか。 But it's actually a magazine (<ruby>雑誌<rt>ざっし</rt></ruby>).</div>
+                    <div class="question-text">What's the most natural response?</div>
+                    <div class="mc-options" id="q6-options">
+                        <div class="mc-option" onclick="checkMC('q6', this, 'C')">
+                            <span class="option-letter">A</span>
+                            <span>いいえ、そうじゃ ありません。</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q6', this, 'C')">
+                            <span class="option-letter">B</span>
+                            <span>はい、<ruby>雑誌<rt>ざっし</rt></ruby>です。</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q6', this, 'C')">
+                            <span class="option-letter">C</span>
+                            <span>いいえ、ちがいます。<ruby>雑誌<rt>ざっし</rt></ruby>です。</span>
+                        </div>
+                    </div>
+                    <div class="feedback-area" id="q6-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 8: ～か、～か ======================== -->
+        <div class="slide" data-slide="8">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 4</span>
+                    <div>
+                        <h2>〜か、〜か</h2>
+                        <span class="jp-title">Alternative Questions</span>
+                    </div>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        N₁ です<span class="accent">か</span>、N₂ です<span class="accent">か</span>。
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How it works</h3>
+                    <p>This pattern asks the listener to choose between two (or more) alternatives — like saying "Is it A or B?" in English. Each alternative ends with ですか, and they're separated by a comma (、) in writing and a brief pause in speech.</p>
+                    <p>When answering, you simply state the correct choice directly — you do <strong>not</strong> say はい or いいえ. Just give the answer.</p>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Example ⑧</div>
+                    <div class="conversation-line">
+                        <span class="speaker">A:</span> これは「9」ですか、「7」ですか。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:12px; margin-left: 28px;">Is this a 9 or a 7?</div>
+                    <div class="conversation-line">
+                        <span class="speaker b">B:</span> 「9」です。
+                    </div>
+                    <div class="conversation-translation" style="margin-left: 28px;">It's a 9.</div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Point:</strong> When answering alternative questions (～か、～か), do <strong>not</strong> begin with はい or いいえ. Just state the chosen alternative directly.
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">
+                        📘 Minna no Nihongo Connections (Lessons 1–25)
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="ref-content">
+                        <h4>Alternative patterns reappear:</h4>
+                        <p><span class="ref-badge">L4</span> Time alternatives: <ruby>今日<rt>きょう</rt></ruby>ですか、<ruby>明日<rt>あした</rt></ruby>ですか ("Is it today or tomorrow?").</p>
+                        <p><span class="ref-badge">L8</span> Adjective alternatives: <ruby>大<rt>おお</rt></ruby>きいですか、<ruby>小<rt>ちい</rt></ruby>さいですか ("Is it big or small?").</p>
+                        <p><span class="ref-badge">L14</span> Verb alternatives: <ruby>行<rt>い</rt></ruby>きますか、<ruby>行<rt>い</rt></ruby>きませんか ("Will you go or not?").</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 9: Quiz 4 — ～か、～か ======================== -->
+        <div class="slide" data-slide="9">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>〜か、〜か — Comprehension</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Someone asks: これは ペンですか、えんぴつですか。It's a pen.</div>
+                    <div class="question-text">How do you answer?</div>
+                    <div class="mc-options" id="q7-options">
+                        <div class="mc-option" onclick="checkMC('q7', this, 'B')">
+                            <span class="option-letter">A</span>
+                            <span>はい、ペンです。</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q7', this, 'B')">
+                            <span class="option-letter">B</span>
+                            <span>ペンです。</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q7', this, 'B')">
+                            <span class="option-letter">C</span>
+                            <span>いいえ、えんぴつじゃ ありません。</span>
+                        </div>
+                    </div>
+                    <div class="feedback-area" id="q7-feedback"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">You want to ask: "Is this coffee or tea?"</div>
+                    <div class="question-text">Fill in the blanks:</div>
+                    <div class="fill-blank">
+                        これは コーヒーです
+                        <input type="text" class="blank-input" id="q8-input" placeholder="？" style="min-width: 50px;">、おちゃです
+                        <input type="text" class="blank-input" id="q8b-input" placeholder="？" style="min-width: 50px;">。
+                    </div>
+                    <button class="check-btn" onclick="checkDoubleBlank('q8', 'q8b', ['か'], ['か'], 'か、〜か', 'Each alternative ends with か. The pattern is: N₁ ですか、N₂ ですか。')">Check →</button>
+                    <div class="feedback-area" id="q8-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 10: N₁ の N₂ (Expanded) ======================== -->
+        <div class="slide" data-slide="10">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 5</span>
+                    <div>
+                        <h2>N₁ の N₂ — Expanded</h2>
+                        <span class="jp-title">の の <ruby>新<rt>あたら</rt></ruby>しい <ruby>使<rt>つか</rt></ruby>い<ruby>方<rt>かた</rt></ruby></span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 Review from Lesson 1</h3>
+                    <p>In Lesson 1, you learned that の connects two nouns, where N₁ modifies N₂ (mainly for affiliation: IMCの <ruby>社員<rt>しゃいん</rt></ruby>). Now in Lesson 2, の expands to cover two more important uses: <strong>what something is about</strong> and <strong>who owns something</strong>.</p>
+                </div>
+
+                <div class="explanation">
+                    <h3>🔹 Use 1: N₁ explains what N₂ is about</h3>
+                    <p>N₁ tells you the subject or topic of N₂.</p>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example ⑨</div>
+                    <div class="example-japanese">
+                        これは コンピューターの <ruby>本<rt>ほん</rt></ruby>です。
+                    </div>
+                    <div class="example-english">This is a book on (about) computers.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>🔹 Use 2: N₁ indicates who owns N₂</h3>
+                    <p>N₁ is the owner, and N₂ is what they own.</p>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example ⑩</div>
+                    <div class="example-japanese">
+                        これは わたしの <ruby>本<rt>ほん</rt></ruby>です。
+                    </div>
+                    <div class="example-english">This is my book.</div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Use</th>
+                                <th>N₁ の N₂</th>
+                                <th>Meaning</th>
+                                <th>Lesson</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Affiliation</td>
+                                <td>IMCの <ruby>社員<rt>しゃいん</rt></ruby></td>
+                                <td>IMC's employee</td>
+                                <td>L1</td>
+                            </tr>
+                            <tr>
+                                <td>Topic/About</td>
+                                <td>コンピューターの <ruby>本<rt>ほん</rt></ruby></td>
+                                <td>a book about computers</td>
+                                <td>L2</td>
+                            </tr>
+                            <tr>
+                                <td>Ownership</td>
+                                <td>わたしの <ruby>本<rt>ほん</rt></ruby></td>
+                                <td>my book</td>
+                                <td>L2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Point:</strong> The particle の is incredibly versatile! The relationship between N₁ and N₂ depends on context. With practice, you'll read the meaning naturally. For now, remember these three uses: affiliation, topic, and ownership.
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">
+                        📘 Minna no Nihongo Connections (Lessons 1–25)
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="ref-content">
+                        <h4>の keeps growing:</h4>
+                        <p><span class="ref-badge">L1</span> Affiliation: IMCの <ruby>社員<rt>しゃいん</rt></ruby> — the first use you learned.</p>
+                        <p><span class="ref-badge">L3</span> Location: <ruby>日本語<rt>にほんご</rt></ruby>の <ruby>教室<rt>きょうしつ</rt></ruby> ("Japanese language classroom").</p>
+                        <p><span class="ref-badge">L5</span> Origin: <ruby>日本<rt>にほん</rt></ruby>の おみやげ ("souvenir from Japan").</p>
+                        <p><span class="ref-badge">L8</span> Material/Type: <ruby>木<rt>き</rt></ruby>の テーブル ("wooden table").</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 11: Quiz 5 — N₁ の N₂ ======================== -->
+        <div class="slide" data-slide="11">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>N₁ の N₂ — Comprehension</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">What does これは <ruby>日本語<rt>にほんご</rt></ruby>の <ruby>本<rt>ほん</rt></ruby>です mean?</div>
+                    <div class="question-text">Choose the best translation:</div>
+                    <div class="mc-options" id="q9-options">
+                        <div class="mc-option" onclick="checkMC('q9', this, 'B')">
+                            <span class="option-letter">A</span>
+                            <span>This is a book and Japanese.</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q9', this, 'B')">
+                            <span class="option-letter">B</span>
+                            <span>This is a Japanese (language) book.</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q9', this, 'B')">
+                            <span class="option-letter">C</span>
+                            <span>This book is Japanese.</span>
+                        </div>
+                    </div>
+                    <div class="feedback-area" id="q9-feedback"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">You want to say: "This is my umbrella."</div>
+                    <div class="question-text">Fill in the blank:</div>
+                    <div class="fill-blank">
+                        これは
+                        <input type="text" class="blank-input" id="q10-input" placeholder="？" style="min-width: 120px;">
+                        <ruby>傘<rt>かさ</rt></ruby>です。
+                    </div>
+                    <button class="check-btn" onclick="checkFillBlank('q10', ['わたしの'], 'わたしの', 'わたしの means \"my\" — the の connects the owner (わたし) with the thing owned (傘). This is the ownership use of の.')">Check →</button>
+                    <div class="feedback-area" id="q10-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 12: の as Noun Substitute ======================== -->
+        <div class="slide" data-slide="12">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 6</span>
+                    <div>
+                        <h2>の Substituting for a Noun</h2>
+                        <span class="jp-title">の（<ruby>名詞<rt>めいし</rt></ruby>の<ruby>代<rt>か</rt></ruby>わり）</span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How it works</h3>
+                    <p>The particle <strong>の</strong> can <em>replace</em> a noun that has already been mentioned, to avoid repeating it. Think of it like saying "one" or "mine" in English — it stands in for a noun the listener already knows from context.</p>
+                    <p>This only works for <strong>things</strong>, not for people.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Structure</div>
+                    <div class="structure-formula">
+                        N₁ <span class="accent">の</span> N₂ → N₁ <span class="accent">の</span>　<span style="color: #999; text-decoration: line-through;">N₂</span>
+                    </div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Example ⑪ — "Whose bag?"</div>
+                    <div class="conversation-line">
+                        <span class="speaker">A:</span> あれは だれの かばんですか。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:12px; margin-left: 28px;">Whose bag is that?</div>
+                    <div class="conversation-line">
+                        <span class="speaker b">B:</span> <ruby>佐藤<rt>さとう</rt></ruby>さん<strong>の</strong>です。
+                    </div>
+                    <div class="conversation-translation" style="margin-left: 28px;">It's Ms. Sato's. (= <ruby>佐藤<rt>さとう</rt></ruby>さんの <s>かばん</s> です)</div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Example ⑫ — "Is this bag yours?"</div>
+                    <div class="conversation-line">
+                        <span class="speaker">A:</span> この かばんは あなたのですか。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:12px; margin-left: 28px;">Is this bag yours?</div>
+                    <div class="conversation-line">
+                        <span class="speaker b">B:</span> いいえ、わたしの<strong>じゃ ありません</strong>。
+                    </div>
+                    <div class="conversation-translation" style="margin-left: 28px;">No, it isn't mine. (= わたしの <s>かばん</s> じゃ ありません)</div>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Example ⑬ — Company affiliation</div>
+                    <div class="conversation-line">
+                        <span class="speaker">A:</span> ミラーさんは IMCの <ruby>社員<rt>しゃいん</rt></ruby>ですか。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:12px; margin-left: 28px;">Does Mr. Miller work at IMC?</div>
+                    <div class="conversation-line">
+                        <span class="speaker b">B:</span> はい、IMCの<strong></strong>です。
+                    </div>
+                    <div class="conversation-translation" style="margin-left: 28px;">Yes, he does. (= IMCの <s><ruby>社員<rt>しゃいん</rt></ruby></s> です)</div>
+                </div>
+
+                <div class="key-point">
+                    <strong>⚠️ Important:</strong> Dropping the noun with の only works for <strong>things and roles</strong>, never for people. Don't say あの<strong>の</strong> は だれですか — instead say あの <ruby>方<rt>かた</rt></ruby>は.
+                </div>
+
+                <div class="example-comparison">
+                    <div class="polite-box">
+                        <div class="style-label">✅ Correct — replaces a thing</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            これは <ruby>佐藤<rt>さとう</rt></ruby>さん<strong>の</strong>です。
+                        </div>
+                        <div class="example-english">(= <ruby>佐藤<rt>さとう</rt></ruby>さんの かばん)</div>
+                    </div>
+                    <div class="plain-box">
+                        <div class="style-label">❌ Wrong — cannot replace a person</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            × はい、IMCの です。(meaning "person")
+                        </div>
+                        <div class="example-english">Only use for things, not people!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 13: Quiz 6 — の substitute ======================== -->
+        <div class="slide" data-slide="13">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>の as Noun Substitute</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Someone asks: この <ruby>傘<rt>かさ</rt></ruby>は だれのですか。<br>It belongs to Yamada.</div>
+                    <div class="question-text">Fill in the blank:</div>
+                    <div class="fill-blank">
+                        <ruby>山田<rt>やまだ</rt></ruby>さん
+                        <input type="text" class="blank-input" id="q11-input" placeholder="？" style="min-width: 70px;">
+                        です。
+                    </div>
+                    <button class="check-btn" onclick="checkFillBlank('q11', ['の'], 'の', 'の replaces the noun 傘 (umbrella) which was already mentioned. So 山田さんの = 山田さんの傘 (Yamada\'s umbrella).')">Check →</button>
+                    <div class="feedback-area" id="q11-feedback"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Can の replace people in this pattern?</div>
+                    <div class="question-text">Choose the correct answer:</div>
+                    <div class="mc-options" id="q12-options">
+                        <div class="mc-option" onclick="checkMC('q12', this, 'B')">
+                            <span class="option-letter">A</span>
+                            <span>Yes — の can replace any noun, including people.</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q12', this, 'B')">
+                            <span class="option-letter">B</span>
+                            <span>No — の can only substitute for things, not people.</span>
+                        </div>
+                    </div>
+                    <div class="feedback-area" id="q12-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 14: お～ Polite Prefix ======================== -->
+        <div class="slide" data-slide="14">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 7</span>
+                    <div>
+                        <h2>お〜 Polite Prefix</h2>
+                        <span class="jp-title">お + <ruby>言葉<rt>ことば</rt></ruby></span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How it works</h3>
+                    <p>The prefix <strong>お</strong> is attached to certain words to make them sound more polite and refined. This is common in everyday Japanese and reflects the language's emphasis on showing respect to others.</p>
+                    <p>You'll see お attached to many common words, especially those related to things you give to or share with others.</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Base Word</th>
+                                <th>With お</th>
+                                <th>Meaning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>みやげ</td>
+                                <td><strong>お</strong>みやげ</td>
+                                <td>souvenir / gift</td>
+                            </tr>
+                            <tr>
+                                <td>さけ</td>
+                                <td><strong>お</strong>さけ</td>
+                                <td>sake / alcohol</td>
+                            </tr>
+                            <tr>
+                                <td>ちゃ</td>
+                                <td><strong>お</strong>ちゃ</td>
+                                <td>tea</td>
+                            </tr>
+                            <tr>
+                                <td><ruby>金<rt>かね</rt></ruby></td>
+                                <td><strong>お</strong><ruby>金<rt>かね</rt></ruby></td>
+                                <td>money</td>
+                            </tr>
+                            <tr>
+                                <td><ruby>名前<rt>なまえ</rt></ruby></td>
+                                <td><strong>お</strong><ruby>名前<rt>なまえ</rt></ruby></td>
+                                <td>name (polite)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Point:</strong> Not every word can take お — it's mainly attached to native Japanese words (<ruby>和語<rt>わご</rt></ruby>). Words borrowed from other languages (like コーヒー or テレビ) do <em>not</em> usually take お. You'll naturally learn which words use it through practice!
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="ref-connection">
+                    <button class="ref-toggle" onclick="toggleRef(this)">
+                        📘 Minna no Nihongo Connections (Lessons 1–25)
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="ref-content">
+                        <h4>Politeness markers appear throughout:</h4>
+                        <p><span class="ref-badge">L1</span> さん — the first honorific you learned. お adds another layer of politeness.</p>
+                        <p><span class="ref-badge">L3</span> お<ruby>国<rt>くに</rt></ruby> ("your country") — polite way to ask someone's country of origin.</p>
+                        <p><span class="ref-badge">L6</span> お<ruby>花見<rt>はなみ</rt></ruby> ("flower viewing") — cultural word with お prefix.</p>
+                        <p><span class="ref-badge">L14</span> お<ruby>願<rt>ねが</rt></ruby>いします ("Please") — one of the most common polite expressions.</p>
+                        <p><span class="ref-badge">L25</span> お + verb stem = respectful form: お<ruby>待<rt>ま</rt></ruby>ちください ("Please wait").</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 15: そうですか ======================== -->
+        <div class="slide" data-slide="15">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 8</span>
+                    <div>
+                        <h2>そうですか</h2>
+                        <span class="jp-title">Acknowledging Information</span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How it works</h3>
+                    <p><strong>そうですか</strong> (with a <strong>falling intonation ↓</strong>) is an expression used to acknowledge new information you've just received. It's like saying "I see," "Oh really," or "Is that so?" in English.</p>
+                    <p>Be careful not to confuse this with そうですか↑ (rising intonation) which means "Is that so?" as a genuine question. The falling intonation version simply shows you've understood what was said.</p>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 Example ⑭</div>
+                    <div class="conversation-line">
+                        <span class="speaker">A:</span> この <ruby>傘<rt>かさ</rt></ruby>は あなたのですか。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:12px; margin-left: 28px;">Is this umbrella yours?</div>
+                    <div class="conversation-line">
+                        <span class="speaker b">B:</span> いいえ、ちがいます。シュミットさんのです。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:12px; margin-left: 28px;">No, it isn't. It's Mr. Schmidt's.</div>
+                    <div class="conversation-line">
+                        <span class="speaker">A:</span> <strong>そうですか</strong>。
+                    </div>
+                    <div class="conversation-translation" style="margin-left: 28px;">Oh, I see. ↓</div>
+                </div>
+
+                <div class="example-comparison">
+                    <div class="polite-box">
+                        <div class="style-label">⬇️ Falling intonation</div>
+                        <div class="example-japanese" style="font-size: 1.3rem;">そうですか。↓</div>
+                        <div class="example-english">"I see." / "Oh, really."</div>
+                        <div style="font-size: 0.85rem; color: #234e52; margin-top: 8px;">Acknowledging info you just learned</div>
+                    </div>
+                    <div class="plain-box">
+                        <div class="style-label">⬆️ Rising intonation</div>
+                        <div class="example-japanese" style="font-size: 1.3rem;">そうですか？↑</div>
+                        <div class="example-english">"Is that so?" / "Really?"</div>
+                        <div style="font-size: 0.85rem; color: #744210; margin-top: 8px;">Genuine question — expressing surprise</div>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Point:</strong> そうですか↓ is one of the most useful "listener responses" (<ruby>相槌<rt>あいづち</rt></ruby>) in Japanese. Saying it naturally shows you're engaged and have understood. You'll hear it constantly in real conversations!
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 16: Full Ko-So-A Chart ======================== -->
+        <div class="slide" data-slide="16">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Review</span>
+                    <div>
+                        <h2>Ko-So-A Master Chart</h2>
+                        <span class="jp-title">こ・そ・あ <ruby>一覧<rt>いちらん</rt></ruby></span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📋 The Full Ko-So-A System So Far</h3>
+                    <p>Here's a complete chart of all the demonstratives you've learned in Lessons 1 and 2. This pattern is one of the most systematic in Japanese — the prefixes こ/そ/あ always follow the same distance logic.</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th style="background:#3b82f6;">こ〜 (Near Speaker)</th>
+                                <th style="background:#10b981;">そ〜 (Near Listener)</th>
+                                <th style="background:#ec4899;">あ〜 (Far from Both)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Pronoun</strong> (standalone)</td>
+                                <td><strong>これ</strong><br><em>this</em></td>
+                                <td><strong>それ</strong><br><em>that</em></td>
+                                <td><strong>あれ</strong><br><em>that over there</em></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Modifier</strong> (+ noun)</td>
+                                <td><strong>この</strong> N<br><em>this N</em></td>
+                                <td><strong>その</strong> N<br><em>that N</em></td>
+                                <td><strong>あの</strong> N<br><em>that N over there</em></td>
+                            </tr>
+                            <tr style="background: #fef3c7;">
+                                <td><strong>Place</strong> (Lesson 3 preview!)</td>
+                                <td><strong>ここ</strong><br><em>here</em></td>
+                                <td><strong>そこ</strong><br><em>there</em></td>
+                                <td><strong>あそこ</strong><br><em>over there</em></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="key-point">
+                    <strong>🔑 Pattern Tip:</strong> Once you know the こ/そ/あ system, you can predict new words! For example, in Lesson 3 you'll learn place words (ここ/そこ/あそこ) that follow the same pattern. Mastering this system early pays off massively.
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 17: Practice Conversation ======================== -->
+        <div class="slide" data-slide="17">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Practice</span>
+                    <div>
+                        <h2>Model Conversation</h2>
+                        <span class="jp-title"><ruby>会話<rt>かいわ</rt></ruby>れんしゅう</span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>🗣️ Putting it all together</h3>
+                    <p>Read through this conversation and spot every grammar point from Lesson 2 in action!</p>
+                </div>
+
+                <div class="conversation-box">
+                    <div class="example-label">💬 At the Office — Identifying Objects</div>
+
+                    <div class="conversation-line">
+                        <span class="speaker">すずき:</span> <strong>これ</strong>は <ruby>何<rt>なん</rt></ruby>ですか。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:14px; margin-left: 50px;">Suzuki: What is this?</div>
+
+                    <div class="conversation-line">
+                        <span class="speaker b">ミラー:</span> <strong>それ</strong>は <ruby>辞書<rt>じしょ</rt></ruby>です。<ruby>日本語<rt>にほんご</rt></ruby><strong>の</strong> <ruby>辞書<rt>じしょ</rt></ruby>です。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:14px; margin-left: 50px;">Miller: That's a dictionary. A Japanese dictionary.</div>
+
+                    <div class="conversation-line">
+                        <span class="speaker">すずき:</span> <strong>この</strong> <ruby>本<rt>ほん</rt></ruby>は ミラーさんのですか。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:14px; margin-left: 50px;">Suzuki: Is this book yours, Mr. Miller?</div>
+
+                    <div class="conversation-line">
+                        <span class="speaker b">ミラー:</span> いいえ、わたし<strong>の</strong>じゃ ありません。<ruby>佐藤<rt>さとう</rt></ruby>さん<strong>の</strong>です。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:14px; margin-left: 50px;">Miller: No, it's not mine. It's Ms. Sato's.</div>
+
+                    <div class="conversation-line">
+                        <span class="speaker">すずき:</span> <strong>そうですか</strong>。じゃ、<strong>あれ</strong>は <ruby>何<rt>なん</rt></ruby>ですか。
+                    </div>
+                    <div class="conversation-translation" style="margin-bottom:14px; margin-left: 50px;">Suzuki: I see. Well, what's that over there?</div>
+
+                    <div class="conversation-line">
+                        <span class="speaker b">ミラー:</span> あれは お<ruby>土産<rt>みやげ</rt></ruby>です。
+                    </div>
+                    <div class="conversation-translation" style="margin-left: 50px;">Miller: That's a souvenir.</div>
+                </div>
+
+                <div class="key-point">
+                    <strong>🔍 Spot the grammar!</strong> This conversation uses: これ/それ/あれ (pronouns), この (modifier), N₁のN₂ (topic + ownership), の as noun substitute, そうですか (acknowledgment), and お〜 (polite prefix). Can you find them all?
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 18: Comprehensive Final Quiz ======================== -->
+        <div class="slide" data-slide="18">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">🏆 Final Quiz</span>
+                    <h2>Lesson 2 — Comprehensive Check</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 3</div>
+                    <div class="question-context">You see a bag near your friend. You want to ask "Is that bag yours?"</div>
+                    <div class="question-text">Fill in the blanks:</div>
+                    <div class="fill-blank">
+                        <input type="text" class="blank-input" id="q13-input" placeholder="？" style="min-width: 80px;">
+                        かばんは あなたのですか。
+                    </div>
+                    <button class="check-btn" onclick="checkFillBlank('q13', ['その'], 'その', 'Since the bag is near the listener (your friend), use その (that ~ near you). この would be wrong because it\'s not near the speaker.')">Check →</button>
+                    <div class="feedback-area" id="q13-feedback"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 3</div>
+                    <div class="question-context">A: それは えんぴつですか、ペンですか。<br>You're holding a pen.</div>
+                    <div class="question-text">How do you answer? (Remember: no はい/いいえ for alternative questions!)</div>
+                    <div class="mc-options" id="q14-options">
+                        <div class="mc-option" onclick="checkMC('q14', this, 'C')">
+                            <span class="option-letter">A</span>
+                            <span>はい、ペンです。</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q14', this, 'C')">
+                            <span class="option-letter">B</span>
+                            <span>いいえ、えんぴつじゃ ありません。</span>
+                        </div>
+                        <div class="mc-option" onclick="checkMC('q14', this, 'C')">
+                            <span class="option-letter">C</span>
+                            <span>ペンです。</span>
+                        </div>
+                    </div>
+                    <div class="feedback-area" id="q14-feedback"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 3 of 3</div>
+                    <div class="question-context">A: この <ruby>傘<rt>かさ</rt></ruby>は <ruby>田中<rt>たなか</rt></ruby>さんのですか。<br>A: No, it's Yamada's. B: __________。</div>
+                    <div class="question-text">What does B say to acknowledge this new info?</div>
+                    <div class="fill-blank">
+                        <input type="text" class="blank-input" id="q15-input" placeholder="？" style="min-width: 160px;">。
+                    </div>
+                    <button class="check-btn" onclick="checkFillBlank('q15', ['そうですか'], 'そうですか', 'そうですか (with falling intonation) means \"I see\" — it\'s the natural way to acknowledge new information in conversation.')">Check →</button>
+                    <div class="feedback-area" id="q15-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 19: What's Next ======================== -->
+        <div class="slide" data-slide="19">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Preview</span>
+                    <div>
+                        <h2>What's Coming Next?</h2>
+                        <span class="jp-title"><ruby>次<rt>つぎ</rt></ruby>のレッスン</span>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h3>🔮 Lesson 3 Preview</h3>
+                    <p>In Lesson 3, the ko-so-a system expands to <strong>places</strong>! You'll learn to say "here," "there," and "over there," plus how to ask where things are and talk about locations.</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Lesson 3 Topic</th>
+                                <th>What You'll Learn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ここ / そこ / あそこ</td>
+                                <td>Here / There / Over there (places)</td>
+                            </tr>
+                            <tr>
+                                <td>〜は どこですか</td>
+                                <td>"Where is ~?" questions</td>
+                            </tr>
+                            <tr>
+                                <td>N₁ は N₂ (place) です</td>
+                                <td>"N₁ is at N₂" (locations)</td>
+                            </tr>
+                            <tr>
+                                <td>〜も 〜です</td>
+                                <td>"~ is also ~" with places</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="key-point">
+                    <strong>🎯 Study Tip:</strong> Review the ko-so-a chart from this lesson! The pattern これ→ここ, それ→そこ, あれ→あそこ is perfectly consistent. If you've mastered the distance logic, Lesson 3 places will feel natural.
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================== SLIDE 20: Summary ======================== -->
+        <div class="slide" data-slide="20">
+            <div class="summary-card">
+                <h2>🎉 Lesson 2 Complete!</h2>
+                <p>おめでとうございます！ You've mastered demonstratives and expanded your sentence-building toolkit.</p>
+
+                <div class="summary-points">
+                    <div class="summary-point">
+                        <h4>👆 これ/それ/あれ</h4>
+                        <p>Point to things using the 3-way distance system</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>📌 この/その/あの</h4>
+                        <p>Modify nouns with demonstratives</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>✅ そうです</h4>
+                        <p>Confirm with そうです, deny with ちがいます</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>❓ 〜か、〜か</h4>
+                        <p>Ask "A or B?" alternative questions</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>🔗 の Expanded</h4>
+                        <p>Topic, ownership, and noun substitution</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>🎩 お〜 &amp; そうですか</h4>
+                        <p>Polite prefix and acknowledging info</p>
+                    </div>
+                </div>
+
+                <button class="restart-btn" onclick="restartPresentation()">
+                    🔄 Start Over
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ========== Slide Navigation ==========
+        let currentSlide = 1;
+        const totalSlides = 20;
+
+        function updateSlide() {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            const active = document.querySelector(`[data-slide="${currentSlide}"]`);
+            if (active) active.classList.add('active');
+
+            document.getElementById('currentSlide').textContent = currentSlide;
+            document.getElementById('totalSlides').textContent = totalSlides;
+
+            const progress = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateSlide(); } }
+        function prevSlide() { if (currentSlide > 1) { currentSlide--; updateSlide(); } }
+        function goToSlide(n) { currentSlide = n; updateSlide(); }
+        function restartPresentation() { currentSlide = 1; updateSlide(); }
+
+        // ========== Collapsible Toggles ==========
+        function toggleRef(button) {
+            const content = button.nextElementSibling;
+            button.classList.toggle('open');
+            content.classList.toggle('open');
+        }
+
+        // ========== Multiple Choice with Instant Feedback ==========
+        const mcAnswers = {
+            q1: { correct: 'A', explanation: '✅ Since you\'re holding the pen (it\'s near YOU, the speaker), use これ. Remember: これ = near speaker, それ = near listener, あれ = far from both.' },
+            q2: { correct: 'C', explanation: '✅ The building is far from BOTH you and your friend, so あれ is correct. If the building were near only your friend, it would be それ.' },
+            q4: { correct: 'B', explanation: '✅ これ is a pronoun (stands alone: これは ～です), while この is a modifier (must be followed by a noun: この本は ～です). They\'re NOT interchangeable!' },
+            q5: { correct: 'A', explanation: '✅ はい、そうです means "Yes, that\'s right." It\'s the natural way to confirm a yes/no question about an object.' },
+            q6: { correct: 'C', explanation: '✅ When denying, use ちがいます (not そうじゃありません), then state the correct answer. いいえ、ちがいます。雑誌です is the most natural pattern.' },
+            q7: { correct: 'B', explanation: '✅ For alternative questions (～か、～か), do NOT start with はい or いいえ. Simply state the chosen option: ペンです.' },
+            q9: { correct: 'B', explanation: '✅ 日本語の本 = "a Japanese (language) book." の connects 日本語 (Japanese language) with 本 (book), where N₁ explains what N₂ is about.' },
+            q12: { correct: 'B', explanation: '✅ Correct! The の noun substitution only works for things and roles, never for people. For people, always use the full noun (like 方 or 人).' },
+            q14: { correct: 'C', explanation: '✅ For alternative questions (AですかBですか), just state the answer directly — no はい or いいえ. ペンです is the natural and correct response.' }
+        };
+
+        function checkMC(qId, clickedOption, correctLetter) {
+            const feedbackEl = document.getElementById(qId + '-feedback');
+            const optionsContainer = document.getElementById(qId + '-options');
+            const options = optionsContainer.querySelectorAll('.mc-option');
+            const answerData = mcAnswers[qId];
+            const clickedLetter = clickedOption.querySelector('.option-letter').textContent;
+
+            options.forEach(opt => opt.classList.add('disabled'));
+
+            options.forEach(opt => {
+                const letter = opt.querySelector('.option-letter').textContent;
+                if (letter === answerData.correct) {
+                    opt.classList.add('correct-choice');
+                } else if (opt === clickedOption && clickedLetter !== answerData.correct) {
+                    opt.classList.add('incorrect-choice');
+                }
+            });
+
+            const isCorrect = clickedLetter === answerData.correct;
+            feedbackEl.className = 'feedback-area show ' + (isCorrect ? 'correct-feedback' : 'incorrect-feedback');
+            feedbackEl.innerHTML = `
+                <span class="fb-icon">${isCorrect ? '🎉' : '😅'}</span>
+                <span class="fb-answer">${isCorrect ? 'Correct!' : 'Not quite!'}</span>
+                <div class="fb-explain">${answerData.explanation}</div>
+            `;
+        }
+
+        // ========== Fill-in-the-Blank with Instant Feedback ==========
+        function checkFillBlank(qId, acceptedAnswers, displayAnswer, explanation) {
+            const input = document.getElementById(qId + '-input');
+            const feedbackEl = document.getElementById(qId + '-feedback');
+            const userAnswer = input.value.trim();
+
+            if (!userAnswer) {
+                feedbackEl.className = 'feedback-area show incorrect-feedback';
+                feedbackEl.innerHTML = `<span class="fb-icon">✍️</span> <span class="fb-answer">Please type your answer first!</span>`;
+                return;
+            }
+
+            const isCorrect = acceptedAnswers.includes(userAnswer);
+
+            input.style.borderColor = isCorrect ? 'var(--success)' : 'var(--error)';
+            input.style.background = isCorrect ? 'var(--success-light)' : 'var(--error-light)';
+
+            feedbackEl.className = 'feedback-area show ' + (isCorrect ? 'correct-feedback' : 'incorrect-feedback');
+            feedbackEl.innerHTML = `
+                <span class="fb-icon">${isCorrect ? '🎉' : '😅'}</span>
+                <span class="fb-answer">${isCorrect ? 'Correct!' : 'Not quite!'} The answer is: <strong>${displayAnswer}</strong></span>
+                <div class="fb-explain">${explanation}</div>
+            `;
+        }
+
+        // ========== Double Fill-in-the-Blank ==========
+        function checkDoubleBlank(qId1, qId2, accepted1, accepted2, displayAnswer, explanation) {
+            const input1 = document.getElementById(qId1 + '-input');
+            const input2 = document.getElementById(qId2 + '-input');
+            const feedbackEl = document.getElementById(qId1 + '-feedback');
+
+            const ans1 = input1.value.trim();
+            const ans2 = input2.value.trim();
+
+            if (!ans1 || !ans2) {
+                feedbackEl.className = 'feedback-area show incorrect-feedback';
+                feedbackEl.innerHTML = `<span class="fb-icon">✍️</span> <span class="fb-answer">Please fill in both blanks first!</span>`;
+                return;
+            }
+
+            const correct1 = accepted1.includes(ans1);
+            const correct2 = accepted2.includes(ans2);
+            const isCorrect = correct1 && correct2;
+
+            input1.style.borderColor = correct1 ? 'var(--success)' : 'var(--error)';
+            input1.style.background = correct1 ? 'var(--success-light)' : 'var(--error-light)';
+            input2.style.borderColor = correct2 ? 'var(--success)' : 'var(--error)';
+            input2.style.background = correct2 ? 'var(--success-light)' : 'var(--error-light)';
+
+            feedbackEl.className = 'feedback-area show ' + (isCorrect ? 'correct-feedback' : 'incorrect-feedback');
+            feedbackEl.innerHTML = `
+                <span class="fb-icon">${isCorrect ? '🎉' : '😅'}</span>
+                <span class="fb-answer">${isCorrect ? 'Correct!' : 'Not quite!'} The answer is: <strong>${displayAnswer}</strong></span>
+                <div class="fb-explain">${explanation}</div>
+            `;
+        }
+
+        // ========== Keyboard Navigation ==========
+        document.addEventListener('keydown', function(e) {
+            if (e.target.tagName === 'INPUT') return;
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        });
+
+        // ========== Touch/Swipe Navigation ==========
+        let touchStartX = 0, touchEndX = 0;
+        document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+        });
+
+        // ========== Initialize ==========
+        updateSlide();
+    </script>
+</body>
+</html>

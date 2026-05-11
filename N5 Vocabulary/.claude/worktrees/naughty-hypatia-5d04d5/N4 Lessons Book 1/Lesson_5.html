@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>いろどり Irodori A2 - Lesson 5: 私の町</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========== CSS Variables - Purple/Violet Town Theme ========== */
+        :root {
+            --primary: #7c3aed;
+            --primary-light: #a78bfa;
+            --primary-dark: #5b21b6;
+            --accent: #ec4899;
+            --accent-light: #f9a8d4;
+            --accent-dark: #be185d;
+            --secondary: #8b5cf6;
+            --secondary-light: #ddd6fe;
+            --success: #10b981;
+            --success-light: #a7f3d0;
+            --error: #ef4444;
+            --error-light: #fecaca;
+            --warning: #f59e0b;
+            --warning-light: #fde68a;
+            --bg-light: #faf5ff;
+            --bg-violet: #ede9fe;
+            --bg-card: #ffffff;
+            --text-primary: #3b0764;
+            --text-secondary: #4c1d95;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ========== Reset & Base ========== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-violet) 100%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== Progress Bar ========== */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--bg-card);
+            box-shadow: var(--shadow);
+            padding: 12px 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .progress-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-title .lesson-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .progress-bar-wrapper {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .progress-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:disabled {
+            background: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ========== Main Container ========== */
+        .presentation {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        /* ========== Slides ========== */
+        .slide {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== Title Slide ========== */
+        .title-slide {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .title-slide .book-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+
+        .title-slide h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .title-slide .lesson-title-jp {
+            font-size: clamp(1.3rem, 3.5vw, 2rem);
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .title-slide .lesson-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .town-icons {
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+        }
+
+        .title-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+
+        .title-card h2 {
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .grammar-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .grammar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--bg-light);
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .grammar-item:hover {
+            transform: translateX(8px);
+            background: var(--secondary-light);
+        }
+
+        .grammar-number {
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+        }
+
+        /* ========== Content Slides ========== */
+        .content-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .slide-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .grammar-badge {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .slide-header h2 {
+            font-size: 1.6rem;
+            color: var(--primary-dark);
+            flex: 1;
+        }
+
+        .slide-header .jp-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* ========== Ruby (Furigana) Styling ========== */
+        ruby {
+            ruby-position: over;
+        }
+
+        ruby rt {
+            font-size: 0.6em;
+            color: var(--text-muted);
+        }
+
+        /* ========== Example Boxes ========== */
+        .example-box {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #e9d5ff 100%);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .example-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-japanese {
+            font-size: 1.4rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 2;
+        }
+
+        .example-english {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* ========== Comparison Boxes ========== */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-box {
+            padding: 20px;
+            border-radius: var(--radius);
+        }
+
+        .noun-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .na-adj-box {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left: 4px solid #10b981;
+        }
+
+        .i-adj-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+        }
+
+        .contrast-positive {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left: 4px solid var(--success);
+        }
+
+        .contrast-negative {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid var(--warning);
+        }
+
+        .box-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .noun-box .box-label { color: #1e40af; }
+        .na-adj-box .box-label { color: #065f46; }
+        .i-adj-box .box-label { color: #92400e; }
+        .contrast-positive .box-label { color: #065f46; }
+        .contrast-negative .box-label { color: #92400e; }
+
+        /* ========== Explanation Sections ========== */
+        .explanation {
+            margin: 24px 0;
+        }
+
+        .explanation h3 {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .explanation p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .key-point {
+            background: var(--secondary-light);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 16px 0;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .key-point strong {
+            color: var(--primary-dark);
+        }
+
+        .warning-point {
+            background: var(--warning-light);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 16px 0;
+            border-left: 4px solid var(--warning);
+        }
+
+        /* ========== Structure Box ========== */
+        .structure-box {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent);
+        }
+
+        .structure-box .label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .structure-formula {
+            font-size: 1.15rem;
+            font-family: 'Outfit', monospace;
+            color: var(--primary-dark);
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 8px 4px;
+        }
+
+        .structure-formula .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .structure-formula .accent {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* ========== Pronunciation Guide ========== */
+        .pronunciation-guide {
+            background: linear-gradient(135deg, #ecfdf5 0%, #a7f3d0 100%);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--success);
+        }
+
+        .pronunciation-guide .label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #065f46;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pronunciation-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 8px 0;
+            border-bottom: 1px dashed #6ee7b7;
+        }
+
+        .pronunciation-item:last-child {
+            border-bottom: none;
+        }
+
+        .pronunciation-jp {
+            font-size: 1.2rem;
+            min-width: 150px;
+        }
+
+        .pronunciation-phonetic {
+            font-family: 'Outfit', sans-serif;
+            color: #047857;
+            font-weight: 500;
+            background: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        /* ========== Collapsible MNN Notes ========== */
+        .mnn-connection {
+            margin: 24px 0;
+        }
+
+        .mnn-toggle {
+            width: 100%;
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            border: none;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #b91c1c;
+            transition: var(--transition);
+        }
+
+        .mnn-toggle:hover {
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+        }
+
+        .mnn-toggle .icon {
+            transition: transform 0.3s ease;
+        }
+
+        .mnn-toggle.open .icon {
+            transform: rotate(180deg);
+        }
+
+        .mnn-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            background: #fef2f2;
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .mnn-content.open {
+            max-height: 500px;
+            padding: 20px;
+            border: 1px solid #fecaca;
+            border-top: none;
+        }
+
+        .mnn-content h4 {
+            color: #b91c1c;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .mnn-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .mnn-lesson-ref {
+            display: inline-block;
+            background: #b91c1c;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+
+        /* ========== Conjugation Table ========== */
+        .conjugation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        .conjugation-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 16px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .conjugation-table th:first-child {
+            text-align: left;
+        }
+
+        .conjugation-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .conjugation-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+            color: var(--primary-dark);
+            background: var(--bg-light);
+        }
+
+        .conjugation-table tr:nth-child(even) {
+            background: var(--bg-light);
+        }
+
+        .conjugation-table tr:nth-child(even) td:first-child {
+            background: var(--bg-violet);
+        }
+
+        .conjugation-table tr:hover {
+            background: var(--secondary-light);
+        }
+
+        .table-example {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .arrow {
+            color: var(--accent);
+            font-weight: bold;
+            margin: 0 6px;
+        }
+
+        /* ========== Quiz Slides ========== */
+        .quiz-card {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #e9d5ff 100%);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .quiz-badge {
+            background: var(--accent);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .quiz-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+        }
+
+        .quiz-question {
+            background: white;
+            padding: 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .question-number {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .question-context {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+
+        .fill-blank {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 1.3rem;
+            margin: 20px 0;
+        }
+
+        .blank-input {
+            border: 2px dashed var(--primary);
+            background: var(--bg-light);
+            padding: 8px 16px;
+            border-radius: 8px;
+            min-width: 100px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .blank-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.2);
+        }
+
+        .check-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+        }
+
+        .check-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* ========== Answer Slides ========== */
+        .answer-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .answer-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .answer-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .answer-result {
+            padding: 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+
+        .answer-result.correct {
+            background: var(--success-light);
+            border-left: 4px solid var(--success);
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--success);
+        }
+
+        .answer-text {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .answer-explanation {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        /* ========== Summary Slide ========== */
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            color: white;
+            text-align: center;
+        }
+
+        .summary-card h2 {
+            font-size: 2rem;
+            margin-bottom: 24px;
+        }
+
+        .summary-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 32px 0;
+        }
+
+        .summary-point {
+            background: rgba(255,255,255,0.15);
+            padding: 24px;
+            border-radius: var(--radius);
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-point h4 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .summary-point p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .restart-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 16px 48px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 24px;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        /* ========== Responsive Design ========== */
+        @media (max-width: 768px) {
+            .progress-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .progress-bar-wrapper {
+                width: 100%;
+                max-width: none;
+            }
+
+            .progress-nav {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .content-card, .quiz-card, .answer-card {
+                padding: 24px;
+            }
+
+            .slide-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .example-japanese {
+                font-size: 1.2rem;
+            }
+
+            .fill-blank {
+                font-size: 1.1rem;
+            }
+
+            .structure-formula {
+                font-size: 1rem;
+                padding: 10px 14px;
+            }
+
+            .conjugation-table {
+                font-size: 0.85rem;
+            }
+
+            .conjugation-table th, .conjugation-table td {
+                padding: 10px 8px;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .progress-title {
+                font-size: 0.8rem;
+            }
+
+            .nav-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .title-slide h1 {
+                font-size: 2rem;
+            }
+
+            .grammar-item {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+
+            .town-icons {
+                font-size: 2rem;
+            }
+        }
+
+        /* ========== Animations ========== */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title">
+                <span class="lesson-badge">A2</span>
+                いろどり Lesson 5
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text"><span id="currentSlide">1</span> / <span id="totalSlides">11</span></div>
+            </div>
+            <div class="progress-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()">
+                    ◀ <span class="btn-text">Back</span>
+                </button>
+                <button class="nav-btn" id="nextBtn" onclick="nextSlide()">
+                    <span class="btn-text">Next</span> ▶
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Presentation -->
+    <div class="presentation">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="1">
+            <div class="title-slide">
+                <div class="book-badge">いろどり IRODORI • 入門 A2</div>
+                <h1>Lesson 5</h1>
+                <div class="town-icons float">🏙️ 🏡 🌳 🚌 🗾</div>
+                <div class="lesson-title-jp"><ruby>私<rt>わたし</rt></ruby>の<ruby>町<rt>まち</rt></ruby></div>
+                <div class="lesson-subtitle">My Town • とてもにぎやかで<ruby>便利<rt>べんり</rt></ruby>です</div>
+                
+                <div class="title-card">
+                    <h2>📚 <ruby>文法<rt>ぶんぽう</rt></ruby>ノート Grammar Points</h2>
+                    <div class="grammar-list">
+                        <div class="grammar-item">
+                            <span class="grammar-number">1</span>
+                            <span>N で、〜 / ナA-で、〜 / イA-くて、〜 — Connecting Descriptions</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">2</span>
+                            <span>〜だけど、〜 / 〜いけど、〜 — Contrasting with "but"</span>
+                        </div>
+                        <div class="grammar-item">
+                            <span class="grammar-number">3</span>
+                            <span>V-ることができます — What You Can Do at a Place</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="start-btn pulse" onclick="nextSlide()">
+                    🏘️ <ruby>始<rt>はじ</rt></ruby>めましょう！Start Learning
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Grammar 1 - Connecting Descriptions -->
+        <div class="slide" data-slide="2">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 1</span>
+                    <div>
+                        <h2>N で、〜 / ナA-で、〜 / イA-くて、〜</h2>
+                        <span class="jp-title">Connecting Descriptions</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        この<ruby>町<rt>まち</rt></ruby>は、とてもにぎやか<span style="color: var(--accent); font-weight: 600;">で</span>、<ruby>便利<rt>べんり</rt></ruby>です。
+                    </div>
+                    <div class="example-english">This town is very lively and convenient.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>These patterns are used to <strong>connect two sentences</strong> that describe the same subject, similar to "and" in English. The conjugation depends on the word type.</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Conjugation Rules</div>
+                    <table class="conjugation-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Rule</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><ruby>名詞<rt>めいし</rt></ruby><br><span class="table-example">Noun</span></td>
+                                <td>N <span class="arrow">で</span>、〜</td>
+                                <td>ここは<ruby>田舎<rt>いなか</rt></ruby><strong>で</strong>、のんびりしています</td>
+                            </tr>
+                            <tr>
+                                <td>ナ<ruby>形容詞<rt>けいようし</rt></ruby><br><span class="table-example">ナ-adjective</span></td>
+                                <td>ナA <span class="arrow">で</span>、〜</td>
+                                <td>にぎやか<strong>で</strong>、<ruby>便利<rt>べんり</rt></ruby>です</td>
+                            </tr>
+                            <tr>
+                                <td>イ<ruby>形容詞<rt>けいようし</rt></ruby><br><span class="table-example">イ-adjective</span></td>
+                                <td>イA-い → <span class="arrow">くて</span>、〜</td>
+                                <td><ruby>緑<rt>みどり</rt></ruby>が<ruby>多<rt>おお</rt></ruby><strong>くて</strong>、<ruby>静<rt>しず</rt></ruby>かです</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">💬 More Examples</div>
+                    <div class="example-japanese">
+                        ここは<ruby>田舎<rt>いなか</rt></ruby>で、のんびりしています。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">It is the countryside here, and the time flows slowly.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        この<ruby>辺<rt>へん</rt></ruby>は<ruby>緑<rt>みどり</rt></ruby>が<ruby>多<rt>おお</rt></ruby>くて、<ruby>静<rt>しず</rt></ruby>かでいいですね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">It is very lush and quiet around here.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        この<ruby>町<rt>まち</rt></ruby>はバスが<ruby>少<rt>すく</rt></ruby>なくて、ちょっと<ruby>不便<rt>ふべん</rt></ruby>です。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">There are not many buses in this town, and it is a bit inconvenient.</span>
+                    </div>
+                </div>
+
+                <div class="pronunciation-guide">
+                    <div class="label">🔊 Pronunciation Guide</div>
+                    <div class="pronunciation-item">
+                        <span class="pronunciation-jp"><ruby>田舎<rt>いなか</rt></ruby></span>
+                        <span class="pronunciation-phonetic">i-na-ka (countryside)</span>
+                    </div>
+                    <div class="pronunciation-item">
+                        <span class="pronunciation-jp"><ruby>便利<rt>べんり</rt></ruby></span>
+                        <span class="pronunciation-phonetic">ben-ri (convenient)</span>
+                    </div>
+                    <div class="pronunciation-item">
+                        <span class="pronunciation-jp"><ruby>不便<rt>ふべん</rt></ruby></span>
+                        <span class="pronunciation-phonetic">fu-ben (inconvenient)</span>
+                    </div>
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 16</span> Te-form for connecting adjectives (イA-くて、ナA-で)</p>
+                        <p><span class="mnn-lesson-ref">Lesson 8</span> Adjective basics and sentence patterns</p>
+                        <p><strong>Key Point:</strong> MNN Lesson 16 introduces this pattern for connecting adjectives. Remember: イ-adjectives drop い and add くて, while ナ-adjectives and nouns simply add で. This is like the "te-form" for adjectives!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Quiz 1 -->
+        <div class="slide" data-slide="3">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 1: Connecting Descriptions</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">Connect: "This town is quiet" + "It's nice" (<ruby>静<rt>しず</rt></ruby>か = quiet, ナ-adj)</div>
+                    <div class="question-text">Fill in the connector:</div>
+                    <div class="fill-blank">
+                        この<ruby>町<rt>まち</rt></ruby>は<ruby>静<rt>しず</rt></ruby>か
+                        <input type="text" class="blank-input" id="q1-1" placeholder="？" style="min-width: 60px;">
+                        、いいですね。
+                    </div>
+                    <div class="example-english">"This town is quiet and nice."</div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">Connect: "The apartment is new" + "It's spacious" (<ruby>新<rt>あたら</rt></ruby>しい = new, イ-adj)</div>
+                    <div class="question-text">Convert the イ-adjective correctly:</div>
+                    <div class="fill-blank">
+                        このアパートは<ruby>新<rt>あたら</rt></ruby>し
+                        <input type="text" class="blank-input" id="q1-2" placeholder="？" style="min-width: 70px;">
+                        、<ruby>広<rt>ひろ</rt></ruby>いです。
+                    </div>
+                    <div class="example-english">"This apartment is new and spacious."</div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Answers 1 -->
+        <div class="slide" data-slide="4">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 1: Connecting Descriptions</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        この<ruby>町<rt>まち</rt></ruby>は<ruby>静<rt>しず</rt></ruby>か<strong>で</strong>、いいですね。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> <ruby>静<rt>しず</rt></ruby>か is a ナ-adjective, so we add で to connect it to another description. ナA + で = "is ~ and..."
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        このアパートは<ruby>新<rt>あたら</rt></ruby>し<strong>くて</strong>、<ruby>広<rt>ひろ</rt></ruby>いです。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> <ruby>新<rt>あたら</rt></ruby>しい is an イ-adjective. Drop い and add くて to connect. <ruby>新<rt>あたら</rt></ruby>しい → <ruby>新<rt>あたら</rt></ruby>しくて = "is new and..."
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Grammar 2 - けど (Contrast) -->
+        <div class="slide" data-slide="5">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 2</span>
+                    <div>
+                        <h2>〜だけど、〜 / 〜いけど、〜</h2>
+                        <span class="jp-title">Contrasting with "but"</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        たちばな<ruby>公園<rt>こうえん</rt></ruby>は、<ruby>場所<rt>ばしょ</rt></ruby>は<ruby>不便<rt>ふべん</rt></ruby><span style="color: var(--accent); font-weight: 600;">だけど</span>、きれいですよ。
+                    </div>
+                    <div class="example-english">The location of Tachibana Park is inconvenient, but it is beautiful.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>けど is used to connect two sentences that <strong>contrast</strong> each other. One sentence makes a positive assessment, while the other makes a negative assessment (or vice versa).</p>
+                </div>
+
+                <div class="structure-box">
+                    <div class="label">📐 Conjugation Rules</div>
+                    <table class="conjugation-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Rule</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><ruby>名詞<rt>めいし</rt></ruby><br><span class="table-example">Noun</span></td>
+                                <td>N <span class="arrow">だけど</span>、〜</td>
+                                <td><ruby>都会<rt>とかい</rt></ruby><strong>だけど</strong>、<ruby>緑<rt>みどり</rt></ruby>が<ruby>多<rt>おお</rt></ruby>い</td>
+                            </tr>
+                            <tr>
+                                <td>ナ<ruby>形容詞<rt>けいようし</rt></ruby><br><span class="table-example">ナ-adjective</span></td>
+                                <td>ナA <span class="arrow">だけど</span>、〜</td>
+                                <td><ruby>静<rt>しず</rt></ruby>か<strong>だけど</strong>、<ruby>不便<rt>ふべん</rt></ruby>です</td>
+                            </tr>
+                            <tr>
+                                <td>イ<ruby>形容詞<rt>けいようし</rt></ruby><br><span class="table-example">イ-adjective</span></td>
+                                <td>イA-い <span class="arrow">けど</span>、〜</td>
+                                <td><ruby>遠<rt>とお</rt></ruby>い<strong>けど</strong>、バスがあります</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="contrast-negative">
+                        <div class="box-label">⚠️ Negative Point</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            <ruby>場所<rt>ばしょ</rt></ruby>は<ruby>不便<rt>ふべん</rt></ruby>だけど...
+                        </div>
+                        <div class="example-english">The location is inconvenient, but...</div>
+                    </div>
+                    <div class="contrast-positive">
+                        <div class="box-label">✨ Positive Point</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            ...きれいですよ。
+                        </div>
+                        <div class="example-english">...it's beautiful!</div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">💬 More Examples</div>
+                    <div class="example-japanese">
+                        <ruby>都会<rt>とかい</rt></ruby>だけど、<ruby>緑<rt>みどり</rt></ruby>が<ruby>多<rt>おお</rt></ruby>いですね。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">It is an urban area, but there is a lot of greenery.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        この<ruby>辺<rt>へん</rt></ruby>りは<ruby>静<rt>しず</rt></ruby>かだけど、ちょっと<ruby>不便<rt>ふべん</rt></ruby>です。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">It is quiet around here, but it is a bit inconvenient.</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        ここからちょっと<ruby>遠<rt>とお</rt></ruby>いけど、バスがあります。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">You can catch a bus from here even though it is slightly far.</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Insight:</strong><br>
+                    けど always connects contrasting ideas. Think of it as: "On one hand... but on the other hand..."<br><br>
+                    • Negative <span class="arrow">→</span> Positive: <ruby>不便<rt>ふべん</rt></ruby>だけど、きれいです<br>
+                    • Positive <span class="arrow">→</span> Negative: <ruby>静<rt>しず</rt></ruby>かだけど、<ruby>不便<rt>ふべん</rt></ruby>です
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 8</span> Basic adjective sentences</p>
+                        <p><span class="mnn-lesson-ref">Lesson 20</span> Plain form + けど for contrast</p>
+                        <p><strong>Key Point:</strong> MNN teaches けど with plain forms in Lesson 20. Note: だけど (for nouns/ナ-adj) and いけど (for イ-adj) are the polite conversational forms. けれども is more formal.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Quiz 2 -->
+        <div class="slide" data-slide="6">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 2: 〜けど (Contrast)</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">The apartment is small, but it's cheap. (<ruby>小<rt>ちい</rt></ruby>さい = small, イ-adj)</div>
+                    <div class="question-text">Fill in the contrasting connector:</div>
+                    <div class="fill-blank">
+                        このアパートは<ruby>小<rt>ちい</rt></ruby>さい
+                        <input type="text" class="blank-input" id="q2-1" placeholder="？" style="min-width: 70px;">
+                        、<ruby>安<rt>やす</rt></ruby>いです。
+                    </div>
+                    <div class="example-english">"This apartment is small, but it's cheap."</div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">The area is convenient, but noisy. (<ruby>便利<rt>べんり</rt></ruby> = convenient, ナ-adj)</div>
+                    <div class="question-text">Connect using けど:</div>
+                    <div class="fill-blank">
+                        この<ruby>辺<rt>へん</rt></ruby>は<ruby>便利<rt>べんり</rt></ruby>
+                        <input type="text" class="blank-input" id="q2-2" placeholder="？" style="min-width: 80px;">
+                        、うるさいです。
+                    </div>
+                    <div class="example-english">"This area is convenient, but noisy."</div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 7: Answers 2 -->
+        <div class="slide" data-slide="7">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 2: 〜けど (Contrast)</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        このアパートは<ruby>小<rt>ちい</rt></ruby>さい<strong>けど</strong>、<ruby>安<rt>やす</rt></ruby>いです。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> For イ-adjectives, simply add けど directly after the adjective. <ruby>小<rt>ちい</rt></ruby>さい + けど creates the contrast "small but..."
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        この<ruby>辺<rt>へん</rt></ruby>は<ruby>便利<rt>べんり</rt></ruby><strong>だけど</strong>、うるさいです。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> For ナ-adjectives and nouns, add だけど. <ruby>便利<rt>べんり</rt></ruby> + だけど = "convenient but..." Note the contrast: positive (convenient) → negative (noisy).
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Grammar 3 - V-ることができます -->
+        <div class="slide" data-slide="8">
+            <div class="content-card">
+                <div class="slide-header">
+                    <span class="grammar-badge">Grammar 3</span>
+                    <div>
+                        <h2>V-ることができます</h2>
+                        <span class="jp-title">What You Can Do at a Place</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">📝 Example</div>
+                    <div class="example-japanese">
+                        <ruby>一年中<rt>いちねんじゅう</rt></ruby>、いろいろな<ruby>花<rt>はな</rt></ruby>を<ruby>見<rt>み</rt></ruby>ることができます。
+                    </div>
+                    <div class="example-english">Various types of flowers can be viewed throughout the year.</div>
+                </div>
+
+                <div class="explanation">
+                    <h3>📖 How It Works</h3>
+                    <p>できます (can / capable of) was introduced in Lesson 2 for personal abilities (Nができます). Here, we extend it to express <strong>what is possible</strong> at a certain place or in a certain situation using <strong>verb expressions</strong>.</p>
+                    
+                    <div class="structure-box">
+                        <div class="label">📐 Structure</div>
+                        <div class="structure-formula">
+                            V (dictionary form) + <span class="highlight">こと</span> + が + できます
+                        </div>
+                        <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-secondary);">
+                            こと turns the verb into a noun phrase ("the act of ~")
+                        </p>
+                    </div>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="noun-box">
+                        <div class="box-label">📚 Lesson 2: Nができます</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            <ruby>私<rt>わたし</rt></ruby>は<ruby>日本語<rt>にほんご</rt></ruby>ができます。
+                        </div>
+                        <div class="example-english">I can speak Japanese. (personal ability)</div>
+                    </div>
+                    <div class="na-adj-box">
+                        <div class="box-label">🏙️ Lesson 5: V-ることができます</div>
+                        <div class="example-japanese" style="font-size: 1.1rem;">
+                            <ruby>冬<rt>ふゆ</rt></ruby>はスキーができます。
+                        </div>
+                        <div class="example-english">You can ski in winter. (situational possibility)</div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-label">💬 More Examples (Describing Places)</div>
+                    <div class="example-japanese">
+                        この<ruby>店<rt>みせ</rt></ruby>では、<ruby>地元<rt>じもと</rt></ruby>の<ruby>料理<rt>りょうり</rt></ruby>を<ruby>食<rt>た</rt></ruby>べることができます。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">This restaurant offers local dishes. (Lit: You can eat local dishes at this restaurant.)</span>
+                    </div>
+                    <div class="example-japanese" style="margin-top: 16px;">
+                        <ruby>丘<rt>おか</rt></ruby>の<ruby>上<rt>うえ</rt></ruby>から<ruby>海<rt>うみ</rt></ruby>と<ruby>町<rt>まち</rt></ruby>を<ruby>見渡<rt>みわた</rt></ruby>すことができます。<br>
+                        <span style="color: var(--text-secondary); font-size: 0.95rem;">The top of the hill overlooks the ocean and the town.</span>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Two Uses of できます:</strong><br><br>
+                    <strong>① Personal Ability:</strong> <ruby>私<rt>わたし</rt></ruby>は<ruby>日本語<rt>にほんご</rt></ruby>ができます。<br>
+                    <span style="color: var(--text-muted);">(I can understand Japanese - my skill)</span><br><br>
+                    <strong>② Situational Possibility:</strong> <ruby>冬<rt>ふゆ</rt></ruby>はスキーができます。<br>
+                    <span style="color: var(--text-muted);">(You can go skiing in winter - because of conditions)</span><br><br>
+                    This lesson focuses on usage ② for describing towns and tourist destinations!
+                </div>
+
+                <div class="pronunciation-guide">
+                    <div class="label">🔊 Pronunciation Guide</div>
+                    <div class="pronunciation-item">
+                        <span class="pronunciation-jp"><ruby>一年中<rt>いちねんじゅう</rt></ruby></span>
+                        <span class="pronunciation-phonetic">i-chi-nen-juu (all year round)</span>
+                    </div>
+                    <div class="pronunciation-item">
+                        <span class="pronunciation-jp"><ruby>地元<rt>じもと</rt></ruby></span>
+                        <span class="pronunciation-phonetic">ji-mo-to (local)</span>
+                    </div>
+                    <div class="pronunciation-item">
+                        <span class="pronunciation-jp"><ruby>見渡<rt>みわた</rt></ruby>す</span>
+                        <span class="pronunciation-phonetic">mi-wa-ta-su (to overlook)</span>
+                    </div>
+                </div>
+
+                <!-- MNN Connection -->
+                <div class="mnn-connection">
+                    <button class="mnn-toggle" onclick="toggleMNN(this)">
+                        📕 Minna no Nihongo Connection
+                        <span class="icon">▼</span>
+                    </button>
+                    <div class="mnn-content">
+                        <h4>Related Lessons in MNN</h4>
+                        <p><span class="mnn-lesson-ref">Lesson 18</span> V-ることができます (ability and possibility)</p>
+                        <p><span class="mnn-lesson-ref">Lesson 27</span> Potential form of verbs (V-られる/V-える)</p>
+                        <p><strong>Key Point:</strong> MNN Lesson 18 introduces V-ることができます for expressing ability. Later in Lesson 27, you'll learn the shorter potential verb form (<ruby>見<rt>み</rt></ruby>られる, <ruby>食<rt>た</rt></ruby>べられる). For now, V-ることができます is the standard pattern for N4/N5 level.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Quiz 3 -->
+        <div class="slide" data-slide="9">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <span class="quiz-badge">✏️ Quick Check</span>
+                    <h2>Grammar 3: V-ることができます</h2>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 1 of 2</div>
+                    <div class="question-context">At this pool, you can swim. (<ruby>泳<rt>およ</rt></ruby>ぐ = to swim)</div>
+                    <div class="question-text">Complete the sentence:</div>
+                    <div class="fill-blank">
+                        このプールで<ruby>泳<rt>およ</rt></ruby>ぐ
+                        <input type="text" class="blank-input" id="q3-1" placeholder="？">
+                        ができます。
+                    </div>
+                    <div class="example-english">"You can swim at this pool."</div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="question-number">Question 2 of 2</div>
+                    <div class="question-context">At this park, you can see cherry blossoms in spring. (<ruby>見<rt>み</rt></ruby>る = to see)</div>
+                    <div class="question-text">Fill in the complete pattern:</div>
+                    <div class="fill-blank">
+                        <ruby>春<rt>はる</rt></ruby>は<ruby>桜<rt>さくら</rt></ruby>を
+                        <input type="text" class="blank-input" id="q3-2" placeholder="？">
+                        ことができます。
+                    </div>
+                    <div class="example-english">"You can see cherry blossoms in spring."</div>
+                </div>
+
+                <button class="check-btn" onclick="nextSlide()">Check Answers →</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: Answers 3 -->
+        <div class="slide" data-slide="10">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <span class="answer-badge">✅ Answers</span>
+                    <h2>Grammar 3: V-ることができます</h2>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 1 Answer</div>
+                    <div class="answer-text">
+                        このプールで<ruby>泳<rt>およ</rt></ruby>ぐ<strong>こと</strong>ができます。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> こと turns the verb into a noun phrase. <ruby>泳<rt>およ</rt></ruby>ぐ (to swim) + こと = "swimming" or "the act of swimming." This becomes the subject of ができます.
+                    </div>
+                </div>
+
+                <div class="answer-result correct">
+                    <div class="result-label">✓ Question 2 Answer</div>
+                    <div class="answer-text">
+                        <ruby>春<rt>はる</rt></ruby>は<ruby>桜<rt>さくら</rt></ruby>を<strong><ruby>見<rt>み</rt></ruby>る</strong>ことができます。
+                    </div>
+                    <div class="answer-explanation">
+                        <strong>Explanation:</strong> Use the dictionary form of the verb before こと. <ruby>見<rt>み</rt></ruby>ます → <ruby>見<rt>み</rt></ruby>る (dictionary form). <ruby>見<rt>み</rt></ruby>る + ことができます = "can see."
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Summary -->
+        <div class="slide" data-slide="11">
+            <div class="summary-card">
+                <h2>🎉 Lesson 5 Complete!</h2>
+                <p>You've mastered 3 grammar points for describing towns and places!</p>
+                
+                <div class="summary-points">
+                    <div class="summary-point">
+                        <h4>1. Nで / ナAで / イAくて、〜</h4>
+                        <p>Connect descriptions: "This town is lively <strong>and</strong> convenient."</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>2. 〜だけど / 〜いけど、〜</h4>
+                        <p>Show contrast: "It's far, <strong>but</strong> there's a bus."</p>
+                    </div>
+                    <div class="summary-point">
+                        <h4>3. V-ることができます</h4>
+                        <p>Describe possibilities: "You <strong>can see</strong> flowers here."</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 32px; padding: 20px; background: rgba(255,255,255,0.2); border-radius: var(--radius);">
+                    <h3 style="margin-bottom: 12px;">🏙️ Try Describing Your Town!</h3>
+                    <p style="font-size: 1.1rem; opacity: 0.95;">
+                        <ruby>私<rt>わたし</rt></ruby>の<ruby>町<rt>まち</rt></ruby>は<ruby>静<rt>しず</rt></ruby>かで、<ruby>緑<rt>みどり</rt></ruby>が<ruby>多<rt>おお</rt></ruby>いです。<br>
+                        ちょっと<ruby>不便<rt>ふべん</rt></ruby>だけど、いいところですよ。<br>
+                        <ruby>春<rt>はる</rt></ruby>は<ruby>桜<rt>さくら</rt></ruby>を<ruby>見<rt>み</rt></ruby>ることができます！
+                    </p>
+                </div>
+
+                <p style="margin-top: 24px; opacity: 0.9;">
+                    Now you can introduce your hometown!<br>
+                    あなたの<ruby>町<rt>まち</rt></ruby>はどんな<ruby>町<rt>まち</rt></ruby>ですか？🏡
+                </p>
+
+                <button class="restart-btn" onclick="restartPresentation()">
+                    🔄 <ruby>最初<rt>さいしょ</rt></ruby>から Start Over
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ========== Slide Navigation ==========
+        let currentSlide = 1;
+        const totalSlides = 11;
+
+        function updateSlide() {
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            const activeSlide = document.querySelector(`[data-slide="${currentSlide}"]`);
+            if (activeSlide) {
+                activeSlide.classList.add('active');
+            }
+            
+            document.getElementById('currentSlide').textContent = currentSlide;
+            document.getElementById('totalSlides').textContent = totalSlides;
+            
+            const progress = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(slideNum) {
+            currentSlide = slideNum;
+            updateSlide();
+        }
+
+        function restartPresentation() {
+            currentSlide = 1;
+            updateSlide();
+        }
+
+        // ========== MNN Toggle ==========
+        function toggleMNN(button) {
+            const content = button.nextElementSibling;
+            button.classList.toggle('open');
+            content.classList.toggle('open');
+        }
+
+        // ========== Keyboard Navigation ==========
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // ========== Touch/Swipe Navigation (Mobile) ==========
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+
+        // ========== Initialize ==========
+        updateSlide();
+    </script>
+</body>
+</html>

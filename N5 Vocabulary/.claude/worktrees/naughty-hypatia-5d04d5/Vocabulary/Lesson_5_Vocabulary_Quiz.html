@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>だい5か ごいクイズ - Lesson 5 Vocabulary Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            min-height: 100vh;
+            padding: clamp(10px, 3vw, 20px);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: clamp(15px, 3vw, 30px);
+        }
+        
+        .header h1 {
+            font-size: clamp(24px, 5vw, 42px);
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: clamp(14px, 2.5vw, 20px);
+            opacity: 0.9;
+        }
+        
+        /* Score Board */
+        .score-board {
+            background: white;
+            border-radius: clamp(10px, 2vw, 15px);
+            padding: clamp(12px, 2vw, 20px);
+            margin-bottom: clamp(15px, 2vw, 20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .score-item {
+            text-align: center;
+            min-width: 80px;
+        }
+        
+        .score-label {
+            font-size: clamp(11px, 1.5vw, 14px);
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .score-value {
+            font-size: clamp(20px, 3vw, 28px);
+            font-weight: bold;
+            color: #11998e;
+        }
+        
+        .progress-bar {
+            width: clamp(120px, 20vw, 200px);
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #11998e, #38ef7d);
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Section Tabs */
+        .section-tabs {
+            display: flex;
+            gap: clamp(6px, 1vw, 10px);
+            margin-bottom: clamp(15px, 2vw, 20px);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab-btn {
+            padding: clamp(8px, 1.5vw, 12px) clamp(12px, 2vw, 24px);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: clamp(12px, 1.8vw, 16px);
+            font-weight: 600;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.3);
+            color: white;
+            white-space: nowrap;
+        }
+        
+        .tab-btn:hover:not(.completed):not(.locked) {
+            background: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+        
+        .tab-btn.active {
+            background: white;
+            color: #11998e;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .tab-btn.completed {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .tab-btn.completed::after {
+            content: ' ✓';
+        }
+        
+        .tab-btn.locked {
+            background: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.5);
+            cursor: not-allowed;
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: clamp(12px, 2vw, 20px);
+            padding: clamp(15px, 3vw, 30px);
+            margin-bottom: clamp(15px, 2vw, 20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card-title {
+            font-size: clamp(16px, 2.5vw, 22px);
+            color: #333;
+            margin-bottom: clamp(12px, 2vw, 20px);
+            padding-bottom: clamp(10px, 1.5vw, 15px);
+            border-bottom: 3px solid #11998e;
+        }
+        
+        /* Question Box */
+        .question-box {
+            background: #f0fff4;
+            border-radius: clamp(10px, 1.5vw, 15px);
+            padding: clamp(15px, 3vw, 25px);
+            margin-bottom: clamp(15px, 2vw, 20px);
+        }
+        
+        .question-number {
+            font-size: clamp(12px, 1.5vw, 14px);
+            color: #11998e;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .question-text {
+            font-size: clamp(14px, 2vw, 18px);
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .japanese-prompt {
+            font-size: clamp(24px, 4vw, 36px);
+            color: #11998e;
+            font-weight: bold;
+            margin: clamp(12px, 2vw, 20px) 0;
+            text-align: center;
+        }
+        
+        .english-prompt {
+            font-size: clamp(18px, 3vw, 24px);
+            color: #333;
+            font-weight: 600;
+            margin: clamp(12px, 2vw, 20px) 0;
+            text-align: center;
+        }
+        
+        /* Category Indicators */
+        .category-indicator {
+            display: inline-block;
+            padding: clamp(6px, 1vw, 8px) clamp(10px, 1.5vw, 16px);
+            border-radius: 20px;
+            font-size: clamp(11px, 1.5vw, 14px);
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        .category-indicator.verb { background: #e8f5e9; color: #2e7d32; }
+        .category-indicator.transport { background: #e3f2fd; color: #1565c0; }
+        .category-indicator.time { background: #fff3e0; color: #e65100; }
+        .category-indicator.people { background: #fce4ec; color: #c2185b; }
+        .category-indicator.place { background: #f3e5f5; color: #7b1fa2; }
+        .category-indicator.date { background: #eceff1; color: #546e7a; }
+        
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: clamp(8px, 1.5vw, 12px);
+            margin-top: clamp(12px, 2vw, 20px);
+        }
+        
+        @media (max-width: 500px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .option-btn {
+            padding: clamp(12px, 2vw, 18px) clamp(10px, 1.5vw, 15px);
+            border: 3px solid #e0e0e0;
+            border-radius: clamp(8px, 1.5vw, 12px);
+            background: white;
+            cursor: pointer;
+            font-size: clamp(16px, 2.5vw, 22px);
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .option-btn:hover {
+            border-color: #11998e;
+            background: #f0fff4;
+            transform: translateY(-2px);
+        }
+        
+        .option-btn.correct {
+            border-color: #4caf50;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .option-btn.incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        /* Feedback */
+        .feedback {
+            padding: clamp(12px, 2vw, 15px);
+            border-radius: clamp(8px, 1.5vw, 12px);
+            margin-top: 15px;
+            display: none;
+            font-size: clamp(14px, 2vw, 16px);
+        }
+        
+        .feedback.correct {
+            display: block;
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            color: #2e7d32;
+        }
+        
+        .feedback.incorrect {
+            display: block;
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+            color: #c62828;
+        }
+        
+        .feedback .correct-answer {
+            font-size: clamp(18px, 2.5vw, 22px);
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .next-btn {
+            padding: clamp(10px, 1.5vw, 12px) clamp(20px, 3vw, 30px);
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: clamp(14px, 2vw, 16px);
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+        }
+        
+        /* Transport Visual */
+        .transport-visual {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: clamp(6px, 1vw, 10px);
+            margin: clamp(15px, 2vw, 20px) 0;
+        }
+        
+        .transport-item {
+            text-align: center;
+            padding: clamp(8px, 1.5vw, 12px);
+            border-radius: 10px;
+            background: #f0fff4;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .transport-icon {
+            font-size: clamp(20px, 3vw, 28px);
+            margin-bottom: 4px;
+        }
+        
+        .transport-name {
+            font-size: clamp(10px, 1.3vw, 12px);
+            color: #11998e;
+            font-weight: 600;
+        }
+        
+        /* Time Period Visual */
+        .time-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: clamp(8px, 1.5vw, 15px);
+            margin: clamp(15px, 2vw, 20px) 0;
+            flex-wrap: wrap;
+        }
+        
+        .time-item {
+            text-align: center;
+            padding: clamp(10px, 1.5vw, 15px);
+            border-radius: 10px;
+            min-width: 80px;
+        }
+        
+        .time-item.past { background: #ffebee; border: 2px solid #ef5350; }
+        .time-item.present { background: #e8f5e9; border: 2px solid #4caf50; }
+        .time-item.future { background: #e3f2fd; border: 2px solid #2196f3; }
+        
+        .time-label {
+            font-size: clamp(10px, 1.3vw, 12px);
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .time-word {
+            font-size: clamp(14px, 2vw, 18px);
+            font-weight: bold;
+        }
+        
+        .time-item.past .time-word { color: #c62828; }
+        .time-item.present .time-word { color: #2e7d32; }
+        .time-item.future .time-word { color: #1565c0; }
+        
+        /* Calendar Visual */
+        .calendar-visual {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin: clamp(15px, 2vw, 20px) 0;
+            max-width: 350px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .calendar-day {
+            text-align: center;
+            padding: clamp(6px, 1vw, 10px);
+            border-radius: 6px;
+            font-size: clamp(11px, 1.5vw, 14px);
+            background: #f5f5f5;
+        }
+        
+        .calendar-day.highlight {
+            background: #11998e;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .calendar-day.special {
+            background: #fff3e0;
+            color: #e65100;
+            font-weight: bold;
+        }
+        
+        /* Section Complete */
+        .section-complete {
+            text-align: center;
+            padding: clamp(25px, 4vw, 40px);
+        }
+        
+        .section-complete-icon {
+            font-size: clamp(40px, 8vw, 60px);
+            margin-bottom: 20px;
+        }
+        
+        .section-complete-title {
+            font-size: clamp(20px, 4vw, 28px);
+            color: #4caf50;
+            margin-bottom: 15px;
+        }
+        
+        .section-complete-stats {
+            font-size: clamp(14px, 2.5vw, 18px);
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .continue-btn {
+            padding: clamp(12px, 2vw, 15px) clamp(25px, 4vw, 40px);
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: clamp(14px, 2.5vw, 18px);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .continue-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(17, 153, 142, 0.4);
+        }
+        
+        /* Results */
+        .results-card {
+            text-align: center;
+            padding: clamp(25px, 4vw, 40px);
+        }
+        
+        .results-icon {
+            font-size: clamp(50px, 10vw, 80px);
+            margin-bottom: 20px;
+        }
+        
+        .results-title {
+            font-size: clamp(22px, 5vw, 32px);
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .results-score {
+            font-size: clamp(36px, 8vw, 56px);
+            font-weight: bold;
+            color: #11998e;
+            margin-bottom: 10px;
+        }
+        
+        .results-message {
+            font-size: clamp(14px, 2.5vw, 18px);
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .results-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: clamp(10px, 2vw, 15px);
+            margin: clamp(20px, 3vw, 30px) 0;
+        }
+        
+        .breakdown-item {
+            background: #f0fff4;
+            padding: clamp(10px, 2vw, 15px);
+            border-radius: clamp(8px, 1.5vw, 12px);
+        }
+        
+        .breakdown-label {
+            font-size: clamp(11px, 1.5vw, 14px);
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .breakdown-value {
+            font-size: clamp(18px, 3vw, 24px);
+            font-weight: bold;
+            color: #11998e;
+        }
+        
+        .retry-btn {
+            padding: clamp(12px, 2vw, 15px) clamp(25px, 4vw, 40px);
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: clamp(14px, 2.5vw, 18px);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+        
+        .retry-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(17, 153, 142, 0.4);
+        }
+        
+        /* Practice Sections */
+        .practice-section {
+            display: none;
+        }
+        
+        .practice-section.active {
+            display: block;
+        }
+        
+        /* Reference Toggle */
+        .reference-toggle {
+            text-align: center;
+            margin-bottom: clamp(12px, 2vw, 20px);
+        }
+        
+        .reference-btn {
+            padding: clamp(8px, 1.5vw, 10px) clamp(15px, 2.5vw, 25px);
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 25px;
+            font-size: clamp(12px, 1.8vw, 14px);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .reference-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .reference-card {
+            display: none;
+            background: white;
+            border-radius: clamp(12px, 2vw, 20px);
+            padding: clamp(15px, 2.5vw, 25px);
+            margin-bottom: clamp(15px, 2vw, 20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .reference-card.show {
+            display: block;
+        }
+        
+        .ref-section {
+            margin-bottom: clamp(15px, 2vw, 20px);
+        }
+        
+        .ref-section-title {
+            font-size: clamp(14px, 2vw, 18px);
+            font-weight: bold;
+            color: #11998e;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #38ef7d;
+        }
+        
+        .ref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: clamp(6px, 1vw, 10px);
+        }
+        
+        .ref-item {
+            display: flex;
+            justify-content: space-between;
+            padding: clamp(6px, 1vw, 8px);
+            background: #f0fff4;
+            border-radius: 6px;
+            font-size: clamp(11px, 1.4vw, 13px);
+        }
+        
+        .ref-jp {
+            color: #11998e;
+            font-weight: 600;
+        }
+        
+        .ref-en {
+            color: #666;
+        }
+        
+        /* Responsive adjustments */
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1100px;
+            }
+            
+            .japanese-prompt {
+                font-size: 42px;
+            }
+            
+            .option-btn {
+                font-size: 24px;
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .score-board {
+                flex-direction: column;
+            }
+            
+            .calendar-visual {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>だい5か ごいクイズ</h1>
+            <p>Lesson 5 Vocabulary Quiz - のりもの と ひづけ</p>
+        </div>
+        
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">スコア</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">しんこう</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">といた</div>
+                <div class="score-value"><span id="answered">0</span>/<span id="total">40</span></div>
+            </div>
+        </div>
+        
+        <div class="section-tabs">
+            <button class="tab-btn active" id="tab-jp-en">にほんご→えいご</button>
+            <button class="tab-btn locked" id="tab-en-jp">えいご→にほんご</button>
+            <button class="tab-btn locked" id="tab-transport">のりもの</button>
+            <button class="tab-btn locked" id="tab-dates">ひづけ</button>
+        </div>
+        
+        <div class="reference-toggle">
+            <button class="reference-btn" onclick="toggleReference()">📖 ごいリストをみる</button>
+        </div>
+        
+        <div class="reference-card" id="referenceCard">
+            <div class="ref-section">
+                <div class="ref-section-title">どうし (Verbs)</div>
+                <div class="ref-grid">
+                    <div class="ref-item"><span class="ref-jp">いきます</span><span class="ref-en">go</span></div>
+                    <div class="ref-item"><span class="ref-jp">きます</span><span class="ref-en">come</span></div>
+                    <div class="ref-item"><span class="ref-jp">かえります</span><span class="ref-en">return</span></div>
+                </div>
+            </div>
+            <div class="ref-section">
+                <div class="ref-section-title">のりもの (Transportation)</div>
+                <div class="ref-grid">
+                    <div class="ref-item"><span class="ref-jp">ひこうき</span><span class="ref-en">airplane</span></div>
+                    <div class="ref-item"><span class="ref-jp">ふね</span><span class="ref-en">ship</span></div>
+                    <div class="ref-item"><span class="ref-jp">でんしゃ</span><span class="ref-en">train</span></div>
+                    <div class="ref-item"><span class="ref-jp">ちかてつ</span><span class="ref-en">subway</span></div>
+                    <div class="ref-item"><span class="ref-jp">しんかんせん</span><span class="ref-en">bullet train</span></div>
+                    <div class="ref-item"><span class="ref-jp">バス</span><span class="ref-en">bus</span></div>
+                    <div class="ref-item"><span class="ref-jp">タクシー</span><span class="ref-en">taxi</span></div>
+                    <div class="ref-item"><span class="ref-jp">じてんしゃ</span><span class="ref-en">bicycle</span></div>
+                    <div class="ref-item"><span class="ref-jp">あるいて</span><span class="ref-en">on foot</span></div>
+                </div>
+            </div>
+            <div class="ref-section">
+                <div class="ref-section-title">ひと (People)</div>
+                <div class="ref-grid">
+                    <div class="ref-item"><span class="ref-jp">ひと</span><span class="ref-en">person</span></div>
+                    <div class="ref-item"><span class="ref-jp">ともだち</span><span class="ref-en">friend</span></div>
+                    <div class="ref-item"><span class="ref-jp">かれ</span><span class="ref-en">he/boyfriend</span></div>
+                    <div class="ref-item"><span class="ref-jp">かのじょ</span><span class="ref-en">she/girlfriend</span></div>
+                    <div class="ref-item"><span class="ref-jp">かぞく</span><span class="ref-en">family</span></div>
+                    <div class="ref-item"><span class="ref-jp">ひとりで</span><span class="ref-en">alone</span></div>
+                </div>
+            </div>
+            <div class="ref-section">
+                <div class="ref-section-title">じかん (Time Periods)</div>
+                <div class="ref-grid">
+                    <div class="ref-item"><span class="ref-jp">せんしゅう</span><span class="ref-en">last week</span></div>
+                    <div class="ref-item"><span class="ref-jp">こんしゅう</span><span class="ref-en">this week</span></div>
+                    <div class="ref-item"><span class="ref-jp">らいしゅう</span><span class="ref-en">next week</span></div>
+                    <div class="ref-item"><span class="ref-jp">せんげつ</span><span class="ref-en">last month</span></div>
+                    <div class="ref-item"><span class="ref-jp">こんげつ</span><span class="ref-en">this month</span></div>
+                    <div class="ref-item"><span class="ref-jp">らいげつ</span><span class="ref-en">next month</span></div>
+                    <div class="ref-item"><span class="ref-jp">きょねん</span><span class="ref-en">last year</span></div>
+                    <div class="ref-item"><span class="ref-jp">ことし</span><span class="ref-en">this year</span></div>
+                    <div class="ref-item"><span class="ref-jp">らいねん</span><span class="ref-en">next year</span></div>
+                </div>
+            </div>
+            <div class="ref-section">
+                <div class="ref-section-title">ひづけ (Dates)</div>
+                <div class="ref-grid">
+                    <div class="ref-item"><span class="ref-jp">ついたち</span><span class="ref-en">1st</span></div>
+                    <div class="ref-item"><span class="ref-jp">ふつか</span><span class="ref-en">2nd</span></div>
+                    <div class="ref-item"><span class="ref-jp">みっか</span><span class="ref-en">3rd</span></div>
+                    <div class="ref-item"><span class="ref-jp">よっか</span><span class="ref-en">4th</span></div>
+                    <div class="ref-item"><span class="ref-jp">いつか</span><span class="ref-en">5th</span></div>
+                    <div class="ref-item"><span class="ref-jp">むいか</span><span class="ref-en">6th</span></div>
+                    <div class="ref-item"><span class="ref-jp">なのか</span><span class="ref-en">7th</span></div>
+                    <div class="ref-item"><span class="ref-jp">ようか</span><span class="ref-en">8th</span></div>
+                    <div class="ref-item"><span class="ref-jp">ここのか</span><span class="ref-en">9th</span></div>
+                    <div class="ref-item"><span class="ref-jp">とおか</span><span class="ref-en">10th</span></div>
+                    <div class="ref-item"><span class="ref-jp">はつか</span><span class="ref-en">20th</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section 1: Japanese to English -->
+        <div class="practice-section active" id="jp-en-section">
+            <div class="card">
+                <div class="card-title">セクション1: にほんご → えいご</div>
+                <div id="jp-en-question"></div>
+            </div>
+        </div>
+        
+        <!-- Section 2: English to Japanese -->
+        <div class="practice-section" id="en-jp-section">
+            <div class="card">
+                <div class="card-title">セクション2: えいご → にほんご</div>
+                <div id="en-jp-question"></div>
+            </div>
+        </div>
+        
+        <!-- Section 3: Transportation -->
+        <div class="practice-section" id="transport-section">
+            <div class="card">
+                <div class="card-title">セクション3: のりもの (Transportation)</div>
+                <div id="transport-question"></div>
+            </div>
+        </div>
+        
+        <!-- Section 4: Dates -->
+        <div class="practice-section" id="dates-section">
+            <div class="card">
+                <div class="card-title">セクション4: ひづけ (Dates)</div>
+                <div id="dates-question"></div>
+            </div>
+        </div>
+        
+        <!-- Results -->
+        <div class="practice-section" id="results-section">
+            <div class="card results-card">
+                <div class="results-icon" id="results-icon">🎉</div>
+                <div class="results-title" id="results-title">おつかれさまでした!</div>
+                <div class="results-score" id="final-score">0%</div>
+                <div class="results-message" id="results-message">がんばりましたね!</div>
+                <div class="results-breakdown">
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">にほんご→えいご</div>
+                        <div class="breakdown-value" id="jp-en-score">0/10</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">えいご→にほんご</div>
+                        <div class="breakdown-value" id="en-jp-score">0/10</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">のりもの</div>
+                        <div class="breakdown-value" id="transport-score">0/10</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">ひづけ</div>
+                        <div class="breakdown-value" id="dates-score">0/10</div>
+                    </div>
+                </div>
+                <button class="retry-btn" onclick="restartQuiz()">もういちど</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Vocabulary data
+        const vocabulary = {
+            verbs: [
+                { jp: 'いきます', en: 'go' },
+                { jp: 'きます', en: 'come' },
+                { jp: 'かえります', en: 'go home, return' }
+            ],
+            places: [
+                { jp: 'がっこう', en: 'school' },
+                { jp: 'スーパー', en: 'supermarket' },
+                { jp: 'えき', en: 'station' }
+            ],
+            transport: [
+                { jp: 'ひこうき', en: 'airplane' },
+                { jp: 'ふね', en: 'ship' },
+                { jp: 'でんしゃ', en: 'train' },
+                { jp: 'ちかてつ', en: 'subway, underground' },
+                { jp: 'しんかんせん', en: 'bullet train, Shinkansen' },
+                { jp: 'バス', en: 'bus' },
+                { jp: 'タクシー', en: 'taxi' },
+                { jp: 'じてんしゃ', en: 'bicycle' },
+                { jp: 'あるいて', en: 'on foot' }
+            ],
+            people: [
+                { jp: 'ひと', en: 'person, people' },
+                { jp: 'ともだち', en: 'friend' },
+                { jp: 'かれ', en: 'he, boyfriend' },
+                { jp: 'かのじょ', en: 'she, girlfriend' },
+                { jp: 'かぞく', en: 'family' },
+                { jp: 'ひとりで', en: 'alone, by oneself' }
+            ],
+            time: [
+                { jp: 'せんしゅう', en: 'last week' },
+                { jp: 'こんしゅう', en: 'this week' },
+                { jp: 'らいしゅう', en: 'next week' },
+                { jp: 'せんげつ', en: 'last month' },
+                { jp: 'こんげつ', en: 'this month' },
+                { jp: 'らいげつ', en: 'next month' },
+                { jp: 'きょねん', en: 'last year' },
+                { jp: 'ことし', en: 'this year' },
+                { jp: 'らいねん', en: 'next year' }
+            ],
+            trainTypes: [
+                { jp: 'ふつう', en: 'local train' },
+                { jp: 'きゅうこう', en: 'rapid train' },
+                { jp: 'とっきゅう', en: 'express train' }
+            ]
+        };
+        
+        // Dates vocabulary
+        const dates = [
+            { jp: 'ついたち', en: '1st', num: 1 },
+            { jp: 'ふつか', en: '2nd', num: 2 },
+            { jp: 'みっか', en: '3rd', num: 3 },
+            { jp: 'よっか', en: '4th', num: 4 },
+            { jp: 'いつか', en: '5th', num: 5 },
+            { jp: 'むいか', en: '6th', num: 6 },
+            { jp: 'なのか', en: '7th', num: 7 },
+            { jp: 'ようか', en: '8th', num: 8 },
+            { jp: 'ここのか', en: '9th', num: 9 },
+            { jp: 'とおか', en: '10th', num: 10 },
+            { jp: 'じゅうよっか', en: '14th', num: 14 },
+            { jp: 'はつか', en: '20th', num: 20 },
+            { jp: 'にじゅうよっか', en: '24th', num: 24 }
+        ];
+        
+        // Transport scenarios
+        const transportScenarios = [
+            { sentence: 'とうきょうから おおさかまで ___で いきます。(3 hours)', blank: 'しんかんせん', hint: 'fastest land transport', options: ['しんかんせん', 'バス', 'タクシー', 'じてんしゃ'] },
+            { sentence: 'えきまで ___で いきます。(walking)', blank: 'あるいて', hint: 'no vehicle', options: ['あるいて', 'バス', 'でんしゃ', 'タクシー'] },
+            { sentence: 'にほんから アメリカまで ___で いきます。', blank: 'ひこうき', hint: 'across ocean, fast', options: ['ひこうき', 'ふね', 'でんしゃ', 'バス'] },
+            { sentence: 'かいしゃまで ___で いきます。(underground)', blank: 'ちかてつ', hint: 'under the city', options: ['ちかてつ', 'バス', 'タクシー', 'しんかんせん'] },
+            { sentence: 'こうえんまで ___で いきます。(eco-friendly)', blank: 'じてんしゃ', hint: 'two wheels, pedal', options: ['じてんしゃ', 'タクシー', 'バス', 'でんしゃ'] },
+            { sentence: 'にもつが おおいですから、___で いきます。', blank: 'タクシー', hint: 'door to door service', options: ['タクシー', 'でんしゃ', 'あるいて', 'じてんしゃ'] },
+            { sentence: '___で おきなわへ いきます。(over water, slow)', blank: 'ふね', hint: 'travels on sea', options: ['ふね', 'ひこうき', 'でんしゃ', 'バス'] },
+            { sentence: 'まいにち ___で がっこうへ いきます。(public)', blank: 'バス', hint: 'many stops, road', options: ['バス', 'タクシー', 'ひこうき', 'ふね'] },
+            { sentence: 'きょうとまで ___で いきます。(on rails)', blank: 'でんしゃ', hint: 'runs on tracks', options: ['でんしゃ', 'バス', 'タクシー', 'じてんしゃ'] },
+            { sentence: '___と ___で にほんへ きました。(from far + local)', blank: 'ひこうきとでんしゃ', hint: 'fly then train', options: ['ひこうきとでんしゃ', 'バスとタクシー', 'ふねとバス', 'しんかんせんとちかてつ'] }
+        ];
+        
+        // Date scenarios
+        const dateScenarios = [
+            { question: '1にちは にほんごで なんですか。', answer: 'ついたち', options: ['ついたち', 'ふつか', 'いちにち', 'ひとつ'] },
+            { question: '2かは にほんごで なんですか。', answer: 'ふつか', options: ['ふたつ', 'ふつか', 'にか', 'ににち'] },
+            { question: '3かは にほんごで なんですか。', answer: 'みっか', options: ['さんにち', 'みっか', 'さんか', 'みつ'] },
+            { question: '4かは にほんごで なんですか。', answer: 'よっか', options: ['よんにち', 'しか', 'よっか', 'よんか'] },
+            { question: '7かは にほんごで なんですか。', answer: 'なのか', options: ['しちか', 'なのか', 'ななにち', 'しちにち'] },
+            { question: '8かは にほんごで なんですか。', answer: 'ようか', options: ['はちか', 'ようか', 'はちにち', 'やっか'] },
+            { question: '10かは にほんごで なんですか。', answer: 'とおか', options: ['じゅうにち', 'とおか', 'じゅっか', 'とうか'] },
+            { question: '20にちは にほんごで なんですか。', answer: 'はつか', options: ['にじゅうにち', 'はつか', 'にじゅっか', 'ふたか'] },
+            { question: 'たんじょうびは いつですか。→ 5がつ___です。(5th)', answer: 'いつか', options: ['いつか', 'ごか', 'ごにち', 'いつ'] },
+            { question: 'りょこうは いつですか。→ 9がつ___です。(9th)', answer: 'ここのか', options: ['きゅうか', 'ここのか', 'くにち', 'きゅうにち'] }
+        ];
+        
+        // Game state
+        let currentSection = 'jp-en';
+        let currentQuestion = 0;
+        let score = 0;
+        let questionsAnswered = 0;
+        const totalQuestions = 40;
+        
+        let sectionStatus = {
+            jpEn: { completed: false, correct: 0, total: 10 },
+            enJp: { completed: false, correct: 0, total: 10 },
+            transport: { completed: false, correct: 0, total: 10 },
+            dates: { completed: false, correct: 0, total: 10 }
+        };
+        
+        let jpEnQuestions = [];
+        let enJpQuestions = [];
+        let transportQuestions = [];
+        let datesQuestions = [];
+        
+        // Shuffle array
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+        
+        // Get all vocabulary
+        function getAllVocab() {
+            return [
+                ...vocabulary.verbs.map(v => ({ ...v, type: 'verb' })),
+                ...vocabulary.places.map(v => ({ ...v, type: 'place' })),
+                ...vocabulary.transport.map(v => ({ ...v, type: 'transport' })),
+                ...vocabulary.people.map(v => ({ ...v, type: 'people' })),
+                ...vocabulary.time.map(v => ({ ...v, type: 'time' }))
+            ];
+        }
+        
+        // Generate wrong options
+        function getWrongOptions(correctAnswer, allOptions, count = 3) {
+            const filtered = allOptions.filter(opt => opt !== correctAnswer);
+            return shuffleArray(filtered).slice(0, count);
+        }
+        
+        // Initialize quiz
+        function init() {
+            generateJpEnQuestions();
+            generateEnJpQuestions();
+            generateTransportQuestions();
+            generateDatesQuestions();
+            updateScoreBoard();
+            loadJpEnQuestion();
+        }
+        
+        // Generate Japanese to English questions
+        function generateJpEnQuestions() {
+            const allVocab = getAllVocab();
+            const selected = shuffleArray(allVocab).slice(0, 10);
+            
+            jpEnQuestions = selected.map(vocab => {
+                const allEnglish = allVocab.map(v => v.en);
+                const wrongOptions = getWrongOptions(vocab.en, allEnglish);
+                return {
+                    jp: vocab.jp,
+                    en: vocab.en,
+                    type: vocab.type,
+                    options: shuffleArray([vocab.en, ...wrongOptions])
+                };
+            });
+        }
+        
+        // Generate English to Japanese questions
+        function generateEnJpQuestions() {
+            const allVocab = getAllVocab();
+            const selected = shuffleArray(allVocab).slice(0, 10);
+            
+            enJpQuestions = selected.map(vocab => {
+                const allJapanese = allVocab.map(v => v.jp);
+                const wrongOptions = getWrongOptions(vocab.jp, allJapanese);
+                return {
+                    jp: vocab.jp,
+                    en: vocab.en,
+                    type: vocab.type,
+                    options: shuffleArray([vocab.jp, ...wrongOptions])
+                };
+            });
+        }
+        
+        // Generate transport questions
+        function generateTransportQuestions() {
+            transportQuestions = shuffleArray([...transportScenarios]);
+        }
+        
+        // Generate dates questions
+        function generateDatesQuestions() {
+            datesQuestions = shuffleArray([...dateScenarios]);
+        }
+        
+        // Load Japanese to English question
+        function loadJpEnQuestion() {
+            if (currentQuestion >= jpEnQuestions.length) {
+                completeSectionJpEn();
+                return;
+            }
+            
+            const q = jpEnQuestions[currentQuestion];
+            const typeLabels = {
+                'verb': 'どうし',
+                'place': 'ばしょ',
+                'transport': 'のりもの',
+                'people': 'ひと',
+                'time': 'じかん'
+            };
+            
+            document.getElementById('jp-en-question').innerHTML = `
+                <div class="question-box">
+                    <div class="question-number">もんだい ${currentQuestion + 1} / ${jpEnQuestions.length}</div>
+                    <div class="question-text">このことばの えいごは なんですか?</div>
+                    <div class="japanese-prompt">${q.jp}</div>
+                    <span class="category-indicator ${q.type}">${typeLabels[q.type]}</span>
+                    <div class="options-grid" id="jp-en-options">
+                        ${q.options.map(opt => `
+                            <button class="option-btn" data-answer="${opt}">${opt}</button>
+                        `).join('')}
+                    </div>
+                    <div class="feedback" id="jp-en-feedback"></div>
+                </div>
+            `;
+            
+            document.querySelectorAll('#jp-en-options .option-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    checkJpEnAnswer(this, this.dataset.answer, q.en);
+                });
+            });
+        }
+        
+        function checkJpEnAnswer(btn, selected, correct) {
+            const buttons = document.querySelectorAll('#jp-en-options .option-btn');
+            buttons.forEach(b => b.disabled = true);
+            
+            const isCorrect = selected === correct;
+            
+            if (isCorrect) {
+                btn.classList.add('correct');
+                score += 10;
+                sectionStatus.jpEn.correct++;
+            } else {
+                btn.classList.add('incorrect');
+                buttons.forEach(b => {
+                    if (b.dataset.answer === correct) b.classList.add('correct');
+                });
+            }
+            
+            questionsAnswered++;
+            updateScoreBoard();
+            
+            const feedback = document.getElementById('jp-en-feedback');
+            if (isCorrect) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = `⭕ せいかい! <button class="next-btn" onclick="nextJpEnQuestion()">つぎへ →</button>`;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = `❌ ちがいます。<div class="correct-answer">こたえ: ${correct}</div> <button class="next-btn" onclick="nextJpEnQuestion()">つぎへ →</button>`;
+            }
+        }
+        
+        function nextJpEnQuestion() {
+            currentQuestion++;
+            loadJpEnQuestion();
+        }
+        
+        function completeSectionJpEn() {
+            sectionStatus.jpEn.completed = true;
+            document.getElementById('tab-jp-en').classList.remove('active');
+            document.getElementById('tab-jp-en').classList.add('completed');
+            document.getElementById('tab-en-jp').classList.remove('locked');
+            
+            document.getElementById('jp-en-question').innerHTML = `
+                <div class="section-complete">
+                    <div class="section-complete-icon">✅</div>
+                    <div class="section-complete-title">セクション1 かんりょう!</div>
+                    <div class="section-complete-stats">${sectionStatus.jpEn.correct} / ${sectionStatus.jpEn.total} せいかい</div>
+                    <button class="continue-btn" onclick="startEnJpSection()">セクション2へ →</button>
+                </div>
+            `;
+        }
+        
+        // English to Japanese section
+        function startEnJpSection() {
+            currentSection = 'en-jp';
+            currentQuestion = 0;
+            
+            document.getElementById('tab-en-jp').classList.add('active');
+            document.querySelectorAll('.practice-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('en-jp-section').classList.add('active');
+            
+            loadEnJpQuestion();
+        }
+        
+        function loadEnJpQuestion() {
+            if (currentQuestion >= enJpQuestions.length) {
+                completeSectionEnJp();
+                return;
+            }
+            
+            const q = enJpQuestions[currentQuestion];
+            
+            document.getElementById('en-jp-question').innerHTML = `
+                <div class="question-box">
+                    <div class="question-number">もんだい ${currentQuestion + 1} / ${enJpQuestions.length}</div>
+                    <div class="question-text">このえいごの にほんごは なんですか?</div>
+                    <div class="english-prompt">${q.en}</div>
+                    <div class="options-grid" id="en-jp-options">
+                        ${q.options.map(opt => `
+                            <button class="option-btn" data-answer="${opt}">${opt}</button>
+                        `).join('')}
+                    </div>
+                    <div class="feedback" id="en-jp-feedback"></div>
+                </div>
+            `;
+            
+            document.querySelectorAll('#en-jp-options .option-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    checkEnJpAnswer(this, this.dataset.answer, q.jp);
+                });
+            });
+        }
+        
+        function checkEnJpAnswer(btn, selected, correct) {
+            const buttons = document.querySelectorAll('#en-jp-options .option-btn');
+            buttons.forEach(b => b.disabled = true);
+            
+            const isCorrect = selected === correct;
+            
+            if (isCorrect) {
+                btn.classList.add('correct');
+                score += 10;
+                sectionStatus.enJp.correct++;
+            } else {
+                btn.classList.add('incorrect');
+                buttons.forEach(b => {
+                    if (b.dataset.answer === correct) b.classList.add('correct');
+                });
+            }
+            
+            questionsAnswered++;
+            updateScoreBoard();
+            
+            const feedback = document.getElementById('en-jp-feedback');
+            if (isCorrect) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = `⭕ せいかい! <button class="next-btn" onclick="nextEnJpQuestion()">つぎへ →</button>`;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = `❌ ちがいます。<div class="correct-answer">こたえ: ${correct}</div> <button class="next-btn" onclick="nextEnJpQuestion()">つぎへ →</button>`;
+            }
+        }
+        
+        function nextEnJpQuestion() {
+            currentQuestion++;
+            loadEnJpQuestion();
+        }
+        
+        function completeSectionEnJp() {
+            sectionStatus.enJp.completed = true;
+            document.getElementById('tab-en-jp').classList.remove('active');
+            document.getElementById('tab-en-jp').classList.add('completed');
+            document.getElementById('tab-transport').classList.remove('locked');
+            
+            document.getElementById('en-jp-question').innerHTML = `
+                <div class="section-complete">
+                    <div class="section-complete-icon">✅</div>
+                    <div class="section-complete-title">セクション2 かんりょう!</div>
+                    <div class="section-complete-stats">${sectionStatus.enJp.correct} / ${sectionStatus.enJp.total} せいかい</div>
+                    <button class="continue-btn" onclick="startTransportSection()">セクション3へ →</button>
+                </div>
+            `;
+        }
+        
+        // Transport section
+        function startTransportSection() {
+            currentSection = 'transport';
+            currentQuestion = 0;
+            
+            document.getElementById('tab-transport').classList.add('active');
+            document.querySelectorAll('.practice-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('transport-section').classList.add('active');
+            
+            loadTransportQuestion();
+        }
+        
+        function loadTransportQuestion() {
+            if (currentQuestion >= transportQuestions.length) {
+                completeSectionTransport();
+                return;
+            }
+            
+            const q = transportQuestions[currentQuestion];
+            const displaySentence = q.sentence.replace('___', '<span class="blank" style="display: inline-block; min-width: 80px; border-bottom: 3px solid #11998e; color: #11998e; font-weight: bold;">?</span>');
+            
+            document.getElementById('transport-question').innerHTML = `
+                <div class="question-box">
+                    <div class="question-number">もんだい ${currentQuestion + 1} / ${transportQuestions.length}</div>
+                    <div class="question-text">ただしい のりものを えらんでください。</div>
+                    <div class="transport-visual">
+                        <div class="transport-item"><div class="transport-icon">✈️</div><div class="transport-name">ひこうき</div></div>
+                        <div class="transport-item"><div class="transport-icon">🚢</div><div class="transport-name">ふね</div></div>
+                        <div class="transport-item"><div class="transport-icon">🚄</div><div class="transport-name">しんかんせん</div></div>
+                        <div class="transport-item"><div class="transport-icon">🚃</div><div class="transport-name">でんしゃ</div></div>
+                        <div class="transport-item"><div class="transport-icon">🚇</div><div class="transport-name">ちかてつ</div></div>
+                        <div class="transport-item"><div class="transport-icon">🚌</div><div class="transport-name">バス</div></div>
+                        <div class="transport-item"><div class="transport-icon">🚕</div><div class="transport-name">タクシー</div></div>
+                        <div class="transport-item"><div class="transport-icon">🚲</div><div class="transport-name">じてんしゃ</div></div>
+                        <div class="transport-item"><div class="transport-icon">🚶</div><div class="transport-name">あるいて</div></div>
+                    </div>
+                    <div class="japanese-prompt" style="font-size: clamp(16px, 2.5vw, 20px);">${displaySentence}</div>
+                    <div style="text-align: center; color: #666; font-size: 14px; margin-bottom: 15px;">ヒント: ${q.hint}</div>
+                    <div class="options-grid" id="transport-options">
+                        ${q.options.map(opt => `
+                            <button class="option-btn" data-answer="${opt}">${opt}</button>
+                        `).join('')}
+                    </div>
+                    <div class="feedback" id="transport-feedback"></div>
+                </div>
+            `;
+            
+            document.querySelectorAll('#transport-options .option-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    checkTransportAnswer(this, this.dataset.answer, q.blank);
+                });
+            });
+        }
+        
+        function checkTransportAnswer(btn, selected, correct) {
+            const buttons = document.querySelectorAll('#transport-options .option-btn');
+            buttons.forEach(b => b.disabled = true);
+            
+            const isCorrect = selected === correct;
+            
+            if (isCorrect) {
+                btn.classList.add('correct');
+                score += 10;
+                sectionStatus.transport.correct++;
+            } else {
+                btn.classList.add('incorrect');
+                buttons.forEach(b => {
+                    if (b.dataset.answer === correct) b.classList.add('correct');
+                });
+            }
+            
+            questionsAnswered++;
+            updateScoreBoard();
+            
+            const blank = document.querySelector('.blank');
+            if (blank) {
+                blank.textContent = correct;
+                blank.style.borderColor = isCorrect ? '#4caf50' : '#f44336';
+            }
+            
+            const feedback = document.getElementById('transport-feedback');
+            if (isCorrect) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = `⭕ せいかい! <button class="next-btn" onclick="nextTransportQuestion()">つぎへ →</button>`;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = `❌ ちがいます。<div class="correct-answer">こたえ: ${correct}</div> <button class="next-btn" onclick="nextTransportQuestion()">つぎへ →</button>`;
+            }
+        }
+        
+        function nextTransportQuestion() {
+            currentQuestion++;
+            loadTransportQuestion();
+        }
+        
+        function completeSectionTransport() {
+            sectionStatus.transport.completed = true;
+            document.getElementById('tab-transport').classList.remove('active');
+            document.getElementById('tab-transport').classList.add('completed');
+            document.getElementById('tab-dates').classList.remove('locked');
+            
+            document.getElementById('transport-question').innerHTML = `
+                <div class="section-complete">
+                    <div class="section-complete-icon">✅</div>
+                    <div class="section-complete-title">セクション3 かんりょう!</div>
+                    <div class="section-complete-stats">${sectionStatus.transport.correct} / ${sectionStatus.transport.total} せいかい</div>
+                    <button class="continue-btn" onclick="startDatesSection()">セクション4へ →</button>
+                </div>
+            `;
+        }
+        
+        // Dates section
+        function startDatesSection() {
+            currentSection = 'dates';
+            currentQuestion = 0;
+            
+            document.getElementById('tab-dates').classList.add('active');
+            document.querySelectorAll('.practice-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('dates-section').classList.add('active');
+            
+            loadDatesQuestion();
+        }
+        
+        function loadDatesQuestion() {
+            if (currentQuestion >= datesQuestions.length) {
+                showResults();
+                return;
+            }
+            
+            const q = datesQuestions[currentQuestion];
+            
+            document.getElementById('dates-question').innerHTML = `
+                <div class="question-box">
+                    <div class="question-number">もんだい ${currentQuestion + 1} / ${datesQuestions.length}</div>
+                    <div class="question-text">ただしい こたえを えらんでください。</div>
+                    <div class="calendar-visual">
+                        <div class="calendar-day special">1</div>
+                        <div class="calendar-day special">2</div>
+                        <div class="calendar-day special">3</div>
+                        <div class="calendar-day special">4</div>
+                        <div class="calendar-day special">5</div>
+                        <div class="calendar-day special">6</div>
+                        <div class="calendar-day special">7</div>
+                        <div class="calendar-day special">8</div>
+                        <div class="calendar-day special">9</div>
+                        <div class="calendar-day special">10</div>
+                        <div class="calendar-day">11</div>
+                        <div class="calendar-day">12</div>
+                        <div class="calendar-day">13</div>
+                        <div class="calendar-day special">14</div>
+                        <div class="calendar-day">15</div>
+                        <div class="calendar-day">16</div>
+                        <div class="calendar-day">17</div>
+                        <div class="calendar-day">18</div>
+                        <div class="calendar-day">19</div>
+                        <div class="calendar-day special">20</div>
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                        <div class="calendar-day">23</div>
+                        <div class="calendar-day special">24</div>
+                        <div class="calendar-day">25</div>
+                        <div class="calendar-day">26</div>
+                        <div class="calendar-day">27</div>
+                        <div class="calendar-day">28</div>
+                    </div>
+                    <div style="text-align: center; font-size: 12px; color: #666; margin-bottom: 15px;">⚠️ とくべつな よみかたの ひ</div>
+                    <div class="japanese-prompt" style="font-size: clamp(16px, 2.5vw, 20px);">${q.question}</div>
+                    <div class="options-grid" id="dates-options">
+                        ${q.options.map(opt => `
+                            <button class="option-btn" data-answer="${opt}">${opt}</button>
+                        `).join('')}
+                    </div>
+                    <div class="feedback" id="dates-feedback"></div>
+                </div>
+            `;
+            
+            document.querySelectorAll('#dates-options .option-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    checkDatesAnswer(this, this.dataset.answer, q.answer);
+                });
+            });
+        }
+        
+        function checkDatesAnswer(btn, selected, correct) {
+            const buttons = document.querySelectorAll('#dates-options .option-btn');
+            buttons.forEach(b => b.disabled = true);
+            
+            const isCorrect = selected === correct;
+            
+            if (isCorrect) {
+                btn.classList.add('correct');
+                score += 10;
+                sectionStatus.dates.correct++;
+            } else {
+                btn.classList.add('incorrect');
+                buttons.forEach(b => {
+                    if (b.dataset.answer === correct) b.classList.add('correct');
+                });
+            }
+            
+            questionsAnswered++;
+            updateScoreBoard();
+            
+            const feedback = document.getElementById('dates-feedback');
+            if (isCorrect) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = `⭕ せいかい! <button class="next-btn" onclick="nextDatesQuestion()">つぎへ →</button>`;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = `❌ ちがいます。<div class="correct-answer">こたえ: ${correct}</div> <button class="next-btn" onclick="nextDatesQuestion()">つぎへ →</button>`;
+            }
+        }
+        
+        function nextDatesQuestion() {
+            currentQuestion++;
+            loadDatesQuestion();
+        }
+        
+        // Update score board
+        function updateScoreBoard() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('answered').textContent = questionsAnswered;
+            
+            const progress = (questionsAnswered / totalQuestions) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+        
+        // Show results
+        function showResults() {
+            sectionStatus.dates.completed = true;
+            document.getElementById('tab-dates').classList.remove('active');
+            document.getElementById('tab-dates').classList.add('completed');
+            
+            document.querySelectorAll('.practice-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('results-section').classList.add('active');
+            
+            const totalCorrect = sectionStatus.jpEn.correct + sectionStatus.enJp.correct + 
+                                 sectionStatus.transport.correct + sectionStatus.dates.correct;
+            const percentage = Math.round((totalCorrect / totalQuestions) * 100);
+            
+            document.getElementById('final-score').textContent = percentage + '%';
+            document.getElementById('jp-en-score').textContent = `${sectionStatus.jpEn.correct}/${sectionStatus.jpEn.total}`;
+            document.getElementById('en-jp-score').textContent = `${sectionStatus.enJp.correct}/${sectionStatus.enJp.total}`;
+            document.getElementById('transport-score').textContent = `${sectionStatus.transport.correct}/${sectionStatus.transport.total}`;
+            document.getElementById('dates-score').textContent = `${sectionStatus.dates.correct}/${sectionStatus.dates.total}`;
+            
+            if (percentage >= 80) {
+                document.getElementById('results-icon').textContent = '🎉';
+                document.getElementById('results-title').textContent = 'すばらしい!';
+                document.getElementById('results-message').textContent = 'ごうかく! よく がんばりました!';
+            } else if (percentage >= 60) {
+                document.getElementById('results-icon').textContent = '👍';
+                document.getElementById('results-title').textContent = 'よく できました!';
+                document.getElementById('results-message').textContent = 'もうすこしで ごうかくです。がんばって!';
+            } else {
+                document.getElementById('results-icon').textContent = '📚';
+                document.getElementById('results-title').textContent = 'もっと れんしゅう しましょう!';
+                document.getElementById('results-message').textContent = 'ごいを ふくしゅう してください。';
+            }
+        }
+        
+        // Restart quiz
+        function restartQuiz() {
+            currentSection = 'jp-en';
+            currentQuestion = 0;
+            score = 0;
+            questionsAnswered = 0;
+            
+            sectionStatus = {
+                jpEn: { completed: false, correct: 0, total: 10 },
+                enJp: { completed: false, correct: 0, total: 10 },
+                transport: { completed: false, correct: 0, total: 10 },
+                dates: { completed: false, correct: 0, total: 10 }
+            };
+            
+            // Reset tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'completed', 'locked');
+            });
+            document.getElementById('tab-jp-en').classList.add('active');
+            document.getElementById('tab-en-jp').classList.add('locked');
+            document.getElementById('tab-transport').classList.add('locked');
+            document.getElementById('tab-dates').classList.add('locked');
+            
+            // Reset sections
+            document.querySelectorAll('.practice-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('jp-en-section').classList.add('active');
+            
+            // Regenerate questions
+            generateJpEnQuestions();
+            generateEnJpQuestions();
+            generateTransportQuestions();
+            generateDatesQuestions();
+            
+            updateScoreBoard();
+            loadJpEnQuestion();
+        }
+        
+        // Toggle reference
+        function toggleReference() {
+            const card = document.getElementById('referenceCard');
+            card.classList.toggle('show');
+            const btn = document.querySelector('.reference-btn');
+            btn.textContent = card.classList.contains('show') ? '📖 ごいリストをかくす' : '📖 ごいリストをみる';
+        }
+        
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>

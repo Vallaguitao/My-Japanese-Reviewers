@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Irodori Practice 16</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--sakura-50:#fef7f8;--sakura-100:#fdeef0;--sakura-200:#fbdae0;--sakura-300:#f7b8c4;--sakura-400:#f291a5;--sakura-500:#e86b8a;--sakura-600:#d44a6e;--sakura-700:#b83359;--sakura-800:#9a2d4e;--correct:#4caf7a;--correct-bg:#eaf7ef;--wrong:#d94f5c;--wrong-bg:#fdeef0;--text-primary:#3d2533;--text-secondary:#6b4a5a;--text-light:#9a7a8a;--bg-main:#fef7f8;--bg-card:#ffffff;--shadow-sm:0 2px 8px rgba(184,51,89,.08);--shadow-md:0 4px 20px rgba(184,51,89,.12);--shadow-lg:0 8px 32px rgba(184,51,89,.16);--radius:16px}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg-main);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 20% 20%,rgba(247,184,196,.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(242,145,165,.10) 0%,transparent 50%),radial-gradient(ellipse at 50% 50%,rgba(253,238,240,.3) 0%,transparent 70%);pointer-events:none;z-index:0}
+  .container{max-width:640px;margin:0 auto;padding:24px 16px 60px;position:relative;z-index:1}
+  .header{text-align:center;margin-bottom:32px;animation:fadeDown .6s ease}
+  .header-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--sakura-400),var(--sakura-500));color:#fff;padding:6px 16px;border-radius:20px;font-size:.75rem;font-weight:500;letter-spacing:.05em;margin-bottom:12px}
+  .header h1{font-family:'Zen Maru Gothic',sans-serif;font-size:1.75rem;font-weight:700;color:var(--sakura-700);margin-bottom:4px}
+  .header p{color:var(--text-light);font-size:.875rem}
+  .progress-area{margin-bottom:24px;animation:fadeDown .6s ease .1s both}
+  .progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:.8rem;color:var(--text-secondary)}
+  .progress-info .score{font-weight:500;color:var(--sakura-600)}
+  .progress-bar{height:8px;background:var(--sakura-100);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--sakura-400),var(--sakura-500));border-radius:4px;transition:width .5s cubic-bezier(.4,0,.2,1);width:0%}
+  .section-label{display:inline-flex;align-items:center;gap:6px;background:var(--sakura-100);color:var(--sakura-700);padding:5px 14px;border-radius:16px;font-size:.75rem;font-weight:500;margin-bottom:16px}
+  .question-card{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:28px 24px;margin-bottom:20px;animation:slideUp .5s ease;border:1px solid rgba(247,184,196,.2)}
+  .question-number{font-size:.75rem;color:var(--text-light);font-weight:500;margin-bottom:16px;display:flex;align-items:center;gap:6px}
+  .question-number::before{content:'🌸';font-size:.85rem}
+  .sentence{font-size:1.2rem;line-height:2.4;margin-bottom:8px;font-weight:400}
+  .sentence .blank{display:inline-block;min-width:90px;border-bottom:2.5px dashed var(--sakura-400);text-align:center;padding:0 4px;margin:0 2px;color:var(--sakura-600);font-weight:500;transition:all .3s ease}
+  .sentence .blank.filled{border-bottom-style:solid;border-color:var(--correct);color:var(--correct)}
+  .sentence .blank.wrong{border-bottom-style:solid;border-color:var(--wrong);color:var(--wrong);text-decoration:line-through}
+  .sentence-b{font-size:1.05rem;color:var(--text-secondary);line-height:2.2;margin-top:8px}
+  .kanji-display{text-align:center;font-size:3rem;font-weight:700;color:var(--text-primary);margin:16px 0 24px;font-family:'Noto Sans JP',serif;letter-spacing:.1em}
+  .reading-answer{text-align:center;font-size:1.3rem;color:var(--sakura-600);font-weight:500;margin-bottom:20px;min-height:2em;padding:8px;border-radius:10px;transition:all .3s ease}
+  .reading-answer.correct-bg{background:var(--correct-bg);color:var(--correct)}
+  .reading-answer.wrong-bg{background:var(--wrong-bg);color:var(--wrong)}
+  .options{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+  .option-btn{display:block;width:100%;padding:14px 20px 12px;border:2px solid var(--sakura-200);border-radius:12px;background:var(--sakura-50);font-family:'Noto Sans JP',sans-serif;font-size:1.1rem;line-height:2;color:var(--text-primary);cursor:pointer;transition:all .25s ease;text-align:center;font-weight:400}
+  .option-btn:hover:not(:disabled){border-color:var(--sakura-400);background:var(--sakura-100);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+  .option-btn:active:not(:disabled){transform:translateY(0)}
+  .option-btn:disabled{cursor:default}
+  .option-btn.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--correct);font-weight:500}
+  .option-btn.correct::after{content:' ✓';font-weight:700}
+  .option-btn.wrong{border-color:var(--wrong);background:var(--wrong-bg);color:var(--wrong);opacity:.8}
+  .option-btn.wrong::after{content:' ✗';font-weight:700}
+  .option-btn.dimmed{opacity:.45;border-color:var(--sakura-100)}
+  .explanation{margin-top:18px;padding:16px 20px;background:linear-gradient(135deg,#fef9f0,#fdf5e6);border-radius:12px;border-left:4px solid var(--sakura-400);animation:fadeIn .4s ease;font-size:.9rem;line-height:1.8;color:var(--text-secondary)}
+  .explanation strong{color:var(--sakura-700);font-weight:700}
+  .explanation .grammar-point{font-family:'Zen Maru Gothic',sans-serif;font-weight:700;color:var(--sakura-600);font-size:.95rem;margin-bottom:4px;display:block}
+  .next-btn{display:block;width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--sakura-500),var(--sakura-600));color:#fff;font-family:'Noto Sans JP',sans-serif;font-size:1rem;font-weight:500;cursor:pointer;transition:all .3s ease;animation:fadeIn .4s ease;margin-top:16px;box-shadow:0 4px 15px rgba(212,74,110,.3)}
+  .next-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,74,110,.4)}
+  .next-btn:active{transform:translateY(0)}
+  .section-break{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:40px 24px;text-align:center;animation:slideUp .6s ease;border:1px solid rgba(247,184,196,.2);margin-bottom:20px}
+  .section-break h2{font-family:'Zen Maru Gothic',sans-serif;font-size:1.3rem;color:var(--sakura-700);margin-bottom:8px}
+  .section-break p{color:var(--text-secondary);font-size:.9rem;margin-bottom:20px;line-height:1.7}
+  .section-score{font-size:2rem;font-weight:700;color:var(--sakura-600);font-family:'Zen Maru Gothic',sans-serif;margin-bottom:16px}
+  .section-score span{font-size:1rem;color:var(--text-light);font-weight:400}
+  .results-card{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:40px 24px;text-align:center;animation:slideUp .6s ease;border:1px solid rgba(247,184,196,.2)}
+  .results-emoji{font-size:3rem;margin-bottom:16px;display:block}
+  .results-card h2{font-family:'Zen Maru Gothic',sans-serif;font-size:1.5rem;color:var(--sakura-700);margin-bottom:8px}
+  .results-score{font-size:3rem;font-weight:700;color:var(--sakura-600);margin:16px 0;font-family:'Zen Maru Gothic',sans-serif}
+  .results-score span{font-size:1.2rem;color:var(--text-light);font-weight:400}
+  .results-message{color:var(--text-secondary);margin-bottom:24px;line-height:1.7;font-size:.95rem}
+  .results-breakdown{display:flex;justify-content:center;gap:24px;margin-bottom:24px}
+  .breakdown-item{background:var(--sakura-50);border-radius:12px;padding:12px 20px;text-align:center}
+  .breakdown-item .label{font-size:.7rem;color:var(--text-light);margin-bottom:4px}
+  .breakdown-item .value{font-size:1.3rem;font-weight:700;color:var(--sakura-600);font-family:'Zen Maru Gothic'}
+  .retry-btn{display:inline-block;padding:14px 40px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--sakura-500),var(--sakura-600));color:#fff;font-family:'Noto Sans JP',sans-serif;font-size:1rem;font-weight:500;cursor:pointer;transition:all .3s ease;box-shadow:0 4px 15px rgba(212,74,110,.3);margin-top:8px}
+  .retry-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,74,110,.4)}
+  .review-section{margin-top:32px;text-align:left}
+  .review-section h3{font-family:'Zen Maru Gothic',sans-serif;color:var(--sakura-700);font-size:1.1rem;margin-bottom:16px;text-align:center}
+  .review-item{background:var(--sakura-50);border-radius:12px;padding:14px 18px;margin-bottom:10px;border-left:4px solid var(--correct);font-size:.9rem;line-height:1.8}
+  .review-item.missed{border-left-color:var(--wrong);background:var(--wrong-bg)}
+  .review-item .q-label{font-size:.7rem;color:var(--text-light);font-weight:500;margin-bottom:4px}
+  .review-item .answer-line{font-size:.8rem;color:var(--text-secondary);margin-top:4px}
+  ruby{ruby-align:center}rt{font-size:.5em;color:var(--text-light);font-weight:300;letter-spacing:.02em}
+  .option-btn rt{font-size:.5em;color:inherit}.explanation rt{font-size:.55em}.review-item rt{font-size:.55em}
+  .hidden{display:none!important}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .petal{position:fixed;width:12px;height:12px;background:var(--sakura-300);border-radius:50% 0 50% 50%;opacity:.2;pointer-events:none;z-index:0;animation:float linear infinite}
+  @keyframes float{0%{transform:translateY(-20px) rotate(0deg);opacity:0}10%{opacity:.2}90%{opacity:.2}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="header-badge">IRODORI • <ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby> 16</div>
+    <h1>Practice Quiz 16</h1>
+    <p><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby> (12) ＋ <ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby><ruby>読<rt>よ</rt></ruby>み (5)</p>
+  </div>
+  <div class="progress-area">
+    <div class="progress-info">
+      <span id="progress-text">Question 1 / 17</span>
+      <span class="score" id="score-text">Score: 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+  <div id="quiz-area"></div>
+  <div id="results-area" class="hidden"></div>
+</div>
+<script>
+const R=(k,r)=>`<ruby>${k}<rt>${r}</rt></ruby>`;
+const TOTAL=17,GRAMMAR_COUNT=12;
+
+const grammarQuestions=[
+  {
+    id:1,type:'grammar',
+    display:[`${R('地','じ')}${R('震','しん')}で、${R('店','みせ')}に${R('食','た')}べ${R('物','もの')}が`,'___','なりました。'],
+    sentenceB:null,
+    options:[`${R('届','とど')}かなく`,`${R('届','とど')}かなくて`,`${R('届','とど')}かない`],
+    answer:`${R('届','とど')}かなく`,
+    explanation:{
+      point:'〜なくなる（become unable to ~ / stop ~ing）',
+      text:'「〜なくなる」は、ある状態が成り立たなくなることを表します。動詞のない形から「い」を取って「く」を付け、「なる」に接続します。「届かない」→「届かなく」＋「なる」＝届かなくなる。「届かなくて」はて形の接続で「なる」には使えません。「届かない」はそのままでは「なる」に接続できません。'
+    }
+  },
+  {
+    id:2,type:'grammar',
+    display:[`${R('台','たい')}${R('風','ふう')}の${R('日','ひ')}は、${R('危','き')}${R('険','けん')}ですから${R('外','そと')}に`,'___','。'],
+    sentenceB:null,
+    options:[`${R('出','で')}たほうがいいです`,`${R('出','で')}なくちゃ`,`${R('出','で')}ないようにしてください`],
+    answer:`${R('出','で')}ないようにしてください`,
+    explanation:{
+      point:'〜ないようにしてください（please try not to ~）',
+      text:'「〜ないようにしてください」は、相手に何かをしないよう丁寧にお願いする表現です。台風の日は危険なので「外に出ないで」と言いたい場面です。「出たほうがいいです」は逆に「出るべき」という意味、「出なくちゃ」は「出なければならない」という意味で、文脈に合いません。'
+    }
+  },
+  {
+    id:3,type:'grammar',
+    display:[`そっちは${R('危','あぶ')}ない！${R('早','はや')}く${R('建','たて')}${R('物','もの')}から`,'___','！'],
+    sentenceB:null,
+    options:[`${R('離','はな')}れる`,`${R('離','はな')}れろ`,`${R('離','はな')}れた`],
+    answer:`${R('離','はな')}れろ`,
+    explanation:{
+      point:'命令形（imperative form）',
+      text:'命令形は、緊急時に強く指示する時に使います。一段動詞（る動詞）の命令形は「る」を「ろ」に変えます。「離れる」→「離れろ」。「離れる」は辞書形で命令の力がありません。「離れた」は過去形で場面に合いません。災害時は命令形で素早く指示します。'
+    }
+  },
+  {
+    id:4,type:'grammar',
+    display:[`${R('店','みせ')}が`,'___',`かどうか、わかりません。`],
+    sentenceB:null,
+    options:[`${R('開','あ')}いていて`,`${R('開','あ')}いていれば`,`${R('開','あ')}いている`],
+    answer:`${R('開','あ')}いている`,
+    explanation:{
+      point:'〜かどうか（whether or not ~）',
+      text:'「〜かどうか」は「〜かどうか分からない・知りたい」のように、はい/いいえが不明な時に使います。普通形（辞書形・ている形など）＋かどうか が正しい接続です。「開いている」はている形でそのまま接続できます。「開いていて」はて形、「開いていれば」は条件形で「かどうか」には接続できません。'
+    }
+  },
+  {
+    id:5,type:'grammar',
+    display:[`${R('火','か')}${R('事','じ')}だ。${R('早','はや')}く${R('外','そと')}に`,'___','！'],
+    sentenceB:null,
+    options:[`${R('逃','に')}げろ`,`${R('逃','に')}げない`,`${R('逃','に')}げるな`],
+    answer:`${R('逃','に')}げろ`,
+    explanation:{
+      point:'命令形（imperative form）',
+      text:'Q3と同じ命令形のパターンです。「逃げる」（一段動詞）→「逃げろ」。火事の緊急時に「早く逃げろ！」と命令しています。「逃げない」は否定形で場面に合いません。「逃げるな」は禁止形（〜するな）で「逃げてはいけない」という逆の意味になります。'
+    }
+  },
+  {
+    id:6,type:'grammar',
+    display:[`ドアが${R('開','あ')}かなくなると、${R('外','そと')}に`,'___','なります。'],
+    sentenceB:null,
+    options:[`${R('出','で')}られない`,`${R('出','で')}られないで`,`${R('出','で')}られなく`],
+    answer:`${R('出','で')}られなく`,
+    explanation:{
+      point:'〜なくなる（become unable to ~）',
+      text:'Q1と同じ「〜なくなる」のパターンです。可能形の否定「出られない」から「い」を取って「く」を付けます。「出られない」→「出られなく」＋「なる」＝出られなくなる（外に出ることができなくなる）。「出られない」はそのままでは「なる」に接続できません。「出られないで」はて形の否定で別の用法です。'
+    }
+  },
+  {
+    id:7,type:'grammar',
+    display:[`そっちは${R('危','あぶ')}ないから、`,'___','！'],
+    sentenceB:null,
+    options:[`${R('行','い')}くし`,`${R('行','い')}かなきゃ`,`${R('行','い')}くな`],
+    answer:`${R('行','い')}くな`,
+    explanation:{
+      point:'〜な（prohibitive form — don\'t ~!）',
+      text:'「〜な」は動詞の辞書形に「な」を付けて、強く禁止する表現です。「行く」＋「な」＝「行くな」（行ってはいけない！）。危険な方向に行こうとする人を止める場面です。「行くし」は「〜し」（理由の列挙）で意味が違います。「行かなきゃ」は「行かなければならない」で逆の意味です。'
+    }
+  },
+  {
+    id:8,type:'grammar',
+    display:[`${R('階','かい')}${R('段','だん')}では、`,'___','ようにしてください。'],
+    sentenceB:null,
+    options:[`${R('転','ころ')}ばない`,`${R('転','ころ')}べる`,`${R('転','ころ')}んだ`],
+    answer:`${R('転','ころ')}ばない`,
+    explanation:{
+      point:'〜ないようにしてください（please try not to ~）',
+      text:'Q2と同じ「〜ないようにしてください」のパターンです。「転ぶ」（五段動詞）→ない形「転ばない」＋「ようにしてください」＝転ばないようにしてください（転ばないよう気を付けてください）。「転べる」は可能形、「転んだ」は過去形で、「ようにしてください」との接続が合いません。'
+    }
+  },
+  {
+    id:9,type:'grammar',
+    display:[`みんな！`,'___',`！${R('中','なか')}${R('庭','にわ')}に${R('集','あつ')}まって！`],
+    sentenceB:null,
+    options:[`${R('急','いそ')}げ`,`${R('急','いそ')}げば`,`${R('急','いそ')}ぐ`],
+    answer:`${R('急','いそ')}げ`,
+    explanation:{
+      point:'命令形（imperative form）',
+      text:'五段動詞の命令形は「う段」を「え段」に変えます。「急ぐ」→「急げ」。緊急時に「早くしろ！」と指示する場面です。「急げば」は条件形（もし急げば）で命令ではありません。「急ぐ」は辞書形で命令の力がありません。'
+    }
+  },
+  {
+    id:10,type:'grammar',
+    display:[`${R('地','じ')}${R('震','しん')}のあと、${R('火','ひ')}が`,'___','、あわてないでください。'],
+    sentenceB:null,
+    options:[`${R('出','で')}ても`,`${R('出','で')}たら`,`${R('出','で')}ると`],
+    answer:`${R('出','で')}ても`,
+    explanation:{
+      point:'〜ても（even if ~）',
+      text:'「〜ても」は逆接の条件を表し、「〜が起きても、それでも〜」という意味です。「火が出ても、あわてないでください」＝たとえ火が出たとしても、慌てないでください。「出たら」は順接条件（出た場合は）、「出ると」は自然な結果を表す条件で、「あわてないで」との組み合わせでは「ても」が最適です。'
+    }
+  },
+  {
+    id:11,type:'grammar',
+    display:['___',`、${R('懐','かい')}${R('中','ちゅう')}${R('電','でん')}${R('灯','とう')}があるから、だいじょうぶです。`],
+    sentenceB:null,
+    options:[`${R('停','てい')}${R('電','でん')}したので`,`${R('停','てい')}${R('電','でん')}しても`,`${R('停','てい')}${R('電','でん')}すると`],
+    answer:`${R('停','てい')}${R('電','でん')}しても`,
+    explanation:{
+      point:'〜ても（even if ~）',
+      text:'Q10と同じ「〜ても」のパターンです。「停電しても、だいじょうぶです」＝たとえ停電しても、懐中電灯があるから大丈夫。「したので」は理由（停電したから）で、「だいじょうぶ」との意味がずれます。「すると」は自然な結果の条件で、「だいじょうぶ」にはつながりにくいです。'
+    }
+  },
+  {
+    id:12,type:'grammar',
+    display:[`${R('給','きゅう')}${R('水','すい')}${R('車','しゃ')}が`,'___',`かどうか、${R('知','し')}っていますか？`],
+    sentenceB:null,
+    options:[`${R('来','き')}て`,`${R('来','こ')}い`,`${R('来','く')}る`],
+    answer:`${R('来','く')}る`,
+    explanation:{
+      point:'〜かどうか（whether or not ~）',
+      text:'Q4と同じ「〜かどうか」のパターンです。普通形＋かどうか が正しい接続です。「来る」は辞書形（普通形）でそのまま接続できます。「来て」はて形、「来い」は命令形で「かどうか」には接続できません。なお「来る」は不規則動詞で、読みは「くる」です。'
+    }
+  }
+];
+
+const kanjiQuestions=[
+  {
+    id:13,type:'kanji',
+    kanjiPlain:'危ない',
+    options:['あびない','あぶない','あべない'],
+    answer:'あぶない',
+    explanation:{
+      point:'危ない（あぶない）',
+      text:'「危」の訓読みは「あぶ」で、「危ない」（dangerous）になります。「危ない！」は緊急時の警告としてよく使います。「あびない」は「浴びない」（浴びるの否定形）に近い音、「あべない」は存在しない読みです。'
+    }
+  },
+  {
+    id:14,type:'kanji',
+    kanjiPlain:'台風',
+    options:['だいぶう','たいふう','だいぶう'],
+    answer:'たいふう',
+    explanation:{
+      point:'台風（たいふう）',
+      text:'「台」は「たい」（台所＝だいどころ、でも「台風」では「たい」）、「風」は「ふう」（風力＝ふうりょく）。「台風」は英語の "typhoon" の意味です。「だいぶう」は「台」を「だい」、「風」を「ぶう」と読んでおり、どちらも間違いです。'
+    }
+  },
+  {
+    id:15,type:'kanji',
+    kanjiPlain:'心配な',
+    options:['しぱいな','しっぱいな','しんぱいな'],
+    answer:'しんぱいな',
+    explanation:{
+      point:'心配な（しんぱいな）',
+      text:'「心」は「しん」（心臓＝しんぞう）、「配」は「ぱい」（配達＝はいたつ）。「心配な」はな形容詞で「worried / anxious」の意味です。「しぱいな」は「ん」が抜けています。「しっぱいな」は「失敗な」に近い音で別の単語です。'
+    }
+  },
+  {
+    id:16,type:'kanji',
+    kanjiPlain:'集まる',
+    options:['あつまる','あずまる','あすまる'],
+    answer:'あつまる',
+    explanation:{
+      point:'集まる（あつまる）',
+      text:'「集」の訓読みは「あつ」で、「集まる」（to gather / to assemble）になります。「中庭に集まって！」のように避難時に使います。「あずまる」「あすまる」は存在しない読みです。なお「集める」（あつめる）は他動詞です。'
+    }
+  },
+  {
+    id:17,type:'kanji',
+    kanjiPlain:'地震',
+    options:['ちしん','ししん','じしん'],
+    answer:'じしん',
+    explanation:{
+      point:'地震（じしん）',
+      text:'「地」は「じ」（地面＝じめん）、「震」は「しん」（震度＝しんど）。「地震」は英語の "earthquake" の意味です。「ちしん」は「地」を訓読み「ち」で読んでおり間違いです。「ししん」は存在しない読みです。同音異義語に「自信」（じしん＝confidence）があります。'
+    }
+  }
+];
+
+const allQuestions=[...grammarQuestions,...kanjiQuestions];
+let currentQ=0,score=0,grammarScore=0,kanjiScore=0,answered=[];
+
+function init(){
+  currentQ=0;score=0;grammarScore=0;kanjiScore=0;answered=[];
+  document.getElementById('results-area').classList.add('hidden');
+  renderQuestion();updateProgress();createPetals();
+}
+
+function renderQuestion(){
+  const area=document.getElementById('quiz-area');
+  if(currentQ===GRAMMAR_COUNT&&!document.querySelector('.section-shown')){
+    area.innerHTML=`<div class="section-break">
+      <span style="font-size:2rem;display:block;margin-bottom:12px">📖</span>
+      <h2><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby>セクション<ruby>完<rt>かん</rt></ruby><ruby>了<rt>りょう</rt></ruby>！</h2>
+      <div class="section-score">${grammarScore} <span>/ ${GRAMMAR_COUNT}</span></div>
+      <p><ruby>次<rt>つぎ</rt></ruby>は<ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>の<ruby>読<rt>よ</rt></ruby>みセクションです。<br><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>を<ruby>見<rt>み</rt></ruby>て<ruby>正<rt>ただ</rt></ruby>しい<ruby>読<rt>よ</rt></ruby>みを<ruby>選<rt>えら</rt></ruby>びましょう。</p>
+      <button class="next-btn" onclick="document.querySelector('.section-break').classList.add('section-shown');renderQuestionContent()"><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby><ruby>読<rt>よ</rt></ruby>みへ →</button>
+    </div>`;return;
+  }
+  renderQuestionContent();
+}
+
+function renderQuestionContent(){
+  const q=allQuestions[currentQ],area=document.getElementById('quiz-area');
+  if(q.type==='grammar'){
+    const parts=q.display.map(p=>p==='___'?'<span class="blank" id="blank-slot">　？　</span>':p).join('');
+    area.innerHTML=`<div class="question-card">
+      <div class="section-label"><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby></div>
+      <div class="question-number"><ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${currentQ+1} / ${TOTAL}</div>
+      <div class="sentence">${parts}</div>
+      ${q.sentenceB?`<div class="sentence-b">${q.sentenceB}</div>`:''}
+      <div class="options" id="options-area">
+        ${q.options.map((o,i)=>`<button class="option-btn" onclick="selectAnswer(${i})">${o}</button>`).join('')}
+      </div>
+      <div id="explanation-area"></div><div id="next-area"></div>
+    </div>`;
+  } else {
+    area.innerHTML=`<div class="question-card">
+      <div class="section-label"><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby><ruby>読<rt>よ</rt></ruby>み</div>
+      <div class="question-number"><ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${currentQ+1} / ${TOTAL}</div>
+      <div class="kanji-display">${q.kanjiPlain}</div>
+      <div class="reading-answer" id="reading-slot"></div>
+      <div class="options" id="options-area">
+        ${q.options.map((o,i)=>`<button class="option-btn" onclick="selectAnswer(${i})">${o}</button>`).join('')}
+      </div>
+      <div id="explanation-area"></div><div id="next-area"></div>
+    </div>`;
+  }
+}
+
+function selectAnswer(idx){
+  const q=allQuestions[currentQ],selected=q.options[idx],isCorrect=selected===q.answer;
+  const buttons=document.querySelectorAll('.option-btn');
+  if(isCorrect){score++;if(q.type==='grammar')grammarScore++;else kanjiScore++;}
+
+  if(q.type==='grammar'){
+    const blank=document.getElementById('blank-slot');
+    if(blank){
+      if(isCorrect){blank.innerHTML=q.answer;blank.classList.add('filled');}
+      else{blank.innerHTML=selected;blank.classList.add('wrong');
+        setTimeout(()=>{blank.innerHTML=q.answer;blank.classList.remove('wrong');blank.classList.add('filled');},800);}
+    }
+  } else {
+    const slot=document.getElementById('reading-slot');
+    slot.textContent=isCorrect?q.answer:selected;
+    slot.classList.add(isCorrect?'correct-bg':'wrong-bg');
+    if(!isCorrect)setTimeout(()=>{slot.textContent=q.answer;slot.classList.remove('wrong-bg');slot.classList.add('correct-bg');},800);
+  }
+
+  answered.push({id:q.id,type:q.type,correct:isCorrect,selected,answer:q.answer});
+  buttons.forEach((btn,i)=>{btn.disabled=true;
+    if(q.options[i]===q.answer)btn.classList.add('correct');
+    else if(i===idx&&!isCorrect)btn.classList.add('wrong');
+    else btn.classList.add('dimmed');
+  });
+
+  document.getElementById('explanation-area').innerHTML=`
+    <div class="explanation"><span class="grammar-point">${q.explanation.point}</span>${q.explanation.text}</div>`;
+  const isLast=currentQ>=allQuestions.length-1;
+  document.getElementById('next-area').innerHTML=`
+    <button class="next-btn" onclick="${isLast?'showResults()':'nextQuestion()'}">
+      ${isLast?`<ruby>結<rt>けっ</rt></ruby><ruby>果<rt>か</rt></ruby>を<ruby>見<rt>み</rt></ruby>る →`:`<ruby>次<rt>つぎ</rt></ruby>の<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> →`}
+    </button>`;
+  updateProgress();
+}
+
+function nextQuestion(){currentQ++;renderQuestion();updateProgress();window.scrollTo({top:0,behavior:'smooth'});}
+
+function updateProgress(){
+  document.getElementById('progress-text').textContent=`Question ${currentQ+1} / ${TOTAL}`;
+  document.getElementById('score-text').textContent=`Score: ${score}`;
+  document.getElementById('progress-fill').style.width=`${(answered.length/TOTAL)*100}%`;
+}
+
+function showResults(){
+  document.getElementById('quiz-area').innerHTML='';
+  document.getElementById('progress-fill').style.width='100%';
+  const pct=Math.round((score/TOTAL)*100);
+  let emoji,msg;
+  if(pct===100){emoji='🌸✨';msg=`<ruby>満<rt>まん</rt></ruby><ruby>点<rt>てん</rt></ruby>！パーフェクト！`;}
+  else if(pct>=80){emoji='🌸';msg='よくできました！あと<ruby>少<rt>すこ</rt></ruby>しで<ruby>完<rt>かん</rt></ruby><ruby>璧<rt>ぺき</rt></ruby>です。';}
+  else if(pct>=60){emoji='🌱';msg='まあまあです。<ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>えた<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>を<ruby>復<rt>ふく</rt></ruby><ruby>習<rt>しゅう</rt></ruby>しましょう。';}
+  else{emoji='📖';msg='もう<ruby>少<rt>すこ</rt></ruby>し<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>しましょう。';}
+
+  const missed=answered.filter(a=>!a.correct);
+  let reviewHTML='';
+  if(missed.length>0){
+    reviewHTML=`<div class="review-section">
+      <h3><ruby>間<rt>ま</rt></ruby><ruby>違<rt>ちが</rt></ruby>えた<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby></h3>
+      ${missed.map(m=>{
+        const q=allQuestions.find(qq=>qq.id===m.id);
+        const displayText=q.type==='grammar'
+          ?q.display.join('').replace('___',`<strong>${q.answer}</strong>`)
+          :`<strong>${q.kanjiPlain}</strong> → ${q.answer}`;
+        return`<div class="review-item missed">
+          <div class="q-label">${q.type==='grammar'?'<ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby>':'<ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby>'} — <ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby> ${m.id}</div>
+          <div>${displayText}</div>
+          <div class="answer-line">あなたの<ruby>答<rt>こた</rt></ruby>え：${m.selected}　→　<ruby>正<rt>せい</rt></ruby><ruby>解<rt>かい</rt></ruby>：${m.answer}</div>
+        </div>`;
+      }).join('')}</div>`;
+  }
+
+  const ra=document.getElementById('results-area');
+  ra.classList.remove('hidden');
+  ra.innerHTML=`<div class="results-card">
+    <span class="results-emoji">${emoji}</span>
+    <h2>クイズ<ruby>完<rt>かん</rt></ruby><ruby>了<rt>りょう</rt></ruby>！</h2>
+    <div class="results-score">${score} <span>/ ${TOTAL}</span></div>
+    <div class="results-breakdown">
+      <div class="breakdown-item"><div class="label"><ruby>文<rt>ぶん</rt></ruby><ruby>法<rt>ぽう</rt></ruby></div><div class="value">${grammarScore}/${GRAMMAR_COUNT}</div></div>
+      <div class="breakdown-item"><div class="label"><ruby>漢<rt>かん</rt></ruby><ruby>字<rt>じ</rt></ruby></div><div class="value">${kanjiScore}/5</div></div>
+    </div>
+    <div class="results-message">${msg}</div>
+    <button class="retry-btn" onclick="init()">もう<ruby>一<rt>いち</rt></ruby><ruby>度<rt>ど</rt></ruby>チャレンジ →</button>
+    ${reviewHTML}
+  </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function createPetals(){
+  document.querySelectorAll('.petal').forEach(p=>p.remove());
+  for(let i=0;i<6;i++){
+    const p=document.createElement('div');p.className='petal';
+    p.style.left=Math.random()*100+'%';p.style.animationDuration=(8+Math.random()*12)+'s';
+    p.style.animationDelay=Math.random()*10+'s';p.style.width=(8+Math.random()*8)+'px';p.style.height=p.style.width;
+    document.body.appendChild(p);
+  }
+}
+init();
+</script>
+</body>
+</html>
