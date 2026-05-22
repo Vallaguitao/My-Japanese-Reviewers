@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLPT N4 Kanji Mastery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f4; /* Tailwind stone-100 */
+            touch-action: manipulation; /* Prevent double-tap zoom on mobile */
+        }
+        .kanji-font {
+            font-family: 'Noto Serif JP', serif;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            cursor: pointer;
+        }
+        .btn-option {
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-option:active {
+            transform: scale(0.97);
+        }
+    </style>
+</head>
+<body class="text-stone-800 min-h-screen flex flex-col">
+
+    <div class="flex-grow flex flex-col items-center justify-center p-4 max-w-lg mx-auto w-full">
+        
+        <!-- Header / Stats -->
+        <div class="w-full flex justify-between items-end mb-6 px-2">
+            <div>
+                <h1 class="text-2xl font-bold text-rose-700">N4 Kanji</h1>
+                <p class="text-sm text-stone-500 font-medium" id="progressText">Learned: 0 / 120</p>
+            </div>
+            <div class="text-right">
+                <div class="text-3xl font-bold tracking-tighter" id="scoreText">0</div>
+                <div class="text-xs font-semibold text-stone-400 uppercase tracking-wider">Streak</div>
+            </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="relative w-full aspect-square mb-6">
+            <canvas id="kanjiCanvas"></canvas>
+            
+            <!-- Overlay for showing readings after guessing -->
+            <div id="readingOverlay" class="absolute bottom-3 left-0 w-full flex justify-center opacity-0 transition-opacity duration-300 pointer-events-none px-4">
+                <div class="bg-stone-800/90 text-white px-6 py-3 rounded-2xl text-sm font-medium backdrop-blur-sm shadow-xl flex flex-col items-center gap-1 w-full max-w-xs">
+                    <span id="readingText" class="text-rose-200 font-bold tracking-wide"></span>
+                    <div class="w-full h-px bg-stone-600/50 my-0.5"></div>
+                    <span id="exampleText" class="text-stone-200 text-xs text-center leading-relaxed"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls / Multiple Choice -->
+        <div id="optionsContainer" class="grid grid-cols-2 gap-3 w-full">
+            <button class="btn-option bg-white border-2 border-stone-200 hover:border-rose-400 text-stone-700 font-semibold py-4 px-3 rounded-xl shadow-sm text-sm" onclick="checkAnswer(0)" id="btn0">Option 1</button>
+            <button class="btn-option bg-white border-2 border-stone-200 hover:border-rose-400 text-stone-700 font-semibold py-4 px-3 rounded-xl shadow-sm text-sm" onclick="checkAnswer(1)" id="btn1">Option 2</button>
+            <button class="btn-option bg-white border-2 border-stone-200 hover:border-rose-400 text-stone-700 font-semibold py-4 px-3 rounded-xl shadow-sm text-sm" onclick="checkAnswer(2)" id="btn2">Option 3</button>
+            <button class="btn-option bg-white border-2 border-stone-200 hover:border-rose-400 text-stone-700 font-semibold py-4 px-3 rounded-xl shadow-sm text-sm" onclick="checkAnswer(3)" id="btn3">Option 4</button>
+        </div>
+
+        <button id="nextBtn" class="hidden mt-6 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:-translate-y-1 w-full" onclick="nextKanji()">
+            Next Kanji ➔
+        </button>
+
+    </div>
+
+    <script>
+        // Comprehensive dataset based on the core N4 list with example vocabulary
+        const kanjiData = [
+            // Verbs
+            { k: '会', m: 'To meet', r: 'あ(う) / カイ', ex: '会社 (かいしゃ) - Company' }, { k: '開', m: 'To open', r: 'ひら(く) / カイ', ex: '開ける (あける) - To open' },
+            { k: '帰', m: 'To return', r: 'かえ(る) / キ', ex: '帰る (かえる) - To return' }, { k: '起', m: 'To wake up', r: 'お(きる) / キ', ex: '起きる (おきる) - To wake up' },
+            { k: '教', m: 'To teach', r: 'おし(える) / キョウ', ex: '教室 (きょうしつ) - Classroom' }, { k: '考', m: 'To think', r: 'かんが(える) / コウ', ex: '考える (かんがえる) - To think' },
+            { k: '作', m: 'To make', r: 'つく(る) / サク', ex: '作る (つくる) - To make' }, { k: '死', m: 'To die', r: 'し(ぬ) / シ', ex: '死ぬ (しぬ) - To die' },
+            { k: '始', m: 'To begin', r: 'はじ(める) / シ', ex: '始める (はじめる) - To begin' }, { k: '使', m: 'To use', r: 'つか(う) / シ', ex: '使う (つかう) - To use' },
+            { k: '持', m: 'To hold', r: 'も(つ) / ジ', ex: '持つ (もつ) - To hold' }, { k: '借', m: 'To borrow', r: 'か(りる) / シャク', ex: '借りる (かりる) - To borrow' },
+            { k: '集', m: 'To gather', r: 'あつ(める) / シュウ', ex: '集める (あつめる) - To collect' }, { k: '住', m: 'To live', r: 'す(む) / ジュウ', ex: '住所 (じゅうしょ) - Address' },
+            { k: '終', m: 'To end', r: 'お(わる) / シュウ', ex: '終わる (おわる) - To end' }, { k: '乗', m: 'To ride', r: 'の(る) / ジョウ', ex: '乗る (のる) - To ride' },
+            { k: '洗', m: 'To wash', r: 'あら(う) / セン', ex: '洗う (あらう) - To wash' }, { k: '走', m: 'To run', r: 'はし(る) / ソウ', ex: '走る (はしる) - To run' },
+            { k: '送', m: 'To send', r: 'おく(る) / ソウ', ex: '送る (おくる) - To send' }, { k: '貸', m: 'To lend', r: 'か(す) / タイ', ex: '貸す (かす) - To lend' },
+            { k: '待', m: 'To wait', r: 'ま(つ) / タイ', ex: '待つ (まつ) - To wait' }, { k: '知', m: 'To know', r: 'し(る) / チ', ex: '知る (しる) - To know' },
+            { k: '通', m: 'To commute', r: 'とお(る) / ツウ', ex: '通う (かよう) - To commute' }, { k: '動', m: 'To move', r: 'うご(く) / ドウ', ex: '動物 (どうぶつ) - Animal' },
+            { k: '働', m: 'To work', r: 'はたら(く) / ドウ', ex: '働く (はたらく) - To work' }, { k: '売', m: 'To sell', r: 'う(る) / バイ', ex: '売る (うる) - To sell' },
+            { k: '歩', m: 'To walk', r: 'ある(く) / ホ', ex: '散歩 (さんぽ) - A walk' }, { k: '発', m: 'To emit/start', r: 'ハツ', ex: '出発 (しゅっぱつ) - Departure' },
+            { k: '写', m: 'To copy', r: 'うつ(す) / シャ', ex: '写真 (しゃしん) - Photograph' }, { k: '答', m: 'To answer', r: 'こた(える) / トウ', ex: '答える (こたえる) - To answer' },
+            { k: '問', m: 'To ask', r: 'と(う) / モン', ex: '問題 (もんだい) - Problem/Question' },
+            
+            // Adjectives
+            { k: '悪', m: 'Bad', r: 'わる(い) / アク', ex: '悪い (わるい) - Bad' }, { k: '暗', m: 'Dark', r: 'くら(い) / アン', ex: '暗い (くらい) - Dark' },
+            { k: '多', m: 'Many', r: 'おお(い) / タ', ex: '多い (おおい) - Many' }, { k: '広', m: 'Wide', r: 'ひろ(い) / コウ', ex: '広い (ひろい) - Wide' },
+            { k: '早', m: 'Early/Fast', r: 'はや(い) / ソウ', ex: '早い (はやい) - Early' }, { k: '近', m: 'Near', r: 'ちか(い) / キン', ex: '近い (ちかい) - Near' },
+            { k: '遠', m: 'Far', r: 'とお(い) / エン', ex: '遠い (とおい) - Far' }, { k: '弱', m: 'Weak', r: 'よわ(い) / ジャク', ex: '弱い (よわい) - Weak' },
+            { k: '強', m: 'Strong', r: 'つよ(い) / キョウ', ex: '強い (つよい) - Strong' }, { k: '軽', m: 'Light (weight)', r: 'かる(い) / ケイ', ex: '軽い (かるい) - Light' },
+            { k: '重', m: 'Heavy', r: 'おも(い) / ジュウ', ex: '重い (おもい) - Heavy' }, { k: '寒', m: 'Cold (weather)', r: 'さむ(い) / カン', ex: '寒い (さむい) - Cold' },
+            { k: '暑', m: 'Hot (weather)', r: 'あつ(い) / ショ', ex: '暑い (あつい) - Hot' }, { k: '新', m: 'New', r: 'あたら(しい) / シン', ex: '新しい (あたらしい) - New' },
+            { k: '明', m: 'Bright', r: 'あか(るい) / メイ', ex: '明るい (あかるい) - Bright' }, { k: '正', m: 'Correct', r: 'ただ(しい) / セイ', ex: '正しい (ただしい) - Correct' },
+            { k: '同', m: 'Same', r: 'おな(じ) / ドウ', ex: '同じ (おなじ) - Same' }, { k: '別', m: 'Separate', r: 'わか(れる) / ベツ', ex: '特別 (とくべつ) - Special' },
+            { k: '安', m: 'Safe/Cheap', r: 'やす(い) / アン', ex: '安い (やすい) - Cheap' }, { k: '不', m: 'Negative prefix', r: 'フ / ブ', ex: '不便 (ふべん) - Inconvenient' },
+
+            // Nouns & People
+            { k: '兄', m: 'Older brother', r: 'あに / ケイ', ex: 'お兄さん (おにいさん) - Older brother' }, { k: '姉', m: 'Older sister', r: 'あね / シ', ex: 'お姉さん (おねえさん) - Older sister' },
+            { k: '弟', m: 'Younger brother', r: 'おとうと / テイ', ex: '兄弟 (きょうだい) - Siblings' }, { k: '妹', m: 'Younger sister', r: 'いもうと / マイ', ex: '妹 (いもうと) - Younger sister' },
+            { k: '親', m: 'Parent/Close', r: 'おや / シン', ex: '両親 (りょうしん) - Parents' }, { k: '族', m: 'Tribe/Family', r: 'ゾク', ex: '家族 (かぞく) - Family' },
+            { k: '私', m: 'I/Private', r: 'わたし / シ', ex: '私 (わたし) - I, me' }, { k: '者', m: 'Person', r: 'もの / シャ', ex: '医者 (いしゃ) - Doctor' },
+            { k: '医', m: 'Doctor', r: 'イ', ex: '医学 (いがく) - Medical science' }, { k: '員', m: 'Member', r: 'イン', ex: '会社員 (かいしゃいん) - Office worker' },
+            { k: '主', m: 'Master/Main', r: 'おも / シュ', ex: '主人 (しゅじん) - Husband/Master' }, { k: '顔', m: 'Face', r: 'かお / ガン', ex: '顔 (かお) - Face' },
+            { k: '首', m: 'Neck', r: 'くび / シュ', ex: '手首 (てくび) - Wrist' }, { k: '心', m: 'Heart/Mind', r: 'こころ / シン', ex: '安心 (あんしん) - Relief' },
+            { k: '体', m: 'Body', r: 'からだ / タイ', ex: '体 (からだ) - Body' },
+
+            // Places & Time
+            { k: '京', m: 'Capital', r: 'みやこ / キョウ', ex: '東京 (とうきょう) - Tokyo' }, { k: '都', m: 'Metropolis', r: 'みやこ / ト', ex: '京都 (きょうと) - Kyoto' },
+            { k: '県', m: 'Prefecture', r: 'ケン', ex: '県 (けん) - Prefecture' }, { k: '市', m: 'City', r: 'いち / シ', ex: '市民 (しみん) - Citizen' },
+            { k: '区', m: 'Ward', r: 'ク', ex: '区役所 (くやくしょ) - Ward office' }, { k: '町', m: 'Town', r: 'まち / チョウ', ex: '町 (まち) - Town' },
+            { k: '村', m: 'Village', r: 'むら / ソン', ex: '村 (むら) - Village' }, { k: '院', m: 'Institution', r: 'イン', ex: '病院 (びょういん) - Hospital' },
+            { k: '館', m: 'Building/Hall', r: 'カン', ex: '図書館 (としょかん) - Library' }, { k: '室', m: 'Room', r: 'むろ / シツ', ex: '教室 (きょうしつ) - Classroom' },
+            { k: '屋', m: 'Roof/Shop', r: 'や / オク', ex: '部屋 (へや) - Room' }, { k: '店', m: 'Shop', r: 'みせ / テン', ex: '店員 (てんいん) - Shop clerk' },
+            { k: '場', m: 'Place', r: 'ば / ジョウ', ex: '場所 (ばしょ) - Place' }, { k: '所', m: 'Place', r: 'ところ / ショ', ex: '近所 (きんじょ) - Neighborhood' },
+            { k: '海', m: 'Sea', r: 'うみ / カイ', ex: '海外 (かいがい) - Overseas' }, { k: '春', m: 'Spring', r: 'はる / シュン', ex: '春 (はる) - Spring' },
+            { k: '夏', m: 'Summer', r: 'なつ / カ', ex: '夏休み (なつやすみ) - Summer vacation' }, { k: '秋', m: 'Autumn', r: 'あき / シュウ', ex: '秋 (あき) - Autumn' },
+            { k: '冬', m: 'Winter', r: 'ふゆ / トウ', ex: '冬 (ふゆ) - Winter' }, { k: '朝', m: 'Morning', r: 'あさ / チョウ', ex: '朝ごはん (あさごはん) - Breakfast' },
+            { k: '昼', m: 'Noon', r: 'ひる / チュウ', ex: '昼休み (ひるやすみ) - Lunch break' }, { k: '夕', m: 'Evening', r: 'ゆう / セキ', ex: '夕方 (ゆうがた) - Evening' },
+            { k: '地', m: 'Ground', r: 'チ / ジ', ex: '地下鉄 (ちかてつ) - Subway' }, { k: '野', m: 'Field', r: 'の / ヤ', ex: '野菜 (やさい) - Vegetable' },
+            { k: '森', m: 'Forest', r: 'もり / シン', ex: '森 (もり) - Forest' }, { k: '林', m: 'Woods', r: 'はやし / リン', ex: '林 (はやし) - Woods' },
+
+            // Concepts & Things
+            { k: '事', m: 'Matter/Thing', r: 'こと / ジ', ex: '仕事 (しごと) - Job' }, { k: '物', m: 'Object', r: 'もの / ブツ', ex: '買い物 (かいもの) - Shopping' },
+            { k: '品', m: 'Goods', r: 'しな / ヒン', ex: '品物 (しなもの) - Goods' }, { k: '業', m: 'Business', r: 'わざ / ギョウ', ex: '授業 (じゅぎょう) - Class/Lesson' },
+            { k: '社', m: 'Company/Society', r: 'やしろ / シャ', ex: '社会 (しゃかい) - Society' }, { k: '代', m: 'Substitute', r: 'か(わり) / ダイ', ex: '時代 (じだい) - Era' },
+            { k: '力', m: 'Power', r: 'ちから / リョク', ex: '力 (ちから) - Power' }, { k: '理', m: 'Reason/Logic', r: 'リ', ex: '料理 (りょうり) - Cooking' },
+            { k: '意', m: 'Idea/Mind', r: 'イ', ex: '意味 (いみ) - Meaning' }, { k: '画', m: 'Picture', r: 'ガ / カク', ex: '映画 (えいが) - Movie' },
+            { k: '音', m: 'Sound', r: 'おと / オン', ex: '音楽 (おんがく) - Music' }, { k: '歌', m: 'Song', r: 'うた / カ', ex: '歌う (うたう) - To sing' },
+            { k: '銀', m: 'Silver', r: 'ギン', ex: '銀行 (ぎんこう) - Bank' }, { k: '紙', m: 'Paper', r: 'かみ / シ', ex: '手紙 (てがみ) - Letter' },
+            { k: '肉', m: 'Meat', r: 'ニク', ex: '牛肉 (ぎゅうにく) - Beef' }, { k: '茶', m: 'Tea', r: 'チャ / サ', ex: 'お茶 (おちゃ) - Tea' },
+            { k: '服', m: 'Clothes', r: 'フク', ex: '洋服 (ようふく) - Western clothes' }, { k: '元', m: 'Origin', r: 'もと / ゲン', ex: '元気 (げんき) - Healthy/Energetic' },
+            { k: '界', m: 'World', r: 'カイ', ex: '世界 (せかい) - World' }, { k: '度', m: 'Degree/Times', r: 'たび / ド', ex: '今度 (こんど) - Next time' },
+            { k: '題', m: 'Topic', r: 'ダイ', ex: '問題 (もんだい) - Problem/Question' }, { k: '文', m: 'Sentence', r: 'ふみ / ブン', ex: '文化 (ぶんか) - Culture' },
+            { k: '用', m: 'Use/Task', r: 'もち(いる) / ヨウ', ex: '用意 (ようい) - Preparation' }, { k: '計', m: 'Plan/Measure', r: 'はか(る) / ケイ', ex: '時計 (とけい) - Clock/Watch' },
+            { k: '運', m: 'Transport/Luck', r: 'はこ(ぶ) / ウン', ex: '運動 (うんどう) - Exercise' }, { k: '言', m: 'Word/Say', r: 'い(う) / ゲン', ex: '言葉 (ことば) - Word/Language' },
+            { k: '質', m: 'Quality', r: 'シツ', ex: '質問 (しつもん) - Question' }, { k: '験', m: 'Test', r: 'ケン', ex: '試験 (しけん) - Exam' }
+        ];
+
+        let canvas = document.getElementById('kanjiCanvas');
+        let ctx = canvas.getContext('2d');
+        
+        let currentKanjiObj = null;
+        let currentOptions = [];
+        let correctIndex = -1;
+        let streak = 0;
+        let seenKanji = new Set();
+        let isAnimating = false;
+        let answered = false;
+
+        // Particle System for Canvas
+        let particles = [];
+        
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 6 + 2;
+                this.vx = (Math.random() - 0.5) * 15;
+                this.vy = (Math.random() - 0.5) * 15;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.02 + 0.02;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+                // Add slight gravity
+                this.vy += 0.2; 
+            }
+            draw(ctx) {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.alpha);
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function resizeCanvas() {
+            // Make internal resolution match CSS display size for sharpness
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            drawStatic(); // Redraw static content on resize
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function drawStatic(textColor = '#1c1917', offsetX = 0) {
+            if (!currentKanjiObj) return;
+
+            // Clear
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Inner Border (Traditional Japanese styling)
+            const margin = 20 * window.devicePixelRatio;
+            ctx.strokeStyle = '#e7e5e4';
+            ctx.lineWidth = 2 * window.devicePixelRatio;
+            ctx.strokeRect(margin, margin, canvas.width - margin*2, canvas.height - margin*2);
+
+            // Draw Kanji
+            const fontSize = Math.min(canvas.width, canvas.height) * 0.5;
+            ctx.font = `${fontSize}px "Noto Serif JP", serif`;
+            ctx.fillStyle = textColor;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            ctx.fillText(currentKanjiObj.k, (canvas.width / 2) + offsetX, canvas.height / 2);
+        }
+
+        function animate() {
+            if (!isAnimating) return;
+            
+            drawStatic(); // Draw background and kanji
+
+            // Draw and update particles
+            let activeParticles = false;
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.update();
+                p.draw(ctx);
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                } else {
+                    activeParticles = true;
+                }
+            }
+
+            if (activeParticles) {
+                requestAnimationFrame(animate);
+            } else {
+                isAnimating = false;
+                drawStatic();
+            }
+        }
+
+        function createExplosion(x, y, isCorrect) {
+            particles = [];
+            const colors = isCorrect ? ['#10b981', '#34d399', '#059669', '#fbbf24'] : ['#ef4444', '#f87171', '#991b1b', '#6b7280'];
+            for (let i = 0; i < 40; i++) {
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particles.push(new Particle(x, y, color));
+            }
+            isAnimating = true;
+            animate();
+        }
+
+        function getUniqueRandomKanji(excludeList = []) {
+            let available = kanjiData.filter(k => !excludeList.includes(k.k));
+            if (available.length === 0) return kanjiData[Math.floor(Math.random() * kanjiData.length)];
+            return available[Math.floor(Math.random() * available.length)];
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function nextKanji() {
+            answered = false;
+            
+            // Hide next button, show options
+            document.getElementById('nextBtn').classList.add('hidden');
+            document.getElementById('optionsContainer').classList.remove('hidden');
+            
+            // Hide reading overlay
+            const overlay = document.getElementById('readingOverlay');
+            overlay.classList.remove('opacity-100');
+            overlay.classList.add('opacity-0');
+
+            // Reset button styles
+            for(let i=0; i<4; i++) {
+                let btn = document.getElementById('btn' + i);
+                btn.className = "btn-option bg-white border-2 border-stone-200 hover:border-rose-400 text-stone-700 font-semibold py-4 px-3 rounded-xl shadow-sm text-sm";
+                btn.disabled = false;
+            }
+
+            // Pick a kanji
+            currentKanjiObj = getUniqueRandomKanji();
+            seenKanji.add(currentKanjiObj.k);
+
+            // Generate options
+            let wrongOptions = [];
+            while(wrongOptions.length < 3) {
+                let randomK = getUniqueRandomKanji([currentKanjiObj.k, ...wrongOptions.map(o => o.k)]);
+                wrongOptions.push(randomK);
+            }
+
+            currentOptions = [
+                { text: currentKanjiObj.m, isCorrect: true },
+                { text: wrongOptions[0].m, isCorrect: false },
+                { text: wrongOptions[1].m, isCorrect: false },
+                { text: wrongOptions[2].m, isCorrect: false }
+            ];
+
+            shuffleArray(currentOptions);
+
+            // Update UI
+            for(let i=0; i<4; i++) {
+                document.getElementById('btn' + i).innerText = currentOptions[i].text;
+                if(currentOptions[i].isCorrect) correctIndex = i;
+            }
+
+            document.getElementById('progressText').innerText = `Learned: ${seenKanji.size} / ${kanjiData.length}`;
+
+            drawStatic();
+        }
+
+        function checkAnswer(selectedIndex) {
+            if (answered) return;
+            answered = true;
+
+            const isCorrect = selectedIndex === correctIndex;
+            const btn = document.getElementById('btn' + selectedIndex);
+            const correctBtn = document.getElementById('btn' + correctIndex);
+
+            // Disable all buttons
+            for(let i=0; i<4; i++) {
+                document.getElementById('btn' + i).disabled = true;
+            }
+
+            // Show Reading Overlay
+            const overlay = document.getElementById('readingOverlay');
+            const readingText = document.getElementById('readingText');
+            const exampleText = document.getElementById('exampleText');
+            readingText.innerText = currentKanjiObj.r;
+            exampleText.innerText = currentKanjiObj.ex || '';
+            overlay.classList.remove('opacity-0');
+            overlay.classList.add('opacity-100');
+
+            if (isCorrect) {
+                streak++;
+                document.getElementById('scoreText').innerText = streak;
+                
+                // Style correct button
+                btn.classList.remove('border-stone-200', 'text-stone-700');
+                btn.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-700');
+                
+                // Canvas visual feedback
+                drawStatic('#059669'); // Draw kanji in green
+                createExplosion(canvas.width / 2, canvas.height / 2, true);
+
+            } else {
+                streak = 0;
+                document.getElementById('scoreText').innerText = streak;
+                
+                // Style wrong button
+                btn.classList.remove('border-stone-200', 'text-stone-700');
+                btn.classList.add('bg-rose-50', 'border-rose-500', 'text-rose-700');
+                
+                // Highlight correct button
+                correctBtn.classList.remove('border-stone-200');
+                correctBtn.classList.add('border-emerald-500', 'text-emerald-700');
+
+                // Canvas visual feedback (Shake effect logic inside drawStatic via timeout loop)
+                shakeCanvas();
+                createExplosion(canvas.width / 2, canvas.height / 2, false);
+            }
+
+            // Show Next Button
+            setTimeout(() => {
+                document.getElementById('nextBtn').classList.remove('hidden');
+                document.getElementById('optionsContainer').classList.add('hidden');
+            }, 600); // Small delay to let user see the correct answer
+        }
+
+        function shakeCanvas() {
+            let shakeCount = 0;
+            let shakeInterval = setInterval(() => {
+                let offset = (Math.random() - 0.5) * 20 * window.devicePixelRatio;
+                drawStatic('#e11d48', offset); // Draw in red with offset
+                shakeCount++;
+                if (shakeCount > 10) {
+                    clearInterval(shakeInterval);
+                    drawStatic('#e11d48', 0); // Reset position
+                }
+            }, 30);
+        }
+
+        // Initialize
+        window.onload = () => {
+            resizeCanvas();
+            nextKanji();
+        };
+
+    </script>
+</body>
+</html>
