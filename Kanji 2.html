@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLPT N5 & N4 Kanji Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Warm Kyoto Neutrals (Beige, Terracotta, Charcoal) -->
+    <!-- Application Structure Plan: The application uses a "Dashboard & Directory" structure. This is chosen because a flat list of 400+ Kanji is overwhelming. The dashboard provides high-level context (total counts, distribution via chart), while the directory allows filtering by JLPT level and searching by meaning/reading. A detail modal provides deep-dive information without losing the user's place in the directory. This minimizes cognitive load and maximizes exploratory learning. -->
+    <!-- Visualization & Content Choices: 
+         1. Report Info: Total Kanji counts (N5 vs N4) -> Goal: Inform/Compare -> Viz: Chart.js Doughnut Chart -> Interaction: Hover for exact numbers -> Justification: Quickly shows the volume difference between the two beginner levels.
+         2. Report Info: Kanji List -> Goal: Organize/Explore -> Viz: Interactive Grid of Cards -> Interaction: Click to open detail modal, hover effects -> Justification: Spatial organization makes scanning easy; clicking isolates information for focused study.
+         3. Report Info: Specific Kanji Details (Readings, Meanings) -> Goal: Inform -> Viz: Modal overlay -> Interaction: Close button, click outside to close -> Justification: Keeps the user in context while revealing dense textual data.
+         Library/Method: Chart.js for doughnut chart. Vanilla JS for grid rendering, filtering, and modal logic. NO SVG used. NO Mermaid JS used. HTML/CSS for all UI elements. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #fcfaf8; /* Warm off-white */
+            color: #3d3835; /* Soft charcoal */
+        }
+        
+        /* Strict Chart Container Styling */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px; /* Constrained width */
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px; /* Defined height */
+            max-height: 250px;
+        }
+
+        /* Custom Scrollbar for a polished look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4cec9; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b5aba3; 
+        }
+
+        /* Modal Transitions */
+        #kanjiModal {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-10 border-b border-[#e8e4df]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-black text-[#8c4a3e] tracking-tight">漢字 <span class="text-[#3d3835] font-bold text-xl ml-2">JLPT Explorer</span></h1>
+            <div class="text-sm font-medium text-gray-500">N5 & N4 Foundation</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex flex-col lg:flex-row gap-8">
+        
+        <!-- Left Column: Context & Overview -->
+        <aside class="w-full lg:w-1/3 flex flex-col gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-[#e8e4df]">
+                <h2 class="text-lg font-bold mb-3 border-b border-gray-100 pb-2">Overview & Progress</h2>
+                <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+                    Mastering Kanji is essential for Japanese fluency. The <strong>JLPT N5</strong> requires knowledge of approximately 100 basic characters, focusing on numbers, days, and simple concepts. The <strong>JLPT N4</strong> expands this by roughly 300 additional characters, covering daily life, family, and basic actions.
+                </p>
+                
+                <!-- Chart Container -->
+                <div class="chart-container">
+                    <canvas id="distributionChart"></canvas>
+                </div>
+                <p class="text-xs text-center text-gray-400 mt-2">Distribution of characters required per level.</p>
+            </div>
+
+            <div class="bg-[#f2efe9] p-6 rounded-xl">
+                <h3 class="font-bold text-[#8c4a3e] mb-2 text-sm uppercase tracking-wider">How to use this tool</h3>
+                <ul class="text-sm space-y-2 text-gray-700">
+                    <li><span class="font-bold text-lg mr-2">&bull;</span> Use the <strong>Search</strong> bar to find specific meanings or readings.</li>
+                    <li><span class="font-bold text-lg mr-2">&bull;</span> Click the <strong>Level Filters</strong> to isolate N5 or N4 kanji.</li>
+                    <li><span class="font-bold text-lg mr-2">&bull;</span> <strong>Click any Kanji card</strong> to view its Onyomi, Kunyomi, and common vocabulary examples.</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Right Column: Interactive Directory -->
+        <section class="w-full lg:w-2/3 flex flex-col">
+            
+            <!-- Controls: Search and Filters -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-[#e8e4df] mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+                <div class="relative w-full sm:w-1/2">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 text-lg">&#128269;</span>
+                    <input type="text" id="searchInput" placeholder="Search meaning or reading..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8c4a3e] focus:border-transparent transition">
+                </div>
+                
+                <div class="flex bg-gray-100 rounded-lg p-1 w-full sm:w-auto">
+                    <button class="filter-btn flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors bg-white shadow-sm text-[#8c4a3e]" data-level="all">All</button>
+                    <button class="filter-btn flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors text-gray-500 hover:text-gray-700" data-level="N5">N5 Only</button>
+                    <button class="filter-btn flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors text-gray-500 hover:text-gray-700" data-level="N4">N4 Only</button>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="mb-4 text-sm text-gray-500 flex justify-between items-center">
+                <span id="resultCount">Showing all Kanji</span>
+            </div>
+
+            <!-- Kanji Grid -->
+            <div id="kanjiGrid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 lg:gap-4 overflow-y-auto pr-2 pb-8" style="max-height: 70vh;">
+                <!-- Grid items generated by JS -->
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Detail Modal -->
+    <div id="kanjiModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 opacity-0">
+            <!-- Modal Header -->
+            <div id="modalHeader" class="bg-[#8c4a3e] p-6 text-center relative">
+                <button id="closeModalBtn" class="absolute top-4 right-4 text-white text-3xl hover:text-gray-200 transition leading-none" aria-label="Close">&times;</button>
+                <div id="modalLevelBadge" class="absolute top-4 left-4 bg-white text-[#8c4a3e] text-xs font-bold px-2 py-1 rounded">N5</div>
+                <div id="modalKanji" class="text-7xl font-black text-white mt-4 mb-2 drop-shadow-md">水</div>
+                <div id="modalMeaning" class="text-white text-xl font-medium tracking-wide">Water</div>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-6">
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <div class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Onyomi (Chinese)</div>
+                        <div id="modalOnyomi" class="text-lg text-gray-800 font-medium">スイ</div>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <div class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Kunyomi (Japanese)</div>
+                        <div id="modalKunyomi" class="text-lg text-gray-800 font-medium">みず</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2 border-b border-gray-100 pb-1">Common Vocabulary</div>
+                    <ul id="modalExamples" class="space-y-2">
+                        <!-- Examples injected here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Data Storage ---
+        // A representative dataset combining essential N5 and N4 kanji.
+        const kanjiData = [
+            // N5 Data
+            { k: '日', l: 'N5', m: 'Day, Sun', o: 'ニチ, ジツ', ku: 'ひ, -び, -か', ex: ['日本 (にほん) - Japan', '日曜日 (にちようび) - Sunday'] },
+            { k: '一', l: 'N5', m: 'One', o: 'イチ, イツ', ku: 'ひと.つ', ex: ['一つ (ひとつ) - One thing', '一日 (ついたち) - 1st of the month'] },
+            { k: '国', l: 'N5', m: 'Country', o: 'コク', ku: 'くに', ex: ['外国 (がいこく) - Foreign country', '中国 (ちゅうごく) - China'] },
+            { k: '人', l: 'N5', m: 'Person', o: 'ジン, ニン', ku: 'ひと', ex: ['日本人 (にほんじん) - Japanese person', '大人 (おとな) - Adult'] },
+            { k: '年', l: 'N5', m: 'Year', o: 'ネン', ku: 'とし', ex: ['今年 (ことし) - This year', '来年 (らいねん) - Next year'] },
+            { k: '大', l: 'N5', m: 'Large, Big', o: 'ダイ, タイ', ku: 'おお.きい', ex: ['大きい (おおきい) - Big', '大学 (だいがく) - University'] },
+            { k: '十', l: 'N5', m: 'Ten', o: 'ジュウ', ku: 'とお, と', ex: ['十 (とお) - Ten things', '十月 (じゅうがつ) - October'] },
+            { k: '二', l: 'N5', m: 'Two', o: 'ニ', ku: 'ふた.つ', ex: ['二つ (ふたつ) - Two things', '二人 (ふたり) - Two people'] },
+            { k: '本', l: 'N5', m: 'Book, Origin', o: 'ホン', ku: 'もと', ex: ['本 (ほん) - Book', '本当 (ほんとう) - Truth'] },
+            { k: '中', l: 'N5', m: 'Inside, Middle', o: 'チュウ', ku: 'なか', ex: ['中国 (ちゅうごく) - China', '一日中 (いちにちじゅう) - All day long'] },
+            { k: '長', l: 'N5', m: 'Long, Leader', o: 'チョウ', ku: 'なが.い', ex: ['長い (ながい) - Long', '社長 (しゃちょう) - Company president'] },
+            { k: '出', l: 'N5', m: 'Exit, Leave', o: 'シュツ', ku: 'で.る, だ.す', ex: ['出る (でる) - To exit', '出口 (でぐち) - Exit'] },
+            { k: '三', l: 'N5', m: 'Three', o: 'サン', ku: 'みっ.つ', ex: ['三つ (みっつ) - Three things', '三月 (さんがつ) - March'] },
+            { k: '時', l: 'N5', m: 'Time, Hour', o: 'ジ', ku: 'とき', ex: ['時間 (じかん) - Time', '時計 (とけい) - Watch/Clock'] },
+            { k: '行', l: 'N5', m: 'Go, Conduct', o: 'コウ, ギョウ', ku: 'い.く, ゆ.く', ex: ['行く (いく) - To go', '旅行 (りょこう) - Travel'] },
+            { k: '見', l: 'N5', m: 'See, Look', o: 'ケン', ku: 'み.る, み.える', ex: ['見る (みる) - To see', '花見 (はなみ) - Flower viewing'] },
+            { k: '月', l: 'N5', m: 'Month, Moon', o: 'ゲツ, ガツ', ku: 'つき', ex: ['月曜日 (げつようび) - Monday', '一月 (いちがつ) - January'] },
+            { k: '分', l: 'N5', m: 'Part, Minute', o: 'ブン, フン, ブ', ku: 'わ.ける', ex: ['分かる (わかる) - To understand', '半分 (はんぶん) - Half'] },
+            { k: '後', l: 'N5', m: 'Behind, After', o: 'ゴ, コウ', ku: 'のち, うし.ろ, あと', ex: ['後ろ (うしろ) - Behind', '午後 (ごご) - P.M.'] },
+            { k: '前', l: 'N5', m: 'In front, Before', o: 'ゼン', ku: 'まえ', ex: ['名前 (なまえ) - Name', '午前 (ごぜん) - A.M.'] },
+            { k: '生', l: 'N5', m: 'Life, Birth', o: 'セイ, ショウ', ku: 'い.きる, う.む', ex: ['先生 (せんせい) - Teacher', '学生 (がくせい) - Student'] },
+            { k: '五', l: 'N5', m: 'Five', o: 'ゴ', ku: 'いつ.つ', ex: ['五つ (いつつ) - Five things', '五日 (いつか) - 5th day'] },
+            { k: '間', l: 'N5', m: 'Interval, Between', o: 'カン, ケン', ku: 'あいだ, ま', ex: ['時間 (じかん) - Time', '人間 (にんげん) - Human'] },
+            { k: '上', l: 'N5', m: 'Above, Up', o: 'ジョウ', ku: 'うえ, あ.がる', ex: ['上 (うえ) - Above', '上手 (じょうず) - Skillful'] },
+            { k: '東', l: 'N5', m: 'East', o: 'トウ', ku: 'ひがし', ex: ['東京 (とうきょう) - Tokyo', '東口 (ひがしぐち) - East exit'] },
+            { k: '四', l: 'N5', m: 'Four', o: 'シ', ku: 'よっ.つ, よん', ex: ['四つ (よっつ) - Four things', '四月 (しがつ) - April'] },
+            { k: '今', l: 'N5', m: 'Now', o: 'コン, キン', ku: 'いま', ex: ['今 (いま) - Now', '今日 (きょう) - Today'] },
+            { k: '金', l: 'N5', m: 'Gold, Money', o: 'キン, コン', ku: 'かね, かな', ex: ['お金 (おかね) - Money', '金曜日 (きんようび) - Friday'] },
+            { k: '九', l: 'N5', m: 'Nine', o: 'キュウ, ク', ku: 'ここの.つ', ex: ['九つ (ここのつ) - Nine things', '九月 (くがつ) - September'] },
+            { k: '入', l: 'N5', m: 'Enter, Insert', o: 'ニュウ', ku: 'い.れる, はい.る', ex: ['入る (はいる) - To enter', '入口 (いりぐち) - Entrance'] },
+            { k: '学', l: 'N5', m: 'Study, Learn', o: 'ガク', ku: 'まな.ぶ', ex: ['学校 (がっこう) - School', '学生 (がくせい) - Student'] },
+            { k: '高', l: 'N5', m: 'Tall, Expensive', o: 'コウ', ku: 'たか.い', ex: ['高い (たかい) - Tall/Expensive', '高校 (こうこう) - High school'] },
+            { k: '円', l: 'N5', m: 'Circle, Yen', o: 'エン', ku: 'まる.い', ex: ['百円 (ひゃくえん) - 100 Yen', '円い (まるい) - Round'] },
+            { k: '子', l: 'N5', m: 'Child', o: 'シ, ス', ku: 'こ', ex: ['子供 (こども) - Child', '男の子 (おとこのこ) - Boy'] },
+            { k: '外', l: 'N5', m: 'Outside', o: 'ガイ, ゲ', ku: 'そと, ほか', ex: ['外国 (がいこく) - Foreign country', '外 (そと) - Outside'] },
+            { k: '八', l: 'N5', m: 'Eight', o: 'ハチ', ku: 'やっ.つ', ex: ['八つ (やっつ) - Eight things', '八百屋 (やおや) - Greengrocer'] },
+            { k: '六', l: 'N5', m: 'Six', o: 'ロク', ku: 'むっ.つ', ex: ['六つ (むっつ) - Six things', '六日 (むいか) - 6th day'] },
+            { k: '下', l: 'N5', m: 'Below, Down', o: 'カ, ゲ', ku: 'した, さ.がる', ex: ['下 (した) - Below', '下手 (へた) - Unskillful'] },
+            { k: '来', l: 'N5', m: 'Come, Next', o: 'ライ', ku: 'く.る', ex: ['来る (くる) - To come', '来年 (らいねん) - Next year'] },
+            { k: '気', l: 'N5', m: 'Spirit, Mind', o: 'キ, ケ', ku: 'いき', ex: ['元気 (げんき) - Healthy/Energetic', '天気 (てんき) - Weather'] },
+
+            // N4 Data
+            { k: '会', l: 'N4', m: 'Meeting, Meet', o: 'カイ, エ', ku: 'あ.う', ex: ['会社 (かいしゃ) - Company', '会う (あう) - To meet'] },
+            { k: '同', l: 'N4', m: 'Same, Agree', o: 'ドウ', ku: 'おな.じ', ex: ['同じ (おなじ) - Same', '同時に (どうじに) - At the same time'] },
+            { k: '事', l: 'N4', m: 'Matter, Thing', o: 'ジ, ズ', ku: 'こと', ex: ['仕事 (しごと) - Job', '食事 (しょくじ) - Meal'] },
+            { k: '自', l: 'N4', m: 'Oneself', o: 'ジ, シ', ku: 'みずか.ら', ex: ['自分 (じぶん) - Oneself', '自転車 (じてんしゃ) - Bicycle'] },
+            { k: '社', l: 'N4', m: 'Company, Shrine', o: 'シャ', ku: 'やしろ', ex: ['会社 (かいしゃ) - Company', '社会 (しゃかい) - Society'] },
+            { k: '発', l: 'N4', m: 'Departure, Publish', o: 'ハツ, ホツ', ku: 'た.つ', ex: ['出発 (しゅっぱつ) - Departure', '発音 (はつおん) - Pronunciation'] },
+            { k: '者', l: 'N4', m: 'Someone, Person', o: 'シャ', ku: 'もの', ex: ['医者 (いしゃ) - Doctor', '若者 (わかもの) - Young person'] },
+            { k: '地', l: 'N4', m: 'Ground, Earth', o: 'チ, ジ', ku: '-', ex: ['地下鉄 (ちかてつ) - Subway', '地図 (ちず) - Map'] },
+            { k: '業', l: 'N4', m: 'Business, Vocation', o: 'ギョウ, ゴウ', ku: 'わざ', ex: ['授業 (じゅぎょう) - Class', '工業 (こうぎょう) - Industry'] },
+            { k: '方', l: 'N4', m: 'Direction, Person', o: 'ホウ', ku: 'かた', ex: ['方法 (ほうほう) - Method', '夕方 (ゆうがた) - Evening'] },
+            { k: '新', l: 'N4', m: 'New', o: 'シン', ku: 'あたら.しい', ex: ['新しい (あたらしい) - New', '新聞 (しんぶん) - Newspaper'] },
+            { k: '場', l: 'N4', m: 'Location, Place', o: 'ジョウ', ku: 'ば', ex: ['場所 (ばしょ) - Place', '工場 (こうじょう) - Factory'] },
+            { k: '員', l: 'N4', m: 'Employee, Member', o: 'イン', ku: '-', ex: ['会社員 (かいしゃいん) - Office worker', '店員 (てんいん) - Store clerk'] },
+            { k: '立', l: 'N4', m: 'Stand up', o: 'リツ, リュウ', ku: 'た.つ', ex: ['立つ (たつ) - To stand', '役に立つ (やくにたつ) - To be helpful'] },
+            { k: '開', l: 'N4', m: 'Open', o: 'カイ', ku: 'ひら.く, あ.ける', ex: ['開ける (あける) - To open', '開始 (かいし) - Start'] },
+            { k: '手', l: 'N4', m: 'Hand', o: 'シュ', ku: 'て', ex: ['手紙 (てがみ) - Letter', '切手 (きって) - Postage stamp'] },
+            { k: '力', l: 'N4', m: 'Power, Force', o: 'リョク, リキ', ku: 'ちから', ex: ['力 (ちから) - Power', '努力 (どりょく) - Effort'] },
+            { k: '問', l: 'N4', m: 'Question, Ask', o: 'モン', ku: 'と.う', ex: ['問題 (もんだい) - Problem/Question', '質問 (しつもん) - Question'] },
+            { k: '代', l: 'N4', m: 'Substitute, Era', o: 'ダイ, タイ', ku: 'か.わる', ex: ['時代 (じだい) - Era', '代わり (かわり) - Substitute'] },
+            { k: '明', l: 'N4', m: 'Bright, Light', o: 'メイ, ミョウ', ku: 'あか.るい', ex: ['明るい (あかるい) - Bright', '明日 (あした) - Tomorrow'] },
+            { k: '動', l: 'N4', m: 'Move, Motion', o: 'ドウ', ku: 'うご.く', ex: ['動物 (どうぶつ) - Animal', '運動 (うんどう) - Exercise'] },
+            { k: '京', l: 'N4', m: 'Capital', o: 'キョウ, ケイ', ku: 'みやこ', ex: ['東京 (とうきょう) - Tokyo', '京都 (きょうと) - Kyoto'] },
+            { k: '目', l: 'N4', m: 'Eye, Item', o: 'モク, ボク', ku: 'め', ex: ['目 (め) - Eye', '目的 (もくてき) - Purpose'] },
+            { k: '通', l: 'N4', m: 'Traffic, Pass through', o: 'ツウ, ツ', ku: 'とお.る, かよ.う', ex: ['通る (とおる) - To pass', '交通 (こうつう) - Traffic'] },
+            { k: '言', l: 'N4', m: 'Say, Word', o: 'ゲン, ゴン', ku: 'い.う, こと', ex: ['言う (いう) - To say', '言葉 (ことば) - Word'] },
+            { k: '理', l: 'N4', m: 'Logic, Reason', o: 'リ', ku: 'ことわり', ex: ['理由 (りゆう) - Reason', '料理 (りょうり) - Cooking'] },
+            { k: '体', l: 'N4', m: 'Body', o: 'タイ, テイ', ku: 'からだ', ex: ['体 (からだ) - Body', '体育 (たいいく) - Physical education'] },
+            { k: '田', l: 'N4', m: 'Rice field', o: 'デン', ku: 'た', ex: ['田んぼ (たんぼ) - Rice field', '水田 (すいでん) - Paddy field'] },
+            { k: '主', l: 'N4', m: 'Lord, Master', o: 'シュ, ス', ku: 'ぬし, おも', ex: ['主人 (しゅじん) - Husband/Master', '主に (おもに) - Mainly'] },
+            { k: '題', l: 'N4', m: 'Topic, Subject', o: 'ダイ', ku: '-', ex: ['問題 (もんだい) - Problem', '宿題 (しゅくだい) - Homework'] },
+            { k: '意', l: 'N4', m: 'Idea, Mind', o: 'イ', ku: '-', ex: ['意味 (いみ) - Meaning', '意見 (いけん) - Opinion'] },
+            { k: '不', l: 'N4', m: 'Negative, Non-', o: 'フ, ブ', ku: '-', ex: ['不安 (ふあん) - Anxiety', '不便 (ふべん) - Inconvenient'] },
+            { k: '作', l: 'N4', m: 'Make, Production', o: 'サク, サ', ku: 'つく.る', ex: ['作る (つくる) - To make', '作文 (さくぶん) - Essay'] },
+            { k: '用', l: 'N4', m: 'Utilize, Business', o: 'ヨウ', ku: 'もち.いる', ex: ['用事 (ようじ) - Errand', '用意 (ようい) - Preparation'] },
+            { k: '度', l: 'N4', m: 'Degrees, Occurrence', o: 'ド, ト, タク', ku: 'たび', ex: ['一度 (いちど) - Once', '温度 (おんど) - Temperature'] },
+            { k: '強', l: 'N4', m: 'Strong', o: 'キョウ, ゴウ', ku: 'つよ.い', ex: ['強い (つよい) - Strong', '勉強 (べんきょう) - Study'] },
+            { k: '公', l: 'N4', m: 'Public, Official', o: 'コウ', ku: 'おおやけ', ex: ['公園 (こうえん) - Park', '公務員 (こうむいん) - Civil servant'] },
+            { k: '持', l: 'N4', m: 'Hold, Have', o: 'ジ', ku: 'も.つ', ex: ['持つ (もつ) - To hold', '気持ち (きもち) - Feeling'] },
+            { k: '野', l: 'N4', m: 'Plains, Field', o: 'ヤ', ku: 'の', ex: ['野菜 (やさい) - Vegetable', '野球 (やきゅう) - Baseball'] },
+            { k: '以', l: 'N4', m: 'By means of', o: 'イ', ku: 'もっ.て', ex: ['以上 (いじょう) - More than', '以下 (いか) - Less than'] }
+        ];
+
+        // --- 2. State Management ---
+        let currentState = {
+            filterLevel: 'all', // 'all', 'N5', 'N4'
+            searchQuery: ''
+        };
+
+        // --- 3. DOM Elements ---
+        const gridContainer = document.getElementById('kanjiGrid');
+        const searchInput = document.getElementById('searchInput');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const resultCount = document.getElementById('resultCount');
+        
+        // Modal Elements
+        const modal = document.getElementById('kanjiModal');
+        const modalContent = document.querySelector('.modal-content');
+        const closeBtn = document.getElementById('closeModalBtn');
+        const mKanji = document.getElementById('modalKanji');
+        const mMeaning = document.getElementById('modalMeaning');
+        const mOnyomi = document.getElementById('modalOnyomi');
+        const mKunyomi = document.getElementById('modalKunyomi');
+        const mExamples = document.getElementById('modalExamples');
+        const mLevelBadge = document.getElementById('modalLevelBadge');
+        const modalHeader = document.getElementById('modalHeader');
+
+        // --- 4. Logic & Rendering ---
+
+        // Render the grid based on filtered data
+        function renderGrid(data) {
+            gridContainer.innerHTML = '';
+            
+            if (data.length === 0) {
+                gridContainer.innerHTML = `<div class="col-span-full py-12 text-center text-gray-400">No Kanji found matching your search.</div>`;
+                resultCount.textContent = "0 results";
+                return;
+            }
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                // Determine card border color based on level
+                const borderColor = item.l === 'N5' ? 'border-blue-100' : 'border-orange-100';
+                const levelBg = item.l === 'N5' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600';
+
+                card.className = `bg-white rounded-xl shadow-sm border ${borderColor} hover:shadow-md hover:border-[#8c4a3e] transition-all cursor-pointer flex flex-col items-center justify-center p-4 relative group aspect-square`;
+                card.innerHTML = `
+                    <span class="absolute top-2 left-2 text-[10px] font-bold px-1.5 py-0.5 rounded ${levelBg}">${item.l}</span>
+                    <span class="text-4xl md:text-5xl font-bold text-[#3d3835] group-hover:text-[#8c4a3e] transition-colors mb-2">${item.k}</span>
+                    <span class="text-xs text-gray-500 text-center truncate w-full px-1">${item.m.split(',')[0]}</span>
+                `;
+                card.addEventListener('click', () => openModal(item));
+                gridContainer.appendChild(card);
+            });
+
+            // Update stats text
+            let levelText = currentState.filterLevel === 'all' ? 'All levels' : currentState.filterLevel;
+            resultCount.textContent = `Showing ${data.length} Kanji (${levelText})`;
+        }
+
+        // Apply filters and search
+        function filterData() {
+            const query = currentState.searchQuery.toLowerCase();
+            const filtered = kanjiData.filter(item => {
+                // Level Match
+                const matchLevel = currentState.filterLevel === 'all' || item.l === currentState.filterLevel;
+                
+                // Search Match (checks meaning, onyomi, kunyomi, and kanji itself)
+                const matchSearch = query === '' || 
+                                    item.m.toLowerCase().includes(query) ||
+                                    item.o.toLowerCase().includes(query) ||
+                                    item.ku.toLowerCase().includes(query) ||
+                                    item.k.includes(query);
+                
+                return matchLevel && matchSearch;
+            });
+            renderGrid(filtered);
+        }
+
+        // --- 5. Chart.js Implementation ---
+        function initChart() {
+            const ctx = document.getElementById('distributionChart').getContext('2d');
+            
+            // Calculate actual counts from our dataset (or use official JLPT estimates for context)
+            // Using official estimates for educational value, as our dataset is a sample.
+            // Official N5 ~103, N4 ~181 (total ~284)
+            const n5Count = 103; 
+            const n4Count = 181;
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['N5 (Basic)', 'N4 (Elementary)'],
+                    datasets: [{
+                        data: [n5Count, n4Count],
+                        backgroundColor: [
+                            '#4a7c59', // Muted green for N5
+                            '#8c4a3e'  // Terracotta for N4
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    family: "'Noto Sans JP', sans-serif",
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.label}: ~${context.raw} Kanji`;
+                                }
+                            },
+                            backgroundColor: 'rgba(61, 56, 53, 0.9)',
+                            padding: 12,
+                            titleFont: { size: 13 },
+                            bodyFont: { size: 13 }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- 6. Modal Interactions ---
+        function openModal(item) {
+            mKanji.textContent = item.k;
+            mMeaning.textContent = item.m;
+            mOnyomi.textContent = item.o || '-';
+            mKunyomi.textContent = item.ku || '-';
+            mLevelBadge.textContent = item.l;
+            
+            // Style badge based on level
+            if(item.l === 'N5') {
+                mLevelBadge.className = "absolute top-4 left-4 bg-white text-[#4a7c59] text-xs font-bold px-2 py-1 rounded shadow-sm";
+                modalHeader.classList.remove('bg-[#8c4a3e]');
+                modalHeader.classList.add('bg-[#4a7c59]');
+            } else {
+                mLevelBadge.className = "absolute top-4 left-4 bg-white text-[#8c4a3e] text-xs font-bold px-2 py-1 rounded shadow-sm";
+                modalHeader.classList.remove('bg-[#4a7c59]');
+                modalHeader.classList.add('bg-[#8c4a3e]');
+            }
+
+            // Populate examples
+            mExamples.innerHTML = '';
+            item.ex.forEach(ex => {
+                const li = document.createElement('li');
+                li.className = "text-sm text-gray-700 bg-white p-2 rounded border border-gray-100 flex items-start before:content-['•'] before:mr-2 before:text-[#8c4a3e]";
+                li.textContent = ex;
+                mExamples.appendChild(li);
+            });
+
+            // Show modal with animation
+            modal.classList.remove('hidden');
+            // Small delay to allow display:block to apply before animating opacity/transform
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300); // match transition duration
+        }
+
+        // --- 7. Event Listeners ---
+        
+        // Search Input
+        searchInput.addEventListener('input', (e) => {
+            currentState.searchQuery = e.target.value;
+            filterData();
+        });
+
+        // Filter Buttons
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Update active state visual
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-white', 'shadow-sm', 'text-[#8c4a3e]');
+                    b.classList.add('text-gray-500');
+                });
+                e.target.classList.remove('text-gray-500');
+                e.target.classList.add('bg-white', 'shadow-sm', 'text-[#8c4a3e]');
+
+                // Update state and re-render
+                currentState.filterLevel = e.target.dataset.level;
+                filterData();
+            });
+        });
+
+        // Modal Close Button
+        closeBtn.addEventListener('click', closeModal);
+
+        // Click outside modal to close
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+        
+        // Escape key to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        // --- 8. Initialization ---
+        window.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            renderGrid(kanjiData);
+        });
+
+    </script>
+</body>
+</html>
