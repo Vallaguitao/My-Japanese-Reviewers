@@ -193,10 +193,10 @@
 
     .catalog-header {
       display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
-      gap: 18px;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+      gap: 16px;
       align-items: start;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .intro-panel,
@@ -213,7 +213,7 @@
     }
 
     .intro-panel {
-      padding: clamp(22px, 3vw, 34px);
+      padding: clamp(20px, 2.4vw, 28px);
       display: grid;
       align-content: center;
       min-height: 0;
@@ -237,8 +237,8 @@
       margin: 0;
       max-width: 780px;
       color: var(--red-deep);
-      font-size: clamp(2rem, 4vw, 3.35rem);
-      line-height: 1.04;
+      font-size: clamp(1.85rem, 3.3vw, 2.75rem);
+      line-height: 1.08;
       letter-spacing: 0;
     }
 
@@ -357,7 +357,7 @@
       border-radius: 999px;
       background: #fff;
       color: #56383d;
-      padding: 8px 12px;
+      padding: 9px 13px;
       font-weight: 900;
       cursor: pointer;
       transition: 0.2s ease;
@@ -378,7 +378,7 @@
     }
 
     .resource-card {
-      min-height: 238px;
+      min-height: 246px;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -438,7 +438,7 @@
 
     .card-button,
     .card-secondary {
-      min-height: 40px;
+      min-height: 44px;
       display: inline-flex;
       justify-content: center;
       align-items: center;
@@ -550,13 +550,13 @@
     <div class="brand">
       <span class="brand-mark">日</span>
       <h1>My Japanese Reviewers</h1>
-      <p>A single catalog for lessons, vocabulary, kanji, quizzes, mock exams, and focused practice.</p>
+      <p>A single catalog for lessons, vocabulary, kanji, focused quizzes, and mock exams.</p>
     </div>
 
     <div class="nav-menu" id="sideNav"></div>
 
     <div class="sidebar-note">
-      <strong>Recommended flow:</strong> lesson first, matching vocabulary next, then kanji or quiz practice.
+      <strong>Recommended flow:</strong> lesson first, matching vocabulary next, then targeted quiz or mock exam practice.
     </div>
   </nav>
 
@@ -566,15 +566,15 @@
         <div class="intro-panel">
           <span class="eyebrow">日本語 Study Catalog</span>
           <h2 id="catalogHeading">Build your Japanese <span>one lesson at a time.</span></h2>
-          <p>Keep moving from lessons to vocabulary, kanji, and quizzes with a clear study path. Choose a course group, search by lesson number or topic, then open the next resource when you are ready.</p>
+          <p>Choose the study intent first: course lesson, vocabulary, focused drill, or exam simulation. Search by lesson number, topic, level, or test type when you already know what you need.</p>
         </div>
 
         <aside class="overview-panel" aria-label="Resource summary">
           <div class="stat-grid">
             <div class="stat-tile"><strong data-stat="total">0</strong><span>Total linked resources</span></div>
             <div class="stat-tile"><strong data-stat="lessons">0</strong><span>N5 and N4 lesson pages</span></div>
-            <div class="stat-tile"><strong data-stat="practice">0</strong><span>Vocabulary and kanji tools</span></div>
-            <div class="stat-tile"><strong data-stat="tests">0</strong><span>Quizzes, exams, and drills</span></div>
+            <div class="stat-tile"><strong data-stat="practice">0</strong><span>Practice tools and special lessons</span></div>
+            <div class="stat-tile"><strong data-stat="tests">0</strong><span>Core quizzes and mock exams</span></div>
           </div>
         </aside>
       </section>
@@ -583,8 +583,8 @@
         <ol class="flow-list">
           <li><strong>1. Lesson</strong>Open the current N5 or N4 lesson.</li>
           <li><strong>2. Vocabulary</strong>Use the matching lesson vocabulary set.</li>
-          <li><strong>3. Kanji</strong>Review flashcards or explorer entries.</li>
-          <li><strong>4. Quiz</strong>Finish with grammar, reading, or mock practice.</li>
+          <li><strong>3. Target</strong>Drill one weak point: counters, adjectives, or verb forms.</li>
+          <li><strong>4. Mock</strong>Use JLPT or JFT sets when you want exam pressure.</li>
         </ol>
       </section>
 
@@ -599,7 +599,7 @@
 
         <div class="toolbar">
           <label class="sr-only" for="resourceSearch">Search resources</label>
-          <input class="search-input" id="resourceSearch" type="search" placeholder="Search lesson number, quiz type, N5, N4, kanji, vocabulary...">
+          <input class="search-input" id="resourceSearch" type="search" placeholder="Search lesson number, quiz type, N5, N4, JFT, JLPT, kanji, vocabulary...">
           <div class="filter-buttons" id="filterButtons" aria-label="Course group filters"></div>
         </div>
 
@@ -666,6 +666,16 @@
       return inGroup && inSearch;
     }
 
+    function actionLabel(item) {
+      if (item.actionLabel) return item.actionLabel;
+      if (item.type === 'Lesson') return 'Open Lesson';
+      if (item.type === 'Vocabulary' || item.type === 'Reviewer') return 'Review Vocabulary';
+      if (item.type === 'Tool') return 'Open Tool';
+      if (item.type === 'Mock Exam' || item.type === 'Exam') return 'Take Mock';
+      if (item.type.includes('Quiz')) return 'Start Quiz';
+      return 'Open Resource';
+    }
+
     function card(item) {
       const secondary = item.related && item.related[0]
         ? `<a class="card-secondary" href="${escapeHtml(item.related[0].path)}">${escapeHtml(item.related[0].label)}</a>`
@@ -683,7 +693,7 @@
             ${item.tags.slice(0, 3).map(tag => `<span class="status-tag">${escapeHtml(tag)}</span>`).join('')}
           </div>
           <div class="card-actions">
-            <a class="card-button" href="${escapeHtml(item.path)}">Open Resource</a>
+            <a class="card-button" href="${escapeHtml(item.path)}">${escapeHtml(actionLabel(item))}</a>
             ${secondary}
           </div>
         </article>
@@ -732,9 +742,9 @@
     }
 
     function updateStats() {
-      const lessonCount = resources.filter(item => item.type === 'Lesson').length;
-      const practiceCount = resources.filter(item => item.group === 'vocabulary' || item.group === 'kanji').length;
-      const testCount = resources.filter(item => item.group === 'quizzes' || item.group === 'activities').length;
+      const lessonCount = resources.filter(item => item.group === 'n5-lessons' || item.group === 'n4-book-1' || item.group === 'n4-book-2').length;
+      const practiceCount = resources.filter(item => item.group === 'vocabulary' || item.group === 'kanji' || item.group === 'specialized-lessons').length;
+      const testCount = resources.filter(item => item.group === 'quizzes' || item.group === 'targeted-quiz' || item.group === 'jlpt-mock' || item.group === 'jft-mock').length;
       document.querySelector('[data-stat="total"]').textContent = resources.length;
       document.querySelector('[data-stat="lessons"]').textContent = lessonCount;
       document.querySelector('[data-stat="practice"]').textContent = practiceCount;
