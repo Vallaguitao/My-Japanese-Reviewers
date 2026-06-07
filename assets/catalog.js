@@ -25,7 +25,7 @@
       id: 'vocabulary',
       label: 'Vocabulary',
       shortLabel: 'Vocab',
-      description: 'Lesson vocabulary sets and vocabulary reviewer tools.',
+      description: 'Choose a lesson from the selector, or open the full N5 vocabulary reviewer.',
       groups: ['vocabulary']
     },
     {
@@ -334,7 +334,7 @@
   }
 
   function isScopedFilter(filterId = activeFilter) {
-    return filterId === 'lessons' || filterId === 'vocabulary';
+    return filterId === 'lessons';
   }
 
   function sequenceOptionsForActiveFilter() {
@@ -365,6 +365,11 @@
   function resourceMatches(item, query) {
     const matchesSearch = !query || (item.searchable || searchText(item)).includes(query);
     return categoryMatches(item) && sequenceMatches(item) && numberMatches(item) && matchesSearch;
+  }
+
+  function shouldShowDirectoryItem(item) {
+    if (activeFilter !== 'vocabulary') return true;
+    return item.id === 'full-vocabulary-reviewer';
   }
 
   function matchingResourcesForNumberOptions() {
@@ -441,9 +446,75 @@
     els.featuredGrid?.replaceChildren(fragment);
   }
 
+  function vocabularyLessonResources() {
+    return sequenceResources('vocabulary').filter(item => item.type === 'Vocabulary');
+  }
+
+  function updateVocabularySelectorLink(panel) {
+    const select = panel.querySelector('[data-vocabulary-select]');
+    const link = panel.querySelector('[data-vocabulary-link]');
+    const selected = resourceMap.get(text(select?.value));
+    if (!selected || !link) return;
+    link.href = selected.path;
+    link.textContent = `Open ${selected.title}`;
+  }
+
+  function createVocabularySelectorPanel() {
+    const panel = document.createElement('aside');
+    panel.className = 'lesson-picker-panel vocabulary-selector-panel hidden';
+    panel.setAttribute('aria-label', 'Vocabulary lesson selector');
+
+    const kicker = createTag('section-kicker', 'Vocabulary lesson selector');
+    const title = document.createElement('h2');
+    title.textContent = 'Open a specific N5 vocabulary lesson.';
+    const description = document.createElement('p');
+    description.textContent = 'Pick a lesson here instead of scanning 25 separate vocabulary cards.';
+
+    const stack = document.createElement('div');
+    stack.className = 'picker-stack';
+
+    const label = document.createElement('label');
+    label.className = 'field-label';
+    label.textContent = 'Lesson';
+
+    const select = document.createElement('select');
+    select.className = 'control-select';
+    select.dataset.vocabularySelect = 'true';
+    select.id = 'vocabularyLessonSelect';
+
+    vocabularyLessonResources().forEach(item => {
+      select.append(createOption(item.id, text(item.title)));
+    });
+
+    label.append(select);
+
+    const actions = document.createElement('div');
+    actions.className = 'vocabulary-selector-actions';
+    const link = createLink('card-button', '#', 'Open Selected Lesson');
+    link.dataset.vocabularyLink = 'true';
+    actions.append(link);
+
+    stack.append(label, actions);
+    panel.append(kicker, title, description, stack);
+
+    select.addEventListener('change', () => updateVocabularySelectorLink(panel));
+    updateVocabularySelectorLink(panel);
+
+    return panel;
+  }
+
+  function renderVocabularySelector() {
+    if (!els.resourceList) return;
+    if (!els.vocabularySelectorPanel) {
+      els.vocabularySelectorPanel = createVocabularySelectorPanel();
+      els.resourceList.before(els.vocabularySelectorPanel);
+    }
+    els.vocabularySelectorPanel.classList.toggle('hidden', activeFilter !== 'vocabulary');
+  }
+
   function renderDirectory() {
     const query = text(els.searchInput?.value).toLowerCase();
-    const matches = resources.filter(item => resourceMatches(item, query));
+    const matches = resources.filter(item => resourceMatches(item, query) && shouldShowDirectoryItem(item));
     const fragment = document.createDocumentFragment();
 
     matches.forEach(item => {
@@ -474,6 +545,7 @@
     updateActiveButtons();
     if (els.categorySelect) els.categorySelect.value = activeFilter;
     populateSequenceFilters();
+    renderVocabularySelector();
     renderDirectory();
 
     if (options.updateHash && window.location.hash !== hashForState()) {
