@@ -8,10 +8,19 @@
 
   const FILTERS = [
     {
-      id: 'all',
-      label: 'Compact Directory',
+      id: 'home',
+      label: 'Home',
       shortLabel: 'Home',
-      description: 'Search and filter every linked resource without scanning large cards.',
+      description: 'Featured practice, quick lesson finder, and study flow.',
+      directoryLabel: 'Compact Directory',
+      directoryDescription: 'Search and filter every linked resource without scanning large cards.',
+      groups: null
+    },
+    {
+      id: 'all',
+      label: 'All Resources',
+      shortLabel: 'All',
+      description: 'Every linked lesson, reviewer, quiz, and practice page.',
       groups: null
     },
     {
@@ -25,7 +34,7 @@
       id: 'vocabulary',
       label: 'Vocabulary',
       shortLabel: 'Vocab',
-      description: 'Choose a lesson from the selector, or open the full N5 vocabulary reviewer.',
+      description: 'Use the lesson filters for a specific N5 vocabulary set, or open the full vocabulary reviewer.',
       groups: ['vocabulary']
     },
     {
@@ -66,8 +75,8 @@
   ];
 
   const GROUP_ALIASES = new Map([
-    ['dashboard', 'all'],
-    ['home', 'all'],
+    ['dashboard', 'home'],
+    ['home', 'home'],
     ['n5-vocabulary', 'vocabulary'],
     ['n4-vocabulary', 'vocabulary'],
     ['n5-kanji', 'kanji'],
@@ -137,6 +146,10 @@
     quickLessonSelect: document.getElementById('quickLessonSelect'),
     quickLessonLink: document.getElementById('quickLessonLink'),
     quickRelatedLink: document.getElementById('quickRelatedLink'),
+    dashboardGrid: document.getElementById('dashboardGrid'),
+    featuredPracticeSection: document.getElementById('featuredPracticeSection'),
+    studyFlowSection: document.getElementById('studyFlowSection'),
+    catalogPanel: document.getElementById('catalogPanel'),
     sideNav: document.getElementById('sideNav'),
     visibleCount: document.getElementById('visibleCount'),
     emptyState: document.getElementById('emptyState'),
@@ -147,7 +160,7 @@
     overlay: document.getElementById('sidebarOverlay')
   };
 
-  let activeFilter = 'all';
+  let activeFilter = 'home';
   let activeSequenceKey = 'all';
   let activeSequenceIndex = 'all';
   let lastFocusedBeforeMenu = null;
@@ -196,11 +209,12 @@
     return tag;
   }
 
-  function createLink(className, href, label) {
+  function createLink(className, href, label, ariaLabel = '') {
     const link = document.createElement('a');
     link.className = className;
     link.href = href;
     link.textContent = label;
+    if (ariaLabel) link.setAttribute('aria-label', ariaLabel);
     return link;
   }
 
@@ -268,11 +282,11 @@
 
     const actions = document.createElement('div');
     actions.className = 'card-actions';
-    actions.append(createLink('card-button', item.path, actionLabel(item)));
+    actions.append(createLink('card-button', item.path, actionLabel(item), `${actionLabel(item)}: ${text(item.title)}`));
 
     const related = Array.isArray(item.related) ? item.related[0] : null;
     if (related) {
-      actions.append(createLink('card-secondary', related.path, related.label));
+      actions.append(createLink('card-secondary', related.path, related.label, `${related.label}: ${text(item.title)}`));
     }
 
     card.append(top, title, description, meta, actions);
@@ -301,14 +315,14 @@
     });
 
     main.append(titleRow, meta);
-    row.append(main, createLink('row-button', item.path, actionLabel(item)));
+    row.append(main, createLink('row-button', item.path, actionLabel(item), `${actionLabel(item)}: ${text(item.title)}`));
     return row;
   }
 
   function routeFromHash(hash) {
     const raw = text(hash).replace(/^#/, '');
     if (!raw) {
-      return { filter: 'all', sequenceKey: 'all', sequenceIndex: 'all' };
+      return { filter: 'home', sequenceKey: 'all', sequenceIndex: 'all' };
     }
 
     if (SEQUENCE_ROUTES.has(raw)) {
@@ -320,21 +334,24 @@
       return { filter: aliased, sequenceKey: 'all', sequenceIndex: 'all' };
     }
 
-    return { filter: 'all', sequenceKey: 'all', sequenceIndex: 'all' };
+    return { filter: 'home', sequenceKey: 'all', sequenceIndex: 'all' };
   }
 
   function hashForState() {
     if (activeSequenceKey !== 'all' && activeFilter === 'lessons') {
       return `#${activeSequenceKey}`;
     }
+    if (activeFilter === 'home') {
+      return '#home';
+    }
     if (activeFilter === 'all') {
-      return '#dashboard';
+      return '#all';
     }
     return `#${activeFilter}`;
   }
 
   function isScopedFilter(filterId = activeFilter) {
-    return filterId === 'lessons';
+    return filterId === 'lessons' || filterId === 'vocabulary';
   }
 
   function sequenceOptionsForActiveFilter() {
@@ -365,11 +382,6 @@
   function resourceMatches(item, query) {
     const matchesSearch = !query || (item.searchable || searchText(item)).includes(query);
     return categoryMatches(item) && sequenceMatches(item) && numberMatches(item) && matchesSearch;
-  }
-
-  function shouldShowDirectoryItem(item) {
-    if (activeFilter !== 'vocabulary') return true;
-    return item.id === 'full-vocabulary-reviewer';
   }
 
   function matchingResourcesForNumberOptions() {
@@ -446,75 +458,9 @@
     els.featuredGrid?.replaceChildren(fragment);
   }
 
-  function vocabularyLessonResources() {
-    return sequenceResources('vocabulary').filter(item => item.type === 'Vocabulary');
-  }
-
-  function updateVocabularySelectorLink(panel) {
-    const select = panel.querySelector('[data-vocabulary-select]');
-    const link = panel.querySelector('[data-vocabulary-link]');
-    const selected = resourceMap.get(text(select?.value));
-    if (!selected || !link) return;
-    link.href = selected.path;
-    link.textContent = `Open ${selected.title}`;
-  }
-
-  function createVocabularySelectorPanel() {
-    const panel = document.createElement('aside');
-    panel.className = 'lesson-picker-panel vocabulary-selector-panel hidden';
-    panel.setAttribute('aria-label', 'Vocabulary lesson selector');
-
-    const kicker = createTag('section-kicker', 'Vocabulary lesson selector');
-    const title = document.createElement('h2');
-    title.textContent = 'Open a specific N5 vocabulary lesson.';
-    const description = document.createElement('p');
-    description.textContent = 'Pick a lesson here instead of scanning 25 separate vocabulary cards.';
-
-    const stack = document.createElement('div');
-    stack.className = 'picker-stack';
-
-    const label = document.createElement('label');
-    label.className = 'field-label';
-    label.textContent = 'Lesson';
-
-    const select = document.createElement('select');
-    select.className = 'control-select';
-    select.dataset.vocabularySelect = 'true';
-    select.id = 'vocabularyLessonSelect';
-
-    vocabularyLessonResources().forEach(item => {
-      select.append(createOption(item.id, text(item.title)));
-    });
-
-    label.append(select);
-
-    const actions = document.createElement('div');
-    actions.className = 'vocabulary-selector-actions';
-    const link = createLink('card-button', '#', 'Open Selected Lesson');
-    link.dataset.vocabularyLink = 'true';
-    actions.append(link);
-
-    stack.append(label, actions);
-    panel.append(kicker, title, description, stack);
-
-    select.addEventListener('change', () => updateVocabularySelectorLink(panel));
-    updateVocabularySelectorLink(panel);
-
-    return panel;
-  }
-
-  function renderVocabularySelector() {
-    if (!els.resourceList) return;
-    if (!els.vocabularySelectorPanel) {
-      els.vocabularySelectorPanel = createVocabularySelectorPanel();
-      els.resourceList.before(els.vocabularySelectorPanel);
-    }
-    els.vocabularySelectorPanel.classList.toggle('hidden', activeFilter !== 'vocabulary');
-  }
-
   function renderDirectory() {
     const query = text(els.searchInput?.value).toLowerCase();
-    const matches = resources.filter(item => resourceMatches(item, query) && shouldShowDirectoryItem(item));
+    const matches = resources.filter(item => resourceMatches(item, query));
     const fragment = document.createDocumentFragment();
 
     matches.forEach(item => {
@@ -536,16 +482,24 @@
 
   function updateDirectoryHeading() {
     const filter = getFilter(activeFilter);
-    setText(els.activeGroupTitle, filter.label);
-    setText(els.activeGroupDescription, filter.description);
+    setText(els.activeGroupTitle, filter.directoryLabel || filter.label);
+    setText(els.activeGroupDescription, filter.directoryDescription || filter.description);
+  }
+
+  function updateHomeSections() {
+    const isHome = activeFilter === 'home';
+    els.featuredPracticeSection?.classList.toggle('hidden', !isHome);
+    els.studyFlowSection?.classList.toggle('hidden', !isHome);
+    els.catalogPanel?.classList.toggle('hidden', isHome);
+    els.dashboardGrid?.classList.toggle('category-mode', !isHome);
   }
 
   function refreshDirectory(options = {}) {
     updateDirectoryHeading();
+    updateHomeSections();
     updateActiveButtons();
-    if (els.categorySelect) els.categorySelect.value = activeFilter;
+    if (els.categorySelect) els.categorySelect.value = activeFilter === 'home' ? 'all' : activeFilter;
     populateSequenceFilters();
-    renderVocabularySelector();
     renderDirectory();
 
     if (options.updateHash && window.location.hash !== hashForState()) {
@@ -554,7 +508,7 @@
   }
 
   function setActiveFilter(filterId, options = {}) {
-    activeFilter = filterMap.has(filterId) ? filterId : 'all';
+    activeFilter = filterMap.has(filterId) ? filterId : 'home';
     if (options.resetScope !== false) {
       activeSequenceKey = 'all';
       activeSequenceIndex = 'all';
@@ -569,7 +523,9 @@
 
     FILTERS.forEach(filter => {
       navFragment.append(createNavButton(filter));
-      selectFragment.append(createOption(filter.id, filter.label));
+      if (filter.id !== 'home') {
+        selectFragment.append(createOption(filter.id, filter.label));
+      }
     });
 
     els.sideNav?.replaceChildren(navFragment);
@@ -636,7 +592,7 @@
   }
 
   function applyRoute(route) {
-    activeFilter = filterMap.has(route.filter) ? route.filter : 'all';
+    activeFilter = filterMap.has(route.filter) ? route.filter : 'home';
     activeSequenceKey = route.sequenceKey || 'all';
     activeSequenceIndex = route.sequenceIndex || 'all';
     refreshDirectory({ updateHash: false });
