@@ -1,6 +1,4 @@
 # My-Japanese-Reviewers
-My Activity for myself to learn Japanese 
+My Activity for myself to learn Japanese.
 
-Made by Claude & ChatGPT
-
-Connected to Linux Successfuly
+Vibe coded with Claude & ChatGPT
