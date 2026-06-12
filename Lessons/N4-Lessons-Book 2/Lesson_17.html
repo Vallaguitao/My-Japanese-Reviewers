@@ -9,112 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root{--primary:#4338ca;--primary-light:#6366f1;--primary-dark:#312e81;--accent:#e11d48;--accent-light:#fff1f2;--accent-dark:#9f1239;--secondary:#4f46e5;--secondary-light:#eef2ff;--success:#16a34a;--success-light:#dcfce7;--error:#dc2626;--error-light:#fecaca;--warning:#7c3aed;--warning-light:#f5f3ff;--bg-light:#eef2ff;--bg-card:#ffffff;--text-primary:#312e81;--text-secondary:#4338ca;--text-muted:#6b7280;--border:#c7d2fe;--shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);--shadow-lg:0 10px 15px -3px rgba(0,0,0,0.1),0 4px 6px -2px rgba(0,0,0,0.05);--radius:12px;--radius-lg:20px;--transition:all 0.3s cubic-bezier(0.4,0,0.2,1)}
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
-        body{font-family:'Noto Sans JP','Outfit',sans-serif;background:linear-gradient(135deg,var(--bg-light) 0%,#e0e7ff 100%);color:var(--text-primary);line-height:1.7;min-height:100vh;overflow-x:hidden}
-        .progress-container{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--bg-card);box-shadow:var(--shadow);padding:12px 20px}
-        .progress-header{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;gap:20px}
-        .progress-title{font-size:0.9rem;font-weight:600;color:var(--primary);display:flex;align-items:center;gap:8px}
-        .progress-title .lesson-badge{background:var(--primary);color:white;padding:2px 10px;border-radius:20px;font-size:0.75rem}
-        .progress-bar-wrapper{flex:1;max-width:500px}.progress-bar{height:8px;background:#e2e8f0;border-radius:10px;overflow:hidden}
-        .progress-fill{height:100%;background:linear-gradient(90deg,var(--primary) 0%,var(--accent) 100%);border-radius:10px;transition:width 0.5s ease;width:0%}
-        .progress-text{font-size:0.8rem;color:var(--text-muted);text-align:right;margin-top:4px}
-        .progress-nav{display:flex;gap:8px}
-        .nav-btn{background:var(--primary);color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.85rem;font-weight:500;transition:var(--transition);display:flex;align-items:center;gap:6px}
-        .nav-btn:hover{background:var(--primary-light);transform:translateY(-1px)}.nav-btn:disabled{background:#d1d5db;color:#9ca3af;cursor:not-allowed;transform:none}
-        .presentation{padding-top:80px;min-height:100vh}.slide{display:none;max-width:1000px;margin:0 auto;padding:40px 20px;animation:fadeIn 0.5s ease}.slide.active{display:block}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        .title-slide{text-align:center;padding:50px 20px}
-        .title-slide .book-badge{display:inline-block;background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 100%);color:white;padding:8px 24px;border-radius:30px;font-size:0.9rem;font-weight:500;margin-bottom:24px;letter-spacing:1px}
-        .title-slide h1{font-size:clamp(2.5rem,6vw,3.8rem);font-weight:700;color:var(--primary-dark);margin-bottom:12px;line-height:1.2}
-        .title-slide .lesson-title-jp{font-size:clamp(0.95rem,2.5vw,1.3rem);color:var(--accent-dark);margin-bottom:8px}
-        .title-slide .lesson-subtitle{font-size:1.1rem;color:var(--text-secondary);margin-bottom:36px}
-        .title-card{background:var(--bg-card);border-radius:var(--radius-lg);padding:36px;box-shadow:var(--shadow-lg);max-width:720px;margin:0 auto 36px}
-        .title-card h2{color:var(--primary);font-size:1.2rem;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:10px}
-        .grammar-list{display:grid;gap:8px}.grammar-item{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--bg-light);border-radius:var(--radius);border-left:4px solid var(--accent);transition:var(--transition);font-size:0.93rem}
-        .grammar-item:hover{transform:translateX(8px);background:var(--accent-light)}
-        .grammar-number{width:24px;height:24px;background:var(--primary);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;flex-shrink:0}
-        .start-btn{background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 100%);color:white;border:none;padding:16px 48px;border-radius:30px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:var(--transition);box-shadow:0 4px 14px rgba(0,0,0,0.2)}
-        .start-btn:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,0.3)}
-        .content-card{background:var(--bg-card);border-radius:var(--radius-lg);padding:36px;box-shadow:var(--shadow-lg);margin-bottom:24px}
-        .slide-header{display:flex;align-items:center;gap:16px;margin-bottom:28px;padding-bottom:18px;border-bottom:2px solid var(--border)}
-        .grammar-badge{background:var(--primary);color:white;padding:8px 16px;border-radius:8px;font-size:0.85rem;font-weight:600;white-space:nowrap}
-        .slide-header h2{font-size:1.5rem;color:var(--primary-dark);flex:1}.slide-header .jp-title{font-size:1rem;color:var(--accent-dark);font-weight:500}
-        ruby{ruby-position:over}ruby rt{font-size:0.6em;color:var(--text-muted)}
-        .example-box{background:linear-gradient(135deg,#eef2ff 0%,#e0e7ff 100%);border-radius:var(--radius);padding:20px;margin:16px 0;border-left:4px solid var(--primary)}
-        .example-label{font-size:0.8rem;font-weight:600;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-        .example-japanese{font-size:1.15rem;color:var(--text-primary);margin-bottom:5px;line-height:2.1}
-        .example-english{font-size:0.9rem;color:var(--text-secondary);font-style:italic}
-        .example-comparison{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
-        .polite-box,.plain-box{padding:16px;border-radius:var(--radius)}
-        .polite-box{background:linear-gradient(135deg,#eef2ff 0%,#c7d2fe 100%);border-left:4px solid var(--primary)}
-        .plain-box{background:linear-gradient(135deg,#fff1f2 0%,#fecdd3 100%);border-left:4px solid var(--accent)}
-        .style-label{font-size:0.85rem;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-        .polite-box .style-label{color:var(--primary-dark)}.plain-box .style-label{color:var(--accent-dark)}
-        .structure-box{background:linear-gradient(135deg,#fff1f2 0%,#ffe4e6 100%);border-radius:var(--radius);padding:16px;margin:16px 0;border-left:4px solid var(--accent)}
-        .structure-box .label{font-size:0.8rem;font-weight:600;color:var(--accent-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-        .structure-formula{font-size:1.02rem;font-family:'Outfit',monospace;color:var(--primary-dark);background:white;padding:8px 16px;border-radius:8px;display:inline-block;margin:5px 0}
-        .structure-formula .highlight{color:var(--primary);font-weight:600}.structure-formula .accent{color:var(--accent-dark);font-weight:600}
-        .explanation{margin:18px 0}.explanation h3{font-size:1.02rem;color:var(--primary-dark);margin-bottom:8px;display:flex;align-items:center;gap:10px}
-        .explanation p{color:var(--text-secondary);margin-bottom:8px;line-height:1.8}
-        .key-point{background:var(--accent-light);padding:12px 16px;border-radius:var(--radius);margin:12px 0;border-left:4px solid var(--accent)}
-        .key-point strong{color:var(--primary-dark)}
-        .conversation-box{background:linear-gradient(135deg,#f5f3ff 0%,#ddd6fe 100%);border-radius:var(--radius);padding:20px;margin:16px 0;border-left:4px solid var(--warning)}
-        .conversation-box .example-label{color:#5b21b6}
-        .conversation-line{margin-bottom:8px;font-size:1.08rem;line-height:2}.conversation-line:last-child{margin-bottom:0}
-        .speaker{font-weight:700;color:var(--primary-dark);min-width:28px;display:inline-block}.speaker.b{color:var(--accent-dark)}
-        .conversation-translation{font-size:0.85rem;color:var(--text-muted);font-style:italic;margin-left:32px;margin-top:-5px;margin-bottom:6px}
-        .ref-connection{margin:18px 0}
-        .ref-toggle{width:100%;background:linear-gradient(135deg,#eef2ff 0%,#c7d2fe 100%);border:none;padding:12px 16px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:0.9rem;font-weight:500;color:var(--primary-dark);transition:var(--transition)}
-        .ref-toggle:hover{background:linear-gradient(135deg,#c7d2fe 0%,#a5b4fc 100%)}
-        .ref-toggle .icon{transition:transform 0.3s ease}.ref-toggle.open .icon{transform:rotate(180deg)}
-        .ref-content{max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.4s ease;background:#f5f3ff;border-radius:0 0 var(--radius) var(--radius)}
-        .ref-content.open{max-height:900px;padding:16px;border:1px solid #c7d2fe;border-top:none}
-        .ref-content h4{color:var(--primary-dark);font-size:0.9rem;margin-bottom:8px}.ref-content p{color:var(--text-secondary);font-size:0.88rem;margin-bottom:6px;line-height:1.7}
-        .ref-badge{display:inline-block;background:var(--primary-dark);color:white;padding:2px 10px;border-radius:20px;font-size:0.73rem;margin-right:6px}
-        .table-container{overflow-x:auto;margin:16px 0}.data-table{width:100%;border-collapse:collapse;font-size:0.88rem}
-        .data-table th{background:var(--primary);color:white;padding:10px 12px;text-align:left;font-weight:500}
-        .data-table td{padding:9px 12px;border-bottom:1px solid var(--border)}.data-table tr:nth-child(even){background:var(--bg-light)}.data-table tr:hover{background:#c7d2fe}
-        .quiz-card{background:linear-gradient(135deg,#eef2ff 0%,#c7d2fe 100%);border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow-lg);margin-bottom:24px}
-        .quiz-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
-        .quiz-badge{background:var(--accent);color:white;padding:8px 16px;border-radius:8px;font-size:0.85rem;font-weight:600}
-        .quiz-header h2{font-size:1.3rem;color:var(--primary-dark)}
-        .quiz-question{background:white;padding:20px;border-radius:var(--radius);margin-bottom:14px;box-shadow:var(--shadow)}
-        .question-number{font-size:0.78rem;font-weight:600;color:var(--accent-dark);margin-bottom:8px}
-        .question-context{font-size:0.88rem;color:var(--text-secondary);font-style:italic;margin-bottom:12px;padding:8px;background:var(--bg-light);border-radius:8px}
-        .fill-blank{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:1.08rem;margin:12px 0}
-        .blank-input{border:2px dashed var(--primary);background:#eef2ff;padding:7px 12px;border-radius:8px;min-width:100px;font-size:0.95rem;font-family:inherit;text-align:center;transition:var(--transition)}
-        .blank-input:focus{outline:none;border-color:var(--accent);background:white;box-shadow:0 0 0 3px rgba(225,29,72,0.2)}
-        .blank-input.correct-input{border-color:var(--success);background:var(--success-light)}.blank-input.incorrect-input{border-color:var(--error);background:var(--error-light)}
-        .mc-options{display:grid;gap:8px;margin:12px 0}
-        .mc-option{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius);border:2px solid #e2e8f0;background:white;cursor:pointer;transition:var(--transition);font-size:0.93rem}
-        .mc-option:hover{border-color:var(--primary-light);background:#eef2ff;transform:translateX(4px)}
-        .mc-option.selected{border-color:var(--primary);background:#e0e7ff}.mc-option.correct-option{border-color:var(--success);background:var(--success-light)}
-        .mc-option.incorrect-option{border-color:var(--error);background:var(--error-light)}.mc-option.disabled{pointer-events:none;opacity:0.85}
-        .mc-radio{width:18px;height:18px;border:2px solid #e2e8f0;border-radius:50%;flex-shrink:0;transition:var(--transition);display:flex;align-items:center;justify-content:center}
-        .mc-option.selected .mc-radio{border-color:var(--primary);background:var(--primary)}.mc-option.selected .mc-radio::after{content:'';width:7px;height:7px;border-radius:50%;background:white}
-        .mc-option.correct-option .mc-radio{border-color:var(--success);background:var(--success)}.mc-option.correct-option .mc-radio::after{content:'✓';color:white;font-size:11px;font-weight:700}
-        .mc-option.incorrect-option .mc-radio{border-color:var(--error);background:var(--error)}.mc-option.incorrect-option .mc-radio::after{content:'✗';color:white;font-size:11px;font-weight:700}
-        .feedback{display:none;padding:10px 14px;border-radius:var(--radius);margin-top:8px;font-size:0.85rem;line-height:1.7;animation:fadeIn 0.3s ease}
-        .feedback.show{display:block}.feedback.correct{background:var(--success-light);border-left:4px solid var(--success);color:#14532d}
-        .feedback.incorrect{background:var(--error-light);border-left:4px solid var(--error);color:#7f1d1d}.feedback strong{display:block;margin-bottom:3px}
-        .check-btn{background:var(--primary);color:white;border:none;padding:10px 28px;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;transition:var(--transition);margin-top:8px}
-        .check-btn:hover{background:var(--primary-light);transform:translateY(-2px)}
-        .summary-card{background:linear-gradient(135deg,var(--primary-dark) 0%,var(--primary) 50%,var(--accent) 100%);border-radius:var(--radius-lg);padding:36px;color:white;text-align:center}
-        .summary-card h2{font-size:1.8rem;margin-bottom:16px}.summary-card>p{font-size:1rem;opacity:0.9;margin-bottom:8px}
-        .summary-points{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:24px 0}
-        .summary-point{background:rgba(255,255,255,0.15);padding:14px;border-radius:var(--radius);backdrop-filter:blur(10px)}
-        .summary-point h4{font-size:0.9rem;margin-bottom:4px}.summary-point p{font-size:0.8rem;opacity:0.9}
-        .restart-btn{background:white;color:var(--primary-dark);border:none;padding:14px 44px;border-radius:30px;font-size:1rem;font-weight:600;cursor:pointer;transition:var(--transition);margin-top:16px}
-        .restart-btn:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,0.2)}
-        @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}.pulse{animation:pulse 2s infinite}
-        .change-card{background:white;border-radius:var(--radius);padding:16px;border-left:4px solid var(--primary);margin:8px 0;transition:var(--transition)}.change-card:hover{transform:translateX(4px);box-shadow:var(--shadow)}
-        .change-card .cc-label{font-size:0.78rem;font-weight:600;color:var(--accent-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-        .change-card .cc-pattern{font-size:1rem;font-weight:600;color:var(--primary-dark);margin-bottom:4px}
-        .change-card .cc-example{font-size:0.92rem;color:var(--text-secondary);margin-bottom:2px}
-        .change-card .cc-english{font-size:0.82rem;color:var(--text-muted);font-style:italic}
-        @media(max-width:768px){.progress-header{flex-direction:column;gap:12px}.progress-bar-wrapper{width:100%;max-width:none}.progress-nav{width:100%;justify-content:space-between}.content-card,.quiz-card{padding:20px}.slide-header{flex-direction:column;align-items:flex-start;gap:8px}.example-japanese{font-size:1rem}.example-comparison{grid-template-columns:1fr}.summary-points{grid-template-columns:1fr}}
-        @media(max-width:480px){.progress-title{font-size:0.78rem}.nav-btn{padding:6px 12px;font-size:0.78rem}.nav-btn .btn-text{display:none}.title-slide h1{font-size:2rem}.title-card{padding:20px}}
     </style>
+  <link rel="stylesheet" href="../../assets/lesson/lesson.css">
   <link rel="stylesheet" href="../../assets/site-nav.css">
   <link rel="stylesheet" href="../../assets/contrast-fixes.css">
 </head>
@@ -453,46 +349,36 @@
     </div>
 
     <script>
-    let currentSlide=1;const totalSlides=14;
-    function updateSlide(){document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));const a=document.querySelector(`[data-slide="${currentSlide}"]`);if(a)a.classList.add('active');document.getElementById('currentSlide').textContent=currentSlide;document.getElementById('totalSlides').textContent=totalSlides;document.getElementById('progressFill').style.width=((currentSlide-1)/(totalSlides-1)*100)+'%';document.getElementById('prevBtn').disabled=currentSlide===1;document.getElementById('nextBtn').disabled=currentSlide===totalSlides;window.scrollTo({top:0,behavior:'smooth'});}
-    function nextSlide(){if(currentSlide<totalSlides){currentSlide++;updateSlide();}}
-    function prevSlide(){if(currentSlide>1){currentSlide--;updateSlide();}}
-    function restartPresentation(){currentSlide=1;updateSlide();}
-    function toggleRef(btn){btn.classList.toggle('open');btn.nextElementSibling.classList.toggle('open');}
-    const mc={};
-    function sMC(q,i,el){if(el.classList.contains('disabled'))return;document.querySelectorAll(`#${q}-opts .mc-option`).forEach(o=>o.classList.remove('selected'));el.classList.add('selected');mc[q]=i;}
-    function fb(id,ok,msg){const f=document.getElementById(id);f.className='feedback show '+(ok?'correct':'incorrect');f.innerHTML=`<strong>${ok?'✅ Correct!':'❌ Not quite.'}</strong> ${msg}`;}
-    function dis(q){document.querySelectorAll(`#${q}-opts .mc-option`).forEach(o=>o.classList.add('disabled'));}
-    function mrk(q,ci){document.querySelectorAll(`#${q}-opts .mc-option`).forEach((o,i)=>{if(i===ci)o.classList.add('correct-option');else if(o.classList.contains('selected'))o.classList.add('incorrect-option');});}
-    function cI(id,ans,fid,om,bm){const v=document.getElementById(id).value.trim();if(!v)return;const ok=Array.isArray(ans)?ans.includes(v):v===ans;document.getElementById(id).classList.add(ok?'correct-input':'incorrect-input');fb(fid,ok,ok?om:bm);}
-    function cM(q,ans,fid,om,bm){if(mc[q]===undefined)return;const ok=mc[q]===ans;fb(fid,ok,ok?om:bm);mrk(q,ans);dis(q);}
+        const mc={};
+            function sMC(q,i,el){if(el.classList.contains('disabled'))return;document.querySelectorAll(`#${q}-opts .mc-option`).forEach(o=>o.classList.remove('selected'));el.classList.add('selected');mc[q]=i;}
+            function fb(id,ok,msg){const f=document.getElementById(id);f.className='feedback show '+(ok?'correct':'incorrect');f.innerHTML=`<strong>${ok?'✅ Correct!':'❌ Not quite.'}</strong> ${msg}`;}
+            function dis(q){document.querySelectorAll(`#${q}-opts .mc-option`).forEach(o=>o.classList.add('disabled'));}
+            function mrk(q,ci){document.querySelectorAll(`#${q}-opts .mc-option`).forEach((o,i)=>{if(i===ci)o.classList.add('correct-option');else if(o.classList.contains('selected'))o.classList.add('incorrect-option');});}
+            function cI(id,ans,fid,om,bm){const v=document.getElementById(id).value.trim();if(!v)return;const ok=Array.isArray(ans)?ans.includes(v):v===ans;document.getElementById(id).classList.add(ok?'correct-input':'incorrect-input');fb(fid,ok,ok?om:bm);}
+            function cM(q,ans,fid,om,bm){if(mc[q]===undefined)return;const ok=mc[q]===ans;fb(fid,ok,ok?om:bm);mrk(q,ans);dis(q);}
 
-    function cQ1(){
-        cI('q1',['話せるようになりました','はなせるようになりました'],'q1-fb','話す → potential: 話<strong>せる</strong> + ようになりました = "I\'ve become able to speak." The potential form (話せる) describes the ability, and ようになりました captures the change — you couldn\'t speak before, now you can.','The answer is <strong>話せるようになりました</strong>. 話す → 話せる (potential) + ようになりました. This expresses gradual growth from inability to ability.');
-        cM('q2',0,'q2-fb','<strong>わかる</strong>ようになりました — わかる is already an ability verb (it means "to understand/be able to understand"), so it does NOT take potential form. わかれる does not exist in standard Japanese. The same applies to できる — it\'s already potential, so just use できるようになりました.','わかる and できる are inherently potential verbs — they already express ability. Adding another potential form would be redundant and incorrect. Just use them directly + ようになりました.');
-        cM('q3',0,'q3-fb','V-(ら)れるようになりました describes a <strong>transition from inability to ability</strong> over time. The key word is "become" (なりました) — it emphasizes that this is a change, not a permanent state. You couldn\'t do it before, you worked at it, and now you can.','This pattern specifically marks a <em>change</em> — something you could NOT do before, and NOW you can. The なりました (became) is what makes it a change expression.');
-        cI('q4',['楽しめるようになりました','たのしめるようになりました'],'q4-fb','楽しむ → potential: 楽し<strong>める</strong> (Group 1: む→める) + ようになりました = "I\'ve become able to enjoy." You couldn\'t enjoy your hobbies before (maybe too busy or language barrier), but now you can!','The answer is <strong>楽しめるようになりました</strong>. 楽しむ → 楽しめる (potential, Group 1) + ようになりました.');
-        cM('q5',0,'q5-fb','<strong>できる</strong>ようになりました — できる is already the potential form of する. Adding another potential form (できられる) is incorrect and unnecessary. Just use できる directly before ようになりました. Same logic as わかる — these verbs are inherently about ability.','できる IS the potential form of する already. できられる is double-potential and incorrect. Use できるようになりました directly.');
-    }
-    function cQ2(){
-        cM('q6',0,'q6-fb','楽し<strong>くなりました</strong> — 楽しい is an <strong>イ-adjective</strong>, so it uses the イA-くなる pattern: い→く + なる. If it were a ナ-adjective (like 元気), you\'d use になる. Always check: does it end in い? Then it\'s イA-くなる!','楽しい is イ-adj: い→くなる. 楽しくなりました = "became fun." ナ-adj (元気, 好き) use になる: 元気になりました. The adjective type determines the pattern.');
-        cM('q7',0,'q7-fb','しょうゆを使う<strong>ようになる</strong> = <strong>habit/preference change</strong> using dictionary form. "I started using soy sauce" — this wasn\'t about gaining ability (you could always use soy sauce), it\'s about choosing to start a new habit. Dictionary form = conscious choice to start doing something.','Dictionary form + ようになる = habit change. Potential + ようになる = ability gain. Here, using soy sauce is a choice (habit), not an ability you gained.');
-        cI('q8',['なくなりました'],'q8-fb','困ら<strong>なくなりました</strong> — 困る → 困らない (negative) → 困らなく + なりました = "stopped being troubled / stopped having difficulty." The negative なく + なる pattern expresses that something you used to experience has ceased.','The answer is <strong>なくなりました</strong>. V-ない → V-なくなる = "stopped doing / ceased to be." 困らなくなりました = no longer troubled.');
-        cM('q9',0,'q9-fb','元気<strong>になりました</strong> — 元気 is a <strong>ナ-adjective</strong>, so it uses ナA-になる. くなる is for イ-adjectives only (楽しくなる, 暑くなる). Be careful — 元気 looks like it could be イ-adj, but it\'s ナ-adj (元気<strong>な</strong>人, not 元気い人).','元気 is ナ-adj: になる. Test: 元気<strong>な</strong>人 (not 元気い人). ナ-adj uses に, イ-adj uses く. This is a common trap — always check which type!');
-    }
-    function cQF(){
-        cI('q10',['読めるようになりました','よめるようになりました'],'q10-fb','漢字が読<strong>めるようになりました</strong> — 読む → potential: 読める (Group 1: む→める) + ようになりました. You worked hard at studying kanji, and now you can read them — a wonderful growth milestone!','The answer is <strong>読めるようになりました</strong>. 読む → 読める (potential) + ようになりました = "became able to read."');
-        cM('q11',0,'q11-fb','すし職人<strong>になりたい</strong>です — N + になる for identity/role change. The particle に marks what you become. を is incorrect with なる — you always use に. This is the most basic なる pattern from MNN L3/L19.','N + になる always uses に, never を. すし職人<strong>に</strong>なりたい = "want to become a sushi chef." The に marks the target state of the change.');
-        cM('q12',0,'q12-fb','V-る (dictionary) ようになる = <strong>habit change</strong> (started doing something new). V-(ら)れる (potential) ようになる = <strong>ability gain</strong> (became able to do something). The verb form before ようになる determines the meaning: dictionary = choice, potential = capability.','Dictionary form = habit/preference change ("I started doing X"). Potential form = ability gain ("I became able to do X"). The form of the verb changes the entire meaning.');
-        cI('q13',['ようになりました'],'q13-fb','飲む<strong>ようになりました</strong> — Dictionary form (飲む) + ようになる = "started doing" (habit change). You chose to start drinking miso soup every morning — a lifestyle change, not an ability you gained. No potential form needed here!','The answer is <strong>ようになりました</strong>. 飲む (dictionary form) + ようになる = habit change: "I started drinking ~." No potential form because it\'s a choice, not an ability.');
-        cM('q14',0,'q14-fb','V-(ら)れ<strong>なくなる</strong> = "become unable to" — the exact opposite of V-(ら)れるようになる (become able to). L16 taught this: 逃げられなくなる (become unable to escape). V-なくなる (without potential) means "stop doing" — related but different: it\'s about habit cessation, not ability loss.','V-(ら)れ<strong>なくなる</strong> = ability LOST (opposite of ability gained). V-<strong>なくなる</strong> = stopped doing (habit cessation). Both are "negative changes" but target different things: ability vs habit.');
-    }
-
-    document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nextSlide();}else if(e.key==='ArrowLeft'){e.preventDefault();prevSlide();}});
-    let tsX=0;document.addEventListener('touchstart',e=>{tsX=e.changedTouches[0].screenX;});
-    document.addEventListener('touchend',e=>{const d=tsX-e.changedTouches[0].screenX;if(Math.abs(d)>50){d>0?nextSlide():prevSlide();}});
-    updateSlide();
+            function cQ1(){
+                cI('q1',['話せるようになりました','はなせるようになりました'],'q1-fb','話す → potential: 話<strong>せる</strong> + ようになりました = "I\'ve become able to speak." The potential form (話せる) describes the ability, and ようになりました captures the change — you couldn\'t speak before, now you can.','The answer is <strong>話せるようになりました</strong>. 話す → 話せる (potential) + ようになりました. This expresses gradual growth from inability to ability.');
+                cM('q2',0,'q2-fb','<strong>わかる</strong>ようになりました — わかる is already an ability verb (it means "to understand/be able to understand"), so it does NOT take potential form. わかれる does not exist in standard Japanese. The same applies to できる — it\'s already potential, so just use できるようになりました.','わかる and できる are inherently potential verbs — they already express ability. Adding another potential form would be redundant and incorrect. Just use them directly + ようになりました.');
+                cM('q3',0,'q3-fb','V-(ら)れるようになりました describes a <strong>transition from inability to ability</strong> over time. The key word is "become" (なりました) — it emphasizes that this is a change, not a permanent state. You couldn\'t do it before, you worked at it, and now you can.','This pattern specifically marks a <em>change</em> — something you could NOT do before, and NOW you can. The なりました (became) is what makes it a change expression.');
+                cI('q4',['楽しめるようになりました','たのしめるようになりました'],'q4-fb','楽しむ → potential: 楽し<strong>める</strong> (Group 1: む→める) + ようになりました = "I\'ve become able to enjoy." You couldn\'t enjoy your hobbies before (maybe too busy or language barrier), but now you can!','The answer is <strong>楽しめるようになりました</strong>. 楽しむ → 楽しめる (potential, Group 1) + ようになりました.');
+                cM('q5',0,'q5-fb','<strong>できる</strong>ようになりました — できる is already the potential form of する. Adding another potential form (できられる) is incorrect and unnecessary. Just use できる directly before ようになりました. Same logic as わかる — these verbs are inherently about ability.','できる IS the potential form of する already. できられる is double-potential and incorrect. Use できるようになりました directly.');
+            }
+            function cQ2(){
+                cM('q6',0,'q6-fb','楽し<strong>くなりました</strong> — 楽しい is an <strong>イ-adjective</strong>, so it uses the イA-くなる pattern: い→く + なる. If it were a ナ-adjective (like 元気), you\'d use になる. Always check: does it end in い? Then it\'s イA-くなる!','楽しい is イ-adj: い→くなる. 楽しくなりました = "became fun." ナ-adj (元気, 好き) use になる: 元気になりました. The adjective type determines the pattern.');
+                cM('q7',0,'q7-fb','しょうゆを使う<strong>ようになる</strong> = <strong>habit/preference change</strong> using dictionary form. "I started using soy sauce" — this wasn\'t about gaining ability (you could always use soy sauce), it\'s about choosing to start a new habit. Dictionary form = conscious choice to start doing something.','Dictionary form + ようになる = habit change. Potential + ようになる = ability gain. Here, using soy sauce is a choice (habit), not an ability you gained.');
+                cI('q8',['なくなりました'],'q8-fb','困ら<strong>なくなりました</strong> — 困る → 困らない (negative) → 困らなく + なりました = "stopped being troubled / stopped having difficulty." The negative なく + なる pattern expresses that something you used to experience has ceased.','The answer is <strong>なくなりました</strong>. V-ない → V-なくなる = "stopped doing / ceased to be." 困らなくなりました = no longer troubled.');
+                cM('q9',0,'q9-fb','元気<strong>になりました</strong> — 元気 is a <strong>ナ-adjective</strong>, so it uses ナA-になる. くなる is for イ-adjectives only (楽しくなる, 暑くなる). Be careful — 元気 looks like it could be イ-adj, but it\'s ナ-adj (元気<strong>な</strong>人, not 元気い人).','元気 is ナ-adj: になる. Test: 元気<strong>な</strong>人 (not 元気い人). ナ-adj uses に, イ-adj uses く. This is a common trap — always check which type!');
+            }
+            function cQF(){
+                cI('q10',['読めるようになりました','よめるようになりました'],'q10-fb','漢字が読<strong>めるようになりました</strong> — 読む → potential: 読める (Group 1: む→める) + ようになりました. You worked hard at studying kanji, and now you can read them — a wonderful growth milestone!','The answer is <strong>読めるようになりました</strong>. 読む → 読める (potential) + ようになりました = "became able to read."');
+                cM('q11',0,'q11-fb','すし職人<strong>になりたい</strong>です — N + になる for identity/role change. The particle に marks what you become. を is incorrect with なる — you always use に. This is the most basic なる pattern from MNN L3/L19.','N + になる always uses に, never を. すし職人<strong>に</strong>なりたい = "want to become a sushi chef." The に marks the target state of the change.');
+                cM('q12',0,'q12-fb','V-る (dictionary) ようになる = <strong>habit change</strong> (started doing something new). V-(ら)れる (potential) ようになる = <strong>ability gain</strong> (became able to do something). The verb form before ようになる determines the meaning: dictionary = choice, potential = capability.','Dictionary form = habit/preference change ("I started doing X"). Potential form = ability gain ("I became able to do X"). The form of the verb changes the entire meaning.');
+                cI('q13',['ようになりました'],'q13-fb','飲む<strong>ようになりました</strong> — Dictionary form (飲む) + ようになる = "started doing" (habit change). You chose to start drinking miso soup every morning — a lifestyle change, not an ability you gained. No potential form needed here!','The answer is <strong>ようになりました</strong>. 飲む (dictionary form) + ようになる = habit change: "I started drinking ~." No potential form because it\'s a choice, not an ability.');
+                cM('q14',0,'q14-fb','V-(ら)れ<strong>なくなる</strong> = "become unable to" — the exact opposite of V-(ら)れるようになる (become able to). L16 taught this: 逃げられなくなる (become unable to escape). V-なくなる (without potential) means "stop doing" — related but different: it\'s about habit cessation, not ability loss.','V-(ら)れ<strong>なくなる</strong> = ability LOST (opposite of ability gained). V-<strong>なくなる</strong> = stopped doing (habit cessation). Both are "negative changes" but target different things: ability vs habit.');
+            }
     </script>
+  <script type="module" src="../../assets/lesson/lesson.js"></script>
   <script src="../../assets/resource-data.js"></script>
   <script src="../../assets/site-nav.js" data-site-root="../../"></script>
 </body>
