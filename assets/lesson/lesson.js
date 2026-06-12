@@ -1,33 +1,7 @@
 (function () {
-  const LESSON_PATH_RE = /lessons\/([^/]+)\/lesson_(\d+)\.html$/i;
   let currentSlide = 1;
   let touchStartX = 0;
   let touchStartY = 0;
-
-  function normalizePath(value) {
-    return decodeURIComponent(value || '')
-      .replace(/\\/g, '/')
-      .replace(/^\/+/, '')
-      .toLowerCase();
-  }
-
-  function lessonIdFromPath() {
-    const match = normalizePath(window.location.pathname).match(LESSON_PATH_RE);
-    if (!match) return 'unknown';
-
-    const folder = match[1]
-      .replace(/^n5-lessons$/, 'n5')
-      .replace(/^n4-lessons-book-1$/, 'n4b1')
-      .replace(/^n4-lessons-book 2$/, 'n4b2')
-      .replace(/[^a-z0-9]+/g, '-');
-
-    return `${folder}-${Number(match[2])}`;
-  }
-
-  function applyLessonId() {
-    if (!document.body) return;
-    document.body.dataset.mjrLesson = lessonIdFromPath();
-  }
 
   function slideNumbers() {
     return Array.from(document.querySelectorAll('[data-slide]'))
@@ -47,8 +21,6 @@
   }
 
   function updateSlide(options) {
-    applyLessonId();
-
     const total = totalSlides();
     currentSlide = Math.min(Math.max(currentSlide, 1), total);
 
