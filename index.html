@@ -314,6 +314,199 @@
         group.items = sortItems(group.items);
       });
     });
+
+    const state = {
+      activeCategory: DEFAULT_CATEGORY,
+      query: '',
+      expandedGroups: new Set()
+    };
+
+    const nav = document.getElementById('category-nav');
+    const panel = document.getElementById('directory-panel');
+    const searchInput = document.getElementById('resource-search');
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function allItems() {
+      return RESOURCE_CATEGORIES.flatMap(category =>
+        category.groups.flatMap(group =>
+          group.items.map(item => ({
+            ...item,
+            categoryId: category.id,
+            categoryName: category.name,
+            groupName: group.name,
+            jp: category.jp
+          }))
+        )
+      );
+    }
+
+    function getCategory(id) {
+      return RESOURCE_CATEGORIES.find(category => category.id === id) || RESOURCE_CATEGORIES.find(category => category.id === DEFAULT_CATEGORY);
+    }
+
+    function groupKey(categoryId, groupName) {
+      return `${categoryId}:${groupName}`;
+    }
+
+    function renderNav() {
+      nav.innerHTML = RESOURCE_CATEGORIES.map(category => {
+        const count = category.groups.reduce((sum, group) => sum + group.items.length, 0);
+        const active = category.id === state.activeCategory && !state.query;
+        return `
+          <a class="category-link${active ? ' active' : ''}" href="#${category.id}" data-category="${category.id}">
+            <span class="category-mark" aria-hidden="true">${escapeHtml(category.jp)}</span>
+            <span class="category-copy">
+              <strong>${escapeHtml(category.name)}</strong>
+              <small>${count} resources</small>
+            </span>
+          </a>
+        `;
+      }).join('');
+    }
+
+    function renderRows(items) {
+      return items.map(item => `
+        <li class="resource-row">
+          <a class="resource-title" href="${escapeHtml(item.path)}">
+            ${escapeHtml(item.title)}
+          </a>
+          <span class="resource-path">${escapeHtml(item.path)}</span>
+          <a class="open-link" href="${escapeHtml(item.path)}" aria-label="Open ${escapeHtml(item.title)}">Open</a>
+        </li>
+      `).join('');
+    }
+
+    function renderGroup(category, group) {
+      const key = groupKey(category.id, group.name);
+      const isDense = group.items.length > PREVIEW_LIMIT;
+      const isExpanded = state.expandedGroups.has(key);
+      const visibleItems = isDense && !isExpanded ? group.items.slice(0, PREVIEW_LIMIT) : group.items;
+      const hiddenCount = group.items.length - visibleItems.length;
+
+      return `
+        <section class="resource-group">
+          <div class="group-heading">
+            <div>
+              <p>${escapeHtml(category.name)}</p>
+              <h3>${escapeHtml(group.name)}</h3>
+            </div>
+            <span>${group.items.length} files</span>
+          </div>
+          <ul class="resource-list">
+            ${renderRows(visibleItems)}
+          </ul>
+          ${hiddenCount > 0 ? `<button class="show-more" type="button" data-group="${escapeHtml(key)}">Show all ${group.items.length}</button>` : ''}
+        </section>
+      `;
+    }
+
+    function renderCategory() {
+      const category = getCategory(state.activeCategory);
+      const count = category.groups.reduce((sum, group) => sum + group.items.length, 0);
+      panel.innerHTML = `
+        <div class="panel-heading" data-watermark="${escapeHtml(category.watermark)}">
+          <div>
+            <p class="eyebrow">${escapeHtml(category.jp)} ${escapeHtml(category.subtitle)}</p>
+            <h2>${escapeHtml(category.name)}</h2>
+          </div>
+          <span class="count-pill">${count} resources</span>
+        </div>
+        <div class="group-stack">
+          ${category.groups.map(group => renderGroup(category, group)).join('')}
+        </div>
+      `;
+    }
+
+    function renderSearch() {
+      const query = state.query.toLowerCase();
+      const results = allItems().filter(item => {
+        return [item.title, item.path, item.categoryName, item.groupName]
+          .join(' ')
+          .toLowerCase()
+          .includes(query);
+      });
+
+      panel.innerHTML = `
+        <div class="panel-heading" data-watermark="探">
+          <div>
+            <p class="eyebrow">検索 Search results</p>
+            <h2>${results.length} match${results.length === 1 ? '' : 'es'}</h2>
+          </div>
+          <button class="clear-search" type="button">Clear</button>
+        </div>
+        ${results.length ? `<ul class="resource-list search-results">${renderRows(results)}</ul>` : '<p class="empty-state">No matching resources found.</p>'}
+      `;
+    }
+
+    function render() {
+      renderNav();
+      if (state.query) {
+        renderSearch();
+      } else {
+        renderCategory();
+      }
+    }
+
+    function setActiveCategory(categoryId, updateHash = true) {
+      state.activeCategory = getCategory(categoryId).id;
+      state.query = '';
+      searchInput.value = '';
+      if (updateHash) {
+        history.replaceState(null, '', `#${state.activeCategory}`);
+      }
+      render();
+    }
+
+    function initializeFromHash() {
+      const hash = window.location.hash.replace('#', '');
+      state.activeCategory = getCategory(hash || DEFAULT_CATEGORY).id;
+    }
+
+    nav.addEventListener('click', event => {
+      const link = event.target.closest('[data-category]');
+      if (!link) return;
+      event.preventDefault();
+      setActiveCategory(link.dataset.category);
+    });
+
+    panel.addEventListener('click', event => {
+      const expandButton = event.target.closest('[data-group]');
+      if (expandButton) {
+        state.expandedGroups.add(expandButton.dataset.group);
+        render();
+        return;
+      }
+
+      const clearButton = event.target.closest('.clear-search');
+      if (clearButton) {
+        state.query = '';
+        searchInput.value = '';
+        render();
+      }
+    });
+
+    searchInput.addEventListener('input', event => {
+      state.query = event.target.value.trim();
+      render();
+    });
+
+    window.addEventListener('hashchange', () => {
+      initializeFromHash();
+      state.query = '';
+      searchInput.value = '';
+      render();
+    });
+
+    initializeFromHash();
+    render();
   </script>
 </body>
 </html>
