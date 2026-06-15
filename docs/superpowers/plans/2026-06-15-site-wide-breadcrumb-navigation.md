@@ -615,10 +615,12 @@ Expected:
 Run:
 
 ```powershell
+$root = (Get-Location).Path
 $files = Get-ChildItem -Recurse -File -Filter *.html | Where-Object {
+  $rel = $_.FullName.Substring($root.Length + 1)
   $_.Name -ne 'index.html' -and
-  $_.FullName -notmatch '\\.git\\' -and
-  $_.FullName -notmatch '\\.worktrees\\'
+  $rel -notmatch '(^|[\\/])\\.git([\\/]|$)' -and
+  $rel -notmatch '(^|[\\/])\\.worktrees([\\/]|$)'
 }
 if ($files.Count -ne 109) { throw "Expected 109 content HTML files, found $($files.Count)" }
 $files | Group-Object { ($_.FullName.Substring((Get-Location).Path.Length + 1) -split '[\\/]')[0] } | Sort-Object Name | ForEach-Object { "$($_.Name): $($_.Count)" }
@@ -742,10 +744,12 @@ lesson script and inline-handler static check ok: 61 files
 Run:
 
 ```powershell
+$root = (Get-Location).Path
 $files = Get-ChildItem -Recurse -File -Filter *.html | Where-Object {
+  $rel = $_.FullName.Substring($root.Length + 1)
   $_.Name -ne 'index.html' -and
-  $_.FullName -notmatch '\\.git\\' -and
-  $_.FullName -notmatch '\\.worktrees\\'
+  $rel -notmatch '(^|[\\/])\\.git([\\/]|$)' -and
+  $rel -notmatch '(^|[\\/])\\.worktrees([\\/]|$)'
 }
 $bad = foreach ($file in $files) {
   $html = Get-Content -LiteralPath $file.FullName -Raw
