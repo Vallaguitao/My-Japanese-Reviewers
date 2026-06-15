@@ -6,6 +6,7 @@ const BREADCRUMB_START = '<!-- Site Breadcrumb -->';
 const BREADCRUMB_END = '<!-- End Site Breadcrumb -->';
 const CSS_START = '/* ========== Site Breadcrumb ========== */';
 const CSS_END = '/* ========== End Site Breadcrumb ========== */';
+const EXPECTED_TARGET_COUNT = 109;
 
 const CATEGORY_MAP = {
   Lessons: { label: 'Lessons', hash: 'lessons' },
@@ -255,57 +256,103 @@ function countNeedle(haystack, needle) {
   return haystack.split(needle).length - 1;
 }
 
+function extractMarkedBlock(html, start, end) {
+  const startIndex = html.indexOf(start);
+  const endIndex = html.indexOf(end);
+
+  if (startIndex < 0 || endIndex < 0 || endIndex < startIndex) {
+    return '';
+  }
+
+  return html.slice(startIndex, endIndex + end.length);
+}
+
 function auditFile(root, relPath) {
   const fullPath = path.join(root, relPath);
   const html = fs.readFileSync(fullPath, 'utf8');
-  const category = categoryFor(relPath);
-  const homeHref = relativeIndexHref(relPath);
-  const categoryHref = `${homeHref}#${category.hash}`;
-  const current = pageLabelFor(relPath);
   const problems = [];
-  const breadcrumbMarkers = countNeedle(html, BREADCRUMB_START);
-  const cssMarkers = countNeedle(html, CSS_START);
+  const breadcrumbStartMarkers = countNeedle(html, BREADCRUMB_START);
+  const breadcrumbEndMarkers = countNeedle(html, BREADCRUMB_END);
+  const cssStartMarkers = countNeedle(html, CSS_START);
+  const cssEndMarkers = countNeedle(html, CSS_END);
 
-  if (breadcrumbMarkers !== 1) {
-    problems.push(`expected exactly one breadcrumb marker, found ${breadcrumbMarkers}`);
+  if (breadcrumbStartMarkers !== 1) {
+    problems.push(`expected exactly one breadcrumb marker, found ${breadcrumbStartMarkers}`);
   }
 
-  if (cssMarkers !== 1) {
-    problems.push(`expected exactly one breadcrumb CSS marker, found ${cssMarkers}`);
+  if (breadcrumbEndMarkers !== 1) {
+    problems.push(`expected exactly one breadcrumb end marker, found ${breadcrumbEndMarkers}`);
   }
 
-  if (!html.includes(`href="${homeHref}"`)) {
-    problems.push(`missing Home href ${homeHref}`);
+  if (cssStartMarkers !== 1) {
+    problems.push(`expected exactly one breadcrumb CSS marker, found ${cssStartMarkers}`);
   }
 
-  if (!html.includes(`href="${categoryHref}"`)) {
-    problems.push(`missing category href ${categoryHref}`);
+  if (cssEndMarkers !== 1) {
+    problems.push(`expected exactly one breadcrumb CSS end marker, found ${cssEndMarkers}`);
   }
 
-  if (!html.includes(`>${escapeHtml(category.label)}</a>`)) {
-    problems.push(`missing category label ${category.label}`);
-  }
+  if (breadcrumbStartMarkers === 1 && breadcrumbEndMarkers === 1) {
+    const actualBlock = extractMarkedBlock(html, BREADCRUMB_START, BREADCRUMB_END);
+    const expectedBlock = breadcrumbHtml(relPath);
 
-  if (!html.includes(`aria-current="page">${escapeHtml(current)}</span>`)) {
-    problems.push(`missing current label ${current}`);
+    if (actualBlock !== expectedBlock) {
+      problems.push('breadcrumb block does not match generated content');
+    }
   }
 
   return problems;
 }
 
-function selectedFiles(root, onlyArg) {
+function resolveSelection(root, onlyArg) {
   const files = walkHtmlFiles(root);
-  if (!onlyArg) {
-    return files;
+  if (onlyArg === undefined) {
+    return { files, fullRun: true, selectionFailures: [] };
   }
 
-  const wanted = new Set(onlyArg.split(',').map(item => toPosix(item.trim())).filter(Boolean));
-  return files.filter(file => wanted.has(file));
+  const wanted = Array.from(new Set(onlyArg.split(',').map(item => toPosix(item.trim())).filter(Boolean)));
+  if (wanted.length === 0) {
+    return { files: [], fullRun: false, selectionFailures: ['--only did not include any paths'] };
+  }
+
+  const available = new Set(files);
+  const selected = wanted.filter(file => available.has(file));
+  const unknown = wanted
+    .filter(file => !available.has(file))
+    .map(file => `unknown --only path: ${file}`);
+
+  if (selected.length === 0 && unknown.length === 0) {
+    unknown.push('--only did not match any target files');
+  }
+
+  return { files: selected, fullRun: false, selectionFailures: unknown };
+}
+
+function inventoryFailures(files, fullRun) {
+  if (!fullRun || files.length === EXPECTED_TARGET_COUNT) {
+    return [];
+  }
+
+  return [`expected ${EXPECTED_TARGET_COUNT} target files, found ${files.length}`];
 }
 
 function applyBreadcrumbs(root, onlyArg) {
-  const files = selectedFiles(root, onlyArg);
+  const selection = resolveSelection(root, onlyArg);
+  const inventoryProblems = inventoryFailures(selection.files, selection.fullRun);
+  const ok = selection.selectionFailures.length === 0 && inventoryProblems.length === 0;
   const changed = [];
+
+  if (!ok) {
+    return {
+      ok: false,
+      scanned: selection.files.length,
+      changed,
+      selectionFailures: selection.selectionFailures,
+      inventoryFailures: inventoryProblems
+    };
+  }
+
+  const files = selection.files;
 
   for (const rel of files) {
     const fullPath = path.join(root, rel);
@@ -318,7 +365,13 @@ function applyBreadcrumbs(root, onlyArg) {
     }
   }
 
-  return { scanned: files.length, changed };
+  return {
+    ok: true,
+    scanned: files.length,
+    changed,
+    selectionFailures: [],
+    inventoryFailures: []
+  };
 }
 
 function indexHasHash(indexHtml, hash) {
@@ -327,7 +380,9 @@ function indexHasHash(indexHtml, hash) {
 }
 
 function audit(root, onlyArg) {
-  const files = selectedFiles(root, onlyArg);
+  const selection = resolveSelection(root, onlyArg);
+  const files = selection.files;
+  const inventoryProblems = inventoryFailures(files, selection.fullRun);
   const failures = [];
 
   for (const rel of files) {
@@ -344,8 +399,14 @@ function audit(root, onlyArg) {
   const rootHasBreadcrumb = indexHtml.includes(BREADCRUMB_START) || indexHtml.includes('site-breadcrumb');
 
   return {
-    ok: failures.length === 0 && missingHashes.length === 0 && !rootHasBreadcrumb,
+    ok: selection.selectionFailures.length === 0
+      && inventoryProblems.length === 0
+      && failures.length === 0
+      && missingHashes.length === 0
+      && !rootHasBreadcrumb,
     scanned: files.length,
+    selectionFailures: selection.selectionFailures,
+    inventoryFailures: inventoryProblems,
     failures,
     missingHashes,
     rootHasBreadcrumb
@@ -354,7 +415,11 @@ function audit(root, onlyArg) {
 
 function argValue(name) {
   const index = process.argv.indexOf(name);
-  return index >= 0 ? process.argv[index + 1] : '';
+  if (index < 0) {
+    return undefined;
+  }
+
+  return process.argv[index + 1] || '';
 }
 
 function main() {
@@ -363,6 +428,9 @@ function main() {
   if (process.argv.includes('--apply')) {
     const result = applyBreadcrumbs(ROOT, only);
     console.log(JSON.stringify(result, null, 2));
+    if (!result.ok) {
+      process.exitCode = 1;
+    }
     return;
   }
 
@@ -388,6 +456,7 @@ module.exports = {
   CATEGORY_MAP,
   CSS_END,
   CSS_START,
+  EXPECTED_TARGET_COUNT,
   applyBreadcrumbs,
   audit,
   auditFile,

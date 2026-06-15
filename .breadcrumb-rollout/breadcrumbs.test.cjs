@@ -1,13 +1,50 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const test = require('node:test');
 
 const {
+  BREADCRUMB_END,
+  BREADCRUMB_START,
+  CSS_END,
+  CSS_START,
+  applyBreadcrumbs,
+  audit,
+  auditFile,
+  breadcrumbCss,
+  breadcrumbHtml,
   categoryFor,
   pageLabelFor,
   relativeIndexHref,
   transformHtml,
   walkHtmlFiles
 } = require('./breadcrumbs.cjs');
+
+function makeFixture() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'breadcrumbs-test-'));
+  fs.mkdirSync(path.join(root, 'Vocabulary'), { recursive: true });
+  fs.writeFileSync(
+    path.join(root, 'index.html'),
+    [
+      "id: 'lessons'",
+      "id: 'vocabulary'",
+      "id: 'quiz'",
+      "id: 'kanji'",
+      "id: 'jft-mock'",
+      "id: 'jlpt-mock'",
+      "id: 'targeted-quiz'",
+      "id: 'specialized-lessons'"
+    ].join('\n'),
+    'utf8'
+  );
+  fs.writeFileSync(
+    path.join(root, 'Vocabulary', 'vocabulary1.html'),
+    transformHtml('Vocabulary/vocabulary1.html', '<html><head><style>body{}</style></head><body><main></main></body></html>'),
+    'utf8'
+  );
+  return root;
+}
 
 test('maps top-level folders to root category hashes', () => {
   assert.deepEqual(categoryFor('Lessons/N5-Lessons/Lesson_1.html'), { label: 'Lessons', hash: 'lessons' });
@@ -65,4 +102,79 @@ test('walkHtmlFiles excludes root index and worktree files', () => {
   assert.ok(!files.includes('index.html'));
   assert.ok(files.every(file => !file.startsWith('.worktrees/')));
   assert.equal(files.length, 109);
+});
+
+test('audit rejects unknown --only selections', () => {
+  const root = makeFixture();
+  const result = audit(root, 'Typo/Nope.html');
+
+  assert.equal(result.ok, false);
+  assert.equal(result.scanned, 0);
+  assert.deepEqual(result.selectionFailures, ['unknown --only path: Typo/Nope.html']);
+});
+
+test('audit rejects empty --only selections', () => {
+  const root = makeFixture();
+  const result = audit(root, ' , ');
+
+  assert.equal(result.ok, false);
+  assert.equal(result.scanned, 0);
+  assert.deepEqual(result.selectionFailures, ['--only did not include any paths']);
+});
+
+test('full audit reports inventory drift without enforcing count for --only subsets', () => {
+  const root = makeFixture();
+  const fullResult = audit(root);
+  const subsetResult = audit(root, 'Vocabulary/vocabulary1.html');
+
+  assert.equal(fullResult.ok, false);
+  assert.equal(fullResult.scanned, 1);
+  assert.deepEqual(fullResult.inventoryFailures, ['expected 109 target files, found 1']);
+  assert.equal(subsetResult.ok, true);
+  assert.deepEqual(subsetResult.inventoryFailures, []);
+});
+
+test('full apply reports inventory drift before writing', () => {
+  const root = makeFixture();
+  const relPath = 'Vocabulary/vocabulary1.html';
+  const before = fs.readFileSync(path.join(root, relPath), 'utf8');
+  const result = applyBreadcrumbs(root);
+  const after = fs.readFileSync(path.join(root, relPath), 'utf8');
+
+  assert.equal(result.ok, false);
+  assert.equal(result.scanned, 1);
+  assert.deepEqual(result.changed, []);
+  assert.deepEqual(result.inventoryFailures, ['expected 109 target files, found 1']);
+  assert.equal(after, before);
+});
+
+test('audit validates both breadcrumb and CSS end markers', () => {
+  const root = makeFixture();
+  const relPath = 'Vocabulary/vocabulary1.html';
+  const html = [
+    breadcrumbCss().replace(CSS_END, ''),
+    breadcrumbHtml(relPath).replace(BREADCRUMB_END, '')
+  ].join('\n');
+  fs.writeFileSync(path.join(root, relPath), html, 'utf8');
+
+  const problems = auditFile(root, relPath);
+
+  assert.ok(problems.includes('expected exactly one breadcrumb end marker, found 0'));
+  assert.ok(problems.includes('expected exactly one breadcrumb CSS end marker, found 0'));
+});
+
+test('audit validates breadcrumb content inside the generated block', () => {
+  const root = makeFixture();
+  const relPath = 'Vocabulary/vocabulary1.html';
+  const otherRelPath = 'Vocabulary/vocabulary2.html';
+  const html = [
+    breadcrumbCss(),
+    breadcrumbHtml(otherRelPath),
+    `<!-- global decoys: href="../index.html" href="../index.html#vocabulary" >Vocabulary</a> aria-current="page">Vocabulary 1</span> -->`
+  ].join('\n');
+  fs.writeFileSync(path.join(root, relPath), html, 'utf8');
+
+  const problems = auditFile(root, relPath);
+
+  assert.deepEqual(problems, ['breadcrumb block does not match generated content']);
 });
