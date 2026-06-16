@@ -167,10 +167,17 @@ function breadcrumbCss() {
   transition: color 0.18s ease, background 0.18s ease;
 }
 
-.site-breadcrumb__link:hover,
+.site-breadcrumb__link:hover {
+  color: #a9342a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .site-breadcrumb__link:focus-visible {
   color: #a9342a;
-  outline: none;
+  outline: 2px solid rgba(169, 52, 42, 0.45);
+  outline-offset: 3px;
+  border-radius: 4px;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -182,6 +189,12 @@ function breadcrumbCss() {
 .site-breadcrumb__current {
   color: #18202f;
   overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+  .progress-container + .presentation {
+    padding-top: 160px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -234,10 +247,10 @@ function insertCss(html) {
 
 function insertBreadcrumb(html, relPath) {
   const crumb = breadcrumbHtml(relPath);
-  const presentationMatch = html.match(/\n\s*<div class="presentation">/);
+  const presentationMatch = html.match(/<div class="presentation">/);
 
   if (html.includes('progress-container') && presentationMatch) {
-    return html.replace(presentationMatch[0], `\n${crumb}\n${presentationMatch[0]}`);
+    return html.replace(presentationMatch[0], `${presentationMatch[0]}\n\n${crumb}`);
   }
 
   if (!/<body\b[^>]*>/i.test(html)) {

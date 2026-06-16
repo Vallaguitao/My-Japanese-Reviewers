@@ -73,12 +73,21 @@ test('creates current page labels for known page families and generic files', ()
   assert.equal(pageLabelFor('JFT-Mock/N5-Mock_Practice.html'), 'N5 Mock Practice');
 });
 
-test('inserts progress-page breadcrumb before presentation wrapper', () => {
-  const html = '<html><head><style>body{}</style></head><body><div class="progress-container"></div>\n    <div class="presentation"></div></body></html>';
+test('inserts progress-page breadcrumb inside presentation wrapper before page content', () => {
+  const html = '<html><head><style>body{}</style></head><body><div class="progress-container"></div>\n    <div class="presentation"><section id="first"></section></div></body></html>';
   const result = transformHtml('Lessons/N5-Lessons/Lesson_1.html', html);
+  const presentationOpen = result.indexOf('<div class="presentation">');
+  const crumb = result.indexOf('<!-- Site Breadcrumb -->');
+  const firstContent = result.indexOf('<section id="first">');
+
   assert.match(result, /Site Breadcrumb/);
-  assert.ok(result.indexOf('site-breadcrumb') < result.indexOf('<div class="presentation">'));
+  assert.ok(crumb > presentationOpen);
+  assert.ok(crumb < firstContent);
   assert.match(result, /href="..\/..\/index.html#lessons"/);
+});
+
+test('breadcrumb CSS keeps progress lesson content below stacked mobile controls', () => {
+  assert.match(breadcrumbCss(), /@media \(max-width: 768px\) \{\n  \.progress-container \+ \.presentation \{\n    padding-top: 160px;\n  \}\n\}/);
 });
 
 test('inserts non-progress breadcrumb immediately after opening body tag', () => {
