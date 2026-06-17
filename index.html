@@ -241,6 +241,7 @@
     .count-pill,
     .clear-search,
     .show-more,
+    .show-less,
     .open-link {
       position: relative;
       z-index: 1;
@@ -258,7 +259,8 @@
     }
 
     .clear-search,
-    .show-more {
+    .show-more,
+    .show-less {
       cursor: pointer;
     }
 
@@ -324,7 +326,8 @@
       color: var(--red);
     }
 
-    .show-more {
+    .show-more,
+    .show-less {
       margin: 12px 16px 16px;
     }
 
@@ -585,7 +588,6 @@
               { title: 'N5 Kanji Mastery — Reviewer', path: 'Quiz/Kanji_n5.html' },
               { title: '🌸 Irodori A2 — Grammar Master Quiz (L1–L18)', path: 'Quiz/N4-Book-2.html' },
               { title: 'みんなの日本語 N5 — Dokkai (Reading) Reviewer', path: 'Quiz/Reading-comprehension_n5.html' },
-              { title: 'N5 Vocabulary — Lesson Select', path: 'Quiz/Vocabulary-1_n5.html' },
               { title: 'みんなの日本語 N5 — Vocabulary Reviewer', path: 'Quiz/Vocabulary-2_n5.html' }
             ]
           }
@@ -789,7 +791,7 @@
           <ul class="resource-list">
             ${renderRows(visibleItems)}
           </ul>
-          ${hiddenCount > 0 ? `<button class="show-more" type="button" data-group="${escapeHtml(key)}">Show all ${group.items.length}</button>` : ''}
+          ${isDense ? (isExpanded ? `<button class="show-less" type="button" data-group-collapse="${escapeHtml(key)}">Show less</button>` : `<button class="show-more" type="button" data-group="${escapeHtml(key)}">Show all ${group.items.length}</button>`) : ''}
         </section>
       `;
     }
@@ -867,6 +869,13 @@
       const expandButton = event.target.closest('[data-group]');
       if (expandButton) {
         state.expandedGroups.add(expandButton.dataset.group);
+        render();
+        return;
+      }
+
+      const collapseButton = event.target.closest('[data-group-collapse]');
+      if (collapseButton) {
+        state.expandedGroups.delete(collapseButton.dataset.groupCollapse);
         render();
         return;
       }
