@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My-Japanese-Reviewers — Verb Conjugation Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: #0f0a1c;
+    color: #e5e7eb;
+    font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(135,192,149,0.06) 0%, transparent 45%),
+      radial-gradient(circle at 85% 75%, rgba(92,138,104,0.06) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(132,94,194,0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 32px 16px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Card Styles with Glassmorphism ── */
+  .card, .q-card, .score-banner {
+    background: rgba(22, 19, 32, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 20px;
+    padding: 32px 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  /* ── Name Screen ── */
+  #name-screen { margin-top: 40px; }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #87c095, #5c8a68);
+    color: #0f0a1c;
+    font-weight: 800;
+    font-size: 10px;
+    padding: 5px 16px;
+    border-radius: 20px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(135, 192, 149, 0.25);
+  }
+
+  .title {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 16px 0 6px;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #9ca3af;
+  }
+
+  .name-label {
+    display: block;
+    font-size: 13px;
+    color: #9ca3af;
+    margin: 32px 0 8px;
+    text-align: left;
+    font-weight: 700;
+  }
+
+  .name-input {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.03);
+    color: #ffffff;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s;
+    backdrop-filter: blur(8px);
+  }
+  .name-input:focus {
+    border-color: #87c095;
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 16px rgba(135, 192, 149, 0.25);
+  }
+
+  .btn-primary {
+    width: 100%;
+    margin-top: 24px;
+    padding: 16px 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #87c095, #5c8a68);
+    border: none;
+    color: #0f0a1c;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(135, 192, 149, 0.3);
+    transition: all 0.25s ease;
+  }
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(135, 192, 149, 0.4);
+    opacity: 0.95;
+  }
+  .btn-primary:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* ── Quiz Screen ── */
+  #quiz-screen { display: none; }
+
+  .header { text-align: center; margin-bottom: 24px; }
+  .header .subtitle { margin-top: 6px; }
+
+  /* Score Banner */
+  .score-banner {
+    display: none;
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    margin-bottom: 24px;
+    color: #ffffff;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .score-number { font-size: 52px; font-weight: 900; letter-spacing: -1.5px; line-height: 1; margin-bottom: 6px;}
+  .score-label { font-size: 20px; font-weight: 700; margin-bottom: 14px; }
+  .email-row { margin-bottom: 20px; }
+  .email-pill {
+    display: inline-block;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 12px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+  .email-pill.sent { background: rgba(45, 106, 79, 0.85); border: 1px solid #40916c; }
+  .email-pill.error { background: rgba(155, 34, 38, 0.85); border: 1px solid #ae2012; }
+  .btn-retake {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-retake:hover { background: rgba(255,255,255,0.25); transform: translateY(-1px); }
+
+  /* Progress */
+  .progress-row { margin-bottom: 20px; }
+  .progress-text { font-size: 12px; color: #9ca3af; display: block; margin-bottom: 8px; font-weight: 700; }
+  .progress-bar { height: 6px; background: rgba(255, 255, 255, 0.05); border-radius: 6px; overflow: hidden; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #87c095, #5c8a68);
+    border-radius: 6px;
+    width: 0%;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(135, 192, 149, 0.4);
+  }
+
+  /* Nav Grid */
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .nav-dot {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-dot:hover:not(.answered):not(.active):not(.locked) {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+  }
+  .nav-dot.answered {
+    background: rgba(135, 192, 149, 0.15);
+    border-color: rgba(135, 192, 149, 0.3);
+    color: #ffffff;
+  }
+  .nav-dot.active {
+    border-color: #87c095;
+    background: rgba(135, 192, 149, 0.25);
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(135, 192, 149, 0.4);
+  }
+  .nav-dot.correct {
+    background: #2d6a4f;
+    border-color: #40916c;
+    color: #ffffff;
+    box-shadow: 0 0 8px rgba(45, 106, 79, 0.5);
+  }
+  .nav-dot.wrong {
+    background: #9b2226;
+    border-color: #ae2012;
+    color: #ffffff;
+    box-shadow: 0 0 8px rgba(155, 34, 38, 0.5);
+  }
+  .nav-dot.unanswered-locked {
+    background: rgba(255, 255, 255, 0.01);
+    border-color: rgba(255, 255, 255, 0.04);
+    color: #4b5563;
+    opacity: 0.5;
+  }
+
+  /* Question Card */
+  .q-card {
+    background: rgba(22, 19, 32, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .q-number {
+    font-size: 11px;
+    color: #87c095;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+  }
+  .q-text {
+    font-size: 21px;
+    font-weight: 700;
+    margin-bottom: 28px;
+    line-height: 1.45;
+    color: #ffffff;
+  }
+  .choices-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .choice-btn {
+    padding: 18px 20px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    color: #d1d5db;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 600;
+    position: relative;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+  }
+  .choice-btn:hover:not(.locked) {
+    border-color: #87c095;
+    background: rgba(135, 192, 149, 0.08);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(135, 192, 149, 0.1);
+  }
+  .choice-btn.selected {
+    background: rgba(135, 192, 149, 0.15);
+    border-color: #87c095;
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(135, 192, 149, 0.2);
+  }
+  
+  .choice-btn.correct-reveal {
+    background: rgba(45, 106, 79, 0.9);
+    border-color: #40916c;
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(45, 106, 79, 0.25);
+  }
+  .choice-btn.wrong-reveal {
+    background: rgba(155, 34, 38, 0.9);
+    border-color: #ca6702;
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(155, 34, 38, 0.25);
+  }
+  .choice-btn.faded-reveal {
+    opacity: 0.4;
+    border-color: rgba(255, 255, 255, 0.03);
+  }
+  
+  .choice-letter {
+    font-weight: 800;
+    margin-right: 16px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+  .choice-btn:hover .choice-letter, .choice-btn.selected .choice-letter { opacity: 1; }
+  
+  .mark {
+    position: absolute;
+    right: 20px;
+    font-size: 20px;
+    font-weight: 900;
+  }
+  .mark.ok { color: #a7f3d0; }
+  .mark.no { color: #fca5a5; }
+
+  /* Explanation Box */
+  .explanation-box {
+    margin-top: 24px;
+    padding: 18px 20px;
+    border-radius: 14px;
+    background: rgba(135, 192, 149, 0.08);
+    border: 1px solid rgba(135, 192, 149, 0.2);
+    font-size: 14px;
+    line-height: 1.55;
+    color: #e5e7eb;
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .explanation-title {
+    font-weight: 800;
+    color: #87c095;
+    margin-bottom: 8px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Shortcut Hint */
+  .shortcut-hint {
+    margin-top: 18px;
+    font-size: 11px;
+    color: #6b7280;
+    text-align: center;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .shortcut-key {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-family: monospace;
+    font-size: 9px;
+    color: #9ca3af;
+  }
+
+  /* Arrow Row */
+  .arrow-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .btn-nav {
+    flex: 1;
+    padding: 16px 0;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #d1d5db;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-nav:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  .btn-nav:disabled { opacity: 0.25; cursor: not-allowed; }
+  
+  .btn-submit {
+    flex: 1;
+    padding: 16px 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #87c095, #5c8a68);
+    border: none;
+    color: #0f0a1c;
+    font-size: 15px;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(135, 192, 149, 0.25);
+    transition: all 0.2s;
+  }
+  .btn-submit:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba(135, 192, 149, 0.35);
+    opacity: 0.95;
+  }
+  .btn-submit:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+
+/* ========== Site Breadcrumb ========== */
+.site-breadcrumb,
+.site-breadcrumb * {
+  box-sizing: border-box;
+}
+
+.site-breadcrumb {
+  position: relative;
+  z-index: 20;
+  width: min(1180px, calc(100% - 32px));
+  margin: 16px auto 12px;
+  font-family: "Noto Sans JP", "Outfit", system-ui, sans-serif;
+  color: #18202f;
+}
+
+.site-breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid rgba(24, 32, 47, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: 0 10px 30px rgba(24, 32, 47, 0.08);
+}
+
+.site-breadcrumb__item {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  color: #667085;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.site-breadcrumb__item + .site-breadcrumb__item::before {
+  content: "/";
+  margin: 0 8px;
+  color: rgba(169, 52, 42, 0.42);
+  font-weight: 800;
+}
+
+.site-breadcrumb__link {
+  color: #667085;
+  text-decoration: none;
+  transition: color 0.18s ease, background 0.18s ease;
+}
+
+.site-breadcrumb__link:hover {
+  color: #a9342a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.site-breadcrumb__link:focus-visible {
+  color: #a9342a;
+  outline: 2px solid rgba(169, 52, 42, 0.45);
+  outline-offset: 3px;
+  border-radius: 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.site-breadcrumb__category {
+  color: #a9342a;
+}
+
+.site-breadcrumb__current {
+  color: #18202f;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+  .progress-container + .presentation {
+    padding-top: 160px;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-breadcrumb {
+    width: min(100% - 20px, 680px);
+    margin: 12px auto 10px;
+  }
+
+  .site-breadcrumb__list {
+    padding: 8px 10px;
+  }
+
+  .site-breadcrumb__item {
+    font-size: 0.78rem;
+  }
+}
+/* ========== End Site Breadcrumb ========== */
+    </style>
+</head>
+<body>
+
+<!-- Site Breadcrumb -->
+<nav class="site-breadcrumb" aria-label="Breadcrumb">
+  <ol class="site-breadcrumb__list">
+    <li class="site-breadcrumb__item"><a class="site-breadcrumb__link" href="../../index.html">Home</a></li>
+    <li class="site-breadcrumb__item"><a class="site-breadcrumb__link site-breadcrumb__category" href="../../index.html#quiz">Quiz</a></li>
+    <li class="site-breadcrumb__item"><span class="site-breadcrumb__current" aria-current="page">Verb Conjugation Quiz</span></li>
+  </ol>
+</nav>
+<!-- End Site Breadcrumb -->
+
+
+<div class="container">
+
+  <!-- ════ NAME SCREEN ════ -->
+  <div id="name-screen">
+    <div class="card text-center">
+      <span class="badge">My-Japanese-Reviewers</span>
+      <h1 class="title">Verb Conjugation Mastery</h1>
+      <p class="subtitle">30 multiple-choice questions · N5 Level</p>
+      
+      <label class="name-label">おなまえは？ Enter your name</label>
+      <input class="name-input" id="name-input" type="text" placeholder="Your name..." autofocus>
+      <button class="btn-primary" id="btn-start" disabled>Start Exam →</button>
+    </div>
+  </div>
+
+  <!-- ════ QUIZ SCREEN ════ -->
+  <div id="quiz-screen">
+    <header class="header">
+      <span class="badge">My-Japanese-Reviewers</span>
+      <h1 class="title">Verb Conjugation Mastery</h1>
+      <p class="subtitle" id="quiz-subtitle"></p>
+    </header>
+
+    <div class="score-banner" id="score-banner">
+      <div class="score-number" id="score-number"></div>
+      <div class="score-label" id="score-label"></div>
+      <div class="email-row" id="email-row"></div>
+      <button class="btn-retake" id="btn-retake">Retake Quiz</button>
+    </div>
+
+    <div class="progress-row">
+      <span class="progress-text" id="progress-text">0 / 30 answered</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <div class="nav-grid" id="nav-grid"></div>
+
+    <div class="q-card" id="q-card">
+      <div class="q-number" id="q-number"></div>
+      <div class="q-text" id="q-text"></div>
+      <div class="choices-grid" id="choices-grid"></div>
+      <div class="explanation-box hidden" id="explanation-box"></div>
+    </div>
+
+    <div class="shortcut-hint" id="shortcut-hint">
+      <span><span class="shortcut-key">1</span>-<span class="shortcut-key">4</span> / <span class="shortcut-key">A</span>-<span class="shortcut-key">D</span> : Select option</span>
+      <span>•</span>
+      <span><span class="shortcut-key">←</span> / <span class="shortcut-key">→</span> : Navigate</span>
+      <span>•</span>
+      <span><span class="shortcut-key">Enter</span> : Next / Submit</span>
+    </div>
+
+    <div class="arrow-row">
+      <button class="btn-nav" id="btn-prev">← Previous</button>
+      <button class="btn-nav" id="btn-next">Next →</button>
+      <button class="btn-submit hidden" id="btn-submit" disabled>Submit Exam</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    question: `The "A I U E O" conjugation is technically called _____ conjugation.`,
+    options: [
+      { id: 'a', text: `Godan (<ruby>五<rt>ご</rt>段<rt>だん</rt></ruby>)` },
+      { id: 'b', text: `Ichidan (<ruby>一<rt>いち</rt>段<rt>だん</rt></ruby>)` },
+      { id: 'c', text: `Te-kei (て<ruby>形<rt>けい</rt></ruby>)` },
+      { id: 'd', text: `Ta-kei (た<ruby>形<rt>けい</rt></ruby>)` }
+    ],
+    correct: 'a',
+    explanation: 'Godan (five-row) verbs are called so because their stems conjugate across all 5 vowel sounds (a, i, u, e, o) in the hiragana chart.'
+  },
+  {
+    question: `Group 2 verbs are called _____ because they do not cycle through vowels.`,
+    options: [
+      { id: 'a', text: `Godan (<ruby>五<rt>ご</rt>段<rt>だん</rt></ruby>)` },
+      { id: 'b', text: `Ichidan (<ruby>一<rt>いち</rt>段<rt>だん</rt></ruby>)` },
+      { id: 'c', text: `Sandan (<ruby>三<rt>さん</rt>段<rt>だん</rt></ruby>)` },
+      { id: 'd', text: `Yondan (<ruby>四<rt>よん</rt>段<rt>だん</rt></ruby>)` }
+    ],
+    correct: 'b',
+    explanation: 'Ichidan (one-row) verbs are called so because the stem ends consistently in either "i" or "e" without changing vowels.'
+  },
+  {
+    question: `<ruby>行<rt>い</rt></ruby>きます (to go) belongs to which verb group?`,
+    options: [
+      { id: 'a', text: `Group 1 (Godan)` },
+      { id: 'b', text: `Group 2 (Ichidan)` },
+      { id: 'c', text: `Group 3 (Irregular)` },
+      { id: 'd', text: `It is an adjective` }
+    ],
+    correct: 'a',
+    explanation: 'いきます (dictionary form: いく) belongs to Group 1 (Godan) because the syllable before ます is in the "i" column (き), which changes to "u" (く) in the dictionary form.'
+  },
+  {
+    question: `<ruby>食<rt>た</rt></ruby>べます (to eat) belongs to which verb group?`,
+    options: [
+      { id: 'a', text: `Group 1 (Godan)` },
+      { id: 'b', text: `Group 2 (Ichidan)` },
+      { id: 'c', text: `Group 3 (Irregular)` },
+      { id: 'd', text: `Group 4` }
+    ],
+    correct: 'b',
+    explanation: 'たべます (dictionary form: たべる) belongs to Group 2 (Ichidan) because the syllable before ます is in the "e" column (べ).'
+  },
+  {
+    question: `<ruby>来<rt>き</rt></ruby>ます (to come) belongs to which verb group?`,
+    options: [
+      { id: 'a', text: `Group 1 (Godan)` },
+      { id: 'b', text: `Group 2 (Ichidan)` },
+      { id: 'c', text: `Group 3 (Irregular)` },
+      { id: 'd', text: `Group 4` }
+    ],
+    correct: 'c',
+    explanation: 'きます (dictionary form: くる) and します (dictionary form: する) are the only two irregular Group 3 verbs in Japanese.'
+  },
+  {
+    question: `Despite ending in "eru", <ruby>帰<rt>かえ</rt></ruby>る (to return) is actually a _____ verb.`,
+    options: [
+      { id: 'a', text: `Group 1 (Godan)` },
+      { id: 'b', text: `Group 2 (Ichidan)` },
+      { id: 'c', text: `Group 3 (Irregular)` },
+      { id: 'd', text: `Noun` }
+    ],
+    correct: 'a',
+    explanation: 'かえる (to return) is an exception: despite ending in "eru", it conjugates as a Group 1 (Godan) verb (e.g., negative is かえらない, past is かえった).'
+  },
+  {
+    question: `Despite ending in "iru", <ruby>切<rt>き</rt></ruby>る (to cut) is actually a _____ verb.`,
+    options: [
+      { id: 'a', text: `Group 1 (Godan)` },
+      { id: 'b', text: `Group 2 (Ichidan)` },
+      { id: 'c', text: `Group 3 (Irregular)` },
+      { id: 'd', text: `Adverb` }
+    ],
+    correct: 'a',
+    explanation: 'きる (to cut) is a homophone exception: despite ending in "iru", it conjugates as a Group 1 (Godan) verb (e.g., negative is きらない, past is きった), unlike きる (to wear) which is Group 2.'
+  },
+  {
+    question: `What is the Dictionary form of <ruby>飲<rt>の</rt></ruby>みます?`,
+    options: [
+      { id: 'a', text: `<ruby>飲<rt>の</rt></ruby>む` },
+      { id: 'b', text: `<ruby>飲<rt>の</rt></ruby>ま` },
+      { id: 'c', text: `<ruby>飲<rt>の</rt></ruby>める` },
+      { id: 'd', text: `<ruby>飲<rt>の</rt></ruby>る` }
+    ],
+    correct: 'a',
+    explanation: 'To form the dictionary form of a Group 1 verb, change the syllable before ます from the "i" column to the "u" column: のみ ➔ のむ.'
+  },
+  {
+    question: `What is the Nai-form (negative) of <ruby>待<rt>ま</rt></ruby>つ?`,
+    options: [
+      { id: 'a', text: `<ruby>待<rt>ま</rt></ruby>ちない` },
+      { id: 'b', text: `<ruby>待<rt>ま</rt></ruby>たない` },
+      { id: 'c', text: `<ruby>待<rt>ま</rt></ruby>てない` },
+      { id: 'd', text: `<ruby>待<rt>ま</rt></ruby>わない` }
+    ],
+    correct: 'b',
+    explanation: 'For Group 1 verbs ending in つ, the final "tsu" shifts to the "a" column "ta" to make the negative form: まつ (mat-u) ➔ またない (mat-anai).'
+  },
+  {
+    question: `What is the Volitional form (let's do) of <ruby>遊<rt>あそ</rt></ruby>ぶ?`,
+    options: [
+      { id: 'a', text: `<ruby>遊<rt>あそ</rt></ruby>ぼう` },
+      { id: 'b', text: `<ruby>遊<rt>あそ</rt></ruby>ばう` },
+      { id: 'c', text: `<ruby>遊<rt>あそ</rt></ruby>びよう` },
+      { id: 'd', text: `<ruby>遊<rt>あそ</rt></ruby>べよう` }
+    ],
+    correct: 'a',
+    explanation: 'For Group 1 verbs, change the final "u" column syllable to the "o" column syllable and add う: あそぶ ➔ あそぼう.'
+  },
+  {
+    question: `What is the Potential form (can do) of <ruby>話<rt>はな</rt></ruby>す?`,
+    options: [
+      { id: 'a', text: `<ruby>話<rt>はな</rt></ruby>される` },
+      { id: 'b', text: `<ruby>話<rt>はな</rt></ruby>せる` },
+      { id: 'c', text: `<ruby>話<rt>はな</rt></ruby>しる` },
+      { id: 'd', text: `<ruby>話<rt>はな</rt></ruby>すれる` }
+    ],
+    correct: 'b',
+    explanation: 'For Group 1 verbs, shift the final "u" column syllable to the "e" column syllable and append る: はなす ➔ はなせる.'
+  },
+  {
+    question: `The verb ある (to exist) is irregular. Its Nai-form is simply _____.`,
+    options: [
+      { id: 'a', text: `あらわない` },
+      { id: 'b', text: `あらない` },
+      { id: 'c', text: `ない` },
+      { id: 'd', text: `ありない` }
+    ],
+    correct: 'c',
+    explanation: 'The verb ある (to exist for inanimate objects) has an irregular negative form which is simply ない.'
+  },
+  {
+    question: `For Group 1 Te-form, verbs ending in u, tsu, ru become _____.`,
+    options: [
+      { id: 'a', text: `んで (nde)` },
+      { id: 'b', text: `って (tte)` },
+      { id: 'c', text: `いて (ite)` },
+      { id: 'd', text: `して (shite)` }
+    ],
+    correct: 'b',
+    explanation: 'Group 1 verbs ending in う, つ, or る undergo a double consonant contraction and end in って in the Te-form (e.g. かう ➔ かって, まつ ➔ まって, とる ➔ とって).'
+  },
+  {
+    question: `For Group 1 Te-form, verbs ending in mu, bu, nu become _____.`,
+    options: [
+      { id: 'a', text: `んで (nde)` },
+      { id: 'b', text: `って (tte)` },
+      { id: 'c', text: `いて (ite)` },
+      { id: 'd', text: `いで (ide)` }
+    ],
+    correct: 'a',
+    explanation: 'Group 1 verbs ending in む, ぶ, or ぬ soften and end in んで in the Te-form (e.g., よむ ➔ よんで, あそぶ ➔ あそんで, しぬ ➔ しんで).'
+  },
+  {
+    question: `For Group 1 Te-form, verbs ending in ku become _____.`,
+    options: [
+      { id: 'a', text: `んで (nde)` },
+      { id: 'b', text: `って (tte)` },
+      { id: 'c', text: `いて (ite)` },
+      { id: 'd', text: `いで (ide)` }
+    ],
+    correct: 'c',
+    explanation: 'Group 1 verbs ending in く change the く to いて in the Te-form (e.g., かく ➔ かいて, きく ➔ きいて).'
+  },
+  {
+    question: `The biggest Te-form exception is <ruby>行<rt>い</rt></ruby>く. Instead of いいて, it becomes _____.`,
+    options: [
+      { id: 'a', text: `いって (itte)` },
+      { id: 'b', text: `いんで (inde)` },
+      { id: 'c', text: `いして (ishite)` },
+      { id: 'd', text: `いで (ide)` }
+    ],
+    correct: 'a',
+    explanation: 'いく (to go) is a major exception to the "ku ➔ いて" rule; it becomes いって with a double consonant.'
+  },
+  {
+    question: `What is the Te-form of <ruby>来<rt>き</rt></ruby>ます (to come)?`,
+    options: [
+      { id: 'a', text: `きって` },
+      { id: 'b', text: `きて` },
+      { id: 'c', text: `きいて` },
+      { id: 'd', text: `くって` }
+    ],
+    correct: 'b',
+    explanation: 'The irregular Group 3 verb きます (dictionary form: くる) conjugates to きて in the Te-form.'
+  },
+  {
+    question: `What is the Te-form of <ruby>泳<rt>およ</rt></ruby>ぎます (to swim)?`,
+    options: [
+      { id: 'a', text: `<ruby>泳<rt>およ</rt></ruby>いて` },
+      { id: 'b', text: `<ruby>泳<rt>およ</rt></ruby>いで` },
+      { id: 'c', text: `<ruby>泳<rt>およ</rt></ruby>んで` },
+      { id: 'd', text: `<ruby>泳<rt>およ</rt></ruby>って` }
+    ],
+    correct: 'b',
+    explanation: 'For Group 1 verbs ending in ぐ, the Te-form replaces the ぐ with a voiced いで (e.g. およぐ ➔ およいで).'
+  },
+  {
+    question: `What is the Ta-form (past casual) of <ruby>死<rt>し</rt></ruby>にます (to die)?`,
+    options: [
+      { id: 'a', text: `<ruby>死<rt>し</rt></ruby>った` },
+      { id: 'b', text: `<ruby>死<rt>し</rt></ruby>んだ` },
+      { id: 'c', text: `<ruby>死<rt>し</rt></ruby>いた` },
+      { id: 'd', text: `<ruby>死<rt>し</rt></ruby>んだた` }
+    ],
+    correct: 'b',
+    explanation: 'しぬ (to die) is a Group 1 verb ending in ぬ. Verbs ending in ぬ, ぶ, む replace the last syllable with んだ in the past casual (Ta-form).'
+  },
+  {
+    question: `What is the Ta-form of <ruby>書<rt>か</rt></ruby>きます (to write)?`,
+    options: [
+      { id: 'a', text: `<ruby>書<rt>か</rt></ruby>いた` },
+      { id: 'b', text: `<ruby>書<rt>か</rt></ruby>った` },
+      { id: 'c', text: `<ruby>書<rt>か</rt></ruby>んだ` },
+      { id: 'd', text: `<ruby>書<rt>か</rt></ruby>いだ` }
+    ],
+    correct: 'a',
+    explanation: 'かきます is Group 1 (ends in く). In the Ta-form, the く syllable changes to いた. かく ➔ かいた.'
+  },
+  {
+    question: `Because <ruby>切<rt>き</rt></ruby>ります (to cut) is Group 1, its Ta-form is _____.`,
+    options: [
+      { id: 'a', text: `きた` },
+      { id: 'b', text: `きった` },
+      { id: 'c', text: `きいた` },
+      { id: 'd', text: `きんだ` }
+    ],
+    correct: 'b',
+    explanation: 'きります (dictionary form: きる) is a Group 1 verb ending in る. Verbs ending in う, つ, る replace the last syllable with った in the Ta-form.'
+  },
+  {
+    question: `Because <ruby>着<rt>き</rt></ruby>ます (to wear) is Group 2, its Ta-form is _____.`,
+    options: [
+      { id: 'a', text: `きた` },
+      { id: 'b', text: `きった` },
+      { id: 'c', text: `きいた` },
+      { id: 'd', text: `きんだ` }
+    ],
+    correct: 'a',
+    explanation: 'きます (dictionary form: きる, to wear) is a Group 2 verb. For Group 2 verbs, simply replace ます with た to get the past tense (Ta-form).'
+  },
+  {
+    question: `Grammatically, Te-form and Ta-form share euphonic changes. If Te-form is <ruby>飲<rt>の</rt></ruby>んで, Ta-form is _____.`,
+    options: [
+      { id: 'a', text: `<ruby>飲<rt>の</rt></ruby>んた` },
+      { id: 'b', text: `<ruby>飲<rt>の</rt></ruby>んだ` },
+      { id: 'c', text: `<ruby>飲<rt>の</rt></ruby>った` },
+      { id: 'd', text: `<ruby>飲<rt>の</rt></ruby>いだ` }
+    ],
+    correct: 'b',
+    explanation: 'The sound changes of the Te-form and Ta-form are identical, with "te" changing to "ta" and "de" changing to "da". Therefore, のんで ➔ のんだ.'
+  },
+  {
+    question: `What is the Potential form of <ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>する (to study)?`,
+    options: [
+      { id: 'a', text: `<ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>すれる` },
+      { id: 'b', text: `<ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>できる` },
+      { id: 'c', text: `<ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>られる` },
+      { id: 'd', text: `<ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>せる` }
+    ],
+    correct: 'b',
+    explanation: 'The irregular Group 3 verb する (to do) conjugates to できる for its potential form. So, べんきょうする ➔ べんきょうできる.'
+  },
+  {
+    question: `What is the Volitional form of <ruby>見<rt>み</rt></ruby>る?`,
+    options: [
+      { id: 'a', text: `<ruby>見<rt>み</rt></ruby>よう` },
+      { id: 'b', text: `<ruby>見<rt>み</rt></ruby>ろう` },
+      { id: 'c', text: `<ruby>見<rt>み</rt></ruby>おう` },
+      { id: 'd', text: `<ruby>見<rt>み</rt></ruby>まよう` }
+    ],
+    correct: 'a',
+    explanation: 'For Group 2 verbs, replace the final "ru" with "you" to form the volitional form: みる ➔ みよう.'
+  },
+  {
+    question: `What is the Dictionary form of <ruby>急<rt>いそ</rt></ruby>ぎます?`,
+    options: [
+      { id: 'a', text: `<ruby>急<rt>いそ</rt></ruby>く` },
+      { id: 'b', text: `<ruby>急<rt>いそ</rt></ruby>ぐ` },
+      { id: 'c', text: `<ruby>急<rt>いそ</rt></ruby>む` },
+      { id: 'd', text: `<ruby>急<rt>いそ</rt></ruby>る` }
+    ],
+    correct: 'b',
+    explanation: 'いそぎます is a Group 1 verb. Change the "gi" sound before ます to the "gu" sound in the dictionary form: いそぎ ➔ いそぐ.'
+  },
+  {
+    question: `What is the Dictionary form of <ruby>持<rt>も</rt></ruby>っていきます?`,
+    options: [
+      { id: 'a', text: `<ruby>持<rt>も</rt></ruby>っていく` },
+      { id: 'b', text: `<ruby>持<rt>も</rt></ruby>ってう` },
+      { id: 'c', text: `<ruby>持<rt>も</rt></ruby>っている` },
+      { id: 'd', text: `<ruby>持<rt>も</rt></ruby>ってある` }
+    ],
+    correct: 'a',
+    explanation: 'もっていきます ends with いきます. Its dictionary form is いく. So, もっていきます ➔ もっていく.'
+  },
+  {
+    question: `Which form is also known as the Conjunctive Form or Gerund?`,
+    options: [
+      { id: 'a', text: `Te-form (て<ruby>形<rt>けい</rt></ruby>)` },
+      { id: 'b', text: `Ta-form (た<ruby>形<rt>けい</rt></ruby>)` },
+      { id: 'c', text: `Nai-form (ない<ruby>形<rt>けい</rt></ruby>)` },
+      { id: 'd', text: `Dictionary form (<ruby>辞<rt>じ</rt>書<rt>しょ</rt>形<rt>けい</rt></ruby>)` }
+    ],
+    correct: 'a',
+    explanation: 'The Te-form (て形) functions as a gerund or a conjunctive form used to connect clauses and show sequential actions.'
+  },
+  {
+    question: `Group 1 verbs are called Godan because the stem changes across _____ vowel sounds.`,
+    options: [
+      { id: 'a', text: `Three` },
+      { id: 'b', text: `Four` },
+      { id: 'c', text: `Five` },
+      { id: 'd', text: `Six` }
+    ],
+    correct: 'c',
+    explanation: 'Godan literally translates to "five steps/grades", representing the 5 vowel columns (A, I, U, E, O) across which Group 1 verb stems conjugate.'
+  },
+  {
+    question: `What is the Potential form of <ruby>買<rt>か</rt></ruby>います?`,
+    options: [
+      { id: 'a', text: `<ruby>買<rt>か</rt></ruby>われる` },
+      { id: 'b', text: `<ruby>買<rt>か</rt></ruby>える` },
+      { id: 'c', text: `<ruby>買<rt>か</rt></ruby>いれる` },
+      { id: 'd', text: `<ruby>買<rt>か</rt></ruby>やれる` }
+    ],
+    correct: 'b',
+    explanation: 'For Group 1 verbs, change the final vowel from the "u" column to the "e" column and append る. かう (ka-u) ➔ かえる (ka-eru).'
+  }
+];
+
+/* ── State ── */
+let playerName = "";
+let answers = {};
+let currentQ = 0;
+let submitted = false;
+
+/* ── Initialize EmailJS (Optional) ── */
+// emailjs.init("YOUR_PUBLIC_KEY");
+
+/* ── DOM refs ── */
+const $nameScreen = document.getElementById("name-screen");
+const $quizScreen = document.getElementById("quiz-screen");
+const $nameInput  = document.getElementById("name-input");
+const $btnStart   = document.getElementById("btn-start");
+const $subtitle   = document.getElementById("quiz-subtitle");
+const $scoreBanner= document.getElementById("score-banner");
+const $scoreNum   = document.getElementById("score-number");
+const $scoreLbl   = document.getElementById("score-label");
+const $emailRow   = document.getElementById("email-row");
+const $btnRetake  = document.getElementById("btn-retake");
+const $progText   = document.getElementById("progress-text");
+const $progFill   = document.getElementById("progress-fill");
+const $navGrid    = document.getElementById("nav-grid");
+const $qCard      = document.getElementById("q-card");
+const $qNumber    = document.getElementById("q-number");
+const $qText      = document.getElementById("q-text");
+const $choicesGrid= document.getElementById("choices-grid");
+const $btnPrev    = document.getElementById("btn-prev");
+const $btnNext    = document.getElementById("btn-next");
+const $btnSubmit  = document.getElementById("btn-submit");
+
+/* ── Name Screen ── */
+$nameInput.addEventListener("input", () => {
+  $btnStart.disabled = !$nameInput.value.trim();
+});
+$nameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && $nameInput.value.trim()) startQuiz();
+});
+$btnStart.addEventListener("click", startQuiz);
+
+function startQuiz() {
+  playerName = $nameInput.value.trim();
+  answers = {};
+  currentQ = 0;
+  submitted = false;
+
+  $nameScreen.style.display = "none";
+  $quizScreen.style.display = "block";
+  $scoreBanner.style.display = "none";
+  $subtitle.textContent = `${playerName}さん — Conjugate the verbs`;
+
+  buildNavGrid();
+  renderQuestion();
+  updateProgress();
+}
+
+/* ── Nav Grid ── */
+function buildNavGrid() {
+  $navGrid.innerHTML = "";
+  QUESTIONS.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.className = "nav-dot";
+    btn.textContent = i + 1;
+    btn.addEventListener("click", () => { currentQ = i; renderQuestion(); });
+    $navGrid.appendChild(btn);
+  });
+}
+
+function updateNavGrid() {
+  const dots = $navGrid.querySelectorAll(".nav-dot");
+  dots.forEach((dot, i) => {
+    dot.className = "nav-dot";
+    
+    if (submitted) {
+      dot.classList.add("locked");
+      if (answers[i] === QUESTIONS[i].correct) dot.classList.add("correct");
+      else if (answers[i]) dot.classList.add("wrong");
+      else dot.classList.add("unanswered-locked");
+    } else {
+      if (answers[i]) dot.classList.add("answered");
+    }
+
+    if (i === currentQ) dot.classList.add("active");
+  });
+}
+
+/* ── Progress ── */
+function updateProgress() {
+  const count = Object.keys(answers).length;
+  $progText.textContent = `${count} / ${QUESTIONS.length} answered`;
+  $progFill.style.width = `${(count / QUESTIONS.length) * 100}%`;
+  $btnSubmit.disabled = count < QUESTIONS.length;
+}
+
+/* ── Render Question ── */
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  $qNumber.textContent = `Question ${currentQ + 1}`;
+  $qText.innerHTML = q.question;
+
+  $choicesGrid.innerHTML = "";
+  q.options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    if (submitted) btn.classList.add("locked");
+    
+    btn.innerHTML = `<span class="choice-letter">${opt.id}.</span><span>${opt.text}</span>`;
+
+    const selected = answers[currentQ] === opt.id;
+    const isCorrectChoice = opt.id === q.correct;
+
+    if (!submitted) {
+      if (selected) btn.classList.add("selected");
+      btn.addEventListener("click", () => {
+        if (submitted) return;
+        answers[currentQ] = opt.id;
+        renderQuestion();
+        updateNavGrid();
+        updateProgress();
+      });
+    } else {
+      if (isCorrectChoice) {
+        btn.classList.add("correct-reveal");
+        btn.innerHTML += `<span class="mark ok">✓</span>`;
+      } else if (selected && !isCorrectChoice) {
+        btn.classList.add("wrong-reveal");
+        btn.innerHTML += `<span class="mark no">✗</span>`;
+      } else {
+        btn.classList.add("faded-reveal");
+      }
+    }
+
+    $choicesGrid.appendChild(btn);
+  });
+
+  updateNavGrid();
+
+  /* Arrow / submit visibility */
+  const isLast = currentQ === QUESTIONS.length - 1;
+  $btnPrev.disabled = currentQ === 0;
+
+  if (isLast && !submitted) {
+    $btnNext.classList.add("hidden");
+    $btnSubmit.classList.remove("hidden");
+  } else {
+    $btnNext.classList.remove("hidden");
+    $btnSubmit.classList.add("hidden");
+    $btnNext.disabled = isLast;
+  }
+}
+
+/* ── Navigation ── */
+$btnPrev.addEventListener("click", () => { if (currentQ > 0) { currentQ--; renderQuestion(); } });
+$btnNext.addEventListener("click", () => { if (currentQ < QUESTIONS.length - 1) { currentQ++; renderQuestion(); } });
+
+/* ── Submit ── */
+$btnSubmit.addEventListener("click", submitQuiz);
+
+async function submitQuiz() {
+  let s = 0;
+  QUESTIONS.forEach((q, i) => { if (answers[i] === q.correct) s++; });
+  submitted = true;
+
+  const pct = Math.round((s / QUESTIONS.length) * 100);
+  $scoreNum.textContent = `${s}/${QUESTIONS.length}`;
+
+  if (s >= 25) {
+    $scoreLbl.textContent = "完璧！ Perfect!";
+    $scoreBanner.style.background = "linear-gradient(135deg, #2d6a4f, #40916c)";
+  } else if (s >= 15) {
+    $scoreLbl.textContent = "いいですね！ Good job!";
+    $scoreBanner.style.background = "linear-gradient(135deg, #b08d37, #d4a843)";
+  } else {
+    $scoreLbl.textContent = "もう一度！ Try again!";
+    $scoreBanner.style.background = "linear-gradient(135deg, #9b2226, #ca6702)";
+  }
+  
+  $scoreBanner.style.display = "block";
+
+  currentQ = 0;
+  renderQuestion();
+  updateNavGrid();
+
+  /* Hide submit, show next */
+  $btnSubmit.classList.add("hidden");
+  $btnNext.classList.remove("hidden");
+  $btnNext.disabled = false;
+
+  /* ══════════════════════════════════════════════════
+     EMAILJS TEMPLATE SETUP (Fallback mode simulated)
+     ══════════════════════════════════════════════════ */
+  const EMAILJS_PUBLIC_KEY  = "YOUR_PUBLIC_KEY"; // Replace to enable
+  const EMAILJS_SERVICE_ID  = "YOUR_SERVICE_ID";
+  const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
+
+  const now = new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", dateStyle: "full", timeStyle: "short" });
+  
+  if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
+    // Simulated sequence for demo
+    $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
+    setTimeout(() => {
+      $emailRow.innerHTML = `<span class="email-pill sent">✓ Results saved & simulated email sent!</span>`;
+    }, 1500);
+  } else {
+    $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
+    try {
+      const emailParams = {
+        name: playerName,
+        subject: `[${playerName}] Verb Conjugation Quiz — ${pct}%`,
+        message: `Verb Conjugation Quiz Results\nScore: ${s}/${QUESTIONS.length} (${pct}%)\nTime: ${now}`,
+      };
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams, EMAILJS_PUBLIC_KEY);
+      $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || 'Email failed'}</span>`;
+    }
+  }
+}
+
+/* ── Retake ── */
+$btnRetake.addEventListener("click", () => {
+  answers = {};
+  currentQ = 0;
+  submitted = false;
+  $scoreBanner.style.display = "none";
+  buildNavGrid();
+  renderQuestion();
+  updateProgress();
+});
+</script>
+</body>
+</html>

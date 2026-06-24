@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>みんなの日本語 Lesson 16 — Vocabulary Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { min-height: 100vh; background: #1a1525; color: #e8e0f0; font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 20% 30%, rgba(232,180,200,0.07) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(120,100,180,0.07) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+  .container { max-width: 540px; margin: 0 auto; padding: 24px 16px 60px; position: relative; z-index: 1; }
+  #name-screen { margin-top: 50px; }
+  .card { background: #221d2e; border-radius: 16px; padding: 28px 20px; border: 1px solid #3d3650; }
+  .badge { display: inline-block; background: linear-gradient(135deg, #e8b4c8, #c89db7); color: #1a1525; font-weight: 700; font-size: 12px; padding: 4px 14px; border-radius: 20px; letter-spacing: 1px; }
+  .title { font-size: 22px; font-weight: 800; margin: 14px 0 4px; letter-spacing: -0.5px; }
+  .subtitle { font-size: 13px; color: #9e93b0; }
+  .name-label { display: block; font-size: 13px; color: #9e93b0; margin: 24px 0 8px; text-align: left; }
+  .name-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; font-size: 16px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+  .name-input:focus { border-color: #e8b4c8; }
+  .btn-primary { width: 100%; margin-top: 16px; padding: 14px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+  .btn-primary:disabled { opacity: 0.35; cursor: default; }
+  #quiz-screen { display: none; }
+  .header { text-align: center; margin-bottom: 22px; }
+  .header .subtitle { margin-top: 2px; }
+  .score-banner { display: none; border-radius: 16px; padding: 22px 16px; text-align: center; margin-bottom: 20px; animation: slideDown 0.4s ease; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+  .score-number { font-size: 44px; font-weight: 800; letter-spacing: -1px; }
+  .score-label { font-size: 16px; font-weight: 600; margin-top: 4px; }
+  .email-row { margin-top: 10px; }
+  .email-pill { display: inline-block; background: #3d3650; font-size: 12px; padding: 4px 14px; border-radius: 12px; }
+  .email-pill.sent { background: #2d6a4f; }
+  .email-pill.error { background: #9b2226; }
+  .btn-retake { margin-top: 12px; background: rgba(255,255,255,0.15); color: #fff; border: none; padding: 8px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  .progress-row { margin-bottom: 14px; }
+  .progress-text { font-size: 12px; color: #9e93b0; display: block; margin-bottom: 6px; }
+  .progress-bar { height: 4px; background: #2a2535; border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #e8b4c8, #c89db7); border-radius: 4px; width: 0%; transition: width 0.3s ease; }
+  .nav-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-bottom: 20px; }
+  .nav-dot { aspect-ratio: 1; border-radius: 8px; background: #2a2535; color: #e8e0f0; font-size: 11px; font-weight: 600; border: 2px solid transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .nav-dot.answered { background: #4a4458; }
+  .nav-dot.active { border-color: #e8b4c8; }
+  .nav-dot.correct { background: #2d6a4f; }
+  .nav-dot.wrong { background: #9b2226; }
+  .q-card { background: #221d2e; border-radius: 16px; padding: 24px 18px; border: 1px solid #3d3650; margin-bottom: 16px; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .q-number { font-size: 11px; color: #9e93b0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .q-english { font-size: 20px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; }
+  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .choice-btn { padding: 16px 10px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; text-align: center; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; font-size: 18px; font-weight: 600; position: relative; transition: all 0.15s; min-height: 64px; display: flex; align-items: center; justify-content: center; }
+  .choice-btn:hover:not(.locked) { border-color: #5c4d7a; background: #302844; }
+  .choice-btn.selected { background: #5c4d7a; border-color: #e8b4c8; }
+  .choice-btn.correct-reveal { background: #2d6a4f; border-color: #40916c; }
+  .choice-btn.wrong-reveal { background: #9b2226; border-color: #ca6702; }
+  .choice-btn .mark { position: absolute; top: 6px; right: 8px; font-size: 14px; }
+  .choice-btn .mark.ok { color: #a7f3d0; }
+  .choice-btn .mark.no { color: #fca5a5; }
+  /* Ruby (kanji + furigana) styling */
+  .choice-btn ruby { display: inline-block; line-height: 1.1; }
+  .choice-btn ruby rt { font-size: 0.55em; color: rgba(232,224,240,0.6); font-weight: 500; letter-spacing: 0; margin-bottom: 2px; }
+  .choice-btn.correct-reveal ruby rt { color: rgba(167,243,208,0.85); }
+  .choice-btn.wrong-reveal ruby rt { color: rgba(252,165,165,0.85); }
+  .choice-btn.selected ruby rt { color: rgba(232,180,200,0.85); }
+  .arrow-row { display: flex; justify-content: space-between; gap: 12px; }
+  .btn-nav { flex: 1; padding: 12px 0; border-radius: 12px; background: #2a2535; border: 1px solid #3d3650; color: #e8e0f0; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
+  .btn-nav:disabled { opacity: 0.3; cursor: default; }
+  .btn-submit { flex: 1; padding: 12px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+  .btn-submit:disabled { opacity: 0.35; cursor: default; }
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+
+/* ========== Site Breadcrumb ========== */
+.site-breadcrumb,
+.site-breadcrumb * {
+  box-sizing: border-box;
+}
+
+.site-breadcrumb {
+  position: relative;
+  z-index: 20;
+  width: min(1180px, calc(100% - 32px));
+  margin: 16px auto 12px;
+  font-family: "Noto Sans JP", "Outfit", system-ui, sans-serif;
+  color: #18202f;
+}
+
+.site-breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid rgba(24, 32, 47, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: 0 10px 30px rgba(24, 32, 47, 0.08);
+}
+
+.site-breadcrumb__item {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  color: #667085;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.site-breadcrumb__item + .site-breadcrumb__item::before {
+  content: "/";
+  margin: 0 8px;
+  color: rgba(169, 52, 42, 0.42);
+  font-weight: 800;
+}
+
+.site-breadcrumb__link {
+  color: #667085;
+  text-decoration: none;
+  transition: color 0.18s ease, background 0.18s ease;
+}
+
+.site-breadcrumb__link:hover {
+  color: #a9342a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.site-breadcrumb__link:focus-visible {
+  color: #a9342a;
+  outline: 2px solid rgba(169, 52, 42, 0.45);
+  outline-offset: 3px;
+  border-radius: 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.site-breadcrumb__category {
+  color: #a9342a;
+}
+
+.site-breadcrumb__current {
+  color: #18202f;
+  overflow-wrap: anywhere;
+}
+
+.site-breadcrumb__navigation {
+  margin-left: auto;
+}
+
+.site-breadcrumb__navigation::before {
+  display: none !important;
+}
+
+.site-breadcrumb__btn-short {
+  display: none;
+}
+
+.site-breadcrumb__btn-full {
+  display: inline;
+}
+
+.site-breadcrumb__divider {
+  color: rgba(24, 32, 47, 0.12);
+  margin: 0 6px;
+}
+
+@media (max-width: 768px) {
+  .progress-container + .presentation {
+    padding-top: 160px;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-breadcrumb {
+    width: min(100% - 20px, 680px);
+    margin: 12px auto 10px;
+  }
+
+  .site-breadcrumb__list {
+    padding: 8px 10px;
+  }
+
+  .site-breadcrumb__item {
+    font-size: 0.78rem;
+  }
+
+  .site-breadcrumb__btn-full {
+    display: none;
+  }
+
+  .site-breadcrumb__btn-short {
+    display: inline;
+  }
+}
+/* ========== End Site Breadcrumb ========== */
+    </style>
+</head>
+<body>
+
+<!-- Site Breadcrumb -->
+<nav class="site-breadcrumb" aria-label="Breadcrumb">
+  <ol class="site-breadcrumb__list">
+    <li class="site-breadcrumb__item"><a class="site-breadcrumb__link" href="../../index.html">Home</a></li>
+    <li class="site-breadcrumb__item"><a class="site-breadcrumb__link site-breadcrumb__category" href="../../index.html#quiz">Quiz</a></li>
+    <li class="site-breadcrumb__item"><span class="site-breadcrumb__current" aria-current="page">Vocabulary 16</span></li>
+    <li class="site-breadcrumb__item site-breadcrumb__navigation">
+    <a class="site-breadcrumb__link site-breadcrumb__btn" href="vocabulary15.html"><span class="site-breadcrumb__btn-full">← Vocab 15</span><span class="site-breadcrumb__btn-short">← V15</span></a>
+    <span class="site-breadcrumb__divider">|</span>
+    <a class="site-breadcrumb__link site-breadcrumb__btn" href="vocabulary17.html"><span class="site-breadcrumb__btn-full">Vocab 17 →</span><span class="site-breadcrumb__btn-short">V17 →</span></a>
+  </li>
+  </ol>
+</nav>
+<!-- End Site Breadcrumb -->
+
+
+<div class="container">
+  <div id="name-screen">
+    <div class="card text-center">
+      <span class="badge">みんなの日本語</span>
+      <h1 class="title">Lesson 16 — Vocabulary Exam</h1>
+      <p class="subtitle">56 multiple-choice questions · vocabulary &amp; body parts</p>
+      <label class="name-label">おなまえは？ Enter your name</label>
+      <input class="name-input" id="name-input" type="text" placeholder="Your name..." autofocus>
+      <button class="btn-primary" id="btn-start" disabled>Start Exam →</button>
+    </div>
+  </div>
+
+  <div id="quiz-screen">
+    <header class="header">
+      <span class="badge">みんなの日本語</span>
+      <h1 class="title">Lesson 16 — Vocabulary Exam</h1>
+      <p class="subtitle" id="quiz-subtitle"></p>
+    </header>
+    <div class="score-banner" id="score-banner">
+      <div class="score-number" id="score-number"></div>
+      <div class="score-label" id="score-label"></div>
+      <div class="email-row" id="email-row"></div>
+      <button class="btn-retake" id="btn-retake">Retake Quiz</button>
+    </div>
+    <div class="progress-row">
+      <span class="progress-text" id="progress-text">0 / 56 answered</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <div class="nav-grid" id="nav-grid"></div>
+    <div class="q-card" id="q-card">
+      <div class="q-number" id="q-number"></div>
+      <div class="q-english" id="q-english"></div>
+      <div class="choices-grid" id="choices-grid"></div>
+    </div>
+    <div class="arrow-row">
+      <button class="btn-nav" id="btn-prev">← Previous</button>
+      <button class="btn-nav" id="btn-next">Next →</button>
+      <button class="btn-submit hidden" id="btn-submit" disabled>Submit Exam</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Furigana lookup — body parts only for L16. */
+const FURIGANA = {
+  "体":"からだ","頭":"あたま","髪":"かみ","顔":"かお","目":"め",
+  "耳":"みみ","鼻":"はな","口":"くち","歯":"は","足":"あし","背":"せ"
+};
+
+const QUESTIONS = [
+  /* ── Verbs: transit ── */
+  { english: "ride, get on (a train)", answer: "のります", choices: ["のります","おります","のりかえます","あびます"] },
+  { english: "get off (a train)", answer: "おります", choices: ["おります","のります","のりかえます","はいります"] },
+  { english: "change (train, etc.)", answer: "のりかえます", choices: ["のりかえます","のります","おります","でます"] },
+
+  /* ── Verbs: body action ── */
+  { english: "take a shower", answer: "あびます", choices: ["あびます","のみます","おろします","おします"] },
+
+  /* ── Verbs: put / take / withdraw ── */
+  { english: "put in, insert", answer: "いれます", choices: ["いれます","だします","おろします","おします"] },
+  { english: "take out, hand in, send", answer: "だします", choices: ["だします","いれます","おろします","おします"] },
+  { english: "withdraw (money)", answer: "おろします", choices: ["おろします","いれます","だします","おします"] },
+
+  /* ── Verbs: enter / exit (institution) ── */
+  { english: "enter (university)", answer: "はいります", choices: ["はいります","でます","のります","おります"] },
+  { english: "graduate from (university)", answer: "でます", choices: ["でます","はいります","おります","のります"] },
+
+  /* ── Verbs: action / activity ── */
+  { english: "push, press", answer: "おします", choices: ["おします","おろします","あびます","でんわします"] },
+  { english: "drink alcohol", answer: "のみます", choices: ["のみます","あびます","はじめます","でんわします"] },
+  { english: "start, begin", answer: "はじめます", choices: ["はじめます","けんがくします","でんわします","のみます"] },
+  { english: "tour, visit a place to study it", answer: "けんがくします", choices: ["けんがくします","はじめます","でんわします","のみます"] },
+  { english: "phone, telephone (verb)", answer: "でんわします", choices: ["でんわします","けんがくします","はじめます","でます"] },
+
+  /* ── Adjectives ── */
+  { english: "young", answer: "わかい", choices: ["わかい","ながい","みじかい","あかるい"] },
+  { english: "long", answer: "ながい", choices: ["ながい","みじかい","わかい","くらい"] },
+  { english: "short", answer: "みじかい", choices: ["みじかい","ながい","わかい","あかるい"] },
+  { english: "bright, light", answer: "あかるい", choices: ["あかるい","くらい","ながい","わかい"] },
+  { english: "dark", answer: "くらい", choices: ["くらい","あかるい","ながい","みじかい"] },
+
+  /* ── Body parts (kanji + furigana) ── */
+  { english: "body, health", answer: "体", choices: ["体","頭","髪","顔"] },
+  { english: "head, brain", answer: "頭", choices: ["頭","顔","髪","体"] },
+  { english: "hair (on the head)", answer: "髪", choices: ["髪","頭","顔","体"] },
+  { english: "face", answer: "顔", choices: ["顔","頭","髪","体"] },
+  { english: "eye", answer: "目", choices: ["目","耳","鼻","口"] },
+  { english: "ear", answer: "耳", choices: ["耳","目","鼻","口"] },
+  { english: "nose", answer: "鼻", choices: ["鼻","口","目","耳"] },
+  { english: "mouth", answer: "口", choices: ["口","鼻","歯","耳"] },
+  { english: "tooth", answer: "歯", choices: ["歯","口","鼻","目"] },
+  { english: "stomach (belly)", answer: "おなか", choices: ["おなか","体","足","背"] },
+  { english: "leg, foot", answer: "足", choices: ["足","背","おなか","体"] },
+  { english: "height (of a person)", answer: "背", choices: ["背","体","おなか","足"] },
+
+  /* ── Common nouns ── */
+  { english: "service", answer: "サービス", choices: ["サービス","ジョギング","シャワー","ボタン"] },
+  { english: "jogging", answer: "ジョギング", choices: ["ジョギング","サービス","シャワー","ボタン"] },
+  { english: "shower", answer: "シャワー", choices: ["シャワー","サービス","ジョギング","キャッシュカード"] },
+  { english: "green, greenery", answer: "みどり", choices: ["みどり","おてら","じんじゃ","サービス"] },
+  { english: "Buddhist temple", answer: "おてら", choices: ["おてら","じんじゃ","みどり","～ばん"] },
+  { english: "Shinto shrine", answer: "じんじゃ", choices: ["じんじゃ","おてら","みどり","～ばん"] },
+  { english: "number ~ (counter for sequence)", answer: "～ばん", choices: ["～ばん","あんしょうばんごう","どの","どれ"] },
+
+  /* ── Question words ── */
+  { english: "in what way, how", answer: "どうやって", choices: ["どうやって","どの","どれ","まず"] },
+  { english: "which ~ (used for three or more)", answer: "どの", choices: ["どの","どれ","どうやって","つぎに"] },
+  { english: "which one (of three or more things)", answer: "どれ", choices: ["どれ","どの","どうやって","まず"] },
+
+  /* ── Conversation phrases ── */
+  { english: "That's amazing!", answer: "すごいですね", choices: ["すごいですね","まだまだです","どうやって","～ばん"] },
+  { english: "I still have a long way to go", answer: "まだまだです", choices: ["まだまだです","すごいですね","どうやって","～ばん"] },
+
+  /* ── ATM 会話 ── */
+  { english: "first of all", answer: "まず", choices: ["まず","つぎに","あとで","すぐ"] },
+  { english: "next, as a next step", answer: "つぎに", choices: ["つぎに","まず","あとで","すぐ"] },
+  { english: "cash card (cash dispensing card)", answer: "キャッシュカード", choices: ["キャッシュカード","あんしょうばんごう","きんがく","ボタン"] },
+  { english: "personal identification number, PIN", answer: "あんしょうばんごう", choices: ["あんしょうばんごう","キャッシュカード","きんがく","かくにん"] },
+  { english: "amount of money", answer: "きんがく", choices: ["きんがく","かくにん","あんしょうばんごう","おひきだし"] },
+  { english: "confirmation", answer: "かくにん", choices: ["かくにん","きんがく","あんしょうばんごう","ボタン"] },
+  { english: "button", answer: "ボタン", choices: ["ボタン","キャッシュカード","あんしょうばんごう","おひきだし"] },
+
+  /* ── ATM Useful Words (operations) ── */
+  { english: "deposit (put money in)", answer: "おあずけいれ", choices: ["おあずけいれ","おふりこみ","おふりかえ","おひきだし"] },
+  { english: "payment (transfer to pay a bill)", answer: "おふりこみ", choices: ["おふりこみ","おあずけいれ","おふりかえ","おひきだし"] },
+  { english: "transfer (between accounts)", answer: "おふりかえ", choices: ["おふりかえ","おふりこみ","おあずけいれ","おひきだし"] },
+  { english: "withdrawal (taking money out)", answer: "おひきだし", choices: ["おひきだし","おあずけいれ","おふりこみ","おふりかえ"] },
+  { english: "updating your passbook", answer: "つうちょうきにゅう", choices: ["つうちょうきにゅう","ざんだかしょうかい","おひきだし","おあずけいれ"] },
+  { english: "balance inquiry", answer: "ざんだかしょうかい", choices: ["ざんだかしょうかい","つうちょうきにゅう","おひきだし","おあずけいれ"] },
+];
+
+let playerName = "";
+let quiz = [];
+let answers = {};
+let currentQ = 0;
+let submitted = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderChoiceText(text) {
+  const f = FURIGANA[text];
+  if (f) return `<ruby>${text}<rt>${f}</rt></ruby>`;
+  return text;
+}
+
+function plainAnswer(text) {
+  if (!text || text === "—") return "—";
+  const f = FURIGANA[text];
+  return f ? `${text}（${f}）` : text;
+}
+
+emailjs.init("1oR0j0WDvUmSSYEpK");
+
+const $nameScreen = document.getElementById("name-screen");
+const $quizScreen = document.getElementById("quiz-screen");
+const $nameInput  = document.getElementById("name-input");
+const $btnStart   = document.getElementById("btn-start");
+const $subtitle   = document.getElementById("quiz-subtitle");
+const $scoreBanner= document.getElementById("score-banner");
+const $scoreNum   = document.getElementById("score-number");
+const $scoreLbl   = document.getElementById("score-label");
+const $emailRow   = document.getElementById("email-row");
+const $btnRetake  = document.getElementById("btn-retake");
+const $progText   = document.getElementById("progress-text");
+const $progFill   = document.getElementById("progress-fill");
+const $navGrid    = document.getElementById("nav-grid");
+const $qNumber    = document.getElementById("q-number");
+const $qEnglish   = document.getElementById("q-english");
+const $choicesGrid= document.getElementById("choices-grid");
+const $btnPrev    = document.getElementById("btn-prev");
+const $btnNext    = document.getElementById("btn-next");
+const $btnSubmit  = document.getElementById("btn-submit");
+
+$nameInput.addEventListener("input", () => { $btnStart.disabled = !$nameInput.value.trim(); });
+$nameInput.addEventListener("keydown", (e) => { if (e.key === "Enter" && $nameInput.value.trim()) startQuiz(); });
+$btnStart.addEventListener("click", startQuiz);
+
+function startQuiz() {
+  playerName = $nameInput.value.trim();
+  quiz = shuffle(QUESTIONS).map(q => ({ ...q, choices: shuffle(q.choices) }));
+  answers = {}; currentQ = 0; submitted = false;
+  $nameScreen.style.display = "none";
+  $quizScreen.style.display = "block";
+  $scoreBanner.style.display = "none";
+  $subtitle.textContent = `${playerName}さん — choose the correct word`;
+  buildNavGrid(); renderQuestion(); updateProgress();
+}
+
+function buildNavGrid() {
+  $navGrid.innerHTML = "";
+  quiz.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.className = "nav-dot"; btn.textContent = i + 1;
+    btn.addEventListener("click", () => { currentQ = i; renderQuestion(); });
+    $navGrid.appendChild(btn);
+  });
+}
+
+function updateNavGrid() {
+  const dots = $navGrid.querySelectorAll(".nav-dot");
+  dots.forEach((dot, i) => {
+    dot.className = "nav-dot";
+    if (i === currentQ) dot.classList.add("active");
+    if (!submitted && answers[i] !== undefined) dot.classList.add("answered");
+    if (submitted && answers[i] === quiz[i].answer) dot.classList.add("correct");
+    if (submitted && answers[i] !== undefined && answers[i] !== quiz[i].answer) dot.classList.add("wrong");
+  });
+}
+
+function updateProgress() {
+  const count = Object.keys(answers).length;
+  $progText.textContent = `${count} / ${quiz.length} answered`;
+  $progFill.style.width = `${(count / quiz.length) * 100}%`;
+  $btnSubmit.disabled = count < quiz.length;
+}
+
+function renderQuestion() {
+  const q = quiz[currentQ];
+  $qNumber.textContent = `Question ${currentQ + 1}`;
+  $qEnglish.textContent = q.english;
+  $choicesGrid.innerHTML = "";
+  q.choices.forEach(c => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    if (submitted) btn.classList.add("locked");
+    btn.innerHTML = `<span>${renderChoiceText(c)}</span>`;
+    const selected = answers[currentQ] === c;
+    const isCorrectChoice = c === q.answer;
+    if (!submitted) {
+      if (selected) btn.classList.add("selected");
+      btn.addEventListener("click", () => { if (submitted) return; answers[currentQ] = c; renderQuestion(); updateNavGrid(); updateProgress(); });
+    } else {
+      if (isCorrectChoice) { btn.classList.add("correct-reveal"); btn.innerHTML += `<span class="mark ok">✓</span>`; }
+      if (selected && !isCorrectChoice) { btn.classList.add("wrong-reveal"); btn.innerHTML += `<span class="mark no">✗</span>`; }
+    }
+    $choicesGrid.appendChild(btn);
+  });
+  updateNavGrid();
+  const isLast = currentQ === quiz.length - 1;
+  $btnPrev.disabled = currentQ === 0;
+  if (isLast && !submitted) { $btnNext.classList.add("hidden"); $btnSubmit.classList.remove("hidden"); }
+  else { $btnNext.classList.remove("hidden"); $btnSubmit.classList.add("hidden"); $btnNext.disabled = isLast; }
+}
+
+$btnPrev.addEventListener("click", () => { if (currentQ > 0) { currentQ--; renderQuestion(); } });
+$btnNext.addEventListener("click", () => { if (currentQ < quiz.length - 1) { currentQ++; renderQuestion(); } });
+$btnSubmit.addEventListener("click", submitQuiz);
+
+async function submitQuiz() {
+  let s = 0;
+  quiz.forEach((q, i) => { if (answers[i] === q.answer) s++; });
+  submitted = true;
+  const total = quiz.length;
+  const pct = Math.round((s / total) * 100);
+  $scoreNum.textContent = `${s}/${total}`;
+  if (s === total) $scoreLbl.textContent = "完璧！ Perfect!";
+  else if (pct >= 90) $scoreLbl.textContent = "すごい！ Excellent!";
+  else if (pct >= 70) $scoreLbl.textContent = "いいですね！ Good job!";
+  else $scoreLbl.textContent = "もう一度！ Try again!";
+  const gradient = pct >= 90 ? "linear-gradient(135deg,#2d6a4f,#40916c)" : pct >= 70 ? "linear-gradient(135deg,#b08d37,#d4a843)" : "linear-gradient(135deg,#9b2226,#ca6702)";
+  $scoreBanner.style.background = gradient;
+  $scoreBanner.style.display = "block";
+  currentQ = 0; renderQuestion(); updateNavGrid();
+  $btnSubmit.classList.add("hidden"); $btnNext.classList.remove("hidden"); $btnNext.disabled = false;
+
+  const EMAILJS_SERVICE_ID  = "service_v7ifzdj";
+  const EMAILJS_TEMPLATE_ID = "template_lb9c879";
+  const now = new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", dateStyle: "full", timeStyle: "short" });
+  const details = quiz.map((q, i) => `${i+1}. ${q.english} → Answer: ${plainAnswer(answers[i] || "—")} | Correct: ${plainAnswer(q.answer)} ${answers[i] === q.answer ? "✓" : "✗"}`).join("\n");
+  const emailParams = {
+    name: playerName, email: "noreply@quiz.com",
+    subject: `[${playerName}] みんなの日本語 Lesson 16 Quiz — ${pct}%`,
+    message: `Minna no Nihongo - Lesson 16 Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${total} (${pct}%)\n\n--- Detailed Results ---\n${details}\n\nがんばって！`,
+    time: now
+  };
+  $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams);
+    $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
+  } catch (err) {
+    console.error("EmailJS error:", err);
+    $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || 'Email failed'}</span>`;
+  }
+}
+
+$btnRetake.addEventListener("click", () => {
+  quiz = shuffle(QUESTIONS).map(q => ({ ...q, choices: shuffle(q.choices) }));
+  answers = {}; currentQ = 0; submitted = false;
+  $scoreBanner.style.display = "none";
+  buildNavGrid(); renderQuestion(); updateProgress();
+});
+</script>
+</body>
+</html>
