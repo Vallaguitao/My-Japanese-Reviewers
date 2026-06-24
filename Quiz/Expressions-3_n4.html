@@ -9,72 +9,25 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
-  /* ═══════════════════════════════════════════════════════════════
-     THEME — sakura (default). Swap this :root block to retheme.
-     See references/themes.md for ocean / forest / sunset alternates.
-     ═══════════════════════════════════════════════════════════════ */
-  :root {
-    --bg-base: #1a1525;
-    --bg-radial-1: rgba(232, 180, 200, 0.07);
-    --bg-radial-2: rgba(120, 100, 180, 0.07);
-    --bg-card: #221d2e;
-    --bg-input: #2a2535;
-    --bg-button: #3d3650;
-    --bg-button-hover: #302844;
-    --bg-feedback-correct: #1a3d2a;
-    --bg-feedback-wrong: #3d1a1f;
-
-    --text-primary: #e8e0f0;
-    --text-muted: #9e93b0;
-    --text-on-accent: #1a1525;
-
-    --border: #3d3650;
-    --border-active: #5c4d7a;
-
-    --accent-start: #e8b4c8;
-    --accent-end: #c89db7;
-
-    --success: #2d6a4f;
-    --success-bright: #40916c;
-    --success-text: #a7f3d0;
-    --warning: #b08d37;
-    --warning-bright: #d4a843;
-    --error: #9b2226;
-    --error-bright: #ca6702;
-    --error-text: #fca5a5;
-
-    --tag-l1-bg: #1e3a5f; --tag-l1-fg: #93c5fd;
-    --tag-l2-bg: #1e4a3a; --tag-l2-fg: #86efac;
-    --tag-l3-bg: #5a3a1e; --tag-l3-fg: #fcd34d;
-    --tag-l4-bg: #4a1e3a; --tag-l4-fg: #f9a8d4;
-    --tag-l5-bg: #3a1e4a; --tag-l5-fg: #c4b5fd;
-  }
-
-  /* ── Base ── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     min-height: 100vh;
-    background: var(--bg-base);
-    color: var(--text-primary);
+    background:
+      linear-gradient(90deg, rgba(169, 52, 42, 0.06) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(38, 58, 99, 0.04), transparent 34rem),
+      #f8f3ea;
+    background-size: 44px 44px, auto, auto;
+    color: #18202f;
     font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
     overflow-x: hidden;
-  }
-
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background:
-      radial-gradient(circle at 20% 30%, var(--bg-radial-1) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, var(--bg-radial-2) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
+    position: relative;
   }
 
   .container {
-    max-width: 580px;
+    max-width: 620px;
     margin: 0 auto;
-    padding: 24px 16px 60px;
+    padding: 32px 16px 60px;
     position: relative;
     z-index: 1;
   }
@@ -90,232 +43,287 @@
     min-width: 28px;
     padding: 0 6px;
     margin: 0 2px;
-    background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
-    color: var(--text-on-accent);
+    background: #a9342a;
+    color: #ffffff;
     border-radius: 6px;
     font-weight: 800;
     text-align: center;
   }
-  ruby rt { font-size: 0.6em; color: var(--text-muted); }
+  ruby rt { font-size: 0.6em; color: #667085; }
+
+  /* ── Card Styles ── */
+  .card, .q-card, .score-banner {
+    background: rgba(255, 253, 248, 0.94);
+    border-radius: 8px;
+    padding: 32px 24px;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    box-shadow: 0 12px 40px rgba(24, 32, 47, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
 
   /* ── Name Screen ── */
-  #name-screen { margin-top: 50px; }
-
-  .card {
-    background: var(--bg-card);
-    border-radius: 16px;
-    padding: 28px 20px;
-    border: 1px solid var(--border);
-  }
+  #name-screen { margin-top: 40px; }
 
   .badge {
     display: inline-block;
-    background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
-    color: var(--text-on-accent);
-    font-weight: 700;
-    font-size: 12px;
-    padding: 4px 14px;
+    background: #a9342a;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 10px;
+    padding: 5px 16px;
     border-radius: 20px;
-    letter-spacing: 1px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(169, 52, 42, 0.15);
   }
 
   .title {
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 800;
-    margin: 14px 0 4px;
+    margin: 16px 0 6px;
     letter-spacing: -0.5px;
+    color: #18202f;
   }
 
   .subtitle {
-    font-size: 13px;
-    color: var(--text-muted);
-    line-height: 1.5;
-  }
-
-  .scope-pills {
-    display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
-    margin: 16px 0 4px;
-  }
-  .scope-pill {
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    font-size: 12px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 10px;
+    font-size: 14px;
+    color: #667085;
   }
 
   .name-label {
     display: block;
     font-size: 13px;
-    color: var(--text-muted);
-    margin: 24px 0 8px;
+    color: #667085;
+    margin: 32px 0 8px;
     text-align: left;
+    font-weight: 700;
   }
 
   .name-input {
     width: 100%;
-    padding: 12px 14px;
-    border-radius: 12px;
-    border: 2px solid var(--border);
-    background: var(--bg-input);
-    color: var(--text-primary);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    background: #ffffff;
+    color: #18202f;
     font-size: 16px;
     font-family: inherit;
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
   }
-  .name-input:focus { border-color: var(--accent-start); }
+  .name-input:focus {
+    border-color: #a9342a;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(169, 52, 42, 0.15);
+  }
 
   .btn-primary {
     width: 100%;
-    margin-top: 16px;
-    padding: 14px 0;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+    margin-top: 24px;
+    padding: 16px 0;
+    border-radius: 8px;
+    background: #a9342a;
     border: none;
-    color: var(--text-on-accent);
+    color: #ffffff;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 800;
     font-family: inherit;
     cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
+    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.25);
+    transition: all 0.25s ease;
   }
-  .btn-primary:focus-visible { outline: 3px solid var(--accent-start); outline-offset: 3px; }
-  .btn-primary:active:not(:disabled) { transform: scale(0.98); }
-  .btn-primary:disabled { opacity: 0.35; cursor: default; }
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(169, 52, 42, 0.35);
+    opacity: 0.95;
+  }
+  .btn-primary:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
 
   /* ── Quiz Screen ── */
   #quiz-screen { display: none; }
 
-  .header { text-align: center; margin-bottom: 22px; }
-  .header .subtitle { margin-top: 2px; }
+  .header { text-align: center; margin-bottom: 24px; }
+  .header .subtitle { margin-top: 6px; }
 
-  /* ── Score Banner ── */
+  /* Score Banner */
   .score-banner {
     display: none;
-    border-radius: 16px;
-    padding: 22px 16px;
+    border-radius: 8px;
+    padding: 28px 20px;
     text-align: center;
-    margin-bottom: 20px;
-    animation: slideDown 0.4s ease;
+    margin-bottom: 24px;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    box-shadow: 0 12px 40px rgba(24, 32, 47, 0.06);
+    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
   @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-12px); }
+    from { opacity: 0; transform: translateY(-16px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .score-number { font-size: 44px; font-weight: 800; letter-spacing: -1px; }
-  .score-label { font-size: 16px; font-weight: 600; margin-top: 4px; }
+  .score-number { font-size: 52px; font-weight: 900; letter-spacing: -1.5px; line-height: 1; margin-bottom: 6px; }
+  .score-label { font-size: 20px; font-weight: 700; margin-bottom: 14px; }
   .lesson-breakdown {
     display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
     margin-top: 14px;
+    margin-bottom: 14px;
   }
   .lesson-stat {
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(4px);
+    background: rgba(24, 32, 47, 0.05);
+    border: 1px solid rgba(24, 32, 47, 0.1);
     padding: 6px 12px;
     border-radius: 10px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
+    color: inherit;
   }
-  .email-row { margin-top: 12px; }
+  .email-row { margin-bottom: 20px; }
   .email-pill {
     display: inline-block;
-    background: var(--bg-button);
-    color: var(--text-primary);
+    background: rgba(24, 32, 47, 0.04);
+    border: 1px solid rgba(24, 32, 47, 0.12);
     font-size: 12px;
-    padding: 4px 14px;
-    border-radius: 12px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    color: #18202f;
   }
-  .email-pill.sent { background: var(--success); color: var(--success-text); }
-  .email-pill.error { background: var(--error); color: var(--error-text); }
+  .email-pill.sent {
+    background: #e8f5e9;
+    border: 1px solid #2e7d32;
+    color: #1b5e20;
+  }
+  .email-pill.error {
+    background: #ffebee;
+    border: 1px solid #c62828;
+    color: #b71c1c;
+  }
 
   .end-actions {
     display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
     margin-top: 14px;
   }
   .btn-end {
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 600;
+    background: rgba(24, 32, 47, 0.06);
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    color: #18202f;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
     font-family: inherit;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: all 0.2s;
   }
-  .btn-end:hover:not(:disabled) { background: rgba(255, 255, 255, 0.25); }
+  .btn-end:hover:not(:disabled) {
+    background: #f4ddd8;
+    border-color: rgba(169, 52, 42, 0.2);
+    color: #a9342a;
+    transform: translateY(-1px);
+  }
   .btn-end:disabled { opacity: 0.4; cursor: default; }
-  .btn-end:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
   /* ── Review Banner ── */
   .review-banner {
     display: none;
-    background: linear-gradient(135deg, var(--warning), var(--warning-bright));
-    color: #1a1525;
+    background: #fff9c4;
+    border: 1px solid #fbc02d;
+    color: #f57f17;
     text-align: center;
-    padding: 10px;
-    border-radius: 12px;
+    padding: 12px;
+    border-radius: 8px;
     font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 14px;
+    font-weight: 700;
+    margin-bottom: 20px;
   }
 
-  /* ── Progress ── */
-  .progress-row { margin-bottom: 14px; }
-  .progress-text { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px; }
-  .progress-bar { height: 4px; background: var(--bg-input); border-radius: 4px; overflow: hidden; }
+  /* Progress */
+  .progress-row { margin-bottom: 20px; }
+  .progress-text { font-size: 12px; color: #667085; display: block; margin-bottom: 8px; font-weight: 700; }
+  .progress-bar { height: 6px; background: rgba(24, 32, 47, 0.06); border-radius: 6px; overflow: hidden; }
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent-start), var(--accent-end));
-    border-radius: 4px;
+    background: linear-gradient(90deg, #a9342a, #8f241c);
+    border-radius: 6px;
     width: 0%;
-    transition: width 0.3s ease;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(169, 52, 42, 0.15);
   }
 
-  /* ── Nav Grid (adaptive — fits any question count) ── */
+  /* Nav Grid */
   .nav-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+    grid-template-columns: repeat(10, 1fr);
     gap: 6px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
   .nav-dot {
     aspect-ratio: 1;
-    border-radius: 8px;
-    background: var(--bg-input);
-    color: var(--text-primary);
+    border-radius: 50%;
+    background: #fffdf8;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    color: #667085;
     font-size: 11px;
-    font-weight: 600;
-    border: 2px solid transparent;
+    font-weight: 700;
     cursor: pointer;
     font-family: inherit;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.15s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .nav-dot:hover { background: var(--bg-button-hover); }
-  .nav-dot:focus-visible { outline: 2px solid var(--accent-start); outline-offset: 2px; }
-  .nav-dot.answered { background: var(--bg-button); }
-  .nav-dot.active { border-color: var(--accent-start); }
-  .nav-dot.correct { background: var(--success); }
-  .nav-dot.wrong { background: var(--error); }
+  .nav-dot:hover:not(.locked) {
+    background: #f4ddd8;
+    color: #a9342a;
+    border-color: rgba(169, 52, 42, 0.2);
+  }
+  .nav-dot.answered {
+    background: rgba(169, 52, 42, 0.06);
+    border-color: rgba(169, 52, 42, 0.2);
+    color: #a9342a;
+  }
+  .nav-dot.active {
+    border-color: #a9342a;
+    background: #f4ddd8;
+    color: #a9342a;
+    box-shadow: 0 0 0 3px rgba(169, 52, 42, 0.15);
+  }
+  .nav-dot.correct {
+    background: #e8f5e9;
+    border-color: #2e7d32;
+    color: #1b5e20;
+  }
+  .nav-dot.wrong {
+    background: #ffebee;
+    border-color: #c62828;
+    color: #b71c1c;
+  }
+  .nav-dot.unanswered-locked {
+    background: rgba(24, 32, 47, 0.02);
+    border-color: rgba(24, 32, 47, 0.06);
+    color: rgba(24, 32, 47, 0.3);
+    opacity: 0.5;
+  }
+  @media (max-width: 480px) {
+    .nav-grid { gap: 4px; }
+    .nav-dot { font-size: 10px; }
+  }
 
-  /* ── Question Card ── */
+  /* Question Card */
   .q-card {
-    background: var(--bg-card);
-    border-radius: 16px;
-    padding: 22px 18px;
-    border: 1px solid var(--border);
-    margin-bottom: 16px;
-    animation: fadeIn 0.25s ease;
+    background: rgba(255, 253, 248, 0.94);
+    border-radius: 8px;
+    padding: 28px;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(24, 32, 47, 0.04);
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
@@ -330,115 +338,165 @@
     border-radius: 8px;
     letter-spacing: 0.3px;
   }
-  .q-tag.lesson-1 { background: var(--tag-l1-bg); color: var(--tag-l1-fg); }
-  .q-tag.lesson-2 { background: var(--tag-l2-bg); color: var(--tag-l2-fg); }
-  .q-tag.lesson-3 { background: var(--tag-l3-bg); color: var(--tag-l3-fg); }
-  .q-tag.lesson-4 { background: var(--tag-l4-bg); color: var(--tag-l4-fg); }
-  .q-tag.lesson-5 { background: var(--tag-l5-bg); color: var(--tag-l5-fg); }
+  .q-tag.lesson-1 { background: #e3f2fd; color: #0d47a1; }
+  .q-tag.lesson-2 { background: #e8f5e9; color: #1b5e20; }
+  .q-tag.lesson-3 { background: #fff8e1; color: #ff6f00; }
+  .q-tag.lesson-4 { background: #fce4ec; color: #880e4f; }
+  .q-tag.lesson-5 { background: #f3e5f5; color: #4a148c; }
   .q-tag.type {
-    background: var(--bg-button);
-    color: var(--text-muted);
+    background: rgba(24, 32, 47, 0.05);
+    color: #667085;
   }
 
   .q-number {
     font-size: 11px;
-    color: var(--text-muted);
-    font-weight: 600;
+    color: #a9342a;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
   }
   .q-stem {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 18px;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 24px;
     line-height: 1.45;
+    color: #18202f;
   }
 
   .choices-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
-  .choices-grid.long { grid-template-columns: 1fr; }
 
   .choice-btn {
-    padding: 14px 12px;
-    border-radius: 12px;
-    border: 2px solid var(--border);
-    background: var(--bg-input);
-    color: var(--text-primary);
-    text-align: center;
+    padding: 18px 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    background: #fffdf8;
+    color: #18202f;
+    text-align: left;
     cursor: pointer;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 16px;
+    font-family: inherit;
+    font-size: 17px;
     font-weight: 600;
-    line-height: 1.4;
     position: relative;
-    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
   }
-  .choices-grid.long .choice-btn { text-align: left; padding: 14px 16px; }
-  .choice-btn:hover:not(:disabled) { border-color: var(--border-active); background: var(--bg-button-hover); }
-  .choice-btn:focus-visible { outline: 2px solid var(--accent-start); outline-offset: 2px; }
-  .choice-btn.selected { background: var(--border-active); border-color: var(--accent-start); }
-  .choice-btn.correct-reveal { background: var(--success); border-color: var(--success-bright); }
-  .choice-btn.wrong-reveal { background: var(--error); border-color: var(--error-bright); }
-  .choice-btn:disabled { cursor: default; }
-  .choice-btn .mark {
+  .choice-btn:hover:not(.locked) {
+    border-color: rgba(169, 52, 42, 0.3);
+    background: #f4ddd8;
+    color: #a9342a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.05);
+  }
+  .choice-btn.selected {
+    background: #f4ddd8;
+    border-color: #a9342a;
+    color: #a9342a;
+    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.1);
+  }
+  .choice-btn.correct-reveal {
+    background: #e8f5e9;
+    border-color: #2e7d32;
+    color: #1b5e20;
+  }
+  .choice-btn.wrong-reveal {
+    background: #ffebee;
+    border-color: #c62828;
+    color: #b71c1c;
+  }
+  .choice-btn.faded-reveal {
+    opacity: 0.4;
+    border-color: rgba(24, 32, 47, 0.04);
+  }
+  .choice-letter {
+    font-weight: 800;
+    margin-right: 16px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+  .choice-btn:hover .choice-letter, .choice-btn.selected .choice-letter { opacity: 1; }
+  
+  .mark {
     position: absolute;
-    top: 6px; right: 8px;
-    font-size: 14px;
-    font-weight: 700;
+    right: 20px;
+    font-size: 20px;
+    font-weight: 900;
   }
-  .choice-btn .mark.ok { color: var(--success-text); }
-  .choice-btn .mark.no { color: var(--error-text); }
-  .choice-btn .key-hint {
-    position: absolute;
-    top: 6px; left: 8px;
-    font-size: 10px;
-    color: var(--text-muted);
-    font-weight: 700;
-    opacity: 0.7;
-  }
+  .mark.ok { color: #1b5e20; }
+  .mark.no { color: #b71c1c; }
 
-  /* ── Feedback Card ── */
+  /* Explanation Box / Feedback Card */
   .feedback-card {
     display: none;
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-top: 14px;
-    border: 1px solid;
+    margin-top: 24px;
+    padding: 18px 20px;
+    border-radius: 8px;
+    background: #fff8ef;
+    border: 1px solid rgba(169, 52, 42, 0.15);
     font-size: 14px;
     line-height: 1.55;
-    animation: fadeIn 0.3s ease;
+    color: #18202f;
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .feedback-card.correct {
-    background: var(--bg-feedback-correct);
-    border-color: var(--success-bright);
-  }
-  .feedback-card.wrong {
-    background: var(--bg-feedback-wrong);
-    border-color: var(--error-bright);
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   .fb-header {
-    font-weight: 700;
-    margin-bottom: 6px;
-    font-size: 13px;
-    letter-spacing: 0.3px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
-  .feedback-card.correct .fb-header { color: var(--success-text); }
-  .feedback-card.wrong .fb-header { color: var(--error-text); }
+  .feedback-card.correct .fb-header { color: #2e7d32; }
+  .feedback-card.wrong .fb-header { color: #c62828; }
   .fb-block { margin-top: 8px; }
-  .fb-block.connect { color: var(--text-muted); font-size: 13px; }
+  .fb-block.connect { color: #667085; font-size: 13px; }
   .fb-block.warn {
-    color: #fcd34d;
-    background: rgba(252, 211, 77, 0.08);
+    color: #b71c1c;
+    background: #ffebee;
+    border: 1px solid rgba(198, 40, 40, 0.2);
     padding: 8px 10px;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 13px;
   }
 
-  /* ── Arrow Row ── */
+  /* Skipped warning alert box */
+  .skipped-warning {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #fff8ef;
+    border: 1px solid #a9342a;
+    border-radius: 8px;
+    color: #a9342a;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.5;
+    animation: fadeIn 0.3s ease;
+  }
+  .skipped-link {
+    color: #a9342a;
+    text-decoration: underline;
+    cursor: pointer;
+    margin: 0 4px;
+    font-weight: 800;
+  }
+  .skipped-link:hover {
+    color: #8f241c;
+  }
+
+  /* Arrow Row */
   .arrow-row {
     display: flex;
     justify-content: space-between;
@@ -446,30 +504,48 @@
   }
   .btn-nav {
     flex: 1;
-    padding: 12px 0;
-    border-radius: 12px;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    font-size: 14px;
-    font-weight: 600;
+    padding: 16px 0;
+    border-radius: 8px;
+    background: #fffdf8;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    color: #18202f;
+    font-size: 15px;
+    font-weight: 700;
     font-family: inherit;
     cursor: pointer;
-    transition: opacity 0.15s, background 0.15s;
+    transition: all 0.2s;
   }
-  .btn-nav:hover:not(:disabled) { background: var(--bg-button-hover); }
-  .btn-nav:focus-visible { outline: 2px solid var(--accent-start); outline-offset: 2px; }
-  .btn-nav:disabled { opacity: 0.3; cursor: default; }
-  .btn-next-primary {
-    background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
-    color: var(--text-on-accent);
+  .btn-nav:hover:not(:disabled) {
+    background: #f4ddd8;
+    color: #a9342a;
+    border-color: rgba(169, 52, 42, 0.2);
+  }
+  .btn-nav:disabled { opacity: 0.25; cursor: not-allowed; }
+  
+  .btn-submit {
+    flex: 1;
+    padding: 16px 0;
+    border-radius: 8px;
+    background: #a9342a;
     border: none;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.25);
+    transition: all 0.2s;
   }
+  .btn-submit:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba(169, 52, 42, 0.35);
+    opacity: 0.95;
+  }
+  .btn-submit:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
 
   .text-center { text-align: center; }
   .hidden { display: none !important; }
 
-  /* ── Mobile tweaks ── */
+  /* Mobile tweaks */
   @media (max-width: 480px) {
     .container { padding: 16px 12px 50px; }
     .title { font-size: 20px; }
@@ -604,7 +680,6 @@
     display: inline;
   }
 }
-/* ========== End Site Breadcrumb ========== */
 </style>
 </head>
 <body>
@@ -633,8 +708,6 @@
       <span class="badge" id="ns-badge"></span>
       <h1 class="title" id="ns-title"></h1>
       <p class="subtitle" id="ns-subtitle"></p>
-
-      <div class="scope-pills" id="scope-pills"></div>
 
       <label class="name-label" for="name-input">おなまえは？ Enter your name</label>
       <input class="name-input" id="name-input" type="text" placeholder="Your name..." autocomplete="off" autofocus>
@@ -670,7 +743,9 @@
       <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
     </div>
 
-    <div class="nav-grid" id="nav-grid"></div>
+    <div class="nav-grid hidden" id="nav-grid"></div>
+
+    <div class="skipped-warning hidden" id="skipped-warning"></div>
 
     <div class="q-card" id="q-card">
       <div class="q-meta">
@@ -686,11 +761,11 @@
     <div class="arrow-row">
       <button class="btn-nav" id="btn-prev">← Previous</button>
       <button class="btn-nav btn-next-primary" id="btn-next">Next →</button>
+      <button class="btn-submit hidden" id="btn-submit" disabled>Submit Exam</button>
     </div>
   </div>
 
 </div>
-
 <script>
 /* ═══════════════════════════════════════════════════════════════
    QUIZ_CONFIG — edit this block to customize the quiz.
@@ -699,11 +774,10 @@
    ═══════════════════════════════════════════════════════════════ */
 const QUIZ_CONFIG = {
   // Display
-  badge: "いろどり × MNN",
+  badge: "My-Japanese-Reviewers",
   title: "Irodori 会話表現クイズ Part 4",
   titleShort: "会話表現 Part 4",
   subtitle: "20 questions · Workplace, medical, hospitality & farewell expressions",
-  scopePills: ["🏢 しごと ×4", "💊 びょういん ×4", "💭 きもち ×4", "🍜 おもてなし ×4", "🎀 おわかれ ×4"],
 
   // Behavior
   shuffleQuestions: true,
@@ -711,10 +785,10 @@ const QUIZ_CONFIG = {
 
   // Score thresholds (PERCENTAGE, not absolute count)
   scoreThresholds: {
-    perfect:   { min: 100, label: "完璧！ Perfect!",     gradient: "linear-gradient(135deg, var(--success), var(--success-bright))" },
-    excellent: { min: 90,  label: "すごい！ Excellent!",  gradient: "linear-gradient(135deg, var(--success), var(--success-bright))" },
-    good:      { min: 70,  label: "いいですね！ Good job!", gradient: "linear-gradient(135deg, var(--warning), var(--warning-bright))" },
-    fail:      { min: 0,   label: "もう一度！ Try again!", gradient: "linear-gradient(135deg, var(--error), var(--error-bright))" }
+    perfect:   { min: 100, label: "完璧！ Perfect!",     bg: "#e8f5e9", border: "#2e7d32", text: "#1b5e20" },
+    excellent: { min: 90,  label: "すごい！ Excellent!",  bg: "#e8f5e9", border: "#2e7d32", text: "#1b5e20" },
+    good:      { min: 70,  label: "いいですね！ Good job!", bg: "#fff9c4", border: "#fbc02d", text: "#f57f17" },
+    fail:      { min: 0,   label: "もう一度！ Try again!", bg: "#ffebee", border: "#c62828", text: "#b71c1c" }
   },
 
   // EmailJS — baked in. Edit these if deploying with different credentials.
@@ -996,7 +1070,6 @@ const $nameScreen   = document.getElementById("name-screen");
 const $quizScreen   = document.getElementById("quiz-screen");
 const $nameInput    = document.getElementById("name-input");
 const $btnStart     = document.getElementById("btn-start");
-const $scopePills   = document.getElementById("scope-pills");
 const $subtitle     = document.getElementById("quiz-subtitle");
 const $scoreBanner  = document.getElementById("score-banner");
 const $scoreNum     = document.getElementById("score-number");
@@ -1015,8 +1088,10 @@ const $qNumber      = document.getElementById("q-number");
 const $qStem        = document.getElementById("q-stem");
 const $choicesGrid  = document.getElementById("choices-grid");
 const $feedbackCard = document.getElementById("feedback-card");
+const $skippedWarning = document.getElementById("skipped-warning");
 const $btnPrev      = document.getElementById("btn-prev");
 const $btnNext      = document.getElementById("btn-next");
+const $btnSubmit    = document.getElementById("btn-submit");
 
 /* Populate header text from CONFIG */
 document.title = QUIZ_CONFIG.title;
@@ -1025,14 +1100,6 @@ document.getElementById("ns-title").textContent = QUIZ_CONFIG.title;
 document.getElementById("ns-subtitle").textContent = QUIZ_CONFIG.subtitle;
 document.getElementById("qs-badge").textContent = QUIZ_CONFIG.badge;
 document.getElementById("qs-title").textContent = QUIZ_CONFIG.titleShort;
-
-/* Render scope pills from config */
-QUIZ_CONFIG.scopePills.forEach(text => {
-  const span = document.createElement("span");
-  span.className = "scope-pill";
-  span.textContent = text;
-  $scopePills.appendChild(span);
-});
 
 /* ═══════════════════════════════════════════════════════════════
    NAME SCREEN
@@ -1096,18 +1163,31 @@ function buildNavGrid() {
 function updateNavGrid() {
   const dots = $navGrid.querySelectorAll(".nav-dot");
   const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
+
+  if (submitted) {
+    $navGrid.classList.remove("hidden");
+  } else {
+    $navGrid.classList.add("hidden");
+  }
+
   dots.forEach((dot, i) => {
     dot.className = "nav-dot";
     let label = `Question ${i + 1}`;
     if (i === realIdx) { dot.classList.add("active"); label += ", current"; }
-    if (!submitted && answers[i] !== undefined) {
-      dot.classList.add("answered"); label += ", answered";
-    }
-    if (submitted && answers[i] === quiz[i].answer) {
-      dot.classList.add("correct"); label += ", correct";
-    }
-    if (submitted && answers[i] !== undefined && answers[i] !== quiz[i].answer) {
-      dot.classList.add("wrong"); label += ", incorrect";
+    
+    if (submitted) {
+      dot.classList.add("locked");
+      if (answers[i] === quiz[i].answer) {
+        dot.classList.add("correct"); label += ", correct";
+      } else if (answers[i] !== undefined) {
+        dot.classList.add("wrong"); label += ", incorrect";
+      } else {
+        dot.classList.add("unanswered-locked"); label += ", unanswered";
+      }
+    } else {
+      if (answers[i] !== undefined) {
+        dot.classList.add("answered"); label += ", answered";
+      }
     }
     dot.setAttribute("aria-label", label);
   });
@@ -1125,6 +1205,7 @@ function updateProgress() {
   const count = Object.keys(answers).length;
   $progText.textContent = `${count} / ${quiz.length} answered`;
   $progFill.style.width = `${(count / quiz.length) * 100}%`;
+  $btnSubmit.disabled = false;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1147,43 +1228,52 @@ function renderQuestion() {
   $qStem.innerHTML = q.stem;
 
   /* Choices */
-  $choicesGrid.className = `choices-grid${q.longChoices ? " long" : ""}`;
   $choicesGrid.innerHTML = "";
   const isAnswered = answers[realIdx] !== undefined;
 
   q.choices.forEach((c, i) => {
     const btn = document.createElement("button");
     btn.className = "choice-btn";
+    if (submitted) btn.classList.add("locked");
+
+    const letters = ['a', 'b', 'c', 'd'];
+    btn.innerHTML = `<span class="choice-letter">${letters[i]}.</span><span>${c}</span>`;
+    
     const selected = answers[realIdx] === c;
     const isCorrectChoice = c === q.answer;
 
-    btn.innerHTML = `<span class="key-hint">${i + 1}</span><span>${c}</span>`;
-    btn.setAttribute("aria-pressed", selected ? "true" : "false");
-
-    if (isAnswered) {
-      btn.disabled = true;
+    if (!submitted) {
+      if (selected) btn.classList.add("selected");
+      btn.addEventListener("click", () => {
+        if (submitted) return;
+        answers[realIdx] = c;
+        renderQuestion();
+      });
+    } else {
       if (isCorrectChoice) {
         btn.classList.add("correct-reveal");
         btn.innerHTML += `<span class="mark ok">✓</span>`;
-      }
-      if (selected && !isCorrectChoice) {
+      } else if (selected && !isCorrectChoice) {
         btn.classList.add("wrong-reveal");
         btn.innerHTML += `<span class="mark no">✗</span>`;
+      } else {
+        btn.classList.add("faded-reveal");
       }
-    } else {
-      btn.addEventListener("click", () => answerQuestion(c));
     }
 
     $choicesGrid.appendChild(btn);
   });
 
   /* Feedback card */
-  if (isAnswered) {
+  if (submitted && isAnswered) {
     renderFeedback(q, answers[realIdx]);
   } else {
     $feedbackCard.style.display = "none";
     $feedbackCard.innerHTML = "";
   }
+
+  // Hide skipped questions warning when navigating to a question
+  $skippedWarning.classList.add("hidden");
 
   updateNavGrid();
   updateProgress();
@@ -1204,30 +1294,39 @@ function renderFeedback(q, given) {
   $feedbackCard.innerHTML = html;
 }
 
-function answerQuestion(choice) {
-  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
-  if (answers[realIdx] !== undefined) return;
-  answers[realIdx] = choice;
-  renderQuestion();
-
-  /* If we just finished the last question of a fresh attempt, auto-submit */
-  if (!submitted && !reviewMode && Object.keys(answers).length === quiz.length) {
-    setTimeout(submitQuiz, 600);
-  }
-}
-
 /* ═══════════════════════════════════════════════════════════════
    NAV BUTTONS
    ═══════════════════════════════════════════════════════════════ */
 function updateNavButtons() {
   const total = reviewMode ? reviewIndices.length : quiz.length;
   $btnPrev.disabled = currentQ === 0;
-  if (currentQ === total - 1) {
-    $btnNext.textContent = reviewMode ? "Done reviewing ✓" : "Finish →";
+
+  if (!submitted) {
+    const isLast = currentQ === quiz.length - 1;
+    if (isLast) {
+      $btnNext.classList.add("hidden");
+      $btnSubmit.classList.remove("hidden");
+    } else {
+      $btnNext.classList.remove("hidden");
+      $btnSubmit.classList.add("hidden");
+      $btnNext.textContent = "Next →";
+    }
   } else {
-    $btnNext.textContent = "Next →";
+    $btnSubmit.classList.add("hidden");
+    $btnNext.classList.remove("hidden");
+    
+    if (reviewMode) {
+      if (currentQ === total - 1) {
+        $btnNext.textContent = "Done reviewing ✓";
+      } else {
+        $btnNext.textContent = "Next →";
+      }
+      $btnNext.disabled = false;
+    } else {
+      $btnNext.textContent = "Next →";
+      $btnNext.disabled = currentQ === total - 1;
+    }
   }
-  $btnNext.disabled = false;
 }
 
 $btnPrev.addEventListener("click", () => {
@@ -1247,35 +1346,27 @@ $btnNext.addEventListener("click", () => {
 });
 
 /* ═══════════════════════════════════════════════════════════════
-   KEYBOARD CONTROLS
-   - Arrow Left/Right: prev/next
-   - Digits 1–9: pick that choice (when not typing in input)
-   ═══════════════════════════════════════════════════════════════ */
-document.addEventListener("keydown", (e) => {
-  /* Skip if user is typing in the name input */
-  if (document.activeElement === $nameInput) return;
-  /* Skip if name screen is still up */
-  if ($quizScreen.style.display !== "block") return;
-
-  if (e.key === "ArrowRight") { $btnNext.click(); e.preventDefault(); return; }
-  if (e.key === "ArrowLeft")  { $btnPrev.click(); e.preventDefault(); return; }
-
-  if (/^[1-9]$/.test(e.key)) {
-    const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
-    if (answers[realIdx] !== undefined) return;  // already answered
-    const idx = parseInt(e.key, 10) - 1;
-    const q = quiz[realIdx];
-    if (idx < q.choices.length) {
-      answerQuestion(q.choices[idx]);
-      e.preventDefault();
-    }
-  }
-});
-
-/* ═══════════════════════════════════════════════════════════════
    SUBMIT — score, render results, send email
    ═══════════════════════════════════════════════════════════════ */
+$btnSubmit.addEventListener("click", submitQuiz);
+
 async function submitQuiz() {
+  const count = Object.keys(answers).length;
+  if (count < quiz.length) {
+    const skipped = [];
+    quiz.forEach((_, i) => {
+      if (answers[i] === undefined) skipped.push(i);
+    });
+
+    $skippedWarning.innerHTML = `⚠️ You have unanswered questions: ` + 
+      skipped.map(idx => `<span class="skipped-link" onclick="jumpToQuestion(${idx})">Question ${idx + 1}</span>`).join(", ") + 
+      `. Please answer them before submitting.`;
+    $skippedWarning.classList.remove("hidden");
+    return;
+  }
+
+  $skippedWarning.classList.add("hidden");
+
   let correct = 0;
   const lessonStats = {};
 
@@ -1293,7 +1384,9 @@ async function submitQuiz() {
 
   $scoreNum.textContent = `${correct}/${quiz.length}`;
   $scoreLbl.textContent = tier.label;
-  $scoreBanner.style.background = tier.gradient;
+  $scoreBanner.style.background = tier.bg;
+  $scoreBanner.style.borderColor = tier.border;
+  $scoreBanner.style.color = tier.text;
   $scoreBanner.style.display = "block";
 
   /* Per-lesson breakdown */
@@ -1314,6 +1407,8 @@ async function submitQuiz() {
     ? "🎉 No mistakes!"
     : `📝 Review ${wrongCount} wrong answer${wrongCount > 1 ? "s" : ""}`;
 
+  currentQ = 0;
+  renderQuestion();
   updateNavGrid();
   $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
 
@@ -1331,7 +1426,7 @@ async function submitQuiz() {
     name: playerName,
     email: "noreply@quiz.com",
     subject: `[${playerName}] ${QUIZ_CONFIG.title} — ${pct}%`,
-    message: `${QUIZ_CONFIG.title}\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${correct}/${quiz.length} (${pct}%)\n\n--- Per-category breakdown ---\n${Object.keys(lessonStats).sort((a, b) => +a - +b).map(l => {const n={1:"しごと",2:"びょういん",3:"きもち",4:"おもてなし",5:"おわかれ"}; return `${n[l]||"L"+l}: ${lessonStats[l].correct}/${lessonStats[l].total}`}).join("\n")}\n\n--- Detailed results ---\n${details}\n\nがんばって！`,
+    message: `${QUIZ_CONFIG.title}\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${correct}/${quiz.length} (${pct}%)\n\n--- Per-category breakdown ---\n${Object.keys(lessonStats).sort((a, b) => +a - +b).map(l => {return `${lessonNames[l]||"L"+l}: ${lessonStats[l].correct}/${lessonStats[l].total}`}).join("\n")}\n\n--- Detailed results ---\n${details}\n\nがんばって！`,
     time: now
   };
 
@@ -1380,6 +1475,11 @@ $btnRetake.addEventListener("click", () => {
   updateProgress();
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
+
+window.jumpToQuestion = function(idx) {
+  currentQ = idx;
+  renderQuestion();
+};
 </script>
 </body>
 </html>
