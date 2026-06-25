@@ -577,6 +577,31 @@
   }
 }
 /* ========== End Site Breadcrumb ========== */
+
+  /* Timer Display styling next to progress */
+  .topbar-timer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #18202f;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(255, 253, 248, 0.94);
+    box-shadow: 0 2px 6px rgba(24, 32, 47, 0.04);
+  }
+  .topbar-timer.warning {
+    color: #a9342a;
+    border-color: #a9342a;
+    background: #fff8ef;
+    animation: timerPulse 1s infinite alternate;
+  }
+  @keyframes timerPulse {
+    from { opacity: 1; }
+    to { opacity: 0.6; }
+  }
 </style>
 </head>
 <body>
@@ -634,7 +659,13 @@
     </div>
 
     <div class="progress-row">
-      <span class="progress-text" id="progress-text">0 / X answered</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span class="progress-text" id="progress-text" style="margin-bottom: 0;">0 / X answered</span>
+        <div class="topbar-timer" id="timer-wrapper">
+          <span class="timer-icon">⏳</span>
+          <span class="timer-display" id="timer-display">00:00</span>
+        </div>
+      </div>
       <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
     </div>
 
@@ -771,6 +802,9 @@ const $btnReview  = document.getElementById("btn-review");
 const $btnHome    = document.getElementById("btn-home");
 const $reviewBanner = document.getElementById("review-banner");
 const $skippedWarning = document.getElementById("skipped-warning");
+const $timerDisplay = document.getElementById("timer-display");
+let timeLeft = 0;
+let timerInterval = null;
 const $progText   = document.getElementById("progress-text");
 const $progFill   = document.getElementById("progress-fill");
 const $navGrid    = document.getElementById("nav-grid");
@@ -791,6 +825,50 @@ $nameInput.addEventListener("keydown", (e) => {
 });
 $btnStart.addEventListener("click", startQuiz);
 
+function startTimer() {
+  const qCount = quiz.length;
+  let TIME_LIMIT;
+  if (qCount <= 30) {
+    TIME_LIMIT = 20 * 60;
+  } else if (qCount <= 40) {
+    TIME_LIMIT = 25 * 60;
+  } else if (qCount <= 50) {
+    TIME_LIMIT = 30 * 60;
+  } else {
+    TIME_LIMIT = 40 * 60;
+  }
+
+  timeLeft = TIME_LIMIT;
+  updateTimerDisplay();
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (submitted) {
+      clearInterval(timerInterval);
+      return;
+    }
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      alert("Time is up! Your exam will be submitted automatically.");
+      submitQuiz(true);
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+  const s = String(timeLeft % 60).padStart(2, '0');
+  if ($timerDisplay) {
+    $timerDisplay.textContent = `${m}:${s}`;
+    if (timeLeft < 300) {
+      $timerDisplay.parentElement.classList.add("warning");
+    } else {
+      $timerDisplay.parentElement.classList.remove("warning");
+    }
+  }
+}
+
 function startQuiz() {
   playerName = $nameInput.value.trim();
   quiz = shuffle(QUESTIONS).map(q => ({ ...q, choices: shuffle(q.choices) }));
@@ -808,6 +886,7 @@ function startQuiz() {
   $subtitle.textContent = `${playerName}さん — Choose the correct translation`;
 
   buildNavGrid();
+  startTimer();
   renderQuestion();
   updateProgress();
 }
@@ -974,6 +1053,7 @@ $btnNext.addEventListener("click", () => {
   }
 });
 $btnHome.addEventListener("click", () => {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
   $quizScreen.style.display = "none";
   $nameScreen.style.display = "block";
 });
@@ -981,9 +1061,9 @@ $btnHome.addEventListener("click", () => {
 /* ── Submit ── */
 $btnSubmit.addEventListener("click", submitQuiz);
 
-async function submitQuiz() {
+async function submitQuiz(force = false) {
   const count = Object.keys(answers).length;
-  if (count < quiz.length) {
+  if (force !== true && count < quiz.length) {
     const skipped = [];
     quiz.forEach((_, i) => {
       if (answers[i] === undefined) skipped.push(i);
@@ -997,6 +1077,7 @@ async function submitQuiz() {
   }
 
   $skippedWarning.classList.add("hidden");
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
 
   let s = 0;
   quiz.forEach((q, i) => { if (answers[i] === q.answer) s++; });
@@ -1093,6 +1174,7 @@ $btnRetake.addEventListener("click", () => {
   $reviewBanner.style.display = "none";
   $skippedWarning.classList.add("hidden");
   buildNavGrid();
+  startTimer();
   renderQuestion();
   updateProgress();
   window.scrollTo({ top: 0, behavior: "smooth" });
