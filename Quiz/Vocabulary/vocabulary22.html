@@ -4,70 +4,458 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>みんなの日本語 Lesson 22 — Vocabulary Exam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { min-height: 100vh; background: #1a1525; color: #e8e0f0; font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif; overflow-x: hidden; }
-  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 20% 30%, rgba(232,180,200,0.07) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(120,100,180,0.07) 0%, transparent 50%); pointer-events: none; z-index: 0; }
-  .container { max-width: 540px; margin: 0 auto; padding: 24px 16px 60px; position: relative; z-index: 1; }
-  #name-screen { margin-top: 50px; }
-  .card { background: #221d2e; border-radius: 16px; padding: 28px 20px; border: 1px solid #3d3650; }
-  .badge { display: inline-block; background: linear-gradient(135deg, #e8b4c8, #c89db7); color: #1a1525; font-weight: 700; font-size: 12px; padding: 4px 14px; border-radius: 20px; letter-spacing: 1px; }
-  .title { font-size: 22px; font-weight: 800; margin: 14px 0 4px; letter-spacing: -0.5px; }
-  .subtitle { font-size: 13px; color: #9e93b0; }
-  .name-label { display: block; font-size: 13px; color: #9e93b0; margin: 24px 0 8px; text-align: left; }
-  .name-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; font-size: 16px; font-family: inherit; outline: none; transition: border-color 0.2s; }
-  .name-input:focus { border-color: #e8b4c8; }
-  .btn-primary { width: 100%; margin-top: 16px; padding: 14px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
-  .btn-primary:disabled { opacity: 0.35; cursor: default; }
+
+  body {
+    min-height: 100vh;
+    background:
+      linear-gradient(90deg, rgba(169, 52, 42, 0.06) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(38, 58, 99, 0.04), transparent 34rem),
+      #f8f3ea;
+    background-size: 44px 44px, auto, auto;
+    color: #18202f;
+    font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  .container {
+    max-width: 620px; 
+    margin: 0 auto;
+    padding: 32px 16px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Card Styles ── */
+  .card, .q-card, .score-banner {
+    background: rgba(255, 253, 248, 0.94);
+    border-radius: 8px;
+    padding: 32px 24px;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    box-shadow: 0 12px 40px rgba(24, 32, 47, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  /* ── Name Screen ── */
+  #name-screen { margin-top: 40px; }
+
+  .badge {
+    display: inline-block;
+    background: #a9342a;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 10px;
+    padding: 5px 16px;
+    border-radius: 20px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(169, 52, 42, 0.15);
+  }
+
+  .title {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 16px 0 6px;
+    letter-spacing: -0.5px;
+    color: #18202f;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #667085;
+  }
+
+  .name-label {
+    display: block;
+    font-size: 13px;
+    color: #667085;
+    margin: 32px 0 8px;
+    text-align: left;
+    font-weight: 700;
+  }
+
+  .name-input {
+    width: 100%;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    background: #ffffff;
+    color: #18202f;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .name-input:focus {
+    border-color: #a9342a;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(169, 52, 42, 0.15);
+  }
+
+  .btn-primary {
+    width: 100%;
+    margin-top: 24px;
+    padding: 16px 0;
+    border-radius: 8px;
+    background: #a9342a;
+    border: none;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.25);
+    transition: all 0.25s ease;
+  }
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(169, 52, 42, 0.35);
+    opacity: 0.95;
+  }
+  .btn-primary:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* ── Quiz Screen ── */
   #quiz-screen { display: none; }
-  .header { text-align: center; margin-bottom: 22px; }
-  .header .subtitle { margin-top: 2px; }
-  .score-banner { display: none; border-radius: 16px; padding: 22px 16px; text-align: center; margin-bottom: 20px; animation: slideDown 0.4s ease; }
-  @keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
-  .score-number { font-size: 44px; font-weight: 800; letter-spacing: -1px; }
-  .score-label { font-size: 16px; font-weight: 600; margin-top: 4px; }
-  .email-row { margin-top: 10px; }
-  .email-pill { display: inline-block; background: #3d3650; font-size: 12px; padding: 4px 14px; border-radius: 12px; }
-  .email-pill.sent { background: #2d6a4f; }
-  .email-pill.error { background: #9b2226; }
-  .btn-retake { margin-top: 12px; background: rgba(255,255,255,0.15); color: #fff; border: none; padding: 8px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
-  .progress-row { margin-bottom: 14px; }
-  .progress-text { font-size: 12px; color: #9e93b0; display: block; margin-bottom: 6px; }
-  .progress-bar { height: 4px; background: #2a2535; border-radius: 4px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #e8b4c8, #c89db7); border-radius: 4px; width: 0%; transition: width 0.3s ease; }
-  .nav-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-bottom: 20px; }
-  .nav-dot { aspect-ratio: 1; border-radius: 8px; background: #2a2535; color: #e8e0f0; font-size: 11px; font-weight: 600; border: 2px solid transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-  .nav-dot.answered { background: #4a4458; }
-  .nav-dot.active { border-color: #e8b4c8; }
-  .nav-dot.correct { background: #2d6a4f; }
-  .nav-dot.wrong { background: #9b2226; }
-  .q-card { background: #221d2e; border-radius: 16px; padding: 24px 18px; border: 1px solid #3d3650; margin-bottom: 16px; animation: fadeIn 0.25s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-  .q-number { font-size: 11px; color: #9e93b0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-  .q-english { font-size: 18px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; }
-  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .choice-btn { padding: 16px 8px; border-radius: 12px; border: 2px solid #3d3650; background: #2a2535; color: #e8e0f0; text-align: center; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; font-size: 17px; font-weight: 600; position: relative; transition: all 0.15s; min-height: 64px; display: flex; align-items: center; justify-content: center; line-height: 1.3; }
-  .choice-btn:hover:not(.locked) { border-color: #5c4d7a; background: #302844; }
-  .choice-btn.selected { background: #5c4d7a; border-color: #e8b4c8; }
-  .choice-btn.correct-reveal { background: #2d6a4f; border-color: #40916c; }
-  .choice-btn.wrong-reveal { background: #9b2226; border-color: #ca6702; }
-  .choice-btn .mark { position: absolute; top: 6px; right: 8px; font-size: 14px; }
-  .choice-btn .mark.ok { color: #a7f3d0; }
-  .choice-btn .mark.no { color: #fca5a5; }
-  .choice-btn ruby { display: inline; line-height: 1.1; }
-  .choice-btn ruby rt { font-size: 0.55em; color: rgba(232,224,240,0.6); font-weight: 500; }
-  .choice-btn.correct-reveal ruby rt { color: rgba(167,243,208,0.85); }
-  .choice-btn.wrong-reveal ruby rt { color: rgba(252,165,165,0.85); }
-  .choice-btn.selected ruby rt { color: rgba(232,180,200,0.85); }
-  .arrow-row { display: flex; justify-content: space-between; gap: 12px; }
-  .btn-nav { flex: 1; padding: 12px 0; border-radius: 12px; background: #2a2535; border: 1px solid #3d3650; color: #e8e0f0; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
-  .btn-nav:disabled { opacity: 0.3; cursor: default; }
-  .btn-submit { flex: 1; padding: 12px 0; border-radius: 12px; background: linear-gradient(135deg, #e8b4c8, #c89db7); border: none; color: #1a1525; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
-  .btn-submit:disabled { opacity: 0.35; cursor: default; }
+
+  .header { text-align: center; margin-bottom: 24px; }
+  .header .subtitle { margin-top: 6px; }
+
+  /* Score Banner */
+  .score-banner {
+    display: none;
+    border-radius: 8px;
+    padding: 28px 20px;
+    text-align: center;
+    margin-bottom: 24px;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    box-shadow: 0 12px 40px rgba(24, 32, 47, 0.06);
+    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .score-number { font-size: 52px; font-weight: 900; letter-spacing: -1.5px; line-height: 1; margin-bottom: 6px; }
+  .score-label { font-size: 20px; font-weight: 700; margin-bottom: 14px; }
+  
+  .email-row { margin-bottom: 20px; }
+  .email-pill {
+    display: inline-block;
+    background: rgba(24, 32, 47, 0.04);
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    font-size: 12px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    color: #18202f;
+  }
+  .email-pill.sent {
+    background: #e8f5e9;
+    border: 1px solid #2e7d32;
+    color: #1b5e20;
+  }
+  .email-pill.error {
+    background: #ffebee;
+    border: 1px solid #c62828;
+    color: #b71c1c;
+  }
+
+  .end-actions {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .btn-end {
+    background: rgba(24, 32, 47, 0.06);
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    color: #18202f;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-end:hover:not(:disabled) {
+    background: #f4ddd8;
+    border-color: rgba(169, 52, 42, 0.2);
+    color: #a9342a;
+    transform: translateY(-1px);
+  }
+  .btn-end:disabled { opacity: 0.4; cursor: default; }
+
+  /* ── Review Banner ── */
+  .review-banner {
+    display: none;
+    background: #fff9c4;
+    border: 1px solid #fbc02d;
+    color: #f57f17;
+    text-align: center;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  /* Progress */
+  .progress-row { margin-bottom: 20px; }
+  .progress-text { font-size: 12px; color: #667085; display: block; margin-bottom: 8px; font-weight: 700; }
+  .progress-bar { height: 6px; background: rgba(24, 32, 47, 0.06); border-radius: 6px; overflow: hidden; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #a9342a, #8f241c);
+    border-radius: 6px;
+    width: 0%;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(169, 52, 42, 0.15);
+  }
+
+  /* Nav Grid */
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .nav-dot {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    background: #fffdf8;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    color: #667085;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-dot:hover:not(.locked) {
+    background: #f4ddd8;
+    color: #a9342a;
+    border-color: rgba(169, 52, 42, 0.2);
+  }
+  .nav-dot.answered {
+    background: rgba(169, 52, 42, 0.06);
+    border-color: rgba(169, 52, 42, 0.2);
+    color: #a9342a;
+  }
+  .nav-dot.active {
+    border-color: #a9342a;
+    background: #f4ddd8;
+    color: #a9342a;
+    box-shadow: 0 0 0 3px rgba(169, 52, 42, 0.15);
+  }
+  .nav-dot.correct {
+    background: #e8f5e9;
+    border-color: #2e7d32;
+    color: #1b5e20;
+  }
+  .nav-dot.wrong {
+    background: #ffebee;
+    border-color: #c62828;
+    color: #b71c1c;
+  }
+  .nav-dot.unanswered-locked {
+    background: rgba(24, 32, 47, 0.02);
+    border-color: rgba(24, 32, 47, 0.06);
+    color: rgba(24, 32, 47, 0.3);
+    opacity: 0.5;
+  }
+
+  /* Question Card */
+  .q-card {
+    background: rgba(255, 253, 248, 0.94);
+    border-radius: 8px;
+    padding: 28px;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(24, 32, 47, 0.04);
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .q-number {
+    font-size: 11px;
+    color: #a9342a;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+  }
+  .q-english {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    color: #18202f;
+  }
+  
+  .choices-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .choice-btn {
+    padding: 18px 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    background: #fffdf8;
+    color: #18202f;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    position: relative;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+    line-height: 1.4;
+  }
+  .choice-btn:hover:not(.locked) {
+    border-color: rgba(169, 52, 42, 0.3);
+    background: #f4ddd8;
+    color: #a9342a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.05);
+  }
+  .choice-btn.selected {
+    background: #f4ddd8;
+    border-color: #a9342a;
+    color: #a9342a;
+    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.1);
+  }
+  .choice-btn.correct-reveal {
+    background: #e8f5e9;
+    border-color: #2e7d32;
+    color: #1b5e20;
+  }
+  .choice-btn.wrong-reveal {
+    background: #ffebee;
+    border-color: #c62828;
+    color: #b71c1c;
+  }
+  .choice-btn.faded-reveal {
+    opacity: 0.4;
+    border-color: rgba(24, 32, 47, 0.04);
+  }
+  .choice-letter {
+    font-weight: 800;
+    margin-right: 16px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+  .choice-btn:hover .choice-letter, .choice-btn.selected .choice-letter { opacity: 1; }
+  
+  .mark {
+    position: absolute;
+    right: 20px;
+    font-size: 20px;
+    font-weight: 900;
+  }
+  .mark.ok { color: #1b5e20; }
+  .mark.no { color: #b71c1c; }
+
+  /* Arrow Row */
+  .arrow-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .btn-nav {
+    flex: 1;
+    padding: 16px 0;
+    border-radius: 8px;
+    background: #fffdf8;
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    color: #18202f;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-nav:hover:not(:disabled) {
+    background: #f4ddd8;
+    color: #a9342a;
+    border-color: rgba(169, 52, 42, 0.2);
+  }
+  .btn-nav:disabled { opacity: 0.25; cursor: not-allowed; }
+  
+  .btn-submit {
+    flex: 1;
+    padding: 16px 0;
+    border-radius: 8px;
+    background: #a9342a;
+    border: none;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.25);
+    transition: all 0.2s;
+  }
+  .btn-submit:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba(169, 52, 42, 0.35);
+    opacity: 0.95;
+  }
+  .btn-submit:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+
+  /* Skipped warning alert box */
+  .skipped-warning {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #fff8ef;
+    border: 1px solid #a9342a;
+    border-radius: 8px;
+    color: #a9342a;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.5;
+    animation: fadeIn 0.3s ease;
+  }
+  .skipped-link {
+    color: #a9342a;
+    text-decoration: underline;
+    cursor: pointer;
+    margin: 0 4px;
+    font-weight: 800;
+  }
+  .skipped-link:hover {
+    color: #8f241c;
+  }
+
   .text-center { text-align: center; }
   .hidden { display: none !important; }
+
+  /* Mobile tweaks */
+  @media (max-width: 480px) {
+    .container { padding: 16px 12px 50px; }
+    .title { font-size: 20px; }
+    .q-english { font-size: 18px; }
+    .choice-btn { font-size: 14px; padding: 12px 10px; }
+  }
 
 /* ========== Site Breadcrumb ========== */
 .site-breadcrumb,
@@ -166,12 +554,6 @@
   margin: 0 6px;
 }
 
-@media (max-width: 768px) {
-  .progress-container + .presentation {
-    padding-top: 160px;
-  }
-}
-
 @media (max-width: 640px) {
   .site-breadcrumb {
     width: min(100% - 20px, 680px);
@@ -195,7 +577,7 @@
   }
 }
 /* ========== End Site Breadcrumb ========== */
-    </style>
+</style>
 </head>
 <body>
 
@@ -214,11 +596,12 @@
 </nav>
 <!-- End Site Breadcrumb -->
 
-
 <div class="container">
+
+  <!-- ════ NAME SCREEN ════ -->
   <div id="name-screen">
     <div class="card text-center">
-      <span class="badge">みんなの日本語</span>
+      <span class="badge">My-Japanese-Reviewers</span>
       <h1 class="title">Lesson 22 — Vocabulary Exam</h1>
       <p class="subtitle">60 multiple-choice questions · vocabulary, clothes &amp; dressing verbs</p>
       <label class="name-label">おなまえは？ Enter your name</label>
@@ -227,54 +610,54 @@
     </div>
   </div>
 
+  <!-- ════ QUIZ SCREEN ════ -->
   <div id="quiz-screen">
     <header class="header">
-      <span class="badge">みんなの日本語</span>
+      <span class="badge">My-Japanese-Reviewers</span>
       <h1 class="title">Lesson 22 — Vocabulary Exam</h1>
       <p class="subtitle" id="quiz-subtitle"></p>
     </header>
-    <div class="score-banner" id="score-banner">
+
+    <div class="score-banner" id="score-banner" aria-live="polite">
       <div class="score-number" id="score-number"></div>
       <div class="score-label" id="score-label"></div>
       <div class="email-row" id="email-row"></div>
-      <button class="btn-retake" id="btn-retake">Retake Quiz</button>
+      <div class="end-actions">
+        <button class="btn-end" id="btn-review" disabled>📝 Review wrong answers</button>
+        <button class="btn-end" id="btn-retake">🔄 Retake Quiz</button>
+        <button class="btn-end" id="btn-home">🏠 Main Menu</button>
+      </div>
     </div>
+
+    <div class="review-banner" id="review-banner">
+      📝 Review mode — showing only the questions you got wrong
+    </div>
+
     <div class="progress-row">
-      <span class="progress-text" id="progress-text">0 / 60 answered</span>
+      <span class="progress-text" id="progress-text">0 / X answered</span>
       <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
     </div>
-    <div class="nav-grid" id="nav-grid"></div>
+
+    <div class="nav-grid hidden" id="nav-grid"></div>
+
+    <div class="skipped-warning hidden" id="skipped-warning"></div>
+
     <div class="q-card" id="q-card">
       <div class="q-number" id="q-number"></div>
       <div class="q-english" id="q-english"></div>
       <div class="choices-grid" id="choices-grid"></div>
     </div>
+
     <div class="arrow-row">
       <button class="btn-nav" id="btn-prev">← Previous</button>
       <button class="btn-nav" id="btn-next">Next →</button>
       <button class="btn-submit hidden" id="btn-submit" disabled>Submit Exam</button>
     </div>
   </div>
+
 </div>
 
 <script>
-const DISPLAY = {
-  "帽子":"<ruby>帽子<rt>ぼうし</rt></ruby>",
-  "眼鏡":"<ruby>眼鏡<rt>めがね</rt></ruby>",
-  "着物":"<ruby>着物<rt>きもの</rt></ruby>",
-  "上着":"<ruby>上着<rt>うわぎ</rt></ruby>",
-  "下着":"<ruby>下着<rt>したぎ</rt></ruby>",
-  "手袋":"<ruby>手袋<rt>てぶくろ</rt></ruby>",
-  "帯":"<ruby>帯<rt>おび</rt></ruby>",
-  "足袋":"<ruby>足袋<rt>たび</rt></ruby>",
-  "草履":"<ruby>草履<rt>ぞうり</rt></ruby>",
-  "運動靴":"<ruby>運動靴<rt>うんどうぐつ</rt></ruby>"
-};
-const READING = {
-  "帽子":"ぼうし","眼鏡":"めがね","着物":"きもの","上着":"うわぎ","下着":"したぎ",
-  "手袋":"てぶくろ","帯":"おび","足袋":"たび","草履":"ぞうり","運動靴":"うんどうぐつ"
-};
-
 const QUESTIONS = [
   /* ═══ TIER 1: MAIN VOCABULARY ═══ */
 
@@ -370,60 +753,374 @@ const QUESTIONS = [
   { english: "Which verb? → 帯 (obi sash)", answer: "します", choices: ["します","きます","はきます","かぶります"] },
 ];
 
-let playerName="";let quiz=[];let answers={};let currentQ=0;let submitted=false;
-function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
-function renderChoiceText(t){return DISPLAY[t]||t;}
-function plainAnswer(t){if(!t||t==="—")return"—";return READING[t]?`${t}（${READING[t]}）`:t;}
+/* ── State ── */
+let playerName = "";
+let quiz = [];
+let answers = {};
+let currentQ = 0;
+let submitted = false;
+let reviewMode = false;
+let reviewIndices = [];
 
+/* ── Helpers ── */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ── Initialize EmailJS ── */
 emailjs.init("1oR0j0WDvUmSSYEpK");
-const $=id=>document.getElementById(id);
-const $ns=$("name-screen"),$qs=$("quiz-screen"),$ni=$("name-input"),$bs=$("btn-start");
-const $st=$("quiz-subtitle"),$sb=$("score-banner"),$sn=$("score-number"),$sl=$("score-label");
-const $er=$("email-row"),$br=$("btn-retake"),$pt=$("progress-text"),$pf=$("progress-fill");
-const $ng=$("nav-grid"),$qn=$("q-number"),$qe=$("q-english"),$cg=$("choices-grid");
-const $bp=$("btn-prev"),$bn=$("btn-next"),$bm=$("btn-submit");
 
-$ni.addEventListener("input",()=>{$bs.disabled=!$ni.value.trim();});
-$ni.addEventListener("keydown",e=>{if(e.key==="Enter"&&$ni.value.trim())go();});
-$bs.addEventListener("click",go);
+/* ── DOM refs ── */
+const $nameScreen = document.getElementById("name-screen");
+const $quizScreen = document.getElementById("quiz-screen");
+const $nameInput  = document.getElementById("name-input");
+const $btnStart   = document.getElementById("btn-start");
+const $subtitle   = document.getElementById("quiz-subtitle");
+const $scoreBanner= document.getElementById("score-banner");
+const $scoreNum   = document.getElementById("score-number");
+const $scoreLbl   = document.getElementById("score-label");
+const $emailRow   = document.getElementById("email-row");
+const $btnRetake  = document.getElementById("btn-retake");
+const $btnReview  = document.getElementById("btn-review");
+const $btnHome    = document.getElementById("btn-home");
+const $reviewBanner = document.getElementById("review-banner");
+const $skippedWarning = document.getElementById("skipped-warning");
+const $progText   = document.getElementById("progress-text");
+const $progFill   = document.getElementById("progress-fill");
+const $navGrid    = document.getElementById("nav-grid");
+const $qCard      = document.getElementById("q-card");
+const $qNumber    = document.getElementById("q-number");
+const $qEnglish   = document.getElementById("q-english");
+const $choicesGrid= document.getElementById("choices-grid");
+const $btnPrev    = document.getElementById("btn-prev");
+const $btnNext    = document.getElementById("btn-next");
+const $btnSubmit  = document.getElementById("btn-submit");
 
-function go(){
-  playerName=$ni.value.trim();quiz=shuffle(QUESTIONS).map(q=>({...q,choices:shuffle(q.choices)}));
-  answers={};currentQ=0;submitted=false;$ns.style.display="none";$qs.style.display="block";$sb.style.display="none";
-  $st.textContent=`${playerName}さん — choose the correct word`;nav();rend();prog();
+/* ── Name Screen ── */
+$nameInput.addEventListener("input", () => {
+  $btnStart.disabled = !$nameInput.value.trim();
+});
+$nameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && $nameInput.value.trim()) startQuiz();
+});
+$btnStart.addEventListener("click", startQuiz);
+
+function startQuiz() {
+  playerName = $nameInput.value.trim();
+  quiz = shuffle(QUESTIONS).map(q => ({ ...q, choices: shuffle(q.choices) }));
+  answers = {};
+  currentQ = 0;
+  submitted = false;
+  reviewMode = false;
+  reviewIndices = [];
+
+  $nameScreen.style.display = "none";
+  $quizScreen.style.display = "block";
+  $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "none";
+  $skippedWarning.classList.add("hidden");
+  $subtitle.textContent = `${playerName}さん — Choose the correct translation`;
+
+  buildNavGrid();
+  renderQuestion();
+  updateProgress();
 }
-function nav(){$ng.innerHTML="";quiz.forEach((_,i)=>{const b=document.createElement("button");b.className="nav-dot";b.textContent=i+1;b.addEventListener("click",()=>{currentQ=i;rend();});$ng.appendChild(b);});}
-function uNav(){$ng.querySelectorAll(".nav-dot").forEach((d,i)=>{d.className="nav-dot";if(i===currentQ)d.classList.add("active");if(!submitted&&answers[i]!==undefined)d.classList.add("answered");if(submitted&&answers[i]===quiz[i].answer)d.classList.add("correct");if(submitted&&answers[i]!==undefined&&answers[i]!==quiz[i].answer)d.classList.add("wrong");});}
-function prog(){const c=Object.keys(answers).length;$pt.textContent=`${c} / ${quiz.length} answered`;$pf.style.width=`${(c/quiz.length)*100}%`;$bm.disabled=c<quiz.length;}
-function rend(){
-  const q=quiz[currentQ];$qn.textContent=`Question ${currentQ+1}`;$qe.textContent=q.english;$cg.innerHTML="";
-  q.choices.forEach(c=>{const b=document.createElement("button");b.className="choice-btn";if(submitted)b.classList.add("locked");b.innerHTML=`<span>${renderChoiceText(c)}</span>`;const sel=answers[currentQ]===c,cor=c===q.answer;
-    if(!submitted){if(sel)b.classList.add("selected");b.addEventListener("click",()=>{if(submitted)return;answers[currentQ]=c;rend();uNav();prog();});}
-    else{if(cor){b.classList.add("correct-reveal");b.innerHTML=`<span>${renderChoiceText(c)}</span><span class="mark ok">✓</span>`;}if(sel&&!cor){b.classList.add("wrong-reveal");b.innerHTML=`<span>${renderChoiceText(c)}</span><span class="mark no">✗</span>`;}}
-    $cg.appendChild(b);});
-  uNav();const last=currentQ===quiz.length-1;$bp.disabled=currentQ===0;
-  if(last&&!submitted){$bn.classList.add("hidden");$bm.classList.remove("hidden");}else{$bn.classList.remove("hidden");$bm.classList.add("hidden");$bn.disabled=last;}
-}
-$bp.addEventListener("click",()=>{if(currentQ>0){currentQ--;rend();}});
-$bn.addEventListener("click",()=>{if(currentQ<quiz.length-1){currentQ++;rend();}});
-$bm.addEventListener("click",sub);
 
-async function sub(){
-  let s=0;quiz.forEach((q,i)=>{if(answers[i]===q.answer)s++;});submitted=true;
-  const t=quiz.length,p=Math.round((s/t)*100);
-  $sn.textContent=`${s}/${t}`;
-  if(s===t)$sl.textContent="完璧！ Perfect!";else if(p>=90)$sl.textContent="すごい！ Excellent!";else if(p>=70)$sl.textContent="いいですね！ Good job!";else $sl.textContent="もう一度！ Try again!";
-  $sb.style.background=p>=90?"linear-gradient(135deg,#2d6a4f,#40916c)":p>=70?"linear-gradient(135deg,#b08d37,#d4a843)":"linear-gradient(135deg,#9b2226,#ca6702)";
-  $sb.style.display="block";currentQ=0;rend();uNav();$bm.classList.add("hidden");$bn.classList.remove("hidden");$bn.disabled=false;
-
-  const now=new Date().toLocaleString("en-PH",{timeZone:"Asia/Manila",dateStyle:"full",timeStyle:"short"});
-  const det=quiz.map((q,i)=>`${i+1}. ${q.english} → Answer: ${plainAnswer(answers[i]||"—")} | Correct: ${plainAnswer(q.answer)} ${answers[i]===q.answer?"✓":"✗"}`).join("\n");
-  const ep={name:playerName,email:"noreply@quiz.com",subject:`[${playerName}] みんなの日本語 Lesson 22 Quiz — ${p}%`,message:`Minna no Nihongo - Lesson 22 Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${t} (${p}%)\n\n--- Detailed Results ---\n${det}\n\nがんばって！`,time:now};
-  $er.innerHTML=`<span class="email-pill">📧 Sending results…</span>`;
-  try{await emailjs.send("service_v7ifzdj","template_lb9c879",ep);$er.innerHTML=`<span class="email-pill sent">✓ Results emailed!</span>`;}
-  catch(err){console.error("EmailJS error:",err);$er.innerHTML=`<span class="email-pill error">✗ ${err?.text||err?.message||'Email failed'}</span>`;}
+/* ── Nav Grid ── */
+function buildNavGrid() {
+  $navGrid.innerHTML = "";
+  quiz.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.className = "nav-dot";
+    btn.textContent = i + 1;
+    btn.setAttribute("aria-label", `Question ${i + 1}`);
+    btn.addEventListener("click", () => {
+      if (reviewMode) {
+        const idx = reviewIndices.indexOf(i);
+        if (idx === -1) return;
+        currentQ = idx;
+      } else {
+        currentQ = i;
+      }
+      renderQuestion();
+    });
+    $navGrid.appendChild(btn);
+  });
 }
-$br.addEventListener("click",()=>{quiz=shuffle(QUESTIONS).map(q=>({...q,choices:shuffle(q.choices)}));answers={};currentQ=0;submitted=false;$sb.style.display="none";nav();rend();prog();});
+
+function updateNavGrid() {
+  const dots = $navGrid.querySelectorAll(".nav-dot");
+  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
+
+  if (submitted) {
+    $navGrid.classList.remove("hidden");
+  } else {
+    $navGrid.classList.add("hidden");
+  }
+
+  dots.forEach((dot, i) => {
+    dot.className = "nav-dot";
+    let label = `Question ${i + 1}`;
+    if (i === realIdx) { dot.classList.add("active"); label += ", current"; }
+    
+    if (submitted) {
+      dot.classList.add("locked");
+      if (answers[i] === quiz[i].answer) {
+        dot.classList.add("correct"); label += ", correct";
+      } else if (answers[i] !== undefined) {
+        dot.classList.add("wrong"); label += ", incorrect";
+      } else {
+        dot.classList.add("unanswered-locked"); label += ", unanswered";
+      }
+    } else {
+      if (answers[i] !== undefined) {
+        dot.classList.add("answered"); label += ", answered";
+      }
+    }
+    dot.setAttribute("aria-label", label);
+  });
+}
+
+/* ── Progress ── */
+function updateProgress() {
+  if (reviewMode) {
+    $progText.textContent = `Reviewing ${currentQ + 1} / ${reviewIndices.length}`;
+    $progFill.style.width = `${((currentQ + 1) / reviewIndices.length) * 100}%`;
+    return;
+  }
+  const count = Object.keys(answers).length;
+  $progText.textContent = `${count} / ${quiz.length} answered`;
+  $progFill.style.width = `${(count / quiz.length) * 100}%`;
+  $btnSubmit.disabled = false;
+}
+
+/* ── Render Question ── */
+function renderQuestion() {
+  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
+  const q = quiz[realIdx];
+  $qNumber.textContent = reviewMode
+    ? `Review ${currentQ + 1} of ${reviewIndices.length}`
+    : `Question ${realIdx + 1}`;
+  $qEnglish.textContent = q.english;
+
+  $choicesGrid.innerHTML = "";
+  q.choices.forEach((c, i) => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    if (submitted) btn.classList.add("locked");
+    
+    const letters = ['a', 'b', 'c', 'd'];
+    btn.innerHTML = `<span class="choice-letter">${letters[i]}.</span><span>${c}</span>`;
+
+    const selected = answers[realIdx] === c;
+    const isCorrectChoice = c === q.answer;
+
+    if (!submitted) {
+      if (selected) btn.classList.add("selected");
+      btn.addEventListener("click", () => {
+        if (submitted) return;
+        answers[realIdx] = c;
+        renderQuestion();
+        updateNavGrid();
+        updateProgress();
+      });
+    } else {
+      if (isCorrectChoice) {
+        btn.classList.add("correct-reveal");
+        btn.innerHTML += `<span class="mark ok">✓</span>`;
+      } else if (selected && !isCorrectChoice) {
+        btn.classList.add("wrong-reveal");
+        btn.innerHTML += `<span class="mark no">✗</span>`;
+      } else {
+        btn.classList.add("faded-reveal");
+      }
+    }
+
+    $choicesGrid.appendChild(btn);
+  });
+
+  updateNavGrid();
+
+  /* Arrow / submit visibility */
+  const total = reviewMode ? reviewIndices.length : quiz.length;
+  $btnPrev.disabled = currentQ === 0;
+
+  if (!submitted) {
+    const isLast = currentQ === quiz.length - 1;
+    if (isLast) {
+      $btnNext.classList.add("hidden");
+      $btnSubmit.classList.remove("hidden");
+    } else {
+      $btnNext.classList.remove("hidden");
+      $btnSubmit.classList.add("hidden");
+      $btnNext.textContent = "Next →";
+    }
+  } else {
+    $btnSubmit.classList.add("hidden");
+    $btnNext.classList.remove("hidden");
+    
+    if (reviewMode) {
+      if (currentQ === total - 1) {
+        $btnNext.textContent = "Done reviewing ✓";
+      } else {
+        $btnNext.textContent = "Next →";
+      }
+      $btnNext.disabled = false;
+    } else {
+      $btnNext.textContent = "Next →";
+      $btnNext.disabled = currentQ === total - 1;
+    }
+  }
+}
+
+/* ── Navigation ── */
+$btnPrev.addEventListener("click", () => { if (currentQ > 0) { currentQ--; renderQuestion(); } });
+$btnNext.addEventListener("click", () => {
+  const total = reviewMode ? reviewIndices.length : quiz.length;
+  if (currentQ < total - 1) {
+    currentQ++; renderQuestion();
+  } else if (reviewMode) {
+    /* Exit review mode back to results */
+    reviewMode = false;
+    $reviewBanner.style.display = "none";
+    $scoreBanner.style.display = "block";
+    $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
+$btnHome.addEventListener("click", () => {
+  $quizScreen.style.display = "none";
+  $nameScreen.style.display = "block";
+});
+
+/* ── Submit ── */
+$btnSubmit.addEventListener("click", submitQuiz);
+
+async function submitQuiz() {
+  const count = Object.keys(answers).length;
+  if (count < quiz.length) {
+    const skipped = [];
+    quiz.forEach((_, i) => {
+      if (answers[i] === undefined) skipped.push(i);
+    });
+
+    $skippedWarning.innerHTML = `⚠️ You have unanswered questions: ` + 
+      skipped.map(idx => `<span class="skipped-link" onclick="jumpToQuestion(${idx})">Question ${idx + 1}</span>`).join(", ") + 
+      `. Please answer them before submitting.`;
+    $skippedWarning.classList.remove("hidden");
+    return;
+  }
+
+  $skippedWarning.classList.add("hidden");
+
+  let s = 0;
+  quiz.forEach((q, i) => { if (answers[i] === q.answer) s++; });
+  submitted = true;
+
+  const pct = Math.round((s / quiz.length) * 100);
+  $scoreNum.textContent = `${s}/${quiz.length}`;
+
+  let tier;
+  if (pct === 100) {
+    tier = { label: "完璧！ Perfect!", bg: "#e8f5e9", border: "#2e7d32", text: "#1b5e20" };
+  } else if (pct >= 90) {
+    tier = { label: "すごい！ Excellent!", bg: "#e8f5e9", border: "#2e7d32", text: "#1b5e20" };
+  } else if (pct >= 70) {
+    tier = { label: "いいですね！ Good job!", bg: "#fff9c4", border: "#fbc02d", text: "#f57f17" };
+  } else {
+    tier = { label: "もう一度！ Try again!", bg: "#ffebee", border: "#c62828", text: "#b71c1c" };
+  }
+
+  $scoreLbl.textContent = tier.label;
+  $scoreBanner.style.background = tier.bg;
+  $scoreBanner.style.borderColor = tier.border;
+  $scoreBanner.style.color = tier.text;
+  $scoreBanner.style.borderStyle = "solid";
+  $scoreBanner.style.borderWidth = "1px";
+  $scoreBanner.style.display = "block";
+
+  /* Enable review button if there are wrong answers */
+  const wrongCount = quiz.length - s;
+  $btnReview.disabled = wrongCount === 0;
+  $btnReview.textContent = wrongCount === 0
+    ? "🎉 No mistakes!"
+    : `📝 Review ${wrongCount} wrong answer${wrongCount > 1 ? "s" : ""}`;
+
+  currentQ = 0;
+  renderQuestion();
+  updateNavGrid();
+  $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  /* Email setup */
+  const EMAILJS_PUBLIC_KEY  = "1oR0j0WDvUmSSYEpK";
+  const EMAILJS_SERVICE_ID  = "service_v7ifzdj";
+  const EMAILJS_TEMPLATE_ID = "template_lb9c879";
+
+  const now = new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", dateStyle: "full", timeStyle: "short" });
+  const details = quiz.map((q, i) =>
+    `${i+1}. ${q.english} → Answer: ${answers[i] || "—"} | Correct: ${q.answer} ${answers[i] === q.answer ? "✓" : "✗"}`
+  ).join("\n");
+
+  const emailParams = {
+    name: playerName,
+    email: "noreply@quiz.com",
+    subject: `[${playerName}] Vocabulary Exam — ${pct}%`,
+    message: `Minna no Nihongo - Lesson 22 Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${quiz.length} (${pct}%)\n\n--- Detailed Results ---\n${details}\n\nがんばって！`,
+    time: now
+  };
+
+  if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
+    $emailRow.innerHTML = `<span class="email-pill error">⚠ EmailJS not configured</span>`;
+  } else {
+    $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams, EMAILJS_PUBLIC_KEY);
+      $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || 'Email failed'}</span>`;
+    }
+  }
+}
+
+/* ── Review + Retake ── */
+$btnReview.addEventListener("click", () => {
+  reviewIndices = quiz
+    .map((q, i) => ({ i, wrong: answers[i] !== q.answer }))
+    .filter(x => x.wrong)
+    .map(x => x.i);
+  if (reviewIndices.length === 0) return;
+  reviewMode = true;
+  currentQ = 0;
+  $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "block";
+  renderQuestion();
+});
+
+$btnRetake.addEventListener("click", () => {
+  quiz = shuffle(QUESTIONS).map(q => ({ ...q, choices: shuffle(q.choices) }));
+  answers = {};
+  currentQ = 0;
+  submitted = false;
+  reviewMode = false;
+  reviewIndices = [];
+  $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "none";
+  $skippedWarning.classList.add("hidden");
+  buildNavGrid();
+  renderQuestion();
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+window.jumpToQuestion = function(idx) {
+  currentQ = idx;
+  renderQuestion();
+};
 </script>
 </body>
 </html>
