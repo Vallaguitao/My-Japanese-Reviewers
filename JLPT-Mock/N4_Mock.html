@@ -1520,6 +1520,7 @@ const $timerDisplay = document.getElementById("timer-display");
 const TIME_LIMIT = 60 * 60; // 60 minutes
 let timeLeft = TIME_LIMIT;
 let timerInterval = null;
+let endTime = null;
 
 /* Populate header text from CONFIG */
 document.title = QUIZ_CONFIG.title;
@@ -1570,6 +1571,7 @@ function startQuiz() {
    TIMER LOGIC
    ═══════════════════════════════════════════════════════════════ */
 function startTimer() {
+  endTime = Date.now() + TIME_LIMIT * 1000;
   timeLeft = TIME_LIMIT;
   updateTimerDisplay();
   if (timerInterval) clearInterval(timerInterval);
@@ -1578,7 +1580,7 @@ function startTimer() {
       clearInterval(timerInterval);
       return;
     }
-    timeLeft--;
+    timeLeft = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
     updateTimerDisplay();
     if (timeLeft <= 0) {
       clearInterval(timerInterval);

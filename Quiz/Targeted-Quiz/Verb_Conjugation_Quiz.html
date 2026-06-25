@@ -1019,6 +1019,7 @@ const $choicesGrid= document.getElementById("choices-grid");
 const $explanationBox = document.getElementById("explanation-box");
 const $skippedWarning = document.getElementById("skipped-warning");
 const $timerDisplay = document.getElementById("timer-display");
+let endTime = null;
 let timeLeft = 0;
 let timerInterval = null;
 const $btnPrev    = document.getElementById("btn-prev");
@@ -1054,6 +1055,7 @@ function startTimer() {
     TIME_LIMIT = 40 * 60;
   }
 
+  endTime = Date.now() + TIME_LIMIT * 1000;
   timeLeft = TIME_LIMIT;
   updateTimerDisplay();
   if (timerInterval) clearInterval(timerInterval);
@@ -1062,7 +1064,7 @@ function startTimer() {
       clearInterval(timerInterval);
       return;
     }
-    timeLeft--;
+    timeLeft = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
     updateTimerDisplay();
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
