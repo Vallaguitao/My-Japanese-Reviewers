@@ -731,83 +731,606 @@
 
 <script>
 const QUESTIONS = [
-  /* ── Verbs ── */
-  { english: "climb, go up", answer: "のぼります", choices: ["のぼります","とまります","そうじします","なります"] },
-  { english: "stay [at a hotel]", answer: "とまります", choices: ["とまります","のぼります","せんたくします","なります"] },
-  { english: "clean (a room)", answer: "そうじします", choices: ["そうじします","せんたくします","のぼります","とまります"] },
-  { english: "wash (clothes, laundry)", answer: "せんたくします", choices: ["せんたくします","そうじします","なります","のぼります"] },
-  { english: "become", answer: "なります", choices: ["なります","のぼります","とまります","そうじします"] },
-
-  /* ── Adjectives ── */
-  { english: "sleepy", answer: "ねむい", choices: ["ねむい","つよい","よわい","むり"] },
-  { english: "strong", answer: "つよい", choices: ["つよい","よわい","ねむい","むり"] },
-  { english: "weak", answer: "よわい", choices: ["よわい","つよい","ねむい","むり"] },
-
-  /* ── Nouns ── */
-  { english: "practice", answer: "れんしゅう", choices: ["れんしゅう","ゴルフ","おちゃ","ちょうし"] },
-  { english: "golf", answer: "ゴルフ", choices: ["ゴルフ","れんしゅう","ダイエット","カラオケ"] },
-  { english: "tea ceremony (casual term)", answer: "おちゃ", choices: ["おちゃ","れんしゅう","ちょうし","ゴルフ"] },
-  { english: "day, date", answer: "ひ", choices: ["ひ","ちょうし","いちど","もうすぐ"] },
-  { english: "condition (of health / things)", answer: "ちょうし", choices: ["ちょうし","ひ","れんしゅう","ダイエット"] },
-
-  /* ── Adverbs / time ── */
-  { english: "once", answer: "いちど", choices: ["いちど","いちども","だんだん","もうすぐ"] },
-  { english: "not once, never (used with negatives)", answer: "いちども", choices: ["いちども","いちど","だんだん","もうすぐ"] },
-  { english: "gradually, little by little", answer: "だんだん", choices: ["だんだん","もうすぐ","いちど","いちども"] },
-  { english: "soon, before long", answer: "もうすぐ", choices: ["もうすぐ","だんだん","いちど","でも"] },
-
-  /* ── Phrases ── */
-  { english: "Thank you (gratitude for help received)", answer: "おかげさまで", choices: ["おかげさまで","かんぱい","でも","からだにいい"] },
-  { english: "but", answer: "でも", choices: ["でも","おかげさまで","だんだん","もうすぐ"] },
-
-  /* ── 会話 ── */
-  { english: "Bottoms up! / Cheers!", answer: "かんぱい", choices: ["かんぱい","おかげさまで","ダイエット","からだにいい"] },
-  { english: "diet (go on a diet)", answer: "ダイエット", choices: ["ダイエット","ゴルフ","カラオケ","パチンコ"] },
-  { english: "excessive, impossible, unreasonable", answer: "むり", choices: ["むり","からだにいい","ねむい","よわい"] },
-  { english: "good for one's health", answer: "からだにいい", choices: ["からだにいい","むり","ダイエット","かんぱい"] },
-
-  /* ── Landmark ── */
-  { english: "Tokyo Sky Tree (broadcasting tower)", answer: "東京スカイツリー", choices: ["東京スカイツリー","カラオケ","パチンコ","盆踊り"] },
-
-  /* ── Culture: traditional arts ── */
-  { english: "tea ceremony (the Way of Tea)", answer: "茶道", choices: ["茶道","華道","書道","柔道"] },
-  { english: "flower arranging (ikebana)", answer: "華道", choices: ["華道","茶道","書道","剣道"] },
-  { english: "calligraphy (the Way of Writing)", answer: "書道", choices: ["書道","茶道","華道","柔道"] },
-
-  /* ── Culture: performing arts ── */
-  { english: "Kabuki (traditional theater)", answer: "歌舞伎", choices: ["歌舞伎","能","文楽","落語"] },
-  { english: "Noh (classical masked drama)", answer: "能", choices: ["能","歌舞伎","文楽","漫才"] },
-  { english: "Bunraku (puppet theater)", answer: "文楽", choices: ["文楽","歌舞伎","能","落語"] },
-
-  /* ── Martial arts ── */
-  { english: "sumo wrestling", answer: "相撲", choices: ["相撲","柔道","剣道","空手"] },
-  { english: "judo", answer: "柔道", choices: ["柔道","剣道","空手","相撲"] },
-  { english: "kendo (Japanese fencing)", answer: "剣道", choices: ["剣道","柔道","空手","相撲"] },
-  { english: "karate", answer: "空手", choices: ["空手","柔道","剣道","相撲"] },
-
-  /* ── Comedy ── */
-  { english: "manzai (comic duo act)", answer: "漫才", choices: ["漫才","落語","歌舞伎","カラオケ"] },
-  { english: "rakugo (solo comic storytelling)", answer: "落語", choices: ["落語","漫才","文楽","能"] },
-
-  /* ── Board games ── */
-  { english: "go (board game)", answer: "囲碁", choices: ["囲碁","将棋","空手","書道"] },
-  { english: "shogi (Japanese chess)", answer: "将棋", choices: ["将棋","囲碁","剣道","相撲"] },
-
-  /* ── Modern entertainment ── */
-  { english: "pachinko", answer: "パチンコ", choices: ["パチンコ","カラオケ","ゴルフ","ダイエット"] },
-  { english: "karaoke", answer: "カラオケ", choices: ["カラオケ","パチンコ","ゴルフ","ダイエット"] },
-  { english: "Bon dance (summer festival dance)", answer: "盆踊り", choices: ["盆踊り","歌舞伎","カラオケ","茶道"] },
-
-  /* ═══ DEEPER UNDERSTANDING — descriptive / cultural context ═══ */
-  { english: "martial art meaning 'the gentle way'", answer: "柔道", choices: ["柔道","剣道","空手","相撲"] },
-  { english: "martial art meaning 'the way of the sword'", answer: "剣道", choices: ["剣道","柔道","書道","空手"] },
-  { english: "martial art meaning 'empty hand' (no weapons)", answer: "空手", choices: ["空手","柔道","剣道","相撲"] },
-  { english: "traditional Japanese puppet theater with three puppeteers", answer: "文楽", choices: ["文楽","歌舞伎","能","落語"] },
-  { english: "solo performer tells comic stories sitting on a cushion", answer: "落語", choices: ["落語","漫才","文楽","能"] },
-  { english: "comedy performed by a duo (straight man & funny man)", answer: "漫才", choices: ["漫才","落語","歌舞伎","カラオケ"] },
-  { english: "oldest Japanese theater form using masks and slow movements", answer: "能", choices: ["能","歌舞伎","文楽","落語"] },
-  { english: "strategic board game played with black and white stones", answer: "囲碁", choices: ["囲碁","将棋","書道","空手"] },
-  { english: "summer festival dance with drums, yukata, and lanterns", answer: "盆踊り", choices: ["盆踊り","カラオケ","パチンコ","歌舞伎"] },
+  {
+    "english": "climb, go up",
+    "answer": "のぼります",
+    "choices": [
+      "のぼります",
+      "とまります",
+      "そうじします",
+      "なります"
+    ],
+    "correctNote": "The Japanese word for \"climb, go up\" is 「のぼります」.",
+    "explain": "The English word \"climb, go up\" translates to 「のぼります」. The other choices (「とまります」, 「そうじします」, 「なります」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "stay [at a hotel]",
+    "answer": "とまります",
+    "choices": [
+      "とまります",
+      "のぼります",
+      "せんたくします",
+      "なります"
+    ],
+    "correctNote": "The Japanese word for \"stay [at a hotel]\" is 「とまります」.",
+    "explain": "The English word \"stay [at a hotel]\" translates to 「とまります」. The other choices (「のぼります」, 「せんたくします」, 「なります」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "clean (a room)",
+    "answer": "そうじします",
+    "choices": [
+      "そうじします",
+      "せんたくします",
+      "のぼります",
+      "とまります"
+    ],
+    "correctNote": "The Japanese word for \"clean (a room)\" is 「そうじします」.",
+    "explain": "The English word \"clean (a room)\" translates to 「そうじします」. The other choices (「せんたくします」, 「のぼります」, 「とまります」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "wash (clothes, laundry)",
+    "answer": "せんたくします",
+    "choices": [
+      "せんたくします",
+      "そうじします",
+      "なります",
+      "のぼります"
+    ],
+    "correctNote": "The Japanese word for \"wash (clothes, laundry)\" is 「せんたくします」.",
+    "explain": "The English word \"wash (clothes, laundry)\" translates to 「せんたくします」. The other choices (「そうじします」, 「なります」, 「のぼります」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "become",
+    "answer": "なります",
+    "choices": [
+      "なります",
+      "のぼります",
+      "とまります",
+      "そうじします"
+    ],
+    "correctNote": "The Japanese word for \"become\" is 「なります」.",
+    "explain": "The English word \"become\" translates to 「なります」. The other choices (「のぼります」, 「とまります」, 「そうじします」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "sleepy",
+    "answer": "ねむい",
+    "choices": [
+      "ねむい",
+      "つよい",
+      "よわい",
+      "むり"
+    ],
+    "correctNote": "The Japanese word for \"sleepy\" is 「ねむい」.",
+    "explain": "The English word \"sleepy\" translates to 「ねむい」. The other choices (「つよい」, 「よわい」, 「むり」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "strong",
+    "answer": "つよい",
+    "choices": [
+      "つよい",
+      "よわい",
+      "ねむい",
+      "むり"
+    ],
+    "correctNote": "The Japanese word for \"strong\" is 「つよい」.",
+    "explain": "The English word \"strong\" translates to 「つよい」. The other choices (「よわい」, 「ねむい」, 「むり」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "weak",
+    "answer": "よわい",
+    "choices": [
+      "よわい",
+      "つよい",
+      "ねむい",
+      "むり"
+    ],
+    "correctNote": "The Japanese word for \"weak\" is 「よわい」.",
+    "explain": "The English word \"weak\" translates to 「よわい」. The other choices (「つよい」, 「ねむい」, 「むり」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "practice",
+    "answer": "れんしゅう",
+    "choices": [
+      "れんしゅう",
+      "ゴルフ",
+      "おちゃ",
+      "ちょうし"
+    ],
+    "correctNote": "The Japanese word for \"practice\" is 「れんしゅう」.",
+    "explain": "The English word \"practice\" translates to 「れんしゅう」. The other choices (「ゴルフ」, 「おちゃ」, 「ちょうし」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "golf",
+    "answer": "ゴルフ",
+    "choices": [
+      "ゴルフ",
+      "れんしゅう",
+      "ダイエット",
+      "カラオケ"
+    ],
+    "correctNote": "The Japanese word for \"golf\" is 「ゴルフ」.",
+    "explain": "The English word \"golf\" translates to 「ゴルフ」. The other choices (「れんしゅう」, 「ダイエット」, 「カラオケ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "tea ceremony (casual term)",
+    "answer": "おちゃ",
+    "choices": [
+      "おちゃ",
+      "れんしゅう",
+      "ちょうし",
+      "ゴルフ"
+    ],
+    "correctNote": "The Japanese word for \"tea ceremony (casual term)\" is 「おちゃ」.",
+    "explain": "The English word \"tea ceremony (casual term)\" translates to 「おちゃ」. The other choices (「れんしゅう」, 「ちょうし」, 「ゴルフ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "day, date",
+    "answer": "ひ",
+    "choices": [
+      "ひ",
+      "ちょうし",
+      "いちど",
+      "もうすぐ"
+    ],
+    "correctNote": "The Japanese word for \"day, date\" is 「ひ」.",
+    "explain": "The English word \"day, date\" translates to 「ひ」. The other choices (「ちょうし」, 「いちど」, 「もうすぐ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "condition (of health / things)",
+    "answer": "ちょうし",
+    "choices": [
+      "ちょうし",
+      "ひ",
+      "れんしゅう",
+      "ダイエット"
+    ],
+    "correctNote": "The Japanese word for \"condition (of health / things)\" is 「ちょうし」.",
+    "explain": "The English word \"condition (of health / things)\" translates to 「ちょうし」. The other choices (「ひ」, 「れんしゅう」, 「ダイエット」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "once",
+    "answer": "いちど",
+    "choices": [
+      "いちど",
+      "いちども",
+      "だんだん",
+      "もうすぐ"
+    ],
+    "correctNote": "The Japanese word for \"once\" is 「いちど」.",
+    "explain": "The English word \"once\" translates to 「いちど」. The other choices (「いちども」, 「だんだん」, 「もうすぐ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "not once, never (used with negatives)",
+    "answer": "いちども",
+    "choices": [
+      "いちども",
+      "いちど",
+      "だんだん",
+      "もうすぐ"
+    ],
+    "correctNote": "The Japanese word for \"not once, never (used with negatives)\" is 「いちども」.",
+    "explain": "The English word \"not once, never (used with negatives)\" translates to 「いちども」. The other choices (「いちど」, 「だんだん」, 「もうすぐ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "gradually, little by little",
+    "answer": "だんだん",
+    "choices": [
+      "だんだん",
+      "もうすぐ",
+      "いちど",
+      "いちども"
+    ],
+    "correctNote": "The Japanese word for \"gradually, little by little\" is 「だんだん」.",
+    "explain": "The English word \"gradually, little by little\" translates to 「だんだん」. The other choices (「もうすぐ」, 「いちど」, 「いちども」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "soon, before long",
+    "answer": "もうすぐ",
+    "choices": [
+      "もうすぐ",
+      "だんだん",
+      "いちど",
+      "でも"
+    ],
+    "correctNote": "The Japanese word for \"soon, before long\" is 「もうすぐ」.",
+    "explain": "The English word \"soon, before long\" translates to 「もうすぐ」. The other choices (「だんだん」, 「いちど」, 「でも」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "Thank you (gratitude for help received)",
+    "answer": "おかげさまで",
+    "choices": [
+      "おかげさまで",
+      "かんぱい",
+      "でも",
+      "からだにいい"
+    ],
+    "correctNote": "The Japanese word for \"Thank you (gratitude for help received)\" is 「おかげさまで」.",
+    "explain": "The English word \"Thank you (gratitude for help received)\" translates to 「おかげさまで」. The other choices (「かんぱい」, 「でも」, 「からだにいい」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "but",
+    "answer": "でも",
+    "choices": [
+      "でも",
+      "おかげさまで",
+      "だんだん",
+      "もうすぐ"
+    ],
+    "correctNote": "The Japanese word for \"but\" is 「でも」.",
+    "explain": "The English word \"but\" translates to 「でも」. The other choices (「おかげさまで」, 「だんだん」, 「もうすぐ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "Bottoms up! / Cheers!",
+    "answer": "かんぱい",
+    "choices": [
+      "かんぱい",
+      "おかげさまで",
+      "ダイエット",
+      "からだにいい"
+    ],
+    "correctNote": "The Japanese word for \"Bottoms up! / Cheers!\" is 「かんぱい」.",
+    "explain": "The English word \"Bottoms up! / Cheers!\" translates to 「かんぱい」. The other choices (「おかげさまで」, 「ダイエット」, 「からだにいい」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "diet (go on a diet)",
+    "answer": "ダイエット",
+    "choices": [
+      "ダイエット",
+      "ゴルフ",
+      "カラオケ",
+      "パチンコ"
+    ],
+    "correctNote": "The Japanese word for \"diet (go on a diet)\" is 「ダイエット」.",
+    "explain": "The English word \"diet (go on a diet)\" translates to 「ダイエット」. The other choices (「ゴルフ」, 「カラオケ」, 「パチンコ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "excessive, impossible, unreasonable",
+    "answer": "むり",
+    "choices": [
+      "むり",
+      "からだにいい",
+      "ねむい",
+      "よわい"
+    ],
+    "correctNote": "The Japanese word for \"excessive, impossible, unreasonable\" is 「むり」.",
+    "explain": "The English word \"excessive, impossible, unreasonable\" translates to 「むり」. The other choices (「からだにいい」, 「ねむい」, 「よわい」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "good for one's health",
+    "answer": "からだにいい",
+    "choices": [
+      "からだにいい",
+      "むり",
+      "ダイエット",
+      "かんぱい"
+    ],
+    "correctNote": "The Japanese word for \"good for one's health\" is 「からだにいい」.",
+    "explain": "The English word \"good for one's health\" translates to 「からだにいい」. The other choices (「むり」, 「ダイエット」, 「かんぱい」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "Tokyo Sky Tree (broadcasting tower)",
+    "answer": "東京スカイツリー",
+    "choices": [
+      "東京スカイツリー",
+      "カラオケ",
+      "パチンコ",
+      "盆踊り"
+    ],
+    "correctNote": "The Japanese word for \"Tokyo Sky Tree (broadcasting tower)\" is 「東京スカイツリー」.",
+    "explain": "The English word \"Tokyo Sky Tree (broadcasting tower)\" translates to 「東京スカイツリー」. The other choices (「カラオケ」, 「パチンコ」, 「盆踊り」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "tea ceremony (the Way of Tea)",
+    "answer": "茶道",
+    "choices": [
+      "茶道",
+      "華道",
+      "書道",
+      "柔道"
+    ],
+    "correctNote": "The Japanese word for \"tea ceremony (the Way of Tea)\" is 「茶道」.",
+    "explain": "The English word \"tea ceremony (the Way of Tea)\" translates to 「茶道」. The other choices (「華道」, 「書道」, 「柔道」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "flower arranging (ikebana)",
+    "answer": "華道",
+    "choices": [
+      "華道",
+      "茶道",
+      "書道",
+      "剣道"
+    ],
+    "correctNote": "The Japanese word for \"flower arranging (ikebana)\" is 「華道」.",
+    "explain": "The English word \"flower arranging (ikebana)\" translates to 「華道」. The other choices (「茶道」, 「書道」, 「剣道」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "calligraphy (the Way of Writing)",
+    "answer": "書道",
+    "choices": [
+      "書道",
+      "茶道",
+      "華道",
+      "柔道"
+    ],
+    "correctNote": "The Japanese word for \"calligraphy (the Way of Writing)\" is 「書道」.",
+    "explain": "The English word \"calligraphy (the Way of Writing)\" translates to 「書道」. The other choices (「茶道」, 「華道」, 「柔道」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "Kabuki (traditional theater)",
+    "answer": "歌舞伎",
+    "choices": [
+      "歌舞伎",
+      "能",
+      "文楽",
+      "落語"
+    ],
+    "correctNote": "The Japanese word for \"Kabuki (traditional theater)\" is 「歌舞伎」.",
+    "explain": "The English word \"Kabuki (traditional theater)\" translates to 「歌舞伎」. The other choices (「能」, 「文楽」, 「落語」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "Noh (classical masked drama)",
+    "answer": "能",
+    "choices": [
+      "能",
+      "歌舞伎",
+      "文楽",
+      "漫才"
+    ],
+    "correctNote": "The Japanese word for \"Noh (classical masked drama)\" is 「能」.",
+    "explain": "The English word \"Noh (classical masked drama)\" translates to 「能」. The other choices (「歌舞伎」, 「文楽」, 「漫才」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "Bunraku (puppet theater)",
+    "answer": "文楽",
+    "choices": [
+      "文楽",
+      "歌舞伎",
+      "能",
+      "落語"
+    ],
+    "correctNote": "The Japanese word for \"Bunraku (puppet theater)\" is 「文楽」.",
+    "explain": "The English word \"Bunraku (puppet theater)\" translates to 「文楽」. The other choices (「歌舞伎」, 「能」, 「落語」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "sumo wrestling",
+    "answer": "相撲",
+    "choices": [
+      "相撲",
+      "柔道",
+      "剣道",
+      "空手"
+    ],
+    "correctNote": "The Japanese word for \"sumo wrestling\" is 「相撲」.",
+    "explain": "The English word \"sumo wrestling\" translates to 「相撲」. The other choices (「柔道」, 「剣道」, 「空手」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "judo",
+    "answer": "柔道",
+    "choices": [
+      "柔道",
+      "剣道",
+      "空手",
+      "相撲"
+    ],
+    "correctNote": "The Japanese word for \"judo\" is 「柔道」.",
+    "explain": "The English word \"judo\" translates to 「柔道」. The other choices (「剣道」, 「空手」, 「相撲」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "kendo (Japanese fencing)",
+    "answer": "剣道",
+    "choices": [
+      "剣道",
+      "柔道",
+      "空手",
+      "相撲"
+    ],
+    "correctNote": "The Japanese word for \"kendo (Japanese fencing)\" is 「剣道」.",
+    "explain": "The English word \"kendo (Japanese fencing)\" translates to 「剣道」. The other choices (「柔道」, 「空手」, 「相撲」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "karate",
+    "answer": "空手",
+    "choices": [
+      "空手",
+      "柔道",
+      "剣道",
+      "相撲"
+    ],
+    "correctNote": "The Japanese word for \"karate\" is 「空手」.",
+    "explain": "The English word \"karate\" translates to 「空手」. The other choices (「柔道」, 「剣道」, 「相撲」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "manzai (comic duo act)",
+    "answer": "漫才",
+    "choices": [
+      "漫才",
+      "落語",
+      "歌舞伎",
+      "カラオケ"
+    ],
+    "correctNote": "The Japanese word for \"manzai (comic duo act)\" is 「漫才」.",
+    "explain": "The English word \"manzai (comic duo act)\" translates to 「漫才」. The other choices (「落語」, 「歌舞伎」, 「カラオケ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "rakugo (solo comic storytelling)",
+    "answer": "落語",
+    "choices": [
+      "落語",
+      "漫才",
+      "文楽",
+      "能"
+    ],
+    "correctNote": "The Japanese word for \"rakugo (solo comic storytelling)\" is 「落語」.",
+    "explain": "The English word \"rakugo (solo comic storytelling)\" translates to 「落語」. The other choices (「漫才」, 「文楽」, 「能」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "go (board game)",
+    "answer": "囲碁",
+    "choices": [
+      "囲碁",
+      "将棋",
+      "空手",
+      "書道"
+    ],
+    "correctNote": "The Japanese word for \"go (board game)\" is 「囲碁」.",
+    "explain": "The English word \"go (board game)\" translates to 「囲碁」. The other choices (「将棋」, 「空手」, 「書道」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "shogi (Japanese chess)",
+    "answer": "将棋",
+    "choices": [
+      "将棋",
+      "囲碁",
+      "剣道",
+      "相撲"
+    ],
+    "correctNote": "The Japanese word for \"shogi (Japanese chess)\" is 「将棋」.",
+    "explain": "The English word \"shogi (Japanese chess)\" translates to 「将棋」. The other choices (「囲碁」, 「剣道」, 「相撲」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "pachinko",
+    "answer": "パチンコ",
+    "choices": [
+      "パチンコ",
+      "カラオケ",
+      "ゴルフ",
+      "ダイエット"
+    ],
+    "correctNote": "The Japanese word for \"pachinko\" is 「パチンコ」.",
+    "explain": "The English word \"pachinko\" translates to 「パチンコ」. The other choices (「カラオケ」, 「ゴルフ」, 「ダイエット」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "karaoke",
+    "answer": "カラオケ",
+    "choices": [
+      "カラオケ",
+      "パチンコ",
+      "ゴルフ",
+      "ダイエット"
+    ],
+    "correctNote": "The Japanese word for \"karaoke\" is 「カラオケ」.",
+    "explain": "The English word \"karaoke\" translates to 「カラオケ」. The other choices (「パチンコ」, 「ゴルフ」, 「ダイエット」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "Bon dance (summer festival dance)",
+    "answer": "盆踊り",
+    "choices": [
+      "盆踊り",
+      "歌舞伎",
+      "カラオケ",
+      "茶道"
+    ],
+    "correctNote": "The Japanese word for \"Bon dance (summer festival dance)\" is 「盆踊り」.",
+    "explain": "The English word \"Bon dance (summer festival dance)\" translates to 「盆踊り」. The other choices (「歌舞伎」, 「カラオケ」, 「茶道」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "martial art meaning 'the gentle way'",
+    "answer": "柔道",
+    "choices": [
+      "柔道",
+      "剣道",
+      "空手",
+      "相撲"
+    ],
+    "correctNote": "The Japanese word for \"martial art meaning 'the gentle way'\" is 「柔道」.",
+    "explain": "The English word \"martial art meaning 'the gentle way'\" translates to 「柔道」. The other choices (「剣道」, 「空手」, 「相撲」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "martial art meaning 'the way of the sword'",
+    "answer": "剣道",
+    "choices": [
+      "剣道",
+      "柔道",
+      "書道",
+      "空手"
+    ],
+    "correctNote": "The Japanese word for \"martial art meaning 'the way of the sword'\" is 「剣道」.",
+    "explain": "The English word \"martial art meaning 'the way of the sword'\" translates to 「剣道」. The other choices (「柔道」, 「書道」, 「空手」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "martial art meaning 'empty hand' (no weapons)",
+    "answer": "空手",
+    "choices": [
+      "空手",
+      "柔道",
+      "剣道",
+      "相撲"
+    ],
+    "correctNote": "The Japanese word for \"martial art meaning 'empty hand' (no weapons)\" is 「空手」.",
+    "explain": "The English word \"martial art meaning 'empty hand' (no weapons)\" translates to 「空手」. The other choices (「柔道」, 「剣道」, 「相撲」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "traditional Japanese puppet theater with three puppeteers",
+    "answer": "文楽",
+    "choices": [
+      "文楽",
+      "歌舞伎",
+      "能",
+      "落語"
+    ],
+    "correctNote": "The Japanese word for \"traditional Japanese puppet theater with three puppeteers\" is 「文楽」.",
+    "explain": "The English word \"traditional Japanese puppet theater with three puppeteers\" translates to 「文楽」. The other choices (「歌舞伎」, 「能」, 「落語」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "solo performer tells comic stories sitting on a cushion",
+    "answer": "落語",
+    "choices": [
+      "落語",
+      "漫才",
+      "文楽",
+      "能"
+    ],
+    "correctNote": "The Japanese word for \"solo performer tells comic stories sitting on a cushion\" is 「落語」.",
+    "explain": "The English word \"solo performer tells comic stories sitting on a cushion\" translates to 「落語」. The other choices (「漫才」, 「文楽」, 「能」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "comedy performed by a duo (straight man & funny man)",
+    "answer": "漫才",
+    "choices": [
+      "漫才",
+      "落語",
+      "歌舞伎",
+      "カラオケ"
+    ],
+    "correctNote": "The Japanese word for \"comedy performed by a duo (straight man & funny man)\" is 「漫才」.",
+    "explain": "The English word \"comedy performed by a duo (straight man & funny man)\" translates to 「漫才」. The other choices (「落語」, 「歌舞伎」, 「カラオケ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "oldest Japanese theater form using masks and slow movements",
+    "answer": "能",
+    "choices": [
+      "能",
+      "歌舞伎",
+      "文楽",
+      "落語"
+    ],
+    "correctNote": "The Japanese word for \"oldest Japanese theater form using masks and slow movements\" is 「能」.",
+    "explain": "The English word \"oldest Japanese theater form using masks and slow movements\" translates to 「能」. The other choices (「歌舞伎」, 「文楽」, 「落語」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "strategic board game played with black and white stones",
+    "answer": "囲碁",
+    "choices": [
+      "囲碁",
+      "将棋",
+      "書道",
+      "空手"
+    ],
+    "correctNote": "The Japanese word for \"strategic board game played with black and white stones\" is 「囲碁」.",
+    "explain": "The English word \"strategic board game played with black and white stones\" translates to 「囲碁」. The other choices (「将棋」, 「書道」, 「空手」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "summer festival dance with drums, yukata, and lanterns",
+    "answer": "盆踊り",
+    "choices": [
+      "盆踊り",
+      "カラオケ",
+      "パチンコ",
+      "歌舞伎"
+    ],
+    "correctNote": "The Japanese word for \"summer festival dance with drums, yukata, and lanterns\" is 「盆踊り」.",
+    "explain": "The English word \"summer festival dance with drums, yukata, and lanterns\" translates to 「盆踊り」. The other choices (「カラオケ」, 「パチンコ」, 「歌舞伎」) have different meanings and are incorrect in this context."
+  }
 ];
 
 /* ── State ── */

@@ -731,70 +731,594 @@
 
 <script>
 const QUESTIONS = [
-  /* ── Existence verbs ── */
-  { english: "exist, be (inanimate things)", answer: "あります", choices: ["あります","います","いろいろ","もの"] },
-  { english: "exist, be (animate things)", answer: "います", choices: ["あります","います","いぬ","ねこ"] },
-
-  /* ── People ── */
-  { english: "man", answer: "おとこのひと", choices: ["おとこのひと","おんなのひと","おとこのこ","おんなのこ"] },
-  { english: "woman", answer: "おんなのひと", choices: ["おとこのひと","おんなのひと","おとこのこ","おんなのこ"] },
-  { english: "boy", answer: "おとこのこ", choices: ["おとこのひと","おんなのこ","おとこのこ","おんなのひと"] },
-  { english: "girl", answer: "おんなのこ", choices: ["おとこのこ","おんなのこ","おとこのひと","おんなのひと"] },
-
-  /* ── Animals ── */
-  { english: "dog", answer: "いぬ", choices: ["いぬ","ねこ","パンダ","ぞう"] },
-  { english: "cat", answer: "ねこ", choices: ["いぬ","ねこ","パンダ","ぞう"] },
-  { english: "panda", answer: "パンダ", choices: ["パンダ","ぞう","いぬ","ねこ"] },
-  { english: "elephant", answer: "ぞう", choices: ["ぞう","パンダ","いぬ","ねこ"] },
-
-  /* ── Nature / misc ── */
-  { english: "tree, wood", answer: "き", choices: ["き","はこ","もの","でんち"] },
-  { english: "thing", answer: "もの", choices: ["もの","き","はこ","でんち"] },
-  { english: "battery", answer: "でんち", choices: ["でんち","もの","スイッチ","はこ"] },
-  { english: "box", answer: "はこ", choices: ["はこ","もの","でんち","たな"] },
-
-  /* ── Furniture / appliances ── */
-  { english: "switch", answer: "スイッチ", choices: ["スイッチ","テーブル","ベッド","ドア"] },
-  { english: "refrigerator", answer: "れいぞうこ", choices: ["れいぞうこ","スイッチ","テーブル","たな"] },
-  { english: "table", answer: "テーブル", choices: ["テーブル","ベッド","たな","ドア"] },
-  { english: "bed", answer: "ベッド", choices: ["ベッド","テーブル","たな","まど"] },
-  { english: "shelf", answer: "たな", choices: ["たな","テーブル","ベッド","はこ"] },
-  { english: "door", answer: "ドア", choices: ["ドア","まど","スイッチ","テーブル"] },
-  { english: "window", answer: "まど", choices: ["まど","ドア","スイッチ","ベッド"] },
-
-  /* ── Places ── */
-  { english: "postbox, mailbox", answer: "ポスト", choices: ["ポスト","ビル","コンビニ","ATM"] },
-  { english: "building", answer: "ビル", choices: ["ビル","ポスト","コンビニ","のりば"] },
-  { english: "convenience store", answer: "コンビニ", choices: ["コンビニ","きっさてん","こうえん","ポスト"] },
-  { english: "park", answer: "こうえん", choices: ["こうえん","コンビニ","きっさてん","のりば"] },
-  { english: "café, coffee shop", answer: "きっさてん", choices: ["きっさてん","コンビニ","こうえん","レストラン"] },
-  { english: "a fixed place to catch taxis, trains", answer: "のりば", choices: ["のりば","こうえん","ビル","ポスト"] },
-  { english: "prefecture", answer: "けん", choices: ["けん","まち","のりば","こうえん"] },
-
-  /* ── Position words ── */
-  { english: "on, above, over", answer: "うえ", choices: ["うえ","した","まえ","うしろ"] },
-  { english: "under, below, beneath", answer: "した", choices: ["うえ","した","なか","そと"] },
-  { english: "front, before", answer: "まえ", choices: ["まえ","うしろ","うえ","した"] },
-  { english: "back, behind", answer: "うしろ", choices: ["まえ","うしろ","みぎ","ひだり"] },
-  { english: "right [side]", answer: "みぎ", choices: ["みぎ","ひだり","うえ","した"] },
-  { english: "left [side]", answer: "ひだり", choices: ["みぎ","ひだり","まえ","うしろ"] },
-  { english: "in, inside", answer: "なか", choices: ["なか","そと","うえ","した"] },
-  { english: "outside", answer: "そと", choices: ["なか","そと","まえ","うしろ"] },
-  { english: "next, next door", answer: "となり", choices: ["となり","ちかく","あいだ","なか"] },
-  { english: "near, vicinity", answer: "ちかく", choices: ["ちかく","となり","あいだ","そと"] },
-  { english: "between, among", answer: "あいだ", choices: ["あいだ","となり","ちかく","なか"] },
-
-  /* ── House rooms (diagram) ── */
-  { english: "entrance hall", answer: "げんかん", choices: ["げんかん","だいどころ","いま","しんしつ"] },
-  { english: "toilet", answer: "トイレ", choices: ["トイレ","ふろば","せんめんじょ","ろうか"] },
-  { english: "bathroom (bath)", answer: "ふろば", choices: ["ふろば","トイレ","せんめんじょ","げんかん"] },
-  { english: "washroom", answer: "せんめんじょ", choices: ["せんめんじょ","ふろば","トイレ","だいどころ"] },
-  { english: "kitchen", answer: "だいどころ", choices: ["だいどころ","しょくどう","いま","げんかん"] },
-  { english: "dining room", answer: "しょくどう", choices: ["しょくどう","だいどころ","いま","しんしつ"] },
-  { english: "living room", answer: "いま", choices: ["いま","しょくどう","しんしつ","ろうか"] },
-  { english: "bedroom", answer: "しんしつ", choices: ["しんしつ","いま","しょくどう","げんかん"] },
-  { english: "hall, corridor", answer: "ろうか", choices: ["ろうか","げんかん","ベランダ","いま"] },
-  { english: "balcony", answer: "ベランダ", choices: ["ベランダ","ろうか","まど","そと"] },
+  {
+    "english": "exist, be (inanimate things)",
+    "answer": "あります",
+    "choices": [
+      "あります",
+      "います",
+      "いろいろ",
+      "もの"
+    ],
+    "correctNote": "The Japanese word for \"exist, be (inanimate things)\" is 「あります」.",
+    "explain": "The English word \"exist, be (inanimate things)\" translates to 「あります」. The other choices (「います」, 「いろいろ」, 「もの」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "exist, be (animate things)",
+    "answer": "います",
+    "choices": [
+      "あります",
+      "います",
+      "いぬ",
+      "ねこ"
+    ],
+    "correctNote": "The Japanese word for \"exist, be (animate things)\" is 「います」.",
+    "explain": "The English word \"exist, be (animate things)\" translates to 「います」. The other choices (「あります」, 「いぬ」, 「ねこ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "man",
+    "answer": "おとこのひと",
+    "choices": [
+      "おとこのひと",
+      "おんなのひと",
+      "おとこのこ",
+      "おんなのこ"
+    ],
+    "correctNote": "The Japanese word for \"man\" is 「おとこのひと」.",
+    "explain": "The English word \"man\" translates to 「おとこのひと」. The other choices (「おんなのひと」, 「おとこのこ」, 「おんなのこ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "woman",
+    "answer": "おんなのひと",
+    "choices": [
+      "おとこのひと",
+      "おんなのひと",
+      "おとこのこ",
+      "おんなのこ"
+    ],
+    "correctNote": "The Japanese word for \"woman\" is 「おんなのひと」.",
+    "explain": "The English word \"woman\" translates to 「おんなのひと」. The other choices (「おとこのひと」, 「おとこのこ」, 「おんなのこ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "boy",
+    "answer": "おとこのこ",
+    "choices": [
+      "おとこのひと",
+      "おんなのこ",
+      "おとこのこ",
+      "おんなのひと"
+    ],
+    "correctNote": "The Japanese word for \"boy\" is 「おとこのこ」.",
+    "explain": "The English word \"boy\" translates to 「おとこのこ」. The other choices (「おとこのひと」, 「おんなのこ」, 「おんなのひと」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "girl",
+    "answer": "おんなのこ",
+    "choices": [
+      "おとこのこ",
+      "おんなのこ",
+      "おとこのひと",
+      "おんなのひと"
+    ],
+    "correctNote": "The Japanese word for \"girl\" is 「おんなのこ」.",
+    "explain": "The English word \"girl\" translates to 「おんなのこ」. The other choices (「おとこのこ」, 「おとこのひと」, 「おんなのひと」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "dog",
+    "answer": "いぬ",
+    "choices": [
+      "いぬ",
+      "ねこ",
+      "パンダ",
+      "ぞう"
+    ],
+    "correctNote": "The Japanese word for \"dog\" is 「いぬ」.",
+    "explain": "The English word \"dog\" translates to 「いぬ」. The other choices (「ねこ」, 「パンダ」, 「ぞう」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "cat",
+    "answer": "ねこ",
+    "choices": [
+      "いぬ",
+      "ねこ",
+      "パンダ",
+      "ぞう"
+    ],
+    "correctNote": "The Japanese word for \"cat\" is 「ねこ」.",
+    "explain": "The English word \"cat\" translates to 「ねこ」. The other choices (「いぬ」, 「パンダ」, 「ぞう」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "panda",
+    "answer": "パンダ",
+    "choices": [
+      "パンダ",
+      "ぞう",
+      "いぬ",
+      "ねこ"
+    ],
+    "correctNote": "The Japanese word for \"panda\" is 「パンダ」.",
+    "explain": "The English word \"panda\" translates to 「パンダ」. The other choices (「ぞう」, 「いぬ」, 「ねこ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "elephant",
+    "answer": "ぞう",
+    "choices": [
+      "ぞう",
+      "パンダ",
+      "いぬ",
+      "ねこ"
+    ],
+    "correctNote": "The Japanese word for \"elephant\" is 「ぞう」.",
+    "explain": "The English word \"elephant\" translates to 「ぞう」. The other choices (「パンダ」, 「いぬ」, 「ねこ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "tree, wood",
+    "answer": "き",
+    "choices": [
+      "き",
+      "はこ",
+      "もの",
+      "でんち"
+    ],
+    "correctNote": "The Japanese word for \"tree, wood\" is 「き」.",
+    "explain": "The English word \"tree, wood\" translates to 「き」. The other choices (「はこ」, 「もの」, 「でんち」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "thing",
+    "answer": "もの",
+    "choices": [
+      "もの",
+      "き",
+      "はこ",
+      "でんち"
+    ],
+    "correctNote": "The Japanese word for \"thing\" is 「もの」.",
+    "explain": "The English word \"thing\" translates to 「もの」. The other choices (「き」, 「はこ」, 「でんち」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "battery",
+    "answer": "でんち",
+    "choices": [
+      "でんち",
+      "もの",
+      "スイッチ",
+      "はこ"
+    ],
+    "correctNote": "The Japanese word for \"battery\" is 「でんち」.",
+    "explain": "The English word \"battery\" translates to 「でんち」. The other choices (「もの」, 「スイッチ」, 「はこ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "box",
+    "answer": "はこ",
+    "choices": [
+      "はこ",
+      "もの",
+      "でんち",
+      "たな"
+    ],
+    "correctNote": "The Japanese word for \"box\" is 「はこ」.",
+    "explain": "The English word \"box\" translates to 「はこ」. The other choices (「もの」, 「でんち」, 「たな」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "switch",
+    "answer": "スイッチ",
+    "choices": [
+      "スイッチ",
+      "テーブル",
+      "ベッド",
+      "ドア"
+    ],
+    "correctNote": "The Japanese word for \"switch\" is 「スイッチ」.",
+    "explain": "The English word \"switch\" translates to 「スイッチ」. The other choices (「テーブル」, 「ベッド」, 「ドア」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "refrigerator",
+    "answer": "れいぞうこ",
+    "choices": [
+      "れいぞうこ",
+      "スイッチ",
+      "テーブル",
+      "たな"
+    ],
+    "correctNote": "The Japanese word for \"refrigerator\" is 「れいぞうこ」.",
+    "explain": "The English word \"refrigerator\" translates to 「れいぞうこ」. The other choices (「スイッチ」, 「テーブル」, 「たな」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "table",
+    "answer": "テーブル",
+    "choices": [
+      "テーブル",
+      "ベッド",
+      "たな",
+      "ドア"
+    ],
+    "correctNote": "The Japanese word for \"table\" is 「テーブル」.",
+    "explain": "The English word \"table\" translates to 「テーブル」. The other choices (「ベッド」, 「たな」, 「ドア」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "bed",
+    "answer": "ベッド",
+    "choices": [
+      "ベッド",
+      "テーブル",
+      "たな",
+      "まど"
+    ],
+    "correctNote": "The Japanese word for \"bed\" is 「ベッド」.",
+    "explain": "The English word \"bed\" translates to 「ベッド」. The other choices (「テーブル」, 「たな」, 「まど」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "shelf",
+    "answer": "たな",
+    "choices": [
+      "たな",
+      "テーブル",
+      "ベッド",
+      "はこ"
+    ],
+    "correctNote": "The Japanese word for \"shelf\" is 「たな」.",
+    "explain": "The English word \"shelf\" translates to 「たな」. The other choices (「テーブル」, 「ベッド」, 「はこ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "door",
+    "answer": "ドア",
+    "choices": [
+      "ドア",
+      "まど",
+      "スイッチ",
+      "テーブル"
+    ],
+    "correctNote": "The Japanese word for \"door\" is 「ドア」.",
+    "explain": "The English word \"door\" translates to 「ドア」. The other choices (「まど」, 「スイッチ」, 「テーブル」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "window",
+    "answer": "まど",
+    "choices": [
+      "まど",
+      "ドア",
+      "スイッチ",
+      "ベッド"
+    ],
+    "correctNote": "The Japanese word for \"window\" is 「まど」.",
+    "explain": "The English word \"window\" translates to 「まど」. The other choices (「ドア」, 「スイッチ」, 「ベッド」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "postbox, mailbox",
+    "answer": "ポスト",
+    "choices": [
+      "ポスト",
+      "ビル",
+      "コンビニ",
+      "ATM"
+    ],
+    "correctNote": "The Japanese word for \"postbox, mailbox\" is 「ポスト」.",
+    "explain": "The English word \"postbox, mailbox\" translates to 「ポスト」. The other choices (「ビル」, 「コンビニ」, 「ATM」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "building",
+    "answer": "ビル",
+    "choices": [
+      "ビル",
+      "ポスト",
+      "コンビニ",
+      "のりば"
+    ],
+    "correctNote": "The Japanese word for \"building\" is 「ビル」.",
+    "explain": "The English word \"building\" translates to 「ビル」. The other choices (「ポスト」, 「コンビニ」, 「のりば」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "convenience store",
+    "answer": "コンビニ",
+    "choices": [
+      "コンビニ",
+      "きっさてん",
+      "こうえん",
+      "ポスト"
+    ],
+    "correctNote": "The Japanese word for \"convenience store\" is 「コンビニ」.",
+    "explain": "The English word \"convenience store\" translates to 「コンビニ」. The other choices (「きっさてん」, 「こうえん」, 「ポスト」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "park",
+    "answer": "こうえん",
+    "choices": [
+      "こうえん",
+      "コンビニ",
+      "きっさてん",
+      "のりば"
+    ],
+    "correctNote": "The Japanese word for \"park\" is 「こうえん」.",
+    "explain": "The English word \"park\" translates to 「こうえん」. The other choices (「コンビニ」, 「きっさてん」, 「のりば」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "café, coffee shop",
+    "answer": "きっさてん",
+    "choices": [
+      "きっさてん",
+      "コンビニ",
+      "こうえん",
+      "レストラン"
+    ],
+    "correctNote": "The Japanese word for \"café, coffee shop\" is 「きっさてん」.",
+    "explain": "The English word \"café, coffee shop\" translates to 「きっさてん」. The other choices (「コンビニ」, 「こうえん」, 「レストラン」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "a fixed place to catch taxis, trains",
+    "answer": "のりば",
+    "choices": [
+      "のりば",
+      "こうえん",
+      "ビル",
+      "ポスト"
+    ],
+    "correctNote": "The Japanese word for \"a fixed place to catch taxis, trains\" is 「のりば」.",
+    "explain": "The English word \"a fixed place to catch taxis, trains\" translates to 「のりば」. The other choices (「こうえん」, 「ビル」, 「ポスト」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "prefecture",
+    "answer": "けん",
+    "choices": [
+      "けん",
+      "まち",
+      "のりば",
+      "こうえん"
+    ],
+    "correctNote": "The Japanese word for \"prefecture\" is 「けん」.",
+    "explain": "The English word \"prefecture\" translates to 「けん」. The other choices (「まち」, 「のりば」, 「こうえん」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "on, above, over",
+    "answer": "うえ",
+    "choices": [
+      "うえ",
+      "した",
+      "まえ",
+      "うしろ"
+    ],
+    "correctNote": "The Japanese word for \"on, above, over\" is 「うえ」.",
+    "explain": "The English word \"on, above, over\" translates to 「うえ」. The other choices (「した」, 「まえ」, 「うしろ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "under, below, beneath",
+    "answer": "した",
+    "choices": [
+      "うえ",
+      "した",
+      "なか",
+      "そと"
+    ],
+    "correctNote": "The Japanese word for \"under, below, beneath\" is 「した」.",
+    "explain": "The English word \"under, below, beneath\" translates to 「した」. The other choices (「うえ」, 「なか」, 「そと」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "front, before",
+    "answer": "まえ",
+    "choices": [
+      "まえ",
+      "うしろ",
+      "うえ",
+      "した"
+    ],
+    "correctNote": "The Japanese word for \"front, before\" is 「まえ」.",
+    "explain": "The English word \"front, before\" translates to 「まえ」. The other choices (「うしろ」, 「うえ」, 「した」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "back, behind",
+    "answer": "うしろ",
+    "choices": [
+      "まえ",
+      "うしろ",
+      "みぎ",
+      "ひだり"
+    ],
+    "correctNote": "The Japanese word for \"back, behind\" is 「うしろ」.",
+    "explain": "The English word \"back, behind\" translates to 「うしろ」. The other choices (「まえ」, 「みぎ」, 「ひだり」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "right [side]",
+    "answer": "みぎ",
+    "choices": [
+      "みぎ",
+      "ひだり",
+      "うえ",
+      "した"
+    ],
+    "correctNote": "The Japanese word for \"right [side]\" is 「みぎ」.",
+    "explain": "The English word \"right [side]\" translates to 「みぎ」. The other choices (「ひだり」, 「うえ」, 「した」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "left [side]",
+    "answer": "ひだり",
+    "choices": [
+      "みぎ",
+      "ひだり",
+      "まえ",
+      "うしろ"
+    ],
+    "correctNote": "The Japanese word for \"left [side]\" is 「ひだり」.",
+    "explain": "The English word \"left [side]\" translates to 「ひだり」. The other choices (「みぎ」, 「まえ」, 「うしろ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "in, inside",
+    "answer": "なか",
+    "choices": [
+      "なか",
+      "そと",
+      "うえ",
+      "した"
+    ],
+    "correctNote": "The Japanese word for \"in, inside\" is 「なか」.",
+    "explain": "The English word \"in, inside\" translates to 「なか」. The other choices (「そと」, 「うえ」, 「した」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "outside",
+    "answer": "そと",
+    "choices": [
+      "なか",
+      "そと",
+      "まえ",
+      "うしろ"
+    ],
+    "correctNote": "The Japanese word for \"outside\" is 「そと」.",
+    "explain": "The English word \"outside\" translates to 「そと」. The other choices (「なか」, 「まえ」, 「うしろ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "next, next door",
+    "answer": "となり",
+    "choices": [
+      "となり",
+      "ちかく",
+      "あいだ",
+      "なか"
+    ],
+    "correctNote": "The Japanese word for \"next, next door\" is 「となり」.",
+    "explain": "The English word \"next, next door\" translates to 「となり」. The other choices (「ちかく」, 「あいだ」, 「なか」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "near, vicinity",
+    "answer": "ちかく",
+    "choices": [
+      "ちかく",
+      "となり",
+      "あいだ",
+      "そと"
+    ],
+    "correctNote": "The Japanese word for \"near, vicinity\" is 「ちかく」.",
+    "explain": "The English word \"near, vicinity\" translates to 「ちかく」. The other choices (「となり」, 「あいだ」, 「そと」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "between, among",
+    "answer": "あいだ",
+    "choices": [
+      "あいだ",
+      "となり",
+      "ちかく",
+      "なか"
+    ],
+    "correctNote": "The Japanese word for \"between, among\" is 「あいだ」.",
+    "explain": "The English word \"between, among\" translates to 「あいだ」. The other choices (「となり」, 「ちかく」, 「なか」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "entrance hall",
+    "answer": "げんかん",
+    "choices": [
+      "げんかん",
+      "だいどころ",
+      "いま",
+      "しんしつ"
+    ],
+    "correctNote": "The Japanese word for \"entrance hall\" is 「げんかん」.",
+    "explain": "The English word \"entrance hall\" translates to 「げんかん」. The other choices (「だいどころ」, 「いま」, 「しんしつ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "toilet",
+    "answer": "トイレ",
+    "choices": [
+      "トイレ",
+      "ふろば",
+      "せんめんじょ",
+      "ろうか"
+    ],
+    "correctNote": "The Japanese word for \"toilet\" is 「トイレ」.",
+    "explain": "The English word \"toilet\" translates to 「トイレ」. The other choices (「ふろば」, 「せんめんじょ」, 「ろうか」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "bathroom (bath)",
+    "answer": "ふろば",
+    "choices": [
+      "ふろば",
+      "トイレ",
+      "せんめんじょ",
+      "げんかん"
+    ],
+    "correctNote": "The Japanese word for \"bathroom (bath)\" is 「ふろば」.",
+    "explain": "The English word \"bathroom (bath)\" translates to 「ふろば」. The other choices (「トイレ」, 「せんめんじょ」, 「げんかん」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "washroom",
+    "answer": "せんめんじょ",
+    "choices": [
+      "せんめんじょ",
+      "ふろば",
+      "トイレ",
+      "だいどころ"
+    ],
+    "correctNote": "The Japanese word for \"washroom\" is 「せんめんじょ」.",
+    "explain": "The English word \"washroom\" translates to 「せんめんじょ」. The other choices (「ふろば」, 「トイレ」, 「だいどころ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "kitchen",
+    "answer": "だいどころ",
+    "choices": [
+      "だいどころ",
+      "しょくどう",
+      "いま",
+      "げんかん"
+    ],
+    "correctNote": "The Japanese word for \"kitchen\" is 「だいどころ」.",
+    "explain": "The English word \"kitchen\" translates to 「だいどころ」. The other choices (「しょくどう」, 「いま」, 「げんかん」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "dining room",
+    "answer": "しょくどう",
+    "choices": [
+      "しょくどう",
+      "だいどころ",
+      "いま",
+      "しんしつ"
+    ],
+    "correctNote": "The Japanese word for \"dining room\" is 「しょくどう」.",
+    "explain": "The English word \"dining room\" translates to 「しょくどう」. The other choices (「だいどころ」, 「いま」, 「しんしつ」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "living room",
+    "answer": "いま",
+    "choices": [
+      "いま",
+      "しょくどう",
+      "しんしつ",
+      "ろうか"
+    ],
+    "correctNote": "The Japanese word for \"living room\" is 「いま」.",
+    "explain": "The English word \"living room\" translates to 「いま」. The other choices (「しょくどう」, 「しんしつ」, 「ろうか」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "bedroom",
+    "answer": "しんしつ",
+    "choices": [
+      "しんしつ",
+      "いま",
+      "しょくどう",
+      "げんかん"
+    ],
+    "correctNote": "The Japanese word for \"bedroom\" is 「しんしつ」.",
+    "explain": "The English word \"bedroom\" translates to 「しんしつ」. The other choices (「いま」, 「しょくどう」, 「げんかん」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "hall, corridor",
+    "answer": "ろうか",
+    "choices": [
+      "ろうか",
+      "げんかん",
+      "ベランダ",
+      "いま"
+    ],
+    "correctNote": "The Japanese word for \"hall, corridor\" is 「ろうか」.",
+    "explain": "The English word \"hall, corridor\" translates to 「ろうか」. The other choices (「げんかん」, 「ベランダ」, 「いま」) have different meanings and are incorrect in this context."
+  },
+  {
+    "english": "balcony",
+    "answer": "ベランダ",
+    "choices": [
+      "ベランダ",
+      "ろうか",
+      "まど",
+      "そと"
+    ],
+    "correctNote": "The Japanese word for \"balcony\" is 「ベランダ」.",
+    "explain": "The English word \"balcony\" translates to 「ベランダ」. The other choices (「ろうか」, 「まど」, 「そと」) have different meanings and are incorrect in this context."
+  }
 ];
 
 /* ── State ── */

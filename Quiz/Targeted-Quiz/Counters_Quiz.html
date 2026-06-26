@@ -1008,6 +1008,39 @@ function generateSectionQuestions(counters, count, categoryName, tagClass) {
   return shuffle(questions);
 }
 
+
+function getCounterExplanation(counter, number, correctAnswer, choices) {
+  const isIrregular = counter.irregulars.includes(number);
+  let ruleText = "This follows the standard pronunciation pattern for the counter <strong>" + counter.name + "</strong>.";
+  if (isIrregular) {
+    ruleText = "⚠️ Note: This is an <strong>irregular pronunciation</strong> (ふきそくけい) for the counter <strong>" + counter.name + "</strong>.";
+  }
+  
+  let explainHtml = 'The correct choice is <strong>「' + correctAnswer + '」</strong>. ' + ruleText + '<br><br><strong>Why other choices are incorrect:</strong><br>';
+  
+  choices.forEach(opt => {
+    if (opt === correctAnswer) return;
+    
+    // Find which number key this option corresponds to in counter.readings
+    let matchingNum = null;
+    for (const key in counter.readings) {
+      const readings = counter.readings[key].split(' / ');
+      if (readings.includes(opt)) {
+        matchingNum = key;
+        break;
+      }
+    }
+    
+    if (matchingNum) {
+      explainHtml += '• <code>' + opt + '</code> is the reading for <strong>' + matchingNum + '</strong> items, not ' + number + '.<br>';
+    } else {
+      explainHtml += '• <code>' + opt + '</code> is an incorrect reading for the counter <strong>' + counter.name + '</strong>.<br>';
+    }
+  });
+  
+  return explainHtml;
+}
+
 function generateQuestion(counter, number, categoryName, tagClass) {
   const correctAnswer = counter.readings[number];
   const isIrregular = counter.irregulars.includes(number);
@@ -1035,9 +1068,7 @@ function generateQuestion(counter, number, categoryName, tagClass) {
              Object: <strong>${getCounterDescription(counter)}</strong> (Indicator: <strong>${counter.name}</strong>)
            </span>`,
     correctNote: `Pronunciation: <span class="jp">${correctAnswer}</span>.`,
-    explain: isIrregular 
-      ? `⚠️ This is an <strong>irregular pronunciation</strong> (ふきそくけい) for the counter <strong>${counter.name}</strong>.`
-      : `This follows the standard pronunciation pattern for the counter <strong>${counter.name}</strong>.`
+    explain: getCounterExplanation(counter, number, correctAnswer, choices)
   };
 }
 
