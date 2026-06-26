@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>みんなの日本語 Lesson 12 — Vocabulary Exam</title>
+<title>Lesson 12 — Vocabulary Quiz | N5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
@@ -421,6 +421,46 @@
   }
   .btn-submit:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
 
+  /* Explanation Box / Feedback Card */
+  .feedback-card {
+    display: none;
+    margin-top: 24px;
+    padding: 18px 20px;
+    border-radius: 8px;
+    background: #fff8ef;
+    border: 1px solid rgba(169, 52, 42, 0.15);
+    font-size: 14px;
+    line-height: 1.55;
+    color: #18202f;
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fb-header {
+    font-weight: 800;
+    margin-bottom: 8px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .feedback-card.correct .fb-header { color: #2e7d32; }
+  .feedback-card.wrong .fb-header { color: #c62828; }
+  .fb-block { margin-top: 8px; }
+  .fb-block.connect { color: #667085; font-size: 13px; }
+  .fb-block.warn {
+    color: #b71c1c;
+    background: #ffebee;
+    border: 1px solid rgba(198, 40, 40, 0.2);
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+
   /* Skipped warning alert box */
   .skipped-warning {
     margin-bottom: 20px;
@@ -677,6 +717,7 @@
       <div class="q-number" id="q-number"></div>
       <div class="q-english" id="q-english"></div>
       <div class="choices-grid" id="choices-grid"></div>
+      <div class="feedback-card" id="feedback-card" aria-live="polite"></div>
     </div>
 
     <div class="arrow-row">
@@ -801,6 +842,7 @@ const $btnReview  = document.getElementById("btn-review");
 const $btnHome    = document.getElementById("btn-home");
 const $reviewBanner = document.getElementById("review-banner");
 const $skippedWarning = document.getElementById("skipped-warning");
+const $feedbackCard = document.getElementById("feedback-card");
 const $timerDisplay = document.getElementById("timer-display");
 let endTime = null;
 let timeLeft = 0;
@@ -1005,6 +1047,15 @@ function renderQuestion() {
     $choicesGrid.appendChild(btn);
   });
 
+  /* Feedback card */
+  const isAnswered = answers[realIdx] !== undefined;
+  if (submitted && isAnswered) {
+    renderFeedback(q, answers[realIdx]);
+  } else {
+    $feedbackCard.style.display = "none";
+    $feedbackCard.innerHTML = "";
+  }
+
   updateNavGrid();
 
   /* Arrow / submit visibility */
@@ -1037,6 +1088,20 @@ function renderQuestion() {
       $btnNext.disabled = currentQ === total - 1;
     }
   }
+}
+
+function renderFeedback(q, given) {
+  const isCorrect = given === q.answer;
+  $feedbackCard.className = `feedback-card ${isCorrect ? "correct" : "wrong"}`;
+  $feedbackCard.style.display = "block";
+
+  let html = `<div class="fb-header">${isCorrect ? "✓ Correct" : `✗ Not quite — answer: ${q.answer}`}</div>`;
+  if (q.correctNote) html += `<div>${q.correctNote}</div>`;
+  if (q.explain)     html += `<div class="fb-block">${q.explain}</div>`;
+  if (q.connect)     html += `<div class="fb-block connect">${q.connect}</div>`;
+  if (q.warn)        html += `<div class="fb-block warn">${q.warn}</div>`;
+
+  $feedbackCard.innerHTML = html;
 }
 
 /* ── Navigation ── */

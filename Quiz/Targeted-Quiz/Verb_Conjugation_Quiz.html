@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My-Japanese-Reviewers — Verb Conjugation Quiz</title>
+<title>Verb Conjugation Quiz | N5</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -357,8 +357,9 @@
   .mark.ok { color: #1b5e20; }
   .mark.no { color: #b71c1c; }
 
-  /* Explanation Box */
-  .explanation-box {
+  /* Explanation Box / Feedback Card */
+  .feedback-card {
+    display: none;
     margin-top: 24px;
     padding: 18px 20px;
     border-radius: 8px;
@@ -373,9 +374,8 @@
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .explanation-title {
+  .fb-header {
     font-weight: 800;
-    color: #a9342a;
     margin-bottom: 8px;
     font-size: 12px;
     text-transform: uppercase;
@@ -383,6 +383,58 @@
     display: flex;
     align-items: center;
     gap: 6px;
+  }
+  .feedback-card.correct .fb-header { color: #2e7d32; }
+  .feedback-card.wrong .fb-header { color: #c62828; }
+  .fb-block { margin-top: 8px; }
+  .fb-block.connect { color: #667085; font-size: 13px; }
+  .fb-block.warn {
+    color: #b71c1c;
+    background: #ffebee;
+    border: 1px solid rgba(198, 40, 40, 0.2);
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+
+  .end-actions {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .btn-end {
+    background: rgba(24, 32, 47, 0.06);
+    border: 1px solid rgba(24, 32, 47, 0.12);
+    color: #18202f;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-end:hover:not(:disabled) {
+    background: #f4ddd8;
+    border-color: rgba(169, 52, 42, 0.2);
+    color: #a9342a;
+    transform: translateY(-1px);
+  }
+  .btn-end:disabled { opacity: 0.4; cursor: default; }
+
+  /* ── Review Banner ── */
+  .review-banner {
+    display: none;
+    background: #fff9c4;
+    border: 1px solid #fbc02d;
+    color: #f57f17;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 15px rgba(245, 127, 23, 0.08);
+    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   /* Skipped warning alert box */
@@ -619,7 +671,14 @@
       <div class="score-number" id="score-number"></div>
       <div class="score-label" id="score-label"></div>
       <div class="email-row" id="email-row"></div>
-      <button class="btn-retake" id="btn-retake">Retake Quiz</button>
+      <div class="end-actions">
+        <button class="btn-end" id="btn-review" disabled>📝 Review wrong answers</button>
+        <button class="btn-end" id="btn-retake">🔄 Retake quiz</button>
+      </div>
+    </div>
+
+    <div class="review-banner" id="review-banner">
+      📝 Review mode — showing only the questions you got wrong
     </div>
 
     <div class="progress-row">
@@ -641,7 +700,7 @@
       <div class="q-number" id="q-number"></div>
       <div class="q-text" id="q-text"></div>
       <div class="choices-grid" id="choices-grid"></div>
-      <div class="explanation-box hidden" id="explanation-box"></div>
+      <div class="feedback-card" id="feedback-card" aria-live="polite"></div>
     </div>
 
 
@@ -1007,24 +1066,28 @@ const $subtitle   = document.getElementById("quiz-subtitle");
 const $scoreBanner= document.getElementById("score-banner");
 const $scoreNum   = document.getElementById("score-number");
 const $scoreLbl   = document.getElementById("score-label");
-const $emailRow   = document.getElementById("email-row");
-const $btnRetake  = document.getElementById("btn-retake");
-const $progText   = document.getElementById("progress-text");
-const $progFill   = document.getElementById("progress-fill");
-const $navGrid    = document.getElementById("nav-grid");
-const $qCard      = document.getElementById("q-card");
-const $qNumber    = document.getElementById("q-number");
-const $qText      = document.getElementById("q-text");
-const $choicesGrid= document.getElementById("choices-grid");
-const $explanationBox = document.getElementById("explanation-box");
+const $emailRow     = document.getElementById("email-row");
+const $btnRetake    = document.getElementById("btn-retake");
+const $btnReview    = document.getElementById("btn-review");
+const $reviewBanner = document.getElementById("review-banner");
+const $progText     = document.getElementById("progress-text");
+const $progFill     = document.getElementById("progress-fill");
+const $navGrid      = document.getElementById("nav-grid");
+const $qCard        = document.getElementById("q-card");
+const $qNumber      = document.getElementById("q-number");
+const $qText        = document.getElementById("q-text");
+const $choicesGrid  = document.getElementById("choices-grid");
+const $feedbackCard = document.getElementById("feedback-card");
 const $skippedWarning = document.getElementById("skipped-warning");
 const $timerDisplay = document.getElementById("timer-display");
+let reviewMode = false;
+let reviewIndices = [];
 let endTime = null;
 let timeLeft = 0;
 let timerInterval = null;
-const $btnPrev    = document.getElementById("btn-prev");
-const $btnNext    = document.getElementById("btn-next");
-const $btnSubmit  = document.getElementById("btn-submit");
+const $btnPrev      = document.getElementById("btn-prev");
+const $btnNext      = document.getElementById("btn-next");
+const $btnSubmit    = document.getElementById("btn-submit");
 
 /* ── Name Screen ── */
 $nameInput.addEventListener("input", () => {
@@ -1043,7 +1106,7 @@ function shuffleQuestions() {
 }
 
 function startTimer() {
-  const qCount = quiz.length;
+  const qCount = QUESTIONS.length;
   let TIME_LIMIT;
   if (qCount <= 30) {
     TIME_LIMIT = 20 * 60;
@@ -1092,12 +1155,15 @@ function startQuiz() {
   answers = {};
   currentQ = 0;
   submitted = false;
+  reviewMode = false;
+  reviewIndices = [];
 
   shuffleQuestions();
 
   $nameScreen.style.display = "none";
   $quizScreen.style.display = "block";
   $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "none";
   $subtitle.textContent = `${playerName}さん — Conjugate the verbs`;
 
   buildNavGrid();
@@ -1113,13 +1179,23 @@ function buildNavGrid() {
     const btn = document.createElement("button");
     btn.className = "nav-dot";
     btn.textContent = i + 1;
-    btn.addEventListener("click", () => { currentQ = i; renderQuestion(); });
+    btn.addEventListener("click", () => {
+      if (reviewMode) {
+        const idx = reviewIndices.indexOf(i);
+        if (idx === -1) return;
+        currentQ = idx;
+      } else {
+        currentQ = i;
+      }
+      renderQuestion();
+    });
     $navGrid.appendChild(btn);
   });
 }
 
 function updateNavGrid() {
   const dots = $navGrid.querySelectorAll(".nav-dot");
+  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
 
   if (submitted) {
     $navGrid.classList.remove("hidden");
@@ -1139,12 +1215,16 @@ function updateNavGrid() {
       if (answers[i]) dot.classList.add("answered");
     }
 
-    if (i === currentQ) dot.classList.add("active");
+    if (i === realIdx) dot.classList.add("active");
   });
 }
 
-/* ── Progress ── */
 function updateProgress() {
+  if (reviewMode) {
+    $progText.textContent = `Reviewing ${currentQ + 1} / ${reviewIndices.length}`;
+    $progFill.style.width = `${((currentQ + 1) / reviewIndices.length) * 100}%`;
+    return;
+  }
   const count = Object.keys(answers).length;
   $progText.textContent = `${count} / ${QUESTIONS.length} answered`;
   $progFill.style.width = `${(count / QUESTIONS.length) * 100}%`;
@@ -1153,11 +1233,16 @@ function updateProgress() {
 
 /* ── Render Question ── */
 function renderQuestion() {
-  const q = QUESTIONS[currentQ];
-  $qNumber.textContent = `Question ${currentQ + 1}`;
+  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
+  const q = QUESTIONS[realIdx];
+  $qNumber.textContent = reviewMode
+    ? `Review ${currentQ + 1} of ${reviewIndices.length}`
+    : `Question ${realIdx + 1} of ${QUESTIONS.length}`;
   $qText.innerHTML = q.question;
 
   $choicesGrid.innerHTML = "";
+  const isAnswered = answers[realIdx] !== undefined;
+
   q.options.forEach(opt => {
     const btn = document.createElement("button");
     btn.className = "choice-btn";
@@ -1165,14 +1250,14 @@ function renderQuestion() {
     
     btn.innerHTML = `<span class="choice-letter">${opt.id}.</span><span>${opt.text}</span>`;
 
-    const selected = answers[currentQ] === opt.id;
+    const selected = answers[realIdx] === opt.id;
     const isCorrectChoice = opt.id === q.correct;
 
     if (!submitted) {
       if (selected) btn.classList.add("selected");
       btn.addEventListener("click", () => {
         if (submitted) return;
-        answers[currentQ] = opt.id;
+        answers[realIdx] = opt.id;
         renderQuestion();
         updateProgress();
       });
@@ -1191,37 +1276,82 @@ function renderQuestion() {
     $choicesGrid.appendChild(btn);
   });
 
-  /* Explanation Box */
-  if (submitted) {
-    $explanationBox.classList.remove("hidden");
-    $explanationBox.innerHTML = `<div class="explanation-title">💡 Explanation</div>${q.explanation}`;
+  /* Feedback Card */
+  if (submitted && isAnswered) {
+    renderFeedback(q, answers[realIdx]);
   } else {
-    $explanationBox.classList.add("hidden");
-    $explanationBox.innerHTML = "";
+    $feedbackCard.style.display = "none";
+    $feedbackCard.innerHTML = "";
   }
 
   // Hide skipped questions warning when navigating to a question
   $skippedWarning.classList.add("hidden");
 
   updateNavGrid();
+  updateNavButtons();
+}
 
-  /* Arrow / submit visibility */
-  const isLast = currentQ === QUESTIONS.length - 1;
+function renderFeedback(q, given) {
+  const isCorrect = given === q.correct;
+  $feedbackCard.className = `feedback-card ${isCorrect ? "correct" : "wrong"}`;
+  $feedbackCard.style.display = "block";
+
+  let html = `<div class="fb-header">${isCorrect ? "✓ Correct" : `✗ Not quite — answer: ${q.correct}`}</div>`;
+  if (q.correctNote) html += `<div>${q.correctNote}</div>`;
+  if (q.explanation) html += `<div class="fb-block">${q.explanation}</div>`;
+  if (q.connect)     html += `<div class="fb-block connect">${q.connect}</div>`;
+  if (q.warn)        html += `<div class="fb-block warn">${q.warn}</div>`;
+
+  $feedbackCard.innerHTML = html;
+}
+
+function updateNavButtons() {
+  const total = reviewMode ? reviewIndices.length : QUESTIONS.length;
   $btnPrev.disabled = currentQ === 0;
 
-  if (isLast && !submitted) {
-    $btnNext.classList.add("hidden");
-    $btnSubmit.classList.remove("hidden");
+  if (!submitted) {
+    const isLast = currentQ === QUESTIONS.length - 1;
+    if (isLast) {
+      $btnNext.classList.add("hidden");
+      $btnSubmit.classList.remove("hidden");
+    } else {
+      $btnNext.classList.remove("hidden");
+      $btnSubmit.classList.add("hidden");
+      $btnNext.textContent = "Next →";
+    }
   } else {
-    $btnNext.classList.remove("hidden");
     $btnSubmit.classList.add("hidden");
-    $btnNext.disabled = isLast;
+    $btnNext.classList.remove("hidden");
+    
+    if (reviewMode) {
+      if (currentQ === total - 1) {
+        $btnNext.textContent = "Done reviewing ✓";
+      } else {
+        $btnNext.textContent = "Next →";
+      }
+      $btnNext.disabled = false;
+    } else {
+      $btnNext.textContent = "Next →";
+      $btnNext.disabled = currentQ === total - 1;
+    }
   }
 }
 
 /* ── Navigation ── */
-$btnPrev.addEventListener("click", () => { if (currentQ > 0) { currentQ--; renderQuestion(); } });
-$btnNext.addEventListener("click", () => { if (currentQ < QUESTIONS.length - 1) { currentQ++; renderQuestion(); } });
+$btnPrev.addEventListener("click", () => {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+});
+$btnNext.addEventListener("click", () => {
+  const total = reviewMode ? reviewIndices.length : QUESTIONS.length;
+  if (currentQ < total - 1) {
+    currentQ++; renderQuestion();
+  } else if (reviewMode) {
+    reviewMode = false;
+    $reviewBanner.style.display = "none";
+    $scoreBanner.style.display = "block";
+    $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
 
 /* ── Submit ── */
 $btnSubmit.addEventListener("click", submitQuiz);
@@ -1279,6 +1409,13 @@ async function submitQuiz(force = false) {
   $btnNext.classList.remove("hidden");
   $btnNext.disabled = false;
 
+  // Show review button if there are wrong answers
+  const wrongCount = QUESTIONS.length - s;
+  $btnReview.disabled = wrongCount === 0;
+  $btnReview.textContent = wrongCount === 0
+    ? "🎉 No mistakes!"
+    : `📝 Review ${wrongCount} wrong answer${wrongCount > 1 ? 's' : ''}`;
+
   /* ══════════════════════════════════════════════════
      EMAILJS TEMPLATE SETUP (Fallback mode simulated)
      ══════════════════════════════════════════════════ */
@@ -1311,12 +1448,28 @@ async function submitQuiz(force = false) {
   }
 }
 
-/* ── Retake ── */
+/* ── Review & Retake ── */
+$btnReview.addEventListener("click", () => {
+  reviewIndices = QUESTIONS
+    .map((q, i) => ({ i, wrong: answers[i] !== q.correct }))
+    .filter(x => x.wrong)
+    .map(x => x.i);
+  if (reviewIndices.length === 0) return;
+  reviewMode = true;
+  currentQ = 0;
+  $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "block";
+  renderQuestion();
+});
+
 $btnRetake.addEventListener("click", () => {
   answers = {};
   currentQ = 0;
   submitted = false;
+  reviewMode = false;
+  reviewIndices = [];
   $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "none";
   
   shuffleQuestions();
 

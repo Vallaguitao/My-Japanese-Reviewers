@@ -1,716 +1,626 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Japanese Counter Quiz - じょすうし れんしゅう</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Noto Sans JP', 'Zen Maru Gothic', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
-            padding: clamp(10px, 3vw, 20px);
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        
-        /* Header */
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: clamp(15px, 3vw, 30px);
-            padding: clamp(15px, 3vw, 25px);
-            background: rgba(255,255,255,0.1);
-            border-radius: clamp(15px, 2vw, 20px);
-            backdrop-filter: blur(10px);
-        }
-        
-        .header h1 {
-            font-size: clamp(24px, 5vw, 40px);
-            margin-bottom: 8px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .header p {
-            font-size: clamp(14px, 2.5vw, 18px);
-            opacity: 0.9;
-        }
-        
-        /* Score Board */
-        .score-board {
-            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
-            border-radius: clamp(12px, 2vw, 20px);
-            padding: clamp(15px, 3vw, 25px);
-            margin-bottom: clamp(15px, 2vw, 20px);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        
-        .score-item {
-            text-align: center;
-            min-width: 80px;
-        }
-        
-        .score-label {
-            font-size: clamp(11px, 1.8vw, 14px);
-            color: #666;
-            margin-bottom: 5px;
-        }
-        
-        .score-value {
-            font-size: clamp(22px, 4vw, 32px);
-            font-weight: bold;
-            color: #0f3460;
-        }
-        
-        .progress-container {
-            width: clamp(120px, 20vw, 200px);
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 12px;
-            background: #e0e0e0;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #e94560, #ff6b6b);
-            border-radius: 6px;
-            transition: width 0.3s ease;
-            width: 0%;
-        }
-        
-        /* Section Tabs */
-        .section-tabs {
-            display: flex;
-            gap: clamp(8px, 1.5vw, 12px);
-            margin-bottom: clamp(15px, 2vw, 20px);
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .tab-btn {
-            padding: clamp(10px, 2vw, 14px) clamp(16px, 3vw, 28px);
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: clamp(13px, 2vw, 16px);
-            font-weight: 600;
-            transition: all 0.3s;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            position: relative;
-        }
-        
-        .tab-btn:hover:not(.completed):not(.locked) {
-            background: rgba(255,255,255,0.4);
-            transform: translateY(-2px);
-        }
-        
-        .tab-btn.active {
-            background: white;
-            color: #0f3460;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .tab-btn.completed {
-            background: #4caf50;
-            color: white;
-            cursor: default;
-        }
-        
-        .tab-btn.completed::after {
-            content: ' ✓';
-        }
-        
-        .tab-btn.locked {
-            background: rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.4);
-            cursor: not-allowed;
-        }
-        
-        /* Reference Toggle */
-        .reference-toggle {
-            text-align: center;
-            margin-bottom: clamp(12px, 2vw, 20px);
-        }
-        
-        .reference-btn {
-            padding: clamp(10px, 2vw, 12px) clamp(20px, 4vw, 30px);
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: 2px solid rgba(255,255,255,0.5);
-            border-radius: 25px;
-            font-size: clamp(13px, 2vw, 15px);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .reference-btn:hover {
-            background: rgba(255,255,255,0.25);
-            transform: translateY(-2px);
-        }
-        
-        /* Reference Card */
-        .reference-card {
-            display: none;
-            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
-            border-radius: clamp(12px, 2vw, 20px);
-            padding: clamp(15px, 3vw, 25px);
-            margin-bottom: clamp(15px, 2vw, 20px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-        
-        .reference-card.show {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-        
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .ref-title {
-            font-size: clamp(18px, 3vw, 24px);
-            color: #0f3460;
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #e94560;
-        }
-        
-        .ref-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-        }
-        
-        .ref-box {
-            padding: clamp(12px, 2vw, 18px);
-            border-radius: 12px;
-            background: #f8f9ff;
-            border-left: 4px solid;
-        }
-        
-        .ref-box.time { border-color: #e94560; background: linear-gradient(135deg, #ffe0e6 0%, #fff 100%); }
-        .ref-box.things { border-color: #48dbfb; background: linear-gradient(135deg, #e0f7ff 0%, #fff 100%); }
-        .ref-box.people { border-color: #ff9f43; background: linear-gradient(135deg, #fff3e0 0%, #fff 100%); }
-        .ref-box.objects { border-color: #26de81; background: linear-gradient(135deg, #e0ffe6 0%, #fff 100%); }
-        .ref-box.animals { border-color: #a55eea; background: linear-gradient(135deg, #f3e5f5 0%, #fff 100%); }
-        
-        .ref-box-title {
-            font-size: clamp(14px, 2vw, 16px);
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .ref-box-content {
-            font-size: clamp(12px, 1.8vw, 14px);
-            color: #555;
-            line-height: 1.8;
-        }
-        
-        .counter-tag {
-            display: inline-block;
-            padding: 2px 8px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 4px;
-            margin: 2px;
-            font-family: 'Noto Sans JP', sans-serif;
-        }
-        
-        /* Quiz Section */
-        .quiz-section {
-            display: none;
-        }
-        
-        .quiz-section.active {
-            display: block;
-            animation: fadeIn 0.4s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Card */
-        .card {
-            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
-            border-radius: clamp(15px, 2.5vw, 25px);
-            padding: clamp(20px, 4vw, 35px);
-            margin-bottom: clamp(15px, 2vw, 20px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #e94560, #ff6b6b, #feca57, #48dbfb);
-        }
-        
-        .card-title {
-            font-size: clamp(18px, 3vw, 24px);
-            color: #0f3460;
-            margin-bottom: clamp(15px, 2.5vw, 25px);
-            padding-bottom: 12px;
-            border-bottom: 2px solid #e94560;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        /* Question Box */
-        .question-box {
-            background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
-            border-radius: clamp(12px, 2vw, 18px);
-            padding: clamp(18px, 3vw, 30px);
-            margin-bottom: 15px;
-            border: 2px solid #e0e5f0;
-        }
-        
-        .question-number {
-            font-size: clamp(12px, 1.8vw, 14px);
-            color: #e94560;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .question-context {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: clamp(10px, 2vw, 20px);
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .counter-emoji {
-            font-size: clamp(40px, 8vw, 60px);
-        }
-        
-        .question-text {
-            font-size: clamp(15px, 2.5vw, 20px);
-            color: #333;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        
-        .japanese-prompt {
-            font-size: clamp(28px, 6vw, 44px);
-            color: #0f3460;
-            font-weight: bold;
-            text-align: center;
-            margin: clamp(15px, 3vw, 25px) 0;
-        }
-        
-        .number-display {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin: 15px 0;
-        }
-        
-        .number-badge {
-            font-size: clamp(32px, 6vw, 48px);
-            font-weight: bold;
-            color: white;
-            background: linear-gradient(135deg, #e94560, #ff6b6b);
-            width: clamp(60px, 12vw, 80px);
-            height: clamp(60px, 12vw, 80px);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
-        }
-        
-        .counter-indicator {
-            display: inline-block;
-            padding: clamp(6px, 1.5vw, 10px) clamp(12px, 2.5vw, 20px);
-            border-radius: 20px;
-            font-size: clamp(13px, 2vw, 16px);
-            font-weight: bold;
-            margin: 5px;
-        }
-        
-        .counter-indicator.time { background: #ffe0e6; color: #c62828; }
-        .counter-indicator.things { background: #e0f7ff; color: #0277bd; }
-        .counter-indicator.people { background: #fff3e0; color: #e65100; }
-        .counter-indicator.objects { background: #e0ffe6; color: #2e7d32; }
-        .counter-indicator.animals { background: #f3e5f5; color: #6a1b9a; }
-        
-        /* Options Grid */
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: clamp(10px, 2vw, 15px);
-            margin-top: 20px;
-        }
-        
-        @media (max-width: 500px) {
-            .options-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .option-btn {
-            padding: clamp(14px, 3vw, 20px);
-            border: 3px solid #e0e0e0;
-            border-radius: 12px;
-            background: white;
-            cursor: pointer;
-            font-size: clamp(18px, 3.5vw, 24px);
-            font-family: 'Noto Sans JP', sans-serif;
-            transition: all 0.3s;
-            text-align: center;
-        }
-        
-        .option-btn:hover:not(:disabled) {
-            border-color: #e94560;
-            background: #fff5f7;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.2);
-        }
-        
-        .option-btn.correct {
-            border-color: #4caf50;
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-        
-        .option-btn.incorrect {
-            border-color: #f44336;
-            background: #ffebee;
-            color: #c62828;
-        }
-        
-        .option-btn:disabled {
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-        
-        /* Feedback */
-        .feedback {
-            padding: clamp(12px, 2.5vw, 18px);
-            border-radius: 12px;
-            margin-top: 15px;
-            display: none;
-            font-size: clamp(14px, 2.2vw, 17px);
-        }
-        
-        .feedback.correct {
-            display: block;
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-            border-left: 5px solid #4caf50;
-            color: #2e7d32;
-        }
-        
-        .feedback.incorrect {
-            display: block;
-            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-            border-left: 5px solid #f44336;
-            color: #c62828;
-        }
-        
-        .feedback .correct-answer {
-            font-size: clamp(20px, 3.5vw, 26px);
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        
-        .next-btn {
-            padding: clamp(10px, 2vw, 14px) clamp(24px, 4vw, 35px);
-            background: linear-gradient(135deg, #4caf50, #66bb6a);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: clamp(14px, 2.2vw, 17px);
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: all 0.3s;
-        }
-        
-        .next-btn:hover {
-            background: linear-gradient(135deg, #43a047, #5cb85c);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
-        }
-        
-        /* Results Section */
-        .results-card {
-            text-align: center;
-            padding: clamp(30px, 5vw, 50px);
-        }
-        
-        .results-icon {
-            font-size: clamp(60px, 12vw, 90px);
-            margin-bottom: 20px;
-        }
-        
-        .results-title {
-            font-size: clamp(24px, 5vw, 36px);
-            color: #0f3460;
-            margin-bottom: 15px;
-        }
-        
-        .results-score {
-            font-size: clamp(40px, 8vw, 60px);
-            font-weight: bold;
-            color: #e94560;
-            margin-bottom: 25px;
-        }
-        
-        .results-breakdown {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: clamp(10px, 2vw, 15px);
-            margin: 25px 0;
-        }
-        
-        .breakdown-item {
-            background: #f8f9ff;
-            padding: clamp(12px, 2vw, 18px);
-            border-radius: 12px;
-            border-left: 4px solid #e94560;
-        }
-        
-        .breakdown-label {
-            font-size: clamp(11px, 1.8vw, 14px);
-            color: #666;
-        }
-        
-        .breakdown-value {
-            font-size: clamp(20px, 3.5vw, 28px);
-            font-weight: bold;
-            color: #0f3460;
-        }
-        
-        .retry-btn {
-            padding: clamp(14px, 2.5vw, 18px) clamp(35px, 6vw, 50px);
-            background: linear-gradient(135deg, #e94560, #ff6b6b);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: clamp(16px, 2.5vw, 20px);
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 10px;
-        }
-        
-        .retry-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
-        }
-        
-        /* Notes Box */
-        .note-box {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
-            padding: clamp(12px, 2vw, 18px);
-            border-radius: 12px;
-            margin: 15px 0;
-            border-left: 4px solid #ffc107;
-            font-size: clamp(12px, 1.8vw, 15px);
-        }
-        
-        .note-box::before {
-            content: '📝 ';
-        }
-        
-        .warning-box {
-            background: linear-gradient(135deg, #ffe0e6 0%, #ffd1d9 100%);
-            padding: clamp(12px, 2vw, 18px);
-            border-radius: 12px;
-            margin: 15px 0;
-            border-left: 4px solid #e94560;
-            font-size: clamp(12px, 1.8vw, 15px);
-        }
-        
-        .warning-box::before {
-            content: '⚠️ ';
-        }
-        
-        .tip-box {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            padding: clamp(12px, 2vw, 18px);
-            border-radius: 12px;
-            margin: 15px 0;
-            border-left: 4px solid #28a745;
-            font-size: clamp(12px, 1.8vw, 15px);
-        }
-        
-        .tip-box::before {
-            content: '💡 ';
-        }
-        
-        /* Irregular highlight */
-        .irregular {
-            color: #e94560;
-            font-weight: bold;
-        }
-        
-        /* Mobile touch feedback */
-        @media (hover: none) {
-            .option-btn:active {
-                transform: scale(0.98);
-            }
-        }
-        
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.3);
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,255,255,0.5);
-        }
-
-/* ========== Site Breadcrumb ========== */
-.site-breadcrumb,
-.site-breadcrumb * {
-  box-sizing: border-box;
-}
-
-.site-breadcrumb {
-  position: relative;
-  z-index: 20;
-  width: min(1180px, calc(100% - 32px));
-  margin: 16px auto 12px;
-  font-family: "Noto Sans JP", "Outfit", system-ui, sans-serif;
-  color: #18202f;
-}
-
-.site-breadcrumb__list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0;
-  list-style: none;
-  margin: 0;
-  padding: 8px 12px;
-  border: 1px solid rgba(24, 32, 47, 0.12);
-  border-radius: 8px;
-  background: rgba(255, 253, 248, 0.94);
-  box-shadow: 0 10px 30px rgba(24, 32, 47, 0.08);
-}
-
-.site-breadcrumb__item {
-  display: inline-flex;
-  align-items: center;
-  min-width: 0;
-  color: #667085;
-  font-size: 0.82rem;
-  font-weight: 700;
-  line-height: 1.4;
-}
-
-.site-breadcrumb__item + .site-breadcrumb__item::before {
-  content: "/";
-  margin: 0 8px;
-  color: rgba(169, 52, 42, 0.42);
-  font-weight: 800;
-}
-
-.site-breadcrumb__link {
-  color: #667085;
-  text-decoration: none;
-  transition: color 0.18s ease, background 0.18s ease;
-}
-
-.site-breadcrumb__link:hover {
-  color: #a9342a;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.site-breadcrumb__link:focus-visible {
-  color: #a9342a;
-  outline: 2px solid rgba(169, 52, 42, 0.45);
-  outline-offset: 3px;
-  border-radius: 4px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.site-breadcrumb__category {
-  color: #a9342a;
-}
-
-.site-breadcrumb__current {
-  color: #18202f;
-  overflow-wrap: anywhere;
-}
-
-@media (max-width: 768px) {
-  .progress-container + .presentation {
-    padding-top: 160px;
-  }
-}
-
-@media (max-width: 640px) {
-  .site-breadcrumb {
-    width: min(100% - 20px, 680px);
-    margin: 12px auto 10px;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Japanese Counter Quiz | N5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  :root {
+    --accent-start: #a9342a;
+    --accent-end: #8f241c;
+    --bg-base: #f8f3ea;
+    --bg-radial-1: rgba(169, 52, 42, 0.06);
+    --bg-radial-2: rgba(38, 58, 99, 0.04);
+    --bg-card: rgba(255, 253, 248, 0.94);
+    --bg-input: rgba(24, 32, 47, 0.04);
+    --bg-button: #fffdf8;
+    --bg-button-hover: #f4ddd8;
+    --text-primary: #18202f;
+    --text-muted: #667085;
+    --text-on-accent: #ffffff;
+    --border: rgba(24, 32, 47, 0.12);
+    --border-active: #a9342a;
+    --success: #e8f5e9;
+    --success-bright: #2e7d32;
+    --success-text: #1b5e20;
+    --warning: #fff9c4;
+    --warning-bright: #f57f17;
+    --error: #ffebee;
+    --error-bright: #c62828;
+    --error-text: #b71c1c;
   }
 
-  .site-breadcrumb__list {
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background:
+      linear-gradient(90deg, rgba(169, 52, 42, 0.06) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(38, 58, 99, 0.04), transparent 34rem),
+      #f8f3ea;
+    background-size: 44px 44px, auto, auto;
+    color: var(--text-primary);
+    font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: none;
+  }
+
+  .container {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 32px 16px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .jp {
+    font-family: 'Noto Sans JP', 'Zen Kaku Gothic New', sans-serif;
+    font-weight: 700;
+  }
+  .blank {
+    display: inline-block;
+    min-width: 28px;
+    padding: 0 6px;
+    margin: 0 2px;
+    background: var(--accent-start);
+    color: #ffffff;
+    border-radius: 6px;
+    font-weight: 800;
+    text-align: center;
+  }
+  ruby rt { font-size: 0.6em; color: var(--text-muted); }
+
+  /* ── Card Styles ── */
+  .card, .q-card, .score-banner {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 32px 24px;
+    border: 1px solid var(--border);
+    box-shadow: 0 12px 40px rgba(15, 52, 96, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  /* ── Name Screen ── */
+  #name-screen { margin-top: 40px; }
+
+  .badge {
+    display: inline-block;
+    background: var(--accent-start);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 10px;
+    padding: 5px 16px;
+    border-radius: 20px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(233, 69, 96, 0.15);
+  }
+
+  .title {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 16px 0 6px;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .name-label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 24px 0 8px;
+    text-align: left;
+    font-weight: 700;
+  }
+
+  .name-input {
+    width: 100%;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(255, 253, 248, 0.94);
+    color: var(--text-primary);
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .name-input:focus {
+    border-color: var(--accent-start);
+    box-shadow: 0 0 0 3px rgba(169, 52, 42, 0.15);
+  }
+
+  .btn-primary {
+    width: 100%;
+    margin-top: 24px;
+    padding: 16px 0;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+    border: none;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.25);
+    transition: all 0.25s ease;
+  }
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(233, 69, 96, 0.35);
+    opacity: 0.95;
+  }
+  .btn-primary:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* ── Quiz Screen ── */
+  #quiz-screen { display: none; }
+  .header { text-align: center; margin-bottom: 24px; }
+  .header .subtitle { margin-top: 6px; }
+
+  /* Score Banner */
+  .score-banner {
+    display: none;
+    border-radius: 8px;
+    padding: 28px 20px;
+    text-align: center;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .score-number { font-size: 52px; font-weight: 900; letter-spacing: -1.5px; line-height: 1; margin-bottom: 6px;}
+  .score-label { font-size: 20px; font-weight: 700; margin-bottom: 14px; }
+  .email-row { margin-bottom: 20px; }
+  .email-pill {
+    display: inline-block;
+    background: rgba(15, 52, 96, 0.04);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .email-pill.sent {
+    background: #e8f5e9;
+    border: 1px solid var(--success-bright);
+    color: var(--success-text);
+  }
+  .email-pill.error {
+    background: #ffebee;
+    border: 1px solid var(--error-bright);
+    color: var(--error-text);
+  }
+
+  .end-actions {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .btn-end {
+    background: rgba(15, 52, 96, 0.06);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-end:hover:not(:disabled) {
+    background: var(--bg-button);
+    border-color: rgba(233, 69, 96, 0.2);
+    color: var(--accent-start);
+    transform: translateY(-1px);
+  }
+  .btn-end:disabled { opacity: 0.4; cursor: default; }
+
+  /* Review Banner */
+  .review-banner {
+    display: none;
+    background: #fff9c4;
+    border: 1px solid #fbc02d;
+    color: #f57f17;
+    text-align: center;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  /* Progress */
+  .progress-row { margin-bottom: 20px; }
+  .progress-text { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 8px; font-weight: 700; }
+  .progress-bar { height: 6px; background: rgba(15, 52, 96, 0.06); border-radius: 6px; overflow: hidden; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-start), var(--accent-end));
+    border-radius: 6px;
+    width: 0%;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Nav Grid */
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .nav-dot {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #fffdf8;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-dot:hover:not(.answered):not(.active):not(.locked) {
+    background: var(--bg-button);
+    color: var(--accent-start);
+  }
+  .nav-dot.answered {
+    background: rgba(233, 69, 96, 0.08);
+    border-color: rgba(233, 69, 96, 0.3);
+    color: var(--accent-start);
+  }
+  .nav-dot.active {
+    border-color: var(--accent-start);
+    background: var(--bg-button);
+    color: var(--accent-start);
+    box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
+  }
+  .nav-dot.correct {
+    background: #e8f5e9;
+    border-color: var(--success-bright);
+    color: var(--success-text);
+  }
+  .nav-dot.wrong {
+    background: #ffebee;
+    border-color: var(--error-bright);
+    color: var(--error-text);
+  }
+  .nav-dot.unanswered-locked {
+    background: rgba(15, 52, 96, 0.02);
+    border-color: rgba(15, 52, 96, 0.06);
+    color: rgba(15, 52, 96, 0.3);
+    opacity: 0.5;
+  }
+  @media (max-width: 480px) {
+    .nav-grid { gap: 4px; }
+    .nav-dot { font-size: 10px; }
+  }
+
+  /* Question Card */
+  .q-card {
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 28px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(15, 52, 96, 0.04);
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .q-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .q-tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 8px;
+    letter-spacing: 0.3px;
+  }
+  .q-tag.basic { background: #ffe0e6; color: #c62828; }
+  .q-tag.time { background: #e0f7ff; color: #0277bd; }
+  .q-tag.advanced { background: #f3e5f5; color: #6a1b9a; }
+  .q-tag.mixed { background: #fff3e0; color: #e65100; }
+  .q-tag.type { background: rgba(15, 52, 96, 0.05); color: var(--text-muted); }
+
+  .q-number {
+    font-size: 11px;
+    color: var(--accent-start);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+  }
+  .q-text {
+    font-size: 21px;
+    font-weight: 700;
+    margin-bottom: 28px;
+    line-height: 1.45;
+    color: var(--text-primary);
+  }
+
+  /* Choices Grid */
+  .choices-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .choice-btn {
+    padding: 18px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fffdf8;
+    color: var(--text-primary);
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 600;
+    position: relative;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+  }
+  .choice-btn:hover:not(.locked) {
+    border-color: rgba(233, 69, 96, 0.3);
+    background: var(--bg-button);
+    color: var(--accent-start);
+    transform: translateY(-1px);
+  }
+  .choice-btn.selected {
+    background: var(--bg-button);
+    border-color: var(--accent-start);
+    color: var(--accent-start);
+  }
+  .choice-btn.correct-reveal {
+    background: #e8f5e9;
+    border-color: var(--success-bright);
+    color: var(--success-text);
+  }
+  .choice-btn.wrong-reveal {
+    background: #ffebee;
+    border-color: var(--error-bright);
+    color: var(--error-text);
+  }
+  .choice-btn.faded-reveal {
+    opacity: 0.4;
+    border-color: rgba(15, 52, 96, 0.04);
+  }
+  .choice-letter {
+    font-weight: 800;
+    margin-right: 16px;
+    opacity: 0.5;
+  }
+  .choice-btn:hover .choice-letter, .choice-btn.selected .choice-letter { opacity: 1; }
+  .mark {
+    position: absolute;
+    right: 20px;
+    font-size: 20px;
+    font-weight: 900;
+  }
+  .mark.ok { color: var(--success-bright); }
+  .mark.no { color: var(--error-bright); }
+
+  /* ── Explanation Box / Feedback Card ── */
+  .feedback-card {
+    display: none;
+    margin-top: 24px;
+    padding: 18px 20px;
+    border-radius: 8px;
+    background: #fff8ef;
+    border: 1px solid rgba(169, 52, 42, 0.15);
+    font-size: 14px;
+    line-height: 1.55;
+    color: #18202f;
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fb-header {
+    font-weight: 800;
+    margin-bottom: 8px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .feedback-card.correct .fb-header { color: #2e7d32; }
+  .feedback-card.wrong .fb-header { color: #c62828; }
+  .fb-block { margin-top: 8px; }
+  .fb-block.connect { color: #667085; font-size: 13px; }
+  .fb-block.warn {
+    color: #b71c1c;
+    background: #ffebee;
+    border: 1px solid rgba(198, 40, 40, 0.2);
     padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
   }
 
-  .site-breadcrumb__item {
-    font-size: 0.78rem;
+  /* Skipped warning alert box */
+  .skipped-warning {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #fff8ef;
+    border: 1px solid var(--accent-start);
+    border-radius: 8px;
+    color: var(--accent-start);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.5;
+    animation: fadeIn 0.3s ease;
   }
-}
-/* ========== End Site Breadcrumb ========== */
-    </style>
+  .skipped-link {
+    color: var(--accent-start);
+    text-decoration: underline;
+    cursor: pointer;
+    margin: 0 4px;
+    font-weight: 800;
+  }
+  .skipped-link:hover { color: var(--accent-end); }
+
+  /* Arrow Row */
+  .arrow-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .btn-nav {
+    flex: 1;
+    padding: 16px 0;
+    border-radius: 8px;
+    background: #fffdf8;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-nav:hover:not(:disabled) {
+    background: var(--bg-button);
+    color: var(--accent-start);
+    border-color: rgba(233, 69, 96, 0.2);
+  }
+  .btn-nav:disabled { opacity: 0.25; cursor: not-allowed; }
+  
+  .btn-submit {
+    flex: 1;
+    padding: 16px 0;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+    border: none;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.25);
+    transition: all 0.2s;
+  }
+  .btn-submit:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba(233, 69, 96, 0.35);
+    opacity: 0.95;
+  }
+  .btn-submit:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+
+  /* Breadcrumb */
+  .site-breadcrumb, .site-breadcrumb * { box-sizing: border-box; }
+  .site-breadcrumb {
+    position: relative;
+    z-index: 20;
+    width: min(1180px, calc(100% - 32px));
+    margin: 16px auto 12px;
+    font-family: "Noto Sans JP", sans-serif;
+    color: var(--text-primary);
+  }
+  .site-breadcrumb__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0;
+    list-style: none;
+    margin: 0;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(255, 253, 248, 0.94);
+    box-shadow: 0 10px 30px rgba(15, 52, 96, 0.08);
+  }
+  .site-breadcrumb__item {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .site-breadcrumb__item + .site-breadcrumb__item::before {
+    content: "/";
+    margin: 0 8px;
+    color: rgba(233, 69, 96, 0.3);
+    font-weight: 800;
+  }
+  .site-breadcrumb__link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.18s ease;
+  }
+  .site-breadcrumb__link:hover {
+    color: var(--accent-start);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .site-breadcrumb__category { color: var(--accent-start); }
+  .site-breadcrumb__current { color: var(--text-primary); overflow-wrap: anywhere; }
+
+  @media (max-width: 640px) {
+    .site-breadcrumb { width: min(100% - 20px, 680px); margin: 12px auto 10px; }
+    .site-breadcrumb__list { padding: 8px 10px; }
+    .site-breadcrumb__item { font-size: 0.78rem; }
+  }
+
+  /* Timer Display styling */
+  .topbar-timer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(255, 253, 248, 0.94);
+    box-shadow: 0 2px 6px rgba(15, 52, 96, 0.04);
+  }
+  .topbar-timer.warning {
+    color: var(--error-bright);
+    border-color: var(--error-bright);
+    background: #ffebee;
+    animation: timerPulse 1s infinite alternate;
+  }
+  @keyframes timerPulse {
+    from { opacity: 1; }
+    to { opacity: 0.6; }
+  }
+</style>
 </head>
 <body>
 
@@ -724,854 +634,834 @@
 </nav>
 <!-- End Site Breadcrumb -->
 
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🔢 じょすうし れんしゅう</h1>
-            <p>Japanese Counter Practice Quiz • 50 Questions</p>
-        </div>
-        
-        <!-- Score Board -->
-        <div class="score-board">
-            <div class="score-item">
-                <div class="score-label">てんすう</div>
-                <div class="score-value" id="score">0</div>
-            </div>
-            <div class="score-item">
-                <div class="score-label">しつもん</div>
-                <div class="score-value"><span id="answered">0</span>/<span id="total">50</span></div>
-            </div>
-            <div class="score-item progress-container">
-                <div class="score-label">しんど</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress"></div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Section Tabs -->
-        <div class="section-tabs">
-            <button class="tab-btn active" id="tab-basic" onclick="handleTabClick('basic')">📦 きほん</button>
-            <button class="tab-btn locked" id="tab-time" onclick="handleTabClick('time')">⏰ じかん</button>
-            <button class="tab-btn locked" id="tab-advanced" onclick="handleTabClick('advanced')">📚 おうよう</button>
-            <button class="tab-btn locked" id="tab-mixed" onclick="handleTabClick('mixed')">🎯 そうごう</button>
-        </div>
-        
-        <!-- Reference Toggle -->
-        <div class="reference-toggle">
-            <button class="reference-btn" onclick="toggleReference()">📖 じょすうし ひょう をみる</button>
-        </div>
-        
-        <!-- Reference Card -->
-        <div class="reference-card" id="referenceCard">
-            <div class="ref-title">📊 じょすうし さんこう ひょう (Counter Reference)</div>
-            
-            <div class="ref-grid">
-                <div class="ref-box time">
-                    <div class="ref-box-title">⏰ じかん (Time)</div>
-                    <div class="ref-box-content">
-                        <span class="counter-tag">〜じかん (hours)</span>
-                        <span class="counter-tag">〜ふん/ぷん (minutes)</span>
-                        <span class="counter-tag">〜にち (days)</span>
-                        <span class="counter-tag">〜しゅうかん (weeks)</span>
-                        <span class="counter-tag">〜かげつ (months)</span>
-                        <span class="counter-tag">〜ねん (years)</span>
-                    </div>
-                    <div class="note-box" style="margin-top: 10px; font-size: 12px;">
-                        <strong>ふきそく:</strong> いっぷん、ろっぷん、はっぷん、じゅっぷん
-                    </div>
-                </div>
-                
-                <div class="ref-box things">
-                    <div class="ref-box-title">📦 もの (Things)</div>
-                    <div class="ref-box-content">
-                        <span class="counter-tag">〜つ (general)</span>
-                        <span class="counter-tag">〜こ (small items)</span>
-                        <span class="counter-tag">〜まい (flat things)</span>
-                        <span class="counter-tag">〜ほん/ぼん/ぽん (long things)</span>
-                        <span class="counter-tag">〜さつ (books)</span>
-                        <span class="counter-tag">〜だい (machines)</span>
-                    </div>
-                </div>
-                
-                <div class="ref-box people">
-                    <div class="ref-box-title">👥 ひと (People)</div>
-                    <div class="ref-box-content">
-                        <span class="counter-tag">〜にん (people)</span>
-                        <span class="counter-tag">〜さい (age)</span>
-                        <span class="counter-tag">〜ばん (order)</span>
-                    </div>
-                    <div class="warning-box" style="margin-top: 10px; font-size: 12px;">
-                        <strong>ふきそく:</strong> ひとり、ふたり (not いちにん、ににん)
-                    </div>
-                </div>
-                
-                <div class="ref-box objects">
-                    <div class="ref-box-title">🏠 たてもの・のりもの (Buildings & Vehicles)</div>
-                    <div class="ref-box-content">
-                        <span class="counter-tag">〜かい (floors)</span>
-                        <span class="counter-tag">〜けん (houses)</span>
-                        <span class="counter-tag">〜そく (shoes/socks)</span>
-                        <span class="counter-tag">〜ちゃく (clothes)</span>
-                        <span class="counter-tag">〜はい/ぱい/ばい (cups)</span>
-                        <span class="counter-tag">〜かい (frequency)</span>
-                    </div>
-                </div>
-                
-                <div class="ref-box animals">
-                    <div class="ref-box-title">🐱 どうぶつ (Animals)</div>
-                    <div class="ref-box-content">
-                        <span class="counter-tag">〜ひき/びき/ぴき (small animals)</span>
-                    </div>
-                    <div class="tip-box" style="margin-top: 10px; font-size: 12px;">
-                        <strong>ルール:</strong> 1,6,8,10 → ぴき | 3 → びき | others → ひき
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Basic Section (Things, People, General) -->
-        <div class="quiz-section active" id="basic-section">
-            <div class="card">
-                <div class="card-title">📦 きほん じょすうし (Basic Counters)</div>
-                <div id="basic-question"></div>
-            </div>
-        </div>
-        
-        <!-- Time Section -->
-        <div class="quiz-section" id="time-section">
-            <div class="card">
-                <div class="card-title">⏰ じかん の じょすうし (Time Counters)</div>
-                <div id="time-question"></div>
-            </div>
-        </div>
-        
-        <!-- Advanced Section -->
-        <div class="quiz-section" id="advanced-section">
-            <div class="card">
-                <div class="card-title">📚 おうよう じょすうし (Advanced Counters)</div>
-                <div id="advanced-question"></div>
-            </div>
-        </div>
-        
-        <!-- Mixed Section -->
-        <div class="quiz-section" id="mixed-section">
-            <div class="card">
-                <div class="card-title">🎯 そうごう もんだい (Mixed Questions)</div>
-                <div id="mixed-question"></div>
-            </div>
-        </div>
-        
-        <!-- Results Section -->
-        <div class="quiz-section" id="results-section">
-            <div class="card results-card">
-                <div class="results-icon" id="results-icon">🎉</div>
-                <div class="results-title" id="results-title">すばらしい！</div>
-                <div class="results-score" id="final-score">0%</div>
-                
-                <div class="results-breakdown">
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">📦 きほん</div>
-                        <div class="breakdown-value" id="basic-score">0/0</div>
-                    </div>
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">⏰ じかん</div>
-                        <div class="breakdown-value" id="time-score">0/0</div>
-                    </div>
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">📚 おうよう</div>
-                        <div class="breakdown-value" id="advanced-score">0/0</div>
-                    </div>
-                    <div class="breakdown-item">
-                        <div class="breakdown-label">🎯 そうごう</div>
-                        <div class="breakdown-value" id="mixed-score">0/0</div>
-                    </div>
-                </div>
-                
-                <button class="retry-btn" onclick="restartQuiz()">🔄 もういちど</button>
-            </div>
-        </div>
+<div class="container">
+
+  <!-- ════ NAME SCREEN ════ -->
+  <div id="name-screen">
+    <div class="card text-center">
+      <span class="badge">My-Japanese-Reviewers</span>
+      <h1 class="title">じょすうし れんしゅう</h1>
+      <p class="subtitle">Japanese Counter Practice Quiz · 50 Questions</p>
+      <label class="name-label">おなまえは？ Enter your name</label>
+      <input class="name-input" id="name-input" type="text" placeholder="Your name..." autofocus>
+      <button class="btn-primary" id="btn-start" disabled>Start Quiz →</button>
     </div>
+  </div>
+
+  <!-- ════ QUIZ SCREEN ════ -->
+  <div id="quiz-screen">
+    <header class="header">
+      <span class="badge">My-Japanese-Reviewers</span>
+      <h1 class="title">じょすうし れんしゅう</h1>
+      <p class="subtitle" id="quiz-subtitle"></p>
+    </header>
+
+    <div class="score-banner" id="score-banner" aria-live="polite">
+      <div class="score-number" id="score-number"></div>
+      <div class="score-label" id="score-label"></div>
+      <div class="email-row" id="email-row"></div>
+      <div class="end-actions">
+        <button class="btn-end" id="btn-review" disabled>📝 Review wrong answers</button>
+        <button class="btn-end" id="btn-retake">🔄 Retake Quiz</button>
+        <button class="btn-end" id="btn-home">🏠 Main Menu</button>
+      </div>
+    </div>
+
+    <div class="review-banner" id="review-banner">
+      📝 Review mode — showing only questions you got wrong
+    </div>
+
+    <div class="progress-row">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span class="progress-text" id="progress-text" style="margin-bottom: 0;">0 / 50 answered</span>
+        <div class="topbar-timer" id="timer-wrapper">
+          <span class="timer-icon">⏳</span>
+          <span class="timer-display" id="timer-display">00:00</span>
+        </div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <div class="nav-grid hidden" id="nav-grid"></div>
+
+    <div class="skipped-warning hidden" id="skipped-warning" aria-live="polite"></div>
+
+    <div class="q-card" id="q-card">
+      <div class="q-number" id="q-number"></div>
+      <div class="q-text" id="q-text"></div>
+      <div class="choices-grid" id="choices-grid"></div>
+      <div class="feedback-card" id="feedback-card" aria-live="polite"></div>
+    </div>
+
+    <div class="arrow-row">
+      <button class="btn-nav" id="btn-prev">← Previous</button>
+      <button class="btn-nav" id="btn-next">Next →</button>
+      <button class="btn-submit hidden" id="btn-submit" disabled>Submit Exam</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   QUIZ CONFIG
+   ═══════════════════════════════════════════════════════════════ */
+const QUIZ_CONFIG = {
+  badge: "My-Japanese-Reviewers",
+  title: "Japanese Counter Practice Quiz",
+  timerSeconds: 30 * 60,
+  emailjs: {
+    publicKey:  "1oR0j0WDvUmSSYEpK",
+    serviceId:  "service_v7ifzdj",
+    templateId: "template_lb9c879",
+    timezone:   "Asia/Manila",
+    locale:     "en-PH"
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   COUNTER DATA & DEFINITIONS
+   ═══════════════════════════════════════════════════════════════ */
+const tsuCounter = {
+  name: 'つ', emoji: '📦', category: 'basic',
+  readings: { 1: 'ひとつ', 2: 'ふたつ', 3: 'みっつ', 4: 'よっつ', 5: 'いつつ', 6: 'むっつ', 7: 'ななつ', 8: 'やっつ', 9: 'ここのつ', 10: 'とお', '?': 'いくつ' },
+  irregulars: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+};
+
+const ninCounter = {
+  name: 'にん', emoji: '👥', category: 'basic',
+  readings: { 1: 'ひとり', 2: 'ふたり', 3: 'さんにん', 4: 'よにん', 5: 'ごにん', 6: 'ろくにん', 7: 'ななにん / しちにん', 8: 'はちにん', 9: 'きゅうにん', 10: 'じゅうにん', '?': 'なんにん' },
+  irregulars: [1, 2, 4, 7]
+};
+
+const banCounter = {
+  name: 'ばん', emoji: '🏆', category: 'basic',
+  readings: { 1: 'いちばん', 2: 'にばん', 3: 'さんばん', 4: 'よんばん', 5: 'ごばん', 6: 'ろくばん', 7: 'ななばん', 8: 'はちばん', 9: 'きゅうばん', 10: 'じゅうばん', '?': 'なんばん' },
+  irregulars: []
+};
+
+const maiCounter = {
+  name: 'まい', emoji: '📄', category: 'basic',
+  readings: { 1: 'いちまい', 2: 'にまい', 3: 'さんまい', 4: 'よんまい', 5: 'ごまい', 6: 'ろくまい', 7: 'ななまい', 8: 'はちまい', 9: 'きゅうまい', 10: 'じゅうまい', '?': 'なんまい' },
+  irregulars: []
+};
+
+const daiCounter = {
+  name: 'だい', emoji: '🚗', category: 'advanced',
+  readings: { 1: 'いちだい', 2: 'にだい', 3: 'さんだい', 4: 'よんだい', 5: 'ごだい', 6: 'ろくだい', 7: 'ななだい', 8: 'はちだい', 9: 'きゅうだい', 10: 'じゅうだい', '?': 'なんだい' },
+  irregulars: []
+};
+
+const saiCounter = {
+  name: 'さい', emoji: '🎂', category: 'advanced',
+  readings: { 1: 'いっさい', 2: 'にさい', 3: 'さんさい', 4: 'よんさい', 5: 'ごさい', 6: 'ろくさい', 7: 'ななさい', 8: 'はっさい', 9: 'きゅうさい', 10: 'じゅっさい / じっさい', '?': 'なんさい' },
+  irregulars: [1, 8, 10]
+};
+
+const satsuCounter = {
+  name: 'さつ', emoji: '📚', category: 'advanced',
+  readings: { 1: 'いっさつ', 2: 'にさつ', 3: 'さんさつ', 4: 'よんさつ', 5: 'ごさつ', 6: 'ろくさつ', 7: 'ななさつ', 8: 'はっさつ', 9: 'きゅうさつ', 10: 'じゅっさつ', '?': 'なんさつ' },
+  irregulars: [1, 8, 10]
+};
+
+const chakuCounter = {
+  name: 'ちゃく', emoji: '👔', category: 'advanced',
+  readings: { 1: 'いっちゃく', 2: 'にちゃく', 3: 'さんちゃく', 4: 'よんちゃく', 5: 'ごちゃく', 6: 'ろくちゃく', 7: 'ななちゃく', 8: 'はっちゃく', 9: 'きゅうちゃく', 10: 'じゅっちゃく / じっちゃく', '?': 'なんちゃく' },
+  irregulars: [1, 8, 10]
+};
+
+const jikanCounter = {
+  name: 'じかん', emoji: '⏰', category: 'time',
+  readings: { 1: 'いちじかん', 2: 'にじかん', 3: 'さんじかん', 4: 'よじかん', 5: 'ごじかん', 6: 'ろくじかん', 7: 'ななじかん / しちじかん', 8: 'はちじかん', 9: 'くじかん', 10: 'じゅうじかん', '?': 'なんじかん' },
+  irregulars: [4, 7, 9]
+};
+
+const funCounter = {
+  name: 'ふん / ぷん', emoji: '⏱️', category: 'time',
+  readings: { 1: 'いっぷん', 2: 'にふん', 3: 'さんぷん', 4: 'よんぷん', 5: 'ごふん', 6: 'ろっぷん', 7: 'ななふん', 8: 'はっぷん', 9: 'きゅうふん', 10: 'じゅっぷん / じっぷん', '?': 'なんぷん' },
+  irregulars: [1, 3, 4, 6, 8, 10]
+};
+
+const nichiCounter = {
+  name: 'にち', emoji: '📅', category: 'time',
+  readings: { 1: 'いちにか / いちにち', 2: 'ふつか', 3: 'みっか', 4: 'よっか', 5: 'いつか', 6: 'むいか', 7: 'なのか', 8: 'ようか', 9: 'ここのか', 10: 'とおか', '?': 'なんにち' },
+  irregulars: [2, 3, 4, 5, 6, 7, 8, 9, 10]
+};
+
+const shukanCounter = {
+  name: 'しゅうかん', emoji: '📆', category: 'time',
+  readings: { 1: 'いっしゅうかん', 2: 'にしゅうかん', 3: 'さんしゅうかん', 4: 'よんしゅうかん', 5: 'ごしゅうかん', 6: 'ろくしゅうかん', 7: 'ななしゅうかん', 8: 'はっしゅうかん', 9: 'きゅうしゅうかん', 10: 'じゅっしゅうかん', '?': 'なんしゅうかん' },
+  irregulars: [1, 8, 10]
+};
+
+const kagetsuCounter = {
+  name: 'かげつ', emoji: '🗓️', category: 'time',
+  readings: { 1: 'いっかげつ', 2: 'にかげつ', 3: 'さんかげつ', 4: 'よんかげつ', 5: 'ごかげつ', 6: 'ろっかげつ', 7: 'ななかげつ', 8: 'はちかげつ / はっかげつ', 9: 'きゅうかげつ', 10: 'じゅっかげつ', '?': 'なんかげつ' },
+  irregulars: [1, 6, 8, 10]
+};
+
+const nenCounter = {
+  name: 'ねん', emoji: '📅', category: 'time',
+  readings: { 1: 'いちねん', 2: 'にねん', 3: 'さんねん', 4: 'よねん', 5: 'ごねん', 6: 'ろくねん', 7: 'ななねん / しちねん', 8: 'はちねん', 9: 'きゅうねん', 10: 'じゅうねん', '?': 'なんねん' },
+  irregulars: [4, 7]
+};
+
+const kaiCounter = {
+  name: 'かい', emoji: '🔄', category: 'advanced',
+  readings: { 1: 'いっかい', 2: 'にかい', 3: 'さんかい', 4: 'よんかい', 5: 'ごかい', 6: 'ろっかい', 7: 'ななかい', 8: 'はっかい', 9: 'きゅうかい', 10: 'じゅっかい', '?': 'なんかい' },
+  irregulars: [1, 6, 8, 10]
+};
+
+const koCounter = {
+  name: 'こ', emoji: '🔵', category: 'basic',
+  readings: { 1: 'いっこ', 2: 'にこ', 3: 'さんこ', 4: 'よんこ', 5: 'ごこ', 6: 'ろっこ', 7: 'ななこ', 8: 'はっこ', 9: 'きゅうこ', 10: 'じゅっこ', '?': 'なんこ' },
+  irregulars: [1, 6, 8, 10]
+};
+
+const sokuCounter = {
+  name: 'そく', emoji: '👟', category: 'advanced',
+  readings: { 1: 'いっそく', 2: 'にそく', 3: 'さんぞく', 4: 'よんそく', 5: 'ごそく', 6: 'ろくそく', 7: 'ななそく', 8: 'はっそく', 9: 'きゅうそく', 10: 'じゅっそく / じっそく', '?': 'なんそく' },
+  irregulars: [1, 3, 8, 10]
+};
+
+const kenCounter = {
+  name: 'けん', emoji: '🏠', category: 'advanced',
+  readings: { 1: 'いっけん', 2: 'にけん', 3: 'さんげん', 4: 'よんけん', 5: 'ごけん', 6: 'ろっけん', 7: 'ななけん', 8: 'はっけん', 9: 'きゅうけん', 10: 'じゅっけん / じっけん', '?': 'なんげん' },
+  irregulars: [1, 3, 6, 8, 10]
+};
+
+const kaiFloorCounter = {
+  name: 'かい (floors)', emoji: '🏢', category: 'advanced',
+  readings: { 1: 'いっかい', 2: 'にかい', 3: 'さんがい', 4: 'よんかい', 5: 'ごかい', 6: 'ろっかい', 7: 'ななかい', 8: 'はっかい', 9: 'きゅうかい', 10: 'じゅっかい / じっかい', '?': 'なんがい' },
+  irregulars: [1, 3, 6, 8, 10]
+};
+
+const honCounter = {
+  name: 'ほん / ぼん / ぽん', emoji: '🖊️', category: 'advanced',
+  readings: { 1: 'いっぽん', 2: 'にほん', 3: 'さんぼん', 4: 'よんほん', 5: 'ごほん', 6: 'ろっぽん', 7: 'ななほん', 8: 'はっぽん / はちほん', 9: 'きゅうほん', 10: 'じゅっぽん', '?': 'なんぼん' },
+  irregulars: [1, 3, 6, 8, 10]
+};
+
+const haiCounter = {
+  name: 'はい / ばい / ぱい', emoji: '☕', category: 'advanced',
+  readings: { 1: 'いっぱい', 2: 'にはい', 3: 'さんばい', 4: 'よんはい', 5: 'ごはい', 6: 'ろっぱい', 7: 'ななはい', 8: 'はっぱい / はちはい', 9: 'きゅうはい', 10: 'じゅっぱい', '?': 'なんばい' },
+  irregulars: [1, 3, 6, 8, 10]
+};
+
+const hikiCounter = {
+  name: 'ひき / びき / ぴき', emoji: '🐱', category: 'advanced',
+  readings: { 1: 'いっぴき', 2: 'にひき', 3: 'さんびき', 4: 'よんひき', 5: 'ごひき', 6: 'ろっぴき', 7: 'ななひき', 8: 'はっぴき', 9: 'きゅうひき', 10: 'じゅっぴき', '?': 'なんびき' },
+  irregulars: [1, 3, 6, 8, 10]
+};
+
+const basicCounters = [tsuCounter, ninCounter, koCounter, maiCounter, banCounter];
+const timeCounters = [jikanCounter, funCounter, nichiCounter, shukanCounter, kagetsuCounter, nenCounter];
+const advancedCounters = [satsuCounter, daiCounter, saiCounter, chakuCounter, honCounter, haiCounter, hikiCounter, sokuCounter, kenCounter, kaiFloorCounter, kaiCounter];
+const allCounters = [...basicCounters, ...timeCounters, ...advancedCounters];
+
+function getCounterDescription(counter) {
+  const descriptions = {
+    'つ': 'General things',
+    'にん': 'People',
+    'ばん': 'Order/Ranking',
+    'まい': 'Flat things (paper, shirts)',
+    'だい': 'Machines & vehicles',
+    'さい': 'Age',
+    'さつ': 'Books & notebooks',
+    'ちゃく': 'Clothes',
+    'じかん': 'Hours (duration)',
+    'ふん / ぷん': 'Minutes',
+    'にち': 'Days',
+    'しゅうかん': 'Weeks',
+    'かげつ': 'Months',
+    'ねん': 'Years',
+    'かい': 'Frequency (times)',
+    'こ': 'Small things',
+    'そく': 'Pairs (shoes, socks)',
+    'けん': 'Houses & buildings',
+    'かい (floors)': 'Floors of a building',
+    'ほん / ぼん / ぽん': 'Long thin things',
+    'はい / ばい / ぱい': 'Cups & glasses',
+    'ひき / びき / ぴき': 'Small animals'
+  };
+  return descriptions[counter.name] || counter.name;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GAME STATE
+   ═══════════════════════════════════════════════════════════════ */
+let playerName = "";
+let quiz = [];
+let answers = {};
+let currentQ = 0;
+let submitted = false;
+let reviewMode = false;
+let reviewIndices = [];
+let timeLeft = 0;
+let endTime = null;
+let timerInterval = null;
+
+/* ── DOM Elements ── */
+const $nameScreen   = document.getElementById("name-screen");
+const $quizScreen   = document.getElementById("quiz-screen");
+const $nameInput    = document.getElementById("name-input");
+const $btnStart     = document.getElementById("btn-start");
+const $subtitle     = document.getElementById("quiz-subtitle");
+const $scoreBanner  = document.getElementById("score-banner");
+const $scoreNum     = document.getElementById("score-number");
+const $scoreLbl     = document.getElementById("score-label");
+const $emailRow     = document.getElementById("email-row");
+const $btnReview    = document.getElementById("btn-review");
+const $btnRetake    = document.getElementById("btn-retake");
+const $btnHome      = document.getElementById("btn-home");
+const $reviewBanner = document.getElementById("review-banner");
+const $progText     = document.getElementById("progress-text");
+const $progFill     = document.getElementById("progress-fill");
+const $navGrid      = document.getElementById("nav-grid");
+const $qNumber      = document.getElementById("q-number");
+const $qText        = document.getElementById("q-text");
+const $choicesGrid  = document.getElementById("choices-grid");
+const $feedbackCard = document.getElementById("feedback-card");
+const $skippedWarning = document.getElementById("skipped-warning");
+const $timerDisplay = document.getElementById("timer-display");
+const $btnPrev      = document.getElementById("btn-prev");
+const $btnNext      = document.getElementById("btn-next");
+const $btnSubmit    = document.getElementById("btn-submit");
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS & SHUFFLE
+   ═══════════════════════════════════════════════════════════════ */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function formatDuration(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  if (m === 0) return `${s}s`;
+  return `${m}m ${s}s`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT & GENERATOR
+   ═══════════════════════════════════════════════════════════════ */
+emailjs.init(QUIZ_CONFIG.emailjs.publicKey);
+
+$nameInput.addEventListener("input", () => {
+  $btnStart.disabled = !$nameInput.value.trim();
+});
+$nameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && $nameInput.value.trim()) startQuiz();
+});
+$btnStart.addEventListener("click", startQuiz);
+
+function startQuiz() {
+  playerName = $nameInput.value.trim();
+
+  // Generate flat array of 50 questions
+  const basicQ = generateSectionQuestions(basicCounters, 12, 'Basic Counters', 'basic');
+  const timeQ = generateSectionQuestions(timeCounters, 14, 'Time Counters', 'time');
+  const advQ = generateSectionQuestions(advancedCounters, 12, 'Advanced Counters', 'advanced');
+  const mixQ = generateSectionQuestions(allCounters, 12, 'Mixed Counters', 'mixed');
+
+  quiz = [...basicQ, ...timeQ, ...advQ, ...mixQ];
+
+  answers = {};
+  currentQ = 0;
+  submitted = false;
+  reviewMode = false;
+  reviewIndices = [];
+
+  $nameScreen.style.display = "none";
+  $quizScreen.style.display = "block";
+  $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "none";
+  $timerDisplay.parentElement.style.display = "flex";
+  $skippedWarning.classList.add("hidden");
+  $subtitle.innerHTML = `${playerName}さん — complete the counter exercises 🌸`;
+
+  buildNavGrid();
+  startTimer();
+  renderQuestion();
+  updateProgress();
+}
+
+function generateSectionQuestions(counters, count, categoryName, tagClass) {
+  const questions = [];
+  const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  while (questions.length < count) {
+    const counter = counters[Math.floor(Math.random() * counters.length)];
+    const number = numbers[Math.floor(Math.random() * numbers.length)];
+
+    // Avoid duplication
+    const duplicate = questions.some(q => q.counter.name === counter.name && q.number === number);
+    if (!duplicate) {
+      questions.push(generateQuestion(counter, number, categoryName, tagClass));
+    }
+  }
+  return shuffle(questions);
+}
+
+function generateQuestion(counter, number, categoryName, tagClass) {
+  const correctAnswer = counter.readings[number];
+  const isIrregular = counter.irregulars.includes(number);
+
+  // Generate distractors
+  const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const distractors = shuffle(numbers.filter(n => n !== number))
+    .map(n => counter.readings[n])
+    .filter(val => val !== correctAnswer);
+
+  const choices = shuffle([correctAnswer, ...distractors.slice(0, 3)]);
+
+  return {
+    counter: counter,
+    number: number,
+    category: categoryName,
+    tagClass: tagClass,
+    type: 'counter',
+    correctAnswer: correctAnswer,
+    choices: choices,
+    isIrregular: isIrregular,
+    stem: `How do you read <span class="blank">${number}</span> of these?<br>
+           <span style="font-size: 58px; margin: 16px 0; display: block; text-align: center;">${counter.emoji}</span>
+           <span style="font-size: 14px; color: var(--text-muted); display: block; text-align: center;">
+             Object: <strong>${getCounterDescription(counter)}</strong> (Indicator: <strong>${counter.name}</strong>)
+           </span>`,
+    correctNote: `Pronunciation: <span class="jp">${correctAnswer}</span>.`,
+    explain: isIrregular 
+      ? `⚠️ This is an <strong>irregular pronunciation</strong> (ふきそくけい) for the counter <strong>${counter.name}</strong>.`
+      : `This follows the standard pronunciation pattern for the counter <strong>${counter.name}</strong>.`
+  };
+}
+
+function startTimer() {
+  const qCount = quiz.length;
+  let TIME_LIMIT;
+  if (qCount <= 30) {
+    TIME_LIMIT = 20 * 60;
+  } else if (qCount <= 40) {
+    TIME_LIMIT = 25 * 60;
+  } else if (qCount <= 50) {
+    TIME_LIMIT = 30 * 60;
+  } else {
+    TIME_LIMIT = 40 * 60;
+  }
+
+  endTime = Date.now() + TIME_LIMIT * 1000;
+  timeLeft = TIME_LIMIT;
+  updateTimerDisplay();
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (submitted) {
+      clearInterval(timerInterval);
+      return;
+    }
+    timeLeft = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      alert("Time is up! Your exam will be submitted automatically.");
+      submitQuiz(true);
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+  const s = String(timeLeft % 60).padStart(2, '0');
+  if ($timerDisplay) {
+    $timerDisplay.textContent = `${m}:${s}`;
+    if (timeLeft < 300) {
+      $timerDisplay.parentElement.classList.add("warning");
+    } else {
+      $timerDisplay.parentElement.classList.remove("warning");
+    }
+  }
+}
+
+function stopTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV GRID
+   ═══════════════════════════════════════════════════════════════ */
+function buildNavGrid() {
+  $navGrid.innerHTML = "";
+  quiz.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.className = "nav-dot";
+    btn.textContent = i + 1;
+    btn.addEventListener("click", () => {
+      if (reviewMode) {
+        const idx = reviewIndices.indexOf(i);
+        if (idx === -1) return;
+        currentQ = idx;
+      } else {
+        currentQ = i;
+      }
+      renderQuestion();
+    });
+    $navGrid.appendChild(btn);
+  });
+}
+
+function updateNavGrid() {
+  const dots = $navGrid.querySelectorAll(".nav-dot");
+  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
+
+  if (submitted) {
+    $navGrid.classList.remove("hidden");
+  } else {
+    $navGrid.classList.add("hidden");
+  }
+
+  dots.forEach((dot, i) => {
+    dot.className = "nav-dot";
+    if (submitted) {
+      dot.classList.add("locked");
+      const correctOptions = quiz[i].correctAnswer.split(' / ').map(x => x.trim());
+      if (correctOptions.includes(answers[i])) dot.classList.add("correct");
+      else if (answers[i]) dot.classList.add("wrong");
+      else dot.classList.add("unanswered-locked");
+    } else {
+      if (answers[i]) dot.classList.add("answered");
+    }
+    if (i === realIdx) dot.classList.add("active");
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROGRESS
+   ═══════════════════════════════════════════════════════════════ */
+function updateProgress() {
+  if (reviewMode) {
+    $progText.textContent = `Reviewing ${currentQ + 1} / ${reviewIndices.length}`;
+    $progFill.style.width = `${((currentQ + 1) / reviewIndices.length) * 100}%`;
+    return;
+  }
+  const count = Object.keys(answers).length;
+  $progText.textContent = `${count} / ${quiz.length} answered`;
+  $progFill.style.width = `${(count / quiz.length) * 100}%`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER QUESTION
+   ═══════════════════════════════════════════════════════════════ */
+function renderQuestion() {
+  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
+  const q = quiz[realIdx];
+  const isAnswered = answers[realIdx] !== undefined;
+
+  $qNumber.textContent = reviewMode
+    ? `Review ${currentQ + 1} of ${reviewIndices.length}`
+    : `Question ${realIdx + 1} of ${quiz.length}`;
+
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = q.stem;
+  const hintSpan = tempDiv.querySelector("span[style*='color:var(--text-muted)'], span[style*='color: var(--text-muted)']");
+  if (hintSpan) {
+    const prev = hintSpan.previousSibling;
+    if (prev && prev.nodeName === "BR") {
+      prev.parentNode.removeChild(prev);
+    }
+    hintSpan.parentNode.removeChild(hintSpan);
+  }
+  $qText.innerHTML = tempDiv.innerHTML;
+
+  // Clear skipped warning
+  $skippedWarning.classList.add("hidden");
+
+  // Render Choices UI
+  $choicesGrid.innerHTML = "";
+  const given = answers[realIdx];
+
+  q.choices.forEach((opt, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    if (submitted) btn.classList.add("locked");
+
+    const selected = given === opt;
+    // Check if opt matches any forms in correct answer (e.g. 'じゅっさい / じっさい')
+    const correctOptions = q.correctAnswer.split(' / ').map(x => x.trim());
+    const isCorrectChoice = correctOptions.includes(opt);
+
+    const letters = ['a', 'b', 'c', 'd'];
+    btn.innerHTML = `<span class="choice-letter">${letters[idx]}.</span><span>${opt}</span>`;
+    btn.setAttribute("aria-pressed", selected ? "true" : "false");
+
+    if (!submitted) {
+      if (selected) btn.classList.add("selected");
+      btn.addEventListener("click", () => {
+        if (submitted) return;
+        answers[realIdx] = opt;
+        renderQuestion();
+        updateNavGrid();
+        updateProgress();
+      });
+    } else {
+      if (isCorrectChoice) {
+        btn.classList.add("correct-reveal");
+        btn.innerHTML += `<span class="mark ok">✓</span>`;
+      } else if (selected && !isCorrectChoice) {
+        btn.classList.add("wrong-reveal");
+        btn.innerHTML += `<span class="mark no">✗</span>`;
+      } else {
+        btn.classList.add("faded-reveal");
+      }
+    }
+    $choicesGrid.appendChild(btn);
+  });
+
+  /* Feedback card */
+  if (submitted && isAnswered) {
+    renderFeedback(q, answers[realIdx]);
+  } else {
+    $feedbackCard.style.display = "none";
+    $feedbackCard.innerHTML = "";
+  }
+
+  updateNavGrid();
+  updateProgress();
+  updateNavButtons();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV BUTTON MANAGEMENT
+   ═══════════════════════════════════════════════════════════════ */
+function renderFeedback(q, given) {
+  const correctOptions = q.correctAnswer.split(' / ').map(x => x.trim());
+  const isCorrect = correctOptions.includes(given);
+  $feedbackCard.className = `feedback-card ${isCorrect ? "correct" : "wrong"}`;
+  $feedbackCard.style.display = "block";
+
+  let html = `<div class="fb-header">${isCorrect ? "✓ Correct" : `✗ Not quite — answer: ${q.correctAnswer}`}</div>`;
+  if (q.correctNote) html += `<div>${q.correctNote}</div>`;
+  if (q.explain)     html += `<div class="fb-block">${q.explain}</div>`;
+  if (q.connect)     html += `<div class="fb-block connect">${q.connect}</div>`;
+  if (q.warn)        html += `<div class="fb-block warn">${q.warn}</div>`;
+
+  $feedbackCard.innerHTML = html;
+}
+
+function updateNavButtons() {
+  const total = reviewMode ? reviewIndices.length : quiz.length;
+  $btnPrev.disabled = currentQ === 0;
+
+  if (!submitted) {
+    const isLast = currentQ === quiz.length - 1;
+    if (isLast) {
+      $btnNext.classList.add("hidden");
+      $btnSubmit.classList.remove("hidden");
+      $btnSubmit.disabled = false;
+    } else {
+      $btnNext.classList.remove("hidden");
+      $btnSubmit.classList.add("hidden");
+      $btnNext.textContent = "Next →";
+    }
+  } else {
+    $btnSubmit.classList.add("hidden");
+    $btnNext.classList.remove("hidden");
     
-    <script>
-        // ==================== COUNTER DATA ====================
-        
-        // General counter (つ)
-        const tsuCounter = {
-            name: 'つ',
-            emoji: '📦',
-            category: 'things',
-            readings: {
-                1: 'ひとつ', 2: 'ふたつ', 3: 'みっつ', 4: 'よっつ', 5: 'いつつ',
-                6: 'むっつ', 7: 'ななつ', 8: 'やっつ', 9: 'ここのつ', 10: 'とお', '?': 'いくつ'
-            },
-            irregulars: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        };
-        
-        // People counter (人)
-        const ninCounter = {
-            name: 'にん',
-            emoji: '👥',
-            category: 'people',
-            readings: {
-                1: 'ひとり', 2: 'ふたり', 3: 'さんにん', 4: 'よにん', 5: 'ごにん',
-                6: 'ろくにん', 7: 'ななにん / しちにん', 8: 'はちにん', 9: 'きゅうにん', 10: 'じゅうにん', '?': 'なんにん'
-            },
-            irregulars: [1, 2, 4, 7]
-        };
-        
-        // Order counter (番)
-        const banCounter = {
-            name: 'ばん',
-            emoji: '🏆',
-            category: 'people',
-            readings: {
-                1: 'いちばん', 2: 'にばん', 3: 'さんばん', 4: 'よんばん', 5: 'ごばん',
-                6: 'ろくばん', 7: 'ななばん', 8: 'はちばん', 9: 'きゅうばん', 10: 'じゅうばん', '?': 'なんばん'
-            },
-            irregulars: []
-        };
-        
-        // Flat things counter (枚)
-        const maiCounter = {
-            name: 'まい',
-            emoji: '📄',
-            category: 'things',
-            readings: {
-                1: 'いちまい', 2: 'にまい', 3: 'さんまい', 4: 'よんまい', 5: 'ごまい',
-                6: 'ろくまい', 7: 'ななまい', 8: 'はちまい', 9: 'きゅうまい', 10: 'じゅうまい', '?': 'なんまい'
-            },
-            irregulars: []
-        };
-        
-        // Machines/vehicles counter (台)
-        const daiCounter = {
-            name: 'だい',
-            emoji: '🚗',
-            category: 'objects',
-            readings: {
-                1: 'いちだい', 2: 'にだい', 3: 'さんだい', 4: 'よんだい', 5: 'ごだい',
-                6: 'ろくだい', 7: 'ななだい', 8: 'はちだい', 9: 'きゅうだい', 10: 'じゅうだい', '?': 'なんだい'
-            },
-            irregulars: []
-        };
-        
-        // Age counter (歳)
-        const saiCounter = {
-            name: 'さい',
-            emoji: '🎂',
-            category: 'people',
-            readings: {
-                1: 'いっさい', 2: 'にさい', 3: 'さんさい', 4: 'よんさい', 5: 'ごさい',
-                6: 'ろくさい', 7: 'ななさい', 8: 'はっさい', 9: 'きゅうさい', 10: 'じゅっさい / じっさい', '?': 'なんさい'
-            },
-            irregulars: [1, 8, 10]
-        };
-        
-        // Books counter (冊)
-        const satsuCounter = {
-            name: 'さつ',
-            emoji: '📚',
-            category: 'things',
-            readings: {
-                1: 'いっさつ', 2: 'にさつ', 3: 'さんさつ', 4: 'よんさつ', 5: 'ごさつ',
-                6: 'ろくさつ', 7: 'ななさつ', 8: 'はっさつ', 9: 'きゅうさつ', 10: 'じゅっさつ', '?': 'なんさつ'
-            },
-            irregulars: [1, 8, 10]
-        };
-        
-        // Clothes counter (着)
-        const chakuCounter = {
-            name: 'ちゃく',
-            emoji: '👔',
-            category: 'objects',
-            readings: {
-                1: 'いっちゃく', 2: 'にちゃく', 3: 'さんちゃく', 4: 'よんちゃく', 5: 'ごちゃく',
-                6: 'ろくちゃく', 7: 'ななちゃく', 8: 'はっちゃく', 9: 'きゅうちゃく', 10: 'じゅっちゃく / じっちゃく', '?': 'なんちゃく'
-            },
-            irregulars: [1, 8, 10]
-        };
-        
-        // Hours counter (時間)
-        const jikanCounter = {
-            name: 'じかん',
-            emoji: '⏰',
-            category: 'time',
-            readings: {
-                1: 'いちじかん', 2: 'にじかん', 3: 'さんじかん', 4: 'よじかん', 5: 'ごじかん',
-                6: 'ろくじかん', 7: 'ななじかん / しちじかん', 8: 'はちじかん', 9: 'くじかん', 10: 'じゅうじかん', '?': 'なんじかん'
-            },
-            irregulars: [4, 7, 9]
-        };
-        
-        // Minutes counter (分)
-        const funCounter = {
-            name: 'ふん / ぷん',
-            emoji: '⏱️',
-            category: 'time',
-            readings: {
-                1: 'いっぷん', 2: 'にふん', 3: 'さんぷん', 4: 'よんぷん', 5: 'ごふん',
-                6: 'ろっぷん', 7: 'ななふん', 8: 'はっぷん', 9: 'きゅうふん', 10: 'じゅっぷん / じっぷん', '?': 'なんぷん'
-            },
-            irregulars: [1, 3, 4, 6, 8, 10]
-        };
-        
-        // Days counter (日)
-        const nichiCounter = {
-            name: 'にち',
-            emoji: '📅',
-            category: 'time',
-            readings: {
-                1: 'いちにち', 2: 'ふつか', 3: 'みっか', 4: 'よっか', 5: 'いつか',
-                6: 'むいか', 7: 'なのか', 8: 'ようか', 9: 'ここのか', 10: 'とおか', '?': 'なんにち'
-            },
-            irregulars: [2, 3, 4, 5, 6, 7, 8, 9, 10]
-        };
-        
-        // Weeks counter (週間)
-        const shukanCounter = {
-            name: 'しゅうかん',
-            emoji: '📆',
-            category: 'time',
-            readings: {
-                1: 'いっしゅうかん', 2: 'にしゅうかん', 3: 'さんしゅうかん', 4: 'よんしゅうかん', 5: 'ごしゅうかん',
-                6: 'ろくしゅうかん', 7: 'ななしゅうかん', 8: 'はっしゅうかん', 9: 'きゅうしゅうかん', 10: 'じゅっしゅうかん', '?': 'なんしゅうかん'
-            },
-            irregulars: [1, 8, 10]
-        };
-        
-        // Months counter (か月)
-        const kagetsuCounter = {
-            name: 'かげつ',
-            emoji: '🗓️',
-            category: 'time',
-            readings: {
-                1: 'いっかげつ', 2: 'にかげつ', 3: 'さんかげつ', 4: 'よんかげつ', 5: 'ごかげつ',
-                6: 'ろっかげつ', 7: 'ななかげつ', 8: 'はちかげつ / はっかげつ', 9: 'きゅうかげつ', 10: 'じゅっかげつ', '?': 'なんかげつ'
-            },
-            irregulars: [1, 6, 8, 10]
-        };
-        
-        // Years counter (年)
-        const nenCounter = {
-            name: 'ねん',
-            emoji: '📅',
-            category: 'time',
-            readings: {
-                1: 'いちねん', 2: 'にねん', 3: 'さんねん', 4: 'よねん', 5: 'ごねん',
-                6: 'ろくねん', 7: 'ななねん / しちねん', 8: 'はちねん', 9: 'きゅうねん', 10: 'じゅうねん', '?': 'なんねん'
-            },
-            irregulars: [4, 7]
-        };
-        
-        // Frequency counter (回)
-        const kaiCounter = {
-            name: 'かい',
-            emoji: '🔄',
-            category: 'objects',
-            readings: {
-                1: 'いっかい', 2: 'にかい', 3: 'さんかい', 4: 'よんかい', 5: 'ごかい',
-                6: 'ろっかい', 7: 'ななかい', 8: 'はっかい', 9: 'きゅうかい', 10: 'じゅっかい', '?': 'なんかい'
-            },
-            irregulars: [1, 6, 8, 10]
-        };
-        
-        // Small things counter (個)
-        const koCounter = {
-            name: 'こ',
-            emoji: '🔵',
-            category: 'things',
-            readings: {
-                1: 'いっこ', 2: 'にこ', 3: 'さんこ', 4: 'よんこ', 5: 'ごこ',
-                6: 'ろっこ', 7: 'ななこ', 8: 'はっこ', 9: 'きゅうこ', 10: 'じゅっこ', '?': 'なんこ'
-            },
-            irregulars: [1, 6, 8, 10]
-        };
-        
-        // Shoes/socks counter (足)
-        const sokuCounter = {
-            name: 'そく',
-            emoji: '👟',
-            category: 'objects',
-            readings: {
-                1: 'いっそく', 2: 'にそく', 3: 'さんぞく', 4: 'よんそく', 5: 'ごそく',
-                6: 'ろくそく', 7: 'ななそく', 8: 'はっそく', 9: 'きゅうそく', 10: 'じゅっそく / じっそく', '?': 'なんそく'
-            },
-            irregulars: [1, 3, 8, 10]
-        };
-        
-        // Houses counter (軒)
-        const kenCounter = {
-            name: 'けん',
-            emoji: '🏠',
-            category: 'objects',
-            readings: {
-                1: 'いっけん', 2: 'にけん', 3: 'さんげん', 4: 'よんけん', 5: 'ごけん',
-                6: 'ろっけん', 7: 'ななけん', 8: 'はっけん', 9: 'きゅうけん', 10: 'じゅっけん / じっけん', '?': 'なんげん'
-            },
-            irregulars: [1, 3, 6, 8, 10]
-        };
-        
-        // Floors counter (階)
-        const kaiFloorCounter = {
-            name: 'かい (floors)',
-            emoji: '🏢',
-            category: 'objects',
-            readings: {
-                1: 'いっかい', 2: 'にかい', 3: 'さんがい', 4: 'よんかい', 5: 'ごかい',
-                6: 'ろっかい', 7: 'ななかい', 8: 'はっかい', 9: 'きゅうかい', 10: 'じゅっかい / じっかい', '?': 'なんがい'
-            },
-            irregulars: [1, 3, 6, 8, 10]
-        };
-        
-        // Long things counter (本)
-        const honCounter = {
-            name: 'ほん / ぼん / ぽん',
-            emoji: '🖊️',
-            category: 'things',
-            readings: {
-                1: 'いっぽん', 2: 'にほん', 3: 'さんぼん', 4: 'よんほん', 5: 'ごほん',
-                6: 'ろっぽん', 7: 'ななほん', 8: 'はっぽん / はちほん', 9: 'きゅうほん', 10: 'じゅっぽん', '?': 'なんぼん'
-            },
-            irregulars: [1, 3, 6, 8, 10]
-        };
-        
-        // Cups counter (杯)
-        const haiCounter = {
-            name: 'はい / ばい / ぱい',
-            emoji: '☕',
-            category: 'objects',
-            readings: {
-                1: 'いっぱい', 2: 'にはい', 3: 'さんばい', 4: 'よんはい', 5: 'ごはい',
-                6: 'ろっぱい', 7: 'ななはい', 8: 'はっぱい / はちはい', 9: 'きゅうはい', 10: 'じゅっぱい', '?': 'なんばい'
-            },
-            irregulars: [1, 3, 6, 8, 10]
-        };
-        
-        // Small animals counter (匹)
-        const hikiCounter = {
-            name: 'ひき / びき / ぴき',
-            emoji: '🐱',
-            category: 'animals',
-            readings: {
-                1: 'いっぴき', 2: 'にひき', 3: 'さんびき', 4: 'よんひき', 5: 'ごひき',
-                6: 'ろっぴき', 7: 'ななひき', 8: 'はっぴき', 9: 'きゅうひき', 10: 'じゅっぴき', '?': 'なんびき'
-            },
-            irregulars: [1, 3, 6, 8, 10]
-        };
-        
-        // Group counters by section
-        const basicCounters = [tsuCounter, ninCounter, koCounter, maiCounter, banCounter];
-        const timeCounters = [jikanCounter, funCounter, nichiCounter, shukanCounter, kagetsuCounter, nenCounter];
-        const advancedCounters = [satsuCounter, daiCounter, saiCounter, chakuCounter, honCounter, haiCounter, hikiCounter, sokuCounter, kenCounter, kaiFloorCounter, kaiCounter];
-        const allCounters = [...basicCounters, ...timeCounters, ...advancedCounters];
-        
-        // ==================== GAME STATE ====================
-        
-        let currentSection = 'basic';
-        let currentQuestion = 0;
-        let score = 0;
-        let questionsAnswered = 0;
-        const totalQuestions = 50;
-        
-        let sectionStatus = {
-            basic: { completed: false, correct: 0, total: 12 },
-            time: { completed: false, correct: 0, total: 14 },
-            advanced: { completed: false, correct: 0, total: 12 },
-            mixed: { completed: false, correct: 0, total: 12 }
-        };
-        
-        let basicQuestions = [];
-        let timeQuestions = [];
-        let advancedQuestions = [];
-        let mixedQuestions = [];
-        
-        // ==================== QUESTION GENERATION ====================
-        
-        function generateQuestion(counter, number) {
-            const correctAnswer = counter.readings[number];
-            const isIrregular = counter.irregulars.includes(number);
-            
-            // Generate wrong answers
-            const wrongAnswers = [];
-            const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-            const shuffledNumbers = numbers.filter(n => n !== number).sort(() => Math.random() - 0.5);
-            
-            for (let i = 0; i < 3 && i < shuffledNumbers.length; i++) {
-                wrongAnswers.push(counter.readings[shuffledNumbers[i]]);
-            }
-            
-            return {
-                counter: counter,
-                number: number,
-                correctAnswer: correctAnswer,
-                wrongAnswers: wrongAnswers,
-                isIrregular: isIrregular
-            };
-        }
-        
-        function generateSectionQuestions(counters, count) {
-            const questions = [];
-            const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-            
-            while (questions.length < count) {
-                const counter = counters[Math.floor(Math.random() * counters.length)];
-                const number = numbers[Math.floor(Math.random() * numbers.length)];
-                
-                // Avoid too many duplicates
-                const existingCount = questions.filter(q => 
-                    q.counter.name === counter.name && q.number === number
-                ).length;
-                
-                if (existingCount < 1) {
-                    questions.push(generateQuestion(counter, number));
-                }
-            }
-            
-            return questions.sort(() => Math.random() - 0.5);
-        }
-        
-        function init() {
-            // Generate questions for each section
-            basicQuestions = generateSectionQuestions(basicCounters, sectionStatus.basic.total);
-            timeQuestions = generateSectionQuestions(timeCounters, sectionStatus.time.total);
-            advancedQuestions = generateSectionQuestions(advancedCounters, sectionStatus.advanced.total);
-            mixedQuestions = generateSectionQuestions(allCounters, sectionStatus.mixed.total);
-            
-            document.getElementById('total').textContent = totalQuestions;
-            updateScoreBoard();
-            loadQuestion();
-        }
-        
-        // ==================== QUESTION LOADING ====================
-        
-        function loadQuestion() {
-            let questions, elementId;
-            
-            switch (currentSection) {
-                case 'basic':
-                    questions = basicQuestions;
-                    elementId = 'basic-question';
-                    break;
-                case 'time':
-                    questions = timeQuestions;
-                    elementId = 'time-question';
-                    break;
-                case 'advanced':
-                    questions = advancedQuestions;
-                    elementId = 'advanced-question';
-                    break;
-                case 'mixed':
-                    questions = mixedQuestions;
-                    elementId = 'mixed-question';
-                    break;
-            }
-            
-            if (currentQuestion >= questions.length) {
-                showSectionComplete();
-                return;
-            }
-            
-            const q = questions[currentQuestion];
-            const allOptions = [q.correctAnswer, ...q.wrongAnswers].sort(() => Math.random() - 0.5);
-            
-            const irregularNote = q.isIrregular ? 
-                `<div class="warning-box" style="text-align: center; margin: 10px 0;">ふきそく けい (Irregular Form)</div>` : '';
-            
-            document.getElementById(elementId).innerHTML = `
-                <div class="question-box">
-                    <div class="question-number">もんだい ${currentQuestion + 1} / ${questions.length}</div>
-                    
-                    <div class="question-context">
-                        <span class="counter-emoji">${q.counter.emoji}</span>
-                        <div>
-                            <div class="question-text">${getCounterDescription(q.counter)}</div>
-                            <span class="counter-indicator ${q.counter.category}">${q.counter.name}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="number-display">
-                        <div class="number-badge">${q.number}</div>
-                    </div>
-                    
-                    ${irregularNote}
-                    
-                    <div class="question-text">この すうじ は なんと よみますか？</div>
-                    
-                    <div class="options-grid" id="options-${currentSection}">
-                        ${allOptions.map(opt => `
-                            <button class="option-btn" data-answer="${opt}">${opt}</button>
-                        `).join('')}
-                    </div>
-                    
-                    <div class="feedback" id="feedback-${currentSection}"></div>
-                </div>
-            `;
-            
-            // Add event listeners
-            document.querySelectorAll(`#options-${currentSection} .option-btn`).forEach(btn => {
-                btn.addEventListener('click', function() {
-                    checkAnswer(this, this.dataset.answer, q.correctAnswer);
-                });
-            });
-        }
-        
-        function getCounterDescription(counter) {
-            const descriptions = {
-                'つ': 'General things',
-                'にん': 'People',
-                'ばん': 'Order/Ranking',
-                'まい': 'Flat things (paper, shirts)',
-                'だい': 'Machines & vehicles',
-                'さい': 'Age',
-                'さつ': 'Books & notebooks',
-                'ちゃく': 'Clothes',
-                'じかん': 'Hours (duration)',
-                'ふん / ぷん': 'Minutes',
-                'にち': 'Days',
-                'しゅうかん': 'Weeks',
-                'かげつ': 'Months',
-                'ねん': 'Years',
-                'かい': 'Frequency (times)',
-                'こ': 'Small things',
-                'そく': 'Pairs (shoes, socks)',
-                'けん': 'Houses & buildings',
-                'かい (floors)': 'Floors of a building',
-                'ほん / ぼん / ぽん': 'Long thin things',
-                'はい / ばい / ぱい': 'Cups & glasses',
-                'ひき / びき / ぴき': 'Small animals'
-            };
-            return descriptions[counter.name] || counter.name;
-        }
-        
-        // ==================== ANSWER CHECKING ====================
-        
-        function checkAnswer(btn, selected, correct) {
-            const buttons = document.querySelectorAll(`#options-${currentSection} .option-btn`);
-            buttons.forEach(b => b.disabled = true);
-            
-            // Handle answers that might have multiple correct forms (e.g., "じゅっさい / じっさい")
-            const correctAnswers = correct.split(' / ').map(a => a.trim());
-            const isCorrect = correctAnswers.some(ans => selected.includes(ans) || ans.includes(selected)) || selected === correct;
-            
-            if (isCorrect) {
-                btn.classList.add('correct');
-                score += 10;
-                sectionStatus[currentSection].correct++;
-            } else {
-                btn.classList.add('incorrect');
-                buttons.forEach(b => {
-                    if (b.dataset.answer === correct) {
-                        b.classList.add('correct');
-                    }
-                });
-            }
-            
-            questionsAnswered++;
-            updateScoreBoard();
-            
-            const feedback = document.getElementById(`feedback-${currentSection}`);
-            if (isCorrect) {
-                feedback.className = 'feedback correct';
-                feedback.innerHTML = `
-                    ✅ せいかい！よくできました！
-                    <button class="next-btn" onclick="nextQuestion()">つぎへ →</button>
-                `;
-            } else {
-                feedback.className = 'feedback incorrect';
-                feedback.innerHTML = `
-                    ❌ ざんねん！
-                    <div class="correct-answer">こたえ: ${correct}</div>
-                    <button class="next-btn" onclick="nextQuestion()">つぎへ →</button>
-                `;
-            }
-        }
-        
-        function nextQuestion() {
-            currentQuestion++;
-            loadQuestion();
-        }
-        
-        // ==================== SECTION MANAGEMENT ====================
-        
-        function showSectionComplete() {
-            sectionStatus[currentSection].completed = true;
-            document.getElementById(`tab-${currentSection}`).classList.remove('active');
-            document.getElementById(`tab-${currentSection}`).classList.add('completed');
-            
-            const nextSection = getNextSection();
-            
-            if (nextSection) {
-                // Show completion message then move to next section
-                const elementId = `${currentSection}-question`;
-                const sectionCorrect = sectionStatus[currentSection].correct;
-                const sectionTotal = sectionStatus[currentSection].total;
-                
-                document.getElementById(elementId).innerHTML = `
-                    <div style="text-align: center; padding: 30px;">
-                        <div style="font-size: 60px; margin-bottom: 15px;">🎊</div>
-                        <div style="font-size: 24px; color: #4caf50; margin-bottom: 10px;">セクション かんりょう！</div>
-                        <div style="font-size: 18px; color: #666; margin-bottom: 20px;">
-                            ${sectionCorrect} / ${sectionTotal} せいかい
-                        </div>
-                        <button class="next-btn" onclick="switchToSection('${nextSection}')" style="font-size: 18px; padding: 15px 35px;">
-                            つぎの セクションへ →
-                        </button>
-                    </div>
-                `;
-            } else {
-                showResults();
-            }
-        }
-        
-        function getNextSection() {
-            const sections = ['basic', 'time', 'advanced', 'mixed'];
-            const currentIndex = sections.indexOf(currentSection);
-            
-            for (let i = currentIndex + 1; i < sections.length; i++) {
-                if (!sectionStatus[sections[i]].completed) {
-                    return sections[i];
-                }
-            }
-            return null;
-        }
-        
-        function handleTabClick(section) {
-            const tab = document.getElementById('tab-' + section);
-            if (tab.classList.contains('completed') || tab.classList.contains('locked')) {
-                return;
-            }
-        }
-        
-        function switchToSection(section) {
-            // Update tabs
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.getElementById('tab-' + section).classList.add('active');
-            document.getElementById('tab-' + section).classList.remove('locked');
-            
-            // Update sections
-            document.querySelectorAll('.quiz-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(section + '-section').classList.add('active');
-            
-            currentSection = section;
-            currentQuestion = 0;
-            loadQuestion();
-        }
-        
-        // ==================== RESULTS ====================
-        
-        function showResults() {
-            document.querySelectorAll('.quiz-section').forEach(s => s.classList.remove('active'));
-            document.getElementById('results-section').classList.add('active');
-            
-            const totalCorrect = sectionStatus.basic.correct + sectionStatus.time.correct + 
-                                sectionStatus.advanced.correct + sectionStatus.mixed.correct;
-            const percentage = Math.round((totalCorrect / totalQuestions) * 100);
-            
-            document.getElementById('final-score').textContent = percentage + '%';
-            document.getElementById('basic-score').textContent = `${sectionStatus.basic.correct}/${sectionStatus.basic.total}`;
-            document.getElementById('time-score').textContent = `${sectionStatus.time.correct}/${sectionStatus.time.total}`;
-            document.getElementById('advanced-score').textContent = `${sectionStatus.advanced.correct}/${sectionStatus.advanced.total}`;
-            document.getElementById('mixed-score').textContent = `${sectionStatus.mixed.correct}/${sectionStatus.mixed.total}`;
-            
-            if (percentage >= 80) {
-                document.getElementById('results-icon').textContent = '🎉';
-                document.getElementById('results-title').textContent = 'すばらしい！ Excellent!';
-            } else if (percentage >= 60) {
-                document.getElementById('results-icon').textContent = '👍';
-                document.getElementById('results-title').textContent = 'よくできました！ Good Job!';
-            } else {
-                document.getElementById('results-icon').textContent = '📚';
-                document.getElementById('results-title').textContent = 'もっと れんしゅう しましょう！';
-            }
-        }
-        
-        function restartQuiz() {
-            currentSection = 'basic';
-            currentQuestion = 0;
-            score = 0;
-            questionsAnswered = 0;
-            
-            sectionStatus = {
-                basic: { completed: false, correct: 0, total: 12 },
-                time: { completed: false, correct: 0, total: 14 },
-                advanced: { completed: false, correct: 0, total: 12 },
-                mixed: { completed: false, correct: 0, total: 12 }
-            };
-            
-            // Regenerate questions (randomized)
-            basicQuestions = generateSectionQuestions(basicCounters, sectionStatus.basic.total);
-            timeQuestions = generateSectionQuestions(timeCounters, sectionStatus.time.total);
-            advancedQuestions = generateSectionQuestions(advancedCounters, sectionStatus.advanced.total);
-            mixedQuestions = generateSectionQuestions(allCounters, sectionStatus.mixed.total);
-            
-            // Reset tabs
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active', 'completed', 'locked');
-            });
-            document.getElementById('tab-basic').classList.add('active');
-            document.getElementById('tab-time').classList.add('locked');
-            document.getElementById('tab-advanced').classList.add('locked');
-            document.getElementById('tab-mixed').classList.add('locked');
-            
-            // Reset sections
-            document.querySelectorAll('.quiz-section').forEach(s => s.classList.remove('active'));
-            document.getElementById('basic-section').classList.add('active');
-            
-            updateScoreBoard();
-            loadQuestion();
-        }
-        
-        // ==================== UI UPDATES ====================
-        
-        function updateScoreBoard() {
-            document.getElementById('score').textContent = score;
-            document.getElementById('answered').textContent = questionsAnswered;
-            
-            const progress = (questionsAnswered / totalQuestions) * 100;
-            document.getElementById('progress').style.width = progress + '%';
-        }
-        
-        function toggleReference() {
-            const card = document.getElementById('referenceCard');
-            card.classList.toggle('show');
-            const btn = document.querySelector('.reference-btn');
-            btn.textContent = card.classList.contains('show') ? '📖 じょすうし ひょう をかくす' : '📖 じょすうし ひょう をみる';
-        }
-        
-        // ==================== KEYBOARD & TOUCH ====================
-        
-        document.addEventListener('keydown', (e) => {
-            if (e.key >= '1' && e.key <= '4') {
-                const optionBtns = document.querySelectorAll(`#options-${currentSection} .option-btn:not(:disabled)`);
-                const index = parseInt(e.key) - 1;
-                if (optionBtns[index]) {
-                    optionBtns[index].click();
-                }
-            }
-            if (e.key === 'Enter') {
-                const nextBtn = document.querySelector('.next-btn');
-                if (nextBtn) nextBtn.click();
-            }
-        });
-        
-        // Touch swipe for reference card
-        let touchStartY = 0;
-        document.getElementById('referenceCard').addEventListener('touchstart', e => {
-            touchStartY = e.changedTouches[0].screenY;
-        }, { passive: true });
-        
-        document.getElementById('referenceCard').addEventListener('touchend', e => {
-            const touchEndY = e.changedTouches[0].screenY;
-            if (touchStartY - touchEndY > 50) {
-                toggleReference();
-            }
-        }, { passive: true });
-        
-        // Initialize on load
-        init();
-    </script>
+    if (reviewMode) {
+      if (currentQ === total - 1) {
+        $btnNext.textContent = "Done reviewing ✓";
+      } else {
+        $btnNext.textContent = "Next →";
+      }
+      $btnNext.disabled = false;
+    } else {
+      $btnNext.textContent = "Next →";
+      $btnNext.disabled = currentQ === total - 1;
+    }
+  }
+}
+
+$btnPrev.addEventListener("click", () => {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+  }
+});
+
+$btnNext.addEventListener("click", () => {
+  const total = reviewMode ? reviewIndices.length : quiz.length;
+  if (currentQ < total - 1) {
+    currentQ++;
+    renderQuestion();
+  } else if (reviewMode) {
+    reviewMode = false;
+    $reviewBanner.style.display = "none";
+    $scoreBanner.style.display = "block";
+    $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   SUBMIT & EMAILJS
+   ═══════════════════════════════════════════════════════════════ */
+$btnSubmit.addEventListener("click", () => submitQuiz(false));
+
+async function submitQuiz(force = false) {
+  const answeredCount = Object.keys(answers).length;
+
+  if (!force && answeredCount < quiz.length) {
+    const skipped = [];
+    quiz.forEach((_, i) => {
+      if (!answers[i]) skipped.push(i);
+    });
+
+    $skippedWarning.innerHTML = `⚠️ You have unanswered questions: ` + 
+      skipped.map(idx => `<span class="skipped-link" onclick="jumpToQuestion(${idx})">Question ${idx + 1}</span>`).join(", ") + 
+      `. Please answer them before submitting.`;
+    $skippedWarning.classList.remove("hidden");
+    $skippedWarning.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  $skippedWarning.classList.add("hidden");
+  stopTimer();
+  $timerDisplay.parentElement.style.display = "none";
+
+  // Score
+  let score = 0;
+  quiz.forEach((q, i) => {
+    const correctOptions = q.correctAnswer.split(' / ').map(x => x.trim());
+    if (correctOptions.includes(answers[i])) score++;
+  });
+
+  submitted = true;
+  const pct = Math.round((score / quiz.length) * 100);
+
+  $scoreNum.textContent = `${score}/${quiz.length}`;
+  if (score >= 42) {
+    $scoreLbl.textContent = "完璧！ Perfect!";
+    $scoreBanner.style.background = "#e8f5e9";
+    $scoreBanner.style.borderColor = "#2e7d32";
+    $scoreBanner.style.color = "#1b5e20";
+  } else if (score >= 30) {
+    $scoreLbl.textContent = "いいですね！ Good job!";
+    $scoreBanner.style.background = "#fff9c4";
+    $scoreBanner.style.borderColor = "#fbc02d";
+    $scoreBanner.style.color = "#f57f17";
+  } else {
+    $scoreLbl.textContent = "もう一度！ Try again!";
+    $scoreBanner.style.background = "#ffebee";
+    $scoreBanner.style.borderColor = "#c62828";
+    $scoreBanner.style.color = "#b71c1c";
+  }
+  $scoreBanner.style.display = "block";
+
+  // Wrong count
+  const wrongCount = quiz.length - score;
+  $btnReview.disabled = wrongCount === 0;
+  $btnReview.textContent = wrongCount === 0
+    ? "🎉 No mistakes!"
+    : `📝 Review ${wrongCount} wrong answer${wrongCount > 1 ? 's' : ''}`;
+
+  currentQ = 0;
+  renderQuestion();
+  updateNavGrid();
+  $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  // EmailJS sending
+  const cfg = QUIZ_CONFIG.emailjs;
+  const now = new Date().toLocaleString(cfg.locale, {
+    timeZone: cfg.timezone, dateStyle: "full", timeStyle: "short"
+  });
+
+  const elapsedSeconds = 1800 - timeLeft;
+
+  const details = quiz.map((q, i) => {
+    return `${i + 1}. [${q.category}] ${q.counter.name} (${q.number}) → Answered: ${answers[i] || "—"} | Correct: ${q.correctAnswer} ${q.correctAnswer.split(' / ').includes(answers[i]) ? "✓" : "✗"}`;
+  }).join("\n");
+
+  const emailParams = {
+    name: playerName,
+    email: "noreply@quiz.com",
+    subject: `[${playerName}] Counters Quiz — ${pct}%`,
+    message: `Counters Quiz Results\nScore: ${score}/${quiz.length} (${pct}%)\nTime: ${formatDuration(elapsedSeconds)}\nDate: ${now}\n\n--- Detailed results ---\n${details}`,
+    time: now
+  };
+
+  $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
+  try {
+    await emailjs.send(cfg.serviceId, cfg.templateId, emailParams);
+    $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
+  } catch (err) {
+    console.error("EmailJS error:", err);
+    $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || 'Email failed'}</span>`;
+  }
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   REVIEW & RETAKE & HOME
+   ═══════════════════════════════════════════════════════════════ */
+$btnReview.addEventListener("click", () => {
+  reviewIndices = quiz
+    .map((q, i) => {
+      const correctOptions = q.correctAnswer.split(' / ').map(x => x.trim());
+      return { i, wrong: !correctOptions.includes(answers[i]) };
+    })
+    .filter(x => x.wrong)
+    .map(x => x.i);
+  if (reviewIndices.length === 0) return;
+  reviewMode = true;
+  currentQ = 0;
+  $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "block";
+  renderQuestion();
+});
+
+$btnRetake.addEventListener("click", () => {
+  answers = {};
+  currentQ = 0;
+  submitted = false;
+  reviewMode = false;
+  reviewIndices = [];
+
+  $scoreBanner.style.display = "none";
+  $reviewBanner.style.display = "none";
+  $timerDisplay.parentElement.style.display = "flex";
+
+  // Re-generate on retake to keep practice fresh!
+  const basicQ = generateSectionQuestions(basicCounters, 12, 'Basic Counters', 'basic');
+  const timeQ = generateSectionQuestions(timeCounters, 14, 'Time Counters', 'time');
+  const advQ = generateSectionQuestions(advancedCounters, 12, 'Advanced Counters', 'advanced');
+  const mixQ = generateSectionQuestions(allCounters, 12, 'Mixed Counters', 'mixed');
+  quiz = [...basicQ, ...timeQ, ...advQ, ...mixQ];
+
+  buildNavGrid();
+  renderQuestion();
+  updateProgress();
+  startTimer();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+$btnHome.addEventListener("click", () => {
+  stopTimer();
+  $quizScreen.style.display = "none";
+  $nameScreen.style.display = "block";
+});
+
+window.jumpToQuestion = function(idx) {
+  if (reviewMode) {
+    const rIdx = reviewIndices.indexOf(idx);
+    if (rIdx !== -1) currentQ = rIdx;
+  } else {
+    currentQ = idx;
+  }
+  renderQuestion();
+};
+</script>
 </body>
 </html>
