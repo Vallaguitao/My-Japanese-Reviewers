@@ -2,647 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.emailjs.com; img-src 'self' data: https:;">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lesson 24 — Vocabulary Quiz | N5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    min-height: 100vh;
-    background:
-      linear-gradient(90deg, rgba(169, 52, 42, 0.06) 1px, transparent 1px),
-      linear-gradient(180deg, rgba(38, 58, 99, 0.04), transparent 34rem),
-      #f8f3ea;
-    background-size: 44px 44px, auto, auto;
-    color: #18202f;
-    font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  .container {
-    max-width: 620px; 
-    margin: 0 auto;
-    padding: 32px 16px 60px;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* ── Card Styles ── */
-  .card, .q-card, .score-banner {
-    background: rgba(255, 253, 248, 0.94);
-    border-radius: 8px;
-    padding: 32px 24px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    box-shadow: 0 12px 40px rgba(24, 32, 47, 0.06);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  /* ── Name Screen ── */
-  #name-screen { margin-top: 40px; }
-
-  .badge {
-    display: inline-block;
-    background: #a9342a;
-    color: #ffffff;
-    font-weight: 800;
-    font-size: 10px;
-    padding: 5px 16px;
-    border-radius: 20px;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    box-shadow: 0 4px 12px rgba(169, 52, 42, 0.15);
-  }
-
-  .title {
-    font-size: 26px;
-    font-weight: 800;
-    margin: 16px 0 6px;
-    letter-spacing: -0.5px;
-    color: #18202f;
-  }
-
-  .subtitle {
-    font-size: 14px;
-    color: #667085;
-  }
-
-  .name-label {
-    display: block;
-    font-size: 13px;
-    color: #667085;
-    margin: 32px 0 8px;
-    text-align: left;
-    font-weight: 700;
-  }
-
-  .name-input {
-    width: 100%;
-    padding: 16px;
-    border-radius: 8px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    background: #ffffff;
-    color: #18202f;
-    font-size: 16px;
-    font-family: inherit;
-    outline: none;
-    transition: all 0.2s;
-  }
-
-  .name-input:focus {
-    border-color: #a9342a;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(169, 52, 42, 0.15);
-  }
-
-  .btn-primary {
-    width: 100%;
-    margin-top: 24px;
-    padding: 16px 0;
-    border-radius: 8px;
-    background: #a9342a;
-    border: none;
-    color: #ffffff;
-    font-size: 16px;
-    font-weight: 800;
-    font-family: inherit;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.25);
-    transition: all 0.25s ease;
-  }
-  .btn-primary:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(169, 52, 42, 0.35);
-    opacity: 0.95;
-  }
-  .btn-primary:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-
-  /* ── Quiz Screen ── */
-  #quiz-screen { display: none; }
-
-  .header { text-align: center; margin-bottom: 24px; }
-  .header .subtitle { margin-top: 6px; }
-
-  /* Score Banner */
-  .score-banner {
-    display: none;
-    border-radius: 8px;
-    padding: 28px 20px;
-    text-align: center;
-    margin-bottom: 24px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    box-shadow: 0 12px 40px rgba(24, 32, 47, 0.06);
-    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .score-number { font-size: 52px; font-weight: 900; letter-spacing: -1.5px; line-height: 1; margin-bottom: 6px; }
-  .score-label { font-size: 20px; font-weight: 700; margin-bottom: 14px; }
-  
-  .email-row { margin-bottom: 20px; }
-  .email-pill {
-    display: inline-block;
-    background: rgba(24, 32, 47, 0.04);
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    font-size: 12px;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-weight: 700;
-    color: #18202f;
-  }
-  .email-pill.sent {
-    background: #e8f5e9;
-    border: 1px solid #2e7d32;
-    color: #1b5e20;
-  }
-  .email-pill.error {
-    background: #ffebee;
-    border: 1px solid #c62828;
-    color: #b71c1c;
-  }
-
-  .end-actions {
-    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
-    margin-top: 14px;
-  }
-  .btn-end {
-    background: rgba(24, 32, 47, 0.06);
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    color: #18202f;
-    padding: 12px 28px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-end:hover:not(:disabled) {
-    background: #f4ddd8;
-    border-color: rgba(169, 52, 42, 0.2);
-    color: #a9342a;
-    transform: translateY(-1px);
-  }
-  .btn-end:disabled { opacity: 0.4; cursor: default; }
-
-  /* ── Review Banner ── */
-  .review-banner {
-    display: none;
-    background: #fff9c4;
-    border: 1px solid #fbc02d;
-    color: #f57f17;
-    text-align: center;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 20px;
-  }
-
-  /* Progress */
-  .progress-row { margin-bottom: 20px; }
-  .progress-text { font-size: 12px; color: #667085; display: block; margin-bottom: 8px; font-weight: 700; }
-  .progress-bar { height: 6px; background: rgba(24, 32, 47, 0.06); border-radius: 6px; overflow: hidden; }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #a9342a, #8f241c);
-    border-radius: 6px;
-    width: 0%;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 10px rgba(169, 52, 42, 0.15);
-  }
-
-  /* Nav Grid */
-  .nav-grid {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 6px;
-    margin-bottom: 24px;
-  }
-  .nav-dot {
-    aspect-ratio: 1;
-    border-radius: 8px;
-    background: #fffdf8;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    color: #667085;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .nav-dot:hover:not(.locked) {
-    background: #f4ddd8;
-    color: #a9342a;
-    border-color: rgba(169, 52, 42, 0.2);
-  }
-  .nav-dot.answered {
-    background: rgba(169, 52, 42, 0.06);
-    border-color: rgba(169, 52, 42, 0.2);
-    color: #a9342a;
-  }
-  .nav-dot.active {
-    border-color: #a9342a;
-    background: #f4ddd8;
-    color: #a9342a;
-    box-shadow: 0 0 0 3px rgba(169, 52, 42, 0.15);
-  }
-  .nav-dot.correct {
-    background: #e8f5e9;
-    border-color: #2e7d32;
-    color: #1b5e20;
-  }
-  .nav-dot.wrong {
-    background: #ffebee;
-    border-color: #c62828;
-    color: #b71c1c;
-  }
-  .nav-dot.unanswered-locked {
-    background: rgba(24, 32, 47, 0.02);
-    border-color: rgba(24, 32, 47, 0.06);
-    color: rgba(24, 32, 47, 0.3);
-    opacity: 0.5;
-  }
-
-  /* Question Card */
-  .q-card {
-    background: rgba(255, 253, 248, 0.94);
-    border-radius: 8px;
-    padding: 28px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    margin-bottom: 20px;
-    box-shadow: 0 8px 24px rgba(24, 32, 47, 0.04);
-    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .q-number {
-    font-size: 11px;
-    color: #a9342a;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 10px;
-  }
-  .q-english {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    line-height: 1.4;
-    color: #18202f;
-  }
-  
-  .choices-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .choice-btn {
-    padding: 18px 20px;
-    border-radius: 8px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    background: #fffdf8;
-    color: #18202f;
-    text-align: left;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 16px;
-    font-weight: 600;
-    position: relative;
-    display: flex;
-    align-items: center;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow: hidden;
-    line-height: 1.4;
-  }
-  .choice-btn:hover:not(.locked) {
-    border-color: rgba(169, 52, 42, 0.3);
-    background: #f4ddd8;
-    color: #a9342a;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.05);
-  }
-  .choice-btn.selected {
-    background: #f4ddd8;
-    border-color: #a9342a;
-    color: #a9342a;
-    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.1);
-  }
-  .choice-btn.correct-reveal {
-    background: #e8f5e9;
-    border-color: #2e7d32;
-    color: #1b5e20;
-  }
-  .choice-btn.wrong-reveal {
-    background: #ffebee;
-    border-color: #c62828;
-    color: #b71c1c;
-  }
-  .choice-btn.faded-reveal {
-    opacity: 0.4;
-    border-color: rgba(24, 32, 47, 0.04);
-  }
-  .choice-letter {
-    font-weight: 800;
-    margin-right: 16px;
-    opacity: 0.5;
-    transition: opacity 0.2s;
-  }
-  .choice-btn:hover .choice-letter, .choice-btn.selected .choice-letter { opacity: 1; }
-  
-  .mark {
-    position: absolute;
-    right: 20px;
-    font-size: 20px;
-    font-weight: 900;
-  }
-  .mark.ok { color: #1b5e20; }
-  .mark.no { color: #b71c1c; }
-
-  /* Arrow Row */
-  .arrow-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .btn-nav {
-    flex: 1;
-    padding: 16px 0;
-    border-radius: 8px;
-    background: #fffdf8;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    color: #18202f;
-    font-size: 15px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-nav:hover:not(:disabled) {
-    background: #f4ddd8;
-    color: #a9342a;
-    border-color: rgba(169, 52, 42, 0.2);
-  }
-  .btn-nav:disabled { opacity: 0.25; cursor: not-allowed; }
-  
-  .btn-submit {
-    flex: 1;
-    padding: 16px 0;
-    border-radius: 8px;
-    background: #a9342a;
-    border: none;
-    color: #ffffff;
-    font-size: 15px;
-    font-weight: 800;
-    font-family: inherit;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.25);
-    transition: all 0.2s;
-  }
-  .btn-submit:hover:not(:disabled) {
-    box-shadow: 0 6px 20px rgba(169, 52, 42, 0.35);
-    opacity: 0.95;
-  }
-  .btn-submit:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
-
-  /* Explanation Box / Feedback Card */
-  .feedback-card {
-    display: none;
-    margin-top: 24px;
-    padding: 18px 20px;
-    border-radius: 8px;
-    background: #fff8ef;
-    border: 1px solid rgba(169, 52, 42, 0.15);
-    font-size: 14px;
-    line-height: 1.55;
-    color: #18202f;
-    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .fb-header {
-    font-weight: 800;
-    margin-bottom: 8px;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .feedback-card.correct .fb-header { color: #2e7d32; }
-  .feedback-card.wrong .fb-header { color: #c62828; }
-  .fb-block { margin-top: 8px; }
-  .fb-block.connect { color: #667085; font-size: 13px; }
-  .fb-block.warn {
-    color: #b71c1c;
-    background: #ffebee;
-    border: 1px solid rgba(198, 40, 40, 0.2);
-    padding: 8px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-  }
-
-  /* Skipped warning alert box */
-  .skipped-warning {
-    margin-bottom: 20px;
-    padding: 16px;
-    background: #fff8ef;
-    border: 1px solid #a9342a;
-    border-radius: 8px;
-    color: #a9342a;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    line-height: 1.5;
-    animation: fadeIn 0.3s ease;
-  }
-  .skipped-link {
-    color: #a9342a;
-    text-decoration: underline;
-    cursor: pointer;
-    margin: 0 4px;
-    font-weight: 800;
-  }
-  .skipped-link:hover {
-    color: #8f241c;
-  }
-
-  .text-center { text-align: center; }
-  .hidden { display: none !important; }
-
-  /* Mobile tweaks */
-  @media (max-width: 480px) {
-    .container { padding: 16px 12px 50px; }
-    .title { font-size: 20px; }
-    .q-english { font-size: 18px; }
-    .choice-btn { font-size: 14px; padding: 12px 10px; }
-  }
-
-/* ========== Site Breadcrumb ========== */
-.site-breadcrumb,
-.site-breadcrumb * {
-  box-sizing: border-box;
-}
-
-.site-breadcrumb {
-  position: relative;
-  z-index: 20;
-  width: min(1180px, calc(100% - 32px));
-  margin: 16px auto 12px;
-  font-family: "Noto Sans JP", "Outfit", system-ui, sans-serif;
-  color: #18202f;
-}
-
-.site-breadcrumb__list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0;
-  list-style: none;
-  margin: 0;
-  padding: 8px 12px;
-  border: 1px solid rgba(24, 32, 47, 0.12);
-  border-radius: 8px;
-  background: rgba(255, 253, 248, 0.94);
-  box-shadow: 0 10px 30px rgba(24, 32, 47, 0.08);
-}
-
-.site-breadcrumb__item {
-  display: inline-flex;
-  align-items: center;
-  min-width: 0;
-  color: #667085;
-  font-size: 0.82rem;
-  font-weight: 700;
-  line-height: 1.4;
-}
-
-.site-breadcrumb__item + .site-breadcrumb__item::before {
-  content: "/";
-  margin: 0 8px;
-  color: rgba(169, 52, 42, 0.42);
-  font-weight: 800;
-}
-
-.site-breadcrumb__link {
-  color: #667085;
-  text-decoration: none;
-  transition: color 0.18s ease, background 0.18s ease;
-}
-
-.site-breadcrumb__link:hover {
-  color: #a9342a;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.site-breadcrumb__link:focus-visible {
-  color: #a9342a;
-  outline: 2px solid rgba(169, 52, 42, 0.45);
-  outline-offset: 3px;
-  border-radius: 4px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.site-breadcrumb__category {
-  color: #a9342a;
-}
-
-.site-breadcrumb__current {
-  color: #18202f;
-  overflow-wrap: anywhere;
-}
-
-.site-breadcrumb__navigation {
-  margin-left: auto;
-}
-
-.site-breadcrumb__navigation::before {
-  display: none !important;
-}
-
-.site-breadcrumb__btn-short {
-  display: none;
-}
-
-.site-breadcrumb__btn-full {
-  display: inline;
-}
-
-.site-breadcrumb__divider {
-  color: rgba(24, 32, 47, 0.12);
-  margin: 0 6px;
-}
-
-@media (max-width: 640px) {
-  .site-breadcrumb {
-    width: min(100% - 20px, 680px);
-    margin: 12px auto 10px;
-  }
-
-  .site-breadcrumb__list {
-    padding: 8px 10px;
-  }
-
-  .site-breadcrumb__item {
-    font-size: 0.78rem;
-  }
-
-  .site-breadcrumb__btn-full {
-    display: none;
-  }
-
-  .site-breadcrumb__btn-short {
-    display: inline;
-  }
-}
-/* ========== End Site Breadcrumb ========== */
-
-  /* Timer Display styling next to progress */
-  .topbar-timer {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    font-weight: 700;
-    color: #18202f;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    padding: 4px 12px;
-    border-radius: 20px;
-    background: rgba(255, 253, 248, 0.94);
-    box-shadow: 0 2px 6px rgba(24, 32, 47, 0.04);
-  }
-  .topbar-timer.warning {
-    color: #a9342a;
-    border-color: #a9342a;
-    background: #fff8ef;
-    animation: timerPulse 1s infinite alternate;
-  }
-  @keyframes timerPulse {
-    from { opacity: 1; }
-    to { opacity: 0.6; }
-  }
-</style>
+<link rel="stylesheet" href="../assets/css/quiz-common.css">
 </head>
 <body>
 
@@ -730,934 +97,413 @@
 </div>
 
 <script>
-const QUESTIONS = [
+window.quizConfig = {
+  lessonTitle: "Lesson 24 — Vocabulary Exam",
+  emailSubject: "Lesson 24 Quiz",
+  questions: [
   {
     "english": "give (me / my group)",
-    "answer": "くれます",
+    "answer": "44GP44KM44G+44GZ",
     "choices": [
       "くれます",
       "おくります",
       "なおします",
       "せつめいします"
-    ],
-    "correctNote": "The Japanese word for \"give (me / my group)\" is 「くれます」.",
-    "explain": "The English word \"give (me / my group)\" translates to 「くれます」. The other choices (「おくります」, 「なおします」, 「せつめいします」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "repair, correct",
-    "answer": "なおします",
+    "answer": "44Gq44GK44GX44G+44GZ",
     "choices": [
       "なおします",
       "くれます",
       "せつめいします",
       "しょうかいします"
-    ],
-    "correctNote": "The Japanese word for \"repair, correct\" is 「なおします」.",
-    "explain": "The English word \"repair, correct\" translates to 「なおします」. The other choices (「くれます」, 「せつめいします」, 「しょうかいします」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "take (someone somewhere)",
-    "answer": "つれていきます",
+    "answer": "44Gk44KM44Gm44GE44GN44G+44GZ",
     "choices": [
       "つれていきます",
       "つれてきます",
       "おくります",
       "あんないします"
-    ],
-    "correctNote": "The Japanese word for \"take (someone somewhere)\" is 「つれていきます」.",
-    "explain": "The English word \"take (someone somewhere)\" translates to 「つれていきます」. The other choices (「つれてきます」, 「おくります」, 「あんないします」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "bring (someone here)",
-    "answer": "つれてきます",
+    "answer": "44Gk44KM44Gm44GN44G+44GZ",
     "choices": [
       "つれてきます",
       "つれていきます",
       "くれます",
       "しょうかいします"
-    ],
-    "correctNote": "The Japanese word for \"bring (someone here)\" is 「つれてきます」.",
-    "explain": "The English word \"bring (someone here)\" translates to 「つれてきます」. The other choices (「つれていきます」, 「くれます」, 「しょうかいします」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "escort (someone), go with, send off",
-    "answer": "おくります",
+    "answer": "44GK44GP44KK44G+44GZ",
     "choices": [
       "おくります",
       "つれていきます",
       "あんないします",
       "くれます"
-    ],
-    "correctNote": "The Japanese word for \"escort (someone), go with, send off\" is 「おくります」.",
-    "explain": "The English word \"escort (someone), go with, send off\" translates to 「おくります」. The other choices (「つれていきます」, 「あんないします」, 「くれます」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "introduce",
-    "answer": "しょうかいします",
+    "answer": "44GX44KH44GG44GL44GE44GX44G+44GZ",
     "choices": [
       "しょうかいします",
       "あんないします",
       "せつめいします",
       "おくります"
-    ],
-    "correctNote": "The Japanese word for \"introduce\" is 「しょうかいします」.",
-    "explain": "The English word \"introduce\" translates to 「しょうかいします」. The other choices (「あんないします」, 「せつめいします」, 「おくります」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "show around, show the way",
-    "answer": "あんないします",
+    "answer": "44GC44KT44Gq44GE44GX44G+44GZ",
     "choices": [
       "あんないします",
       "しょうかいします",
       "せつめいします",
       "おくります"
-    ],
-    "correctNote": "The Japanese word for \"show around, show the way\" is 「あんないします」.",
-    "explain": "The English word \"show around, show the way\" translates to 「あんないします」. The other choices (「しょうかいします」, 「せつめいします」, 「おくります」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "explain",
-    "answer": "せつめいします",
+    "answer": "44Gb44Gk44KB44GE44GX44G+44GZ",
     "choices": [
       "せつめいします",
       "しょうかいします",
       "あんないします",
       "なおします"
-    ],
-    "correctNote": "The Japanese word for \"explain\" is 「せつめいします」.",
-    "explain": "The English word \"explain\" translates to 「せつめいします」. The other choices (「しょうかいします」, 「あんないします」, 「なおします」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "grandfather, old man (polite)",
-    "answer": "おじいさん",
+    "answer": "44GK44GY44GE44GV44KT",
     "choices": [
       "おじいさん",
       "おじいちゃん",
       "おばあさん",
       "おばあちゃん"
-    ],
-    "correctNote": "The Japanese word for \"grandfather, old man (polite)\" is 「おじいさん」.",
-    "explain": "The English word \"grandfather, old man (polite)\" translates to 「おじいさん」. The other choices (「おじいちゃん」, 「おばあさん」, 「おばあちゃん」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "grandfather (casual / affectionate)",
-    "answer": "おじいちゃん",
+    "answer": "44GK44GY44GE44Gh44KD44KT",
     "choices": [
       "おじいちゃん",
       "おじいさん",
       "おばあちゃん",
       "おばあさん"
-    ],
-    "correctNote": "The Japanese word for \"grandfather (casual / affectionate)\" is 「おじいちゃん」.",
-    "explain": "The English word \"grandfather (casual / affectionate)\" translates to 「おじいちゃん」. The other choices (「おじいさん」, 「おばあちゃん」, 「おばあさん」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "grandmother, old woman (polite)",
-    "answer": "おばあさん",
+    "answer": "44GK44Gw44GC44GV44KT",
     "choices": [
       "おばあさん",
       "おばあちゃん",
       "おじいさん",
       "おじいちゃん"
-    ],
-    "correctNote": "The Japanese word for \"grandmother, old woman (polite)\" is 「おばあさん」.",
-    "explain": "The English word \"grandmother, old woman (polite)\" translates to 「おばあさん」. The other choices (「おばあちゃん」, 「おじいさん」, 「おじいちゃん」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "grandmother (casual / affectionate)",
-    "answer": "おばあちゃん",
+    "answer": "44GK44Gw44GC44Gh44KD44KT",
     "choices": [
       "おばあちゃん",
       "おばあさん",
       "おじいちゃん",
       "おじいさん"
-    ],
-    "correctNote": "The Japanese word for \"grandmother (casual / affectionate)\" is 「おばあちゃん」.",
-    "explain": "The English word \"grandmother (casual / affectionate)\" translates to 「おばあちゃん」. The other choices (「おばあさん」, 「おじいちゃん」, 「おじいさん」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "preparation",
-    "answer": "準備",
+    "answer": "5rqW5YKZ",
     "choices": [
       "準備",
       "引っ越し",
       "お菓子",
       "全部"
-    ],
-    "correctNote": "The Japanese word for \"preparation\" is 「準備」.",
-    "explain": "The English word \"preparation\" translates to 「準備」. The other choices (「引っ越し」, 「お菓子」, 「全部」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "moving out (changing residence)",
-    "answer": "引っ越し",
+    "answer": "5byV44Gj6LaK44GX",
     "choices": [
       "引っ越し",
       "準備",
       "ホームステイ",
       "全部"
-    ],
-    "correctNote": "The Japanese word for \"moving out (changing residence)\" is 「引っ越し」.",
-    "explain": "The English word \"moving out (changing residence)\" translates to 「引っ越し」. The other choices (「準備」, 「ホームステイ」, 「全部」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "sweets, snacks",
-    "answer": "お菓子",
+    "answer": "44GK6I+T5a2Q",
     "choices": [
       "お菓子",
       "準備",
       "引っ越し",
       "ホームステイ"
-    ],
-    "correctNote": "The Japanese word for \"sweets, snacks\" is 「お菓子」.",
-    "explain": "The English word \"sweets, snacks\" translates to 「お菓子」. The other choices (「準備」, 「引っ越し」, 「ホームステイ」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "homestay",
-    "answer": "ホームステイ",
+    "answer": "44Ob44O844Og44K544OG44Kk",
     "choices": [
       "ホームステイ",
       "引っ越し",
       "準備",
       "お菓子"
-    ],
-    "correctNote": "The Japanese word for \"homestay\" is 「ホームステイ」.",
-    "explain": "The English word \"homestay\" translates to 「ホームステイ」. The other choices (「引っ越し」, 「準備」, 「お菓子」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "all, everything",
-    "answer": "全部",
+    "answer": "5YWo6YOo",
     "choices": [
       "全部",
       "自分で",
       "ほかに",
       "準備"
-    ],
-    "correctNote": "The Japanese word for \"all, everything\" is 「全部」.",
-    "explain": "The English word \"all, everything\" translates to 「全部」. The other choices (「自分で」, 「ほかに」, 「準備」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "by oneself",
-    "answer": "自分で",
+    "answer": "6Ieq5YiG44Gn",
     "choices": [
       "自分で",
       "全部",
       "ほかに",
       "準備"
-    ],
-    "correctNote": "The Japanese word for \"by oneself\" is 「自分で」.",
-    "explain": "The English word \"by oneself\" translates to 「自分で」. The other choices (「全部」, 「ほかに」, 「準備」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "besides, in addition",
-    "answer": "ほかに",
+    "answer": "44G744GL44Gr",
     "choices": [
       "ほかに",
       "全部",
       "自分で",
       "母の日"
-    ],
-    "correctNote": "The Japanese word for \"besides, in addition\" is 「ほかに」.",
-    "explain": "The English word \"besides, in addition\" translates to 「ほかに」. The other choices (「全部」, 「自分で」, 「母の日」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "Mother's Day",
-    "answer": "母の日",
+    "answer": "5q+N44Gu5pel",
     "choices": [
       "母の日",
       "ほかに",
       "お菓子",
       "ホームステイ"
-    ],
-    "correctNote": "The Japanese word for \"Mother's Day\" is 「母の日」.",
-    "explain": "The English word \"Mother's Day\" translates to 「母の日」. The other choices (「ほかに」, 「お菓子」, 「ホームステイ」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "small gift of money given to children on New Year's Day",
-    "answer": "お年玉",
+    "answer": "44GK5bm0546J",
     "choices": [
       "お年玉",
       "入学祝い",
       "お中元",
       "お歳暮"
-    ],
-    "correctNote": "The Japanese word for \"small gift of money given to children on New Year's Day\" is 「お年玉」.",
-    "explain": "The English word \"small gift of money given to children on New Year's Day\" translates to 「お年玉」. The other choices (「入学祝い」, 「お中元」, 「お歳暮」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "gift celebrating admission to school",
-    "answer": "入学祝い",
+    "answer": "5YWl5a2m56Wd44GE",
     "choices": [
       "入学祝い",
       "卒業祝い",
       "お年玉",
       "出産祝い"
-    ],
-    "correctNote": "The Japanese word for \"gift celebrating admission to school\" is 「入学祝い」.",
-    "explain": "The English word \"gift celebrating admission to school\" translates to 「入学祝い」. The other choices (「卒業祝い」, 「お年玉」, 「出産祝い」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "graduation gift (money, stationery, book, etc.)",
-    "answer": "卒業祝い",
+    "answer": "5Y2S5qWt56Wd44GE",
     "choices": [
       "卒業祝い",
       "入学祝い",
       "結婚祝い",
       "お年玉"
-    ],
-    "correctNote": "The Japanese word for \"graduation gift (money, stationery, book, etc.)\" is 「卒業祝い」.",
-    "explain": "The English word \"graduation gift (money, stationery, book, etc.)\" translates to 「卒業祝い」. The other choices (「入学祝い」, 「結婚祝い」, 「お年玉」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "wedding gift (money, household goods, etc.)",
-    "answer": "結婚祝い",
+    "answer": "57WQ5ama56Wd44GE",
     "choices": [
       "結婚祝い",
       "出産祝い",
       "卒業祝い",
       "入学祝い"
-    ],
-    "correctNote": "The Japanese word for \"wedding gift (money, household goods, etc.)\" is 「結婚祝い」.",
-    "explain": "The English word \"wedding gift (money, household goods, etc.)\" translates to 「結婚祝い」. The other choices (「出産祝い」, 「卒業祝い」, 「入学祝い」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "gift celebrating a birth (baby clothes, toys, etc.)",
-    "answer": "出産祝い",
+    "answer": "5Ye655Sj56Wd44GE",
     "choices": [
       "出産祝い",
       "結婚祝い",
       "お見舞い",
       "入学祝い"
-    ],
-    "correctNote": "The Japanese word for \"gift celebrating a birth (baby clothes, toys, etc.)\" is 「出産祝い」.",
-    "explain": "The English word \"gift celebrating a birth (baby clothes, toys, etc.)\" translates to 「出産祝い」. The other choices (「結婚祝い」, 「お見舞い」, 「入学祝い」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "summer gift (Jul./Aug.) for someone who cares for you",
-    "answer": "お中元",
+    "answer": "44GK5Lit5YWD",
     "choices": [
       "お中元",
       "お歳暮",
       "お年玉",
       "お香典"
-    ],
-    "correctNote": "The Japanese word for \"summer gift (Jul./Aug.) for someone who cares for you\" is 「お中元」.",
-    "explain": "The English word \"summer gift (Jul./Aug.) for someone who cares for you\" translates to 「お中元」. The other choices (「お歳暮」, 「お年玉」, 「お香典」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "year-end gift (Dec.) for someone who cares for you",
-    "answer": "お歳暮",
+    "answer": "44GK5q2z5pqu",
     "choices": [
       "お歳暮",
       "お中元",
       "お年玉",
       "お香典"
-    ],
-    "correctNote": "The Japanese word for \"year-end gift (Dec.) for someone who cares for you\" is 「お歳暮」.",
-    "explain": "The English word \"year-end gift (Dec.) for someone who cares for you\" translates to 「お歳暮」. The other choices (「お中元」, 「お年玉」, 「お香典」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "condolence money (for a funeral)",
-    "answer": "お香典",
+    "answer": "44GK6aaZ5YW4",
     "choices": [
       "お香典",
       "お見舞い",
       "お歳暮",
       "お中元"
-    ],
-    "correctNote": "The Japanese word for \"condolence money (for a funeral)\" is 「お香典」.",
-    "explain": "The English word \"condolence money (for a funeral)\" translates to 「お香典」. The other choices (「お見舞い」, 「お歳暮」, 「お中元」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "present for visiting a sick or injured person",
-    "answer": "お見舞い",
+    "answer": "44GK6KaL6Iie44GE",
     "choices": [
       "お見舞い",
       "お香典",
       "出産祝い",
       "お歳暮"
-    ],
-    "correctNote": "The Japanese word for \"present for visiting a sick or injured person\" is 「お見舞い」.",
-    "explain": "The English word \"present for visiting a sick or injured person\" translates to 「お見舞い」. The other choices (「お香典」, 「出産祝い」, 「お歳暮」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "special decorated envelope for money gifts",
-    "answer": "のし袋",
+    "answer": "44Gu44GX6KKL",
     "choices": [
       "のし袋",
       "お年玉",
       "お香典",
       "全部"
-    ],
-    "correctNote": "The Japanese word for \"special decorated envelope for money gifts\" is 「のし袋」.",
-    "explain": "The English word \"special decorated envelope for money gifts\" translates to 「のし袋」. The other choices (「お年玉」, 「お香典」, 「全部」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "someone gives TO ME (speaker receives benefit)",
-    "answer": "くれます",
+    "answer": "44GP44KM44G+44GZ",
     "choices": [
       "くれます",
       "あげます",
       "もらいます",
       "おくります"
-    ],
-    "correctNote": "The Japanese word for \"someone gives TO ME (speaker receives benefit)\" is 「くれます」.",
-    "explain": "The English word \"someone gives TO ME (speaker receives benefit)\" translates to 「くれます」. The other choices (「あげます」, 「もらいます」, 「おくります」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "I give TO SOMEONE ELSE",
-    "answer": "あげます",
+    "answer": "44GC44GS44G+44GZ",
     "choices": [
       "あげます",
       "くれます",
       "もらいます",
       "おくります"
-    ],
-    "correctNote": "The Japanese word for \"I give TO SOMEONE ELSE\" is 「あげます」.",
-    "explain": "The English word \"I give TO SOMEONE ELSE\" translates to 「あげます」. The other choices (「くれます」, 「もらいます」, 「おくります」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "I RECEIVE from someone",
-    "answer": "もらいます",
+    "answer": "44KC44KJ44GE44G+44GZ",
     "choices": [
       "もらいます",
       "くれます",
       "あげます",
       "おくります"
-    ],
-    "correctNote": "The Japanese word for \"I RECEIVE from someone\" is 「もらいます」.",
-    "explain": "The English word \"I RECEIVE from someone\" translates to 「もらいます」. The other choices (「くれます」, 「あげます」, 「おくります」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "take a PERSON somewhere (away from here)",
-    "answer": "つれていきます",
+    "answer": "44Gk44KM44Gm44GE44GN44G+44GZ",
     "choices": [
       "つれていきます",
       "つれてきます",
       "もっていきます",
       "もってきます"
-    ],
-    "correctNote": "The Japanese word for \"take a PERSON somewhere (away from here)\" is 「つれていきます」.",
-    "explain": "The English word \"take a PERSON somewhere (away from here)\" translates to 「つれていきます」. The other choices (「つれてきます」, 「もっていきます」, 「もってきます」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "bring a PERSON here (toward speaker)",
-    "answer": "つれてきます",
+    "answer": "44Gk44KM44Gm44GN44G+44GZ",
     "choices": [
       "つれてきます",
       "つれていきます",
       "もってきます",
       "もっていきます"
-    ],
-    "correctNote": "The Japanese word for \"bring a PERSON here (toward speaker)\" is 「つれてきます」.",
-    "explain": "The English word \"bring a PERSON here (toward speaker)\" translates to 「つれてきます」. The other choices (「つれていきます」, 「もってきます」, 「もっていきます」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "take an OBJECT somewhere (away from here) — L17",
-    "answer": "もっていきます",
+    "answer": "44KC44Gj44Gm44GE44GN44G+44GZ",
     "choices": [
       "もっていきます",
       "もってきます",
       "つれていきます",
       "つれてきます"
-    ],
-    "correctNote": "The Japanese word for \"take an OBJECT somewhere (away from here) — L17\" is 「もっていきます」.",
-    "explain": "The English word \"take an OBJECT somewhere (away from here) — L17\" translates to 「もっていきます」. The other choices (「もってきます」, 「つれていきます」, 「つれてきます」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "bring an OBJECT here (toward speaker) — L17",
-    "answer": "もってきます",
+    "answer": "44KC44Gj44Gm44GN44G+44GZ",
     "choices": [
       "もってきます",
       "もっていきます",
       "つれてきます",
       "つれていきます"
-    ],
-    "correctNote": "The Japanese word for \"bring an OBJECT here (toward speaker) — L17\" is 「もってきます」.",
-    "explain": "The English word \"bring an OBJECT here (toward speaker) — L17\" translates to 「もってきます」. The other choices (「もっていきます」, 「つれてきます」, 「つれていきます」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "gift with red & white ribbon for weddings is called...",
-    "answer": "結婚祝い",
+    "answer": "57WQ5ama56Wd44GE",
     "choices": [
       "結婚祝い",
       "お香典",
       "お見舞い",
       "出産祝い"
-    ],
-    "correctNote": "The Japanese word for \"gift with red & white ribbon for weddings is called...\" is 「結婚祝い」.",
-    "explain": "The English word \"gift with red & white ribbon for weddings is called...\" translates to 「結婚祝い」. The other choices (「お香典」, 「お見舞い」, 「出産祝い」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "gift with black & white ribbon for funerals is called...",
-    "answer": "お香典",
+    "answer": "44GK6aaZ5YW4",
     "choices": [
       "お香典",
       "お見舞い",
       "結婚祝い",
       "お歳暮"
-    ],
-    "correctNote": "The Japanese word for \"gift with black & white ribbon for funerals is called...\" is 「お香典」.",
-    "explain": "The English word \"gift with black & white ribbon for funerals is called...\" translates to 「お香典」. The other choices (「お見舞い」, 「結婚祝い」, 「お歳暮」) have different meanings and are incorrect in this context."
+    ]
   },
   {
     "english": "お中元 is for summer; the December equivalent is...",
-    "answer": "お歳暮",
+    "answer": "44GK5q2z5pqu",
     "choices": [
       "お歳暮",
       "お中元",
       "お年玉",
       "お香典"
-    ],
-    "correctNote": "The Japanese word for \"お中元 is for summer; the December equivalent is...\" is 「お歳暮」.",
-    "explain": "The English word \"お中元 is for summer; the December equivalent is...\" translates to 「お歳暮」. The other choices (「お中元」, 「お年玉」, 「お香典」) have different meanings and are incorrect in this context."
+    ]
   }
-];
-
-/* ── State ── */
-let playerName = "";
-let quiz = [];
-let answers = {};
-let currentQ = 0;
-let submitted = false;
-let reviewMode = false;
-let reviewIndices = [];
-
-/* ── Helpers ── */
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-/* ── Initialize EmailJS ── */
-emailjs.init("1oR0j0WDvUmSSYEpK");
-
-/* ── DOM refs ── */
-const $nameScreen = document.getElementById("name-screen");
-const $quizScreen = document.getElementById("quiz-screen");
-const $nameInput  = document.getElementById("name-input");
-const $btnStart   = document.getElementById("btn-start");
-const $subtitle   = document.getElementById("quiz-subtitle");
-const $scoreBanner= document.getElementById("score-banner");
-const $scoreNum   = document.getElementById("score-number");
-const $scoreLbl   = document.getElementById("score-label");
-const $emailRow   = document.getElementById("email-row");
-const $btnRetake  = document.getElementById("btn-retake");
-const $btnReview  = document.getElementById("btn-review");
-const $btnHome    = document.getElementById("btn-home");
-const $reviewBanner = document.getElementById("review-banner");
-const $skippedWarning = document.getElementById("skipped-warning");
-const $feedbackCard = document.getElementById("feedback-card");
-const $timerDisplay = document.getElementById("timer-display");
-let endTime = null;
-let timeLeft = 0;
-let timerInterval = null;
-const $progText   = document.getElementById("progress-text");
-const $progFill   = document.getElementById("progress-fill");
-const $navGrid    = document.getElementById("nav-grid");
-const $qCard      = document.getElementById("q-card");
-const $qNumber    = document.getElementById("q-number");
-const $qEnglish   = document.getElementById("q-english");
-const $choicesGrid= document.getElementById("choices-grid");
-const $btnPrev    = document.getElementById("btn-prev");
-const $btnNext    = document.getElementById("btn-next");
-const $btnSubmit  = document.getElementById("btn-submit");
-
-/* ── Name Screen ── */
-$nameInput.addEventListener("input", () => {
-  $btnStart.disabled = !$nameInput.value.trim();
-});
-$nameInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && $nameInput.value.trim()) startQuiz();
-});
-$btnStart.addEventListener("click", startQuiz);
-
-function startTimer() {
-  const qCount = quiz.length;
-  let TIME_LIMIT;
-  if (qCount <= 30) {
-    TIME_LIMIT = 20 * 60;
-  } else if (qCount <= 40) {
-    TIME_LIMIT = 25 * 60;
-  } else if (qCount <= 50) {
-    TIME_LIMIT = 30 * 60;
-  } else {
-    TIME_LIMIT = 40 * 60;
-  }
-
-  endTime = Date.now() + TIME_LIMIT * 1000;
-  timeLeft = TIME_LIMIT;
-  updateTimerDisplay();
-  if (timerInterval) clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    if (submitted) {
-      clearInterval(timerInterval);
-      return;
-    }
-    timeLeft = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
-    updateTimerDisplay();
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      alert("Time is up! Your exam will be submitted automatically.");
-      submitQuiz(true);
-    }
-  }, 1000);
-}
-
-function updateTimerDisplay() {
-  const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-  const s = String(timeLeft % 60).padStart(2, '0');
-  if ($timerDisplay) {
-    $timerDisplay.textContent = `${m}:${s}`;
-    if (timeLeft < 300) {
-      $timerDisplay.parentElement.classList.add("warning");
-    } else {
-      $timerDisplay.parentElement.classList.remove("warning");
-    }
-  }
-}
-
-function startQuiz() {
-  playerName = $nameInput.value.trim();
-  quiz = shuffle(QUESTIONS).map(q => ({ ...q, choices: shuffle(q.choices) }));
-  answers = {};
-  currentQ = 0;
-  submitted = false;
-  reviewMode = false;
-  reviewIndices = [];
-
-  $nameScreen.style.display = "none";
-  $quizScreen.style.display = "block";
-  $scoreBanner.style.display = "none";
-  $reviewBanner.style.display = "none";
-  $skippedWarning.classList.add("hidden");
-  $subtitle.textContent = `${playerName}さん — Choose the correct translation`;
-
-  buildNavGrid();
-  startTimer();
-  renderQuestion();
-  updateProgress();
-}
-
-/* ── Nav Grid ── */
-function buildNavGrid() {
-  $navGrid.innerHTML = "";
-  quiz.forEach((_, i) => {
-    const btn = document.createElement("button");
-    btn.className = "nav-dot";
-    btn.textContent = i + 1;
-    btn.setAttribute("aria-label", `Question ${i + 1}`);
-    btn.addEventListener("click", () => {
-      if (reviewMode) {
-        const idx = reviewIndices.indexOf(i);
-        if (idx === -1) return;
-        currentQ = idx;
-      } else {
-        currentQ = i;
-      }
-      renderQuestion();
-    });
-    $navGrid.appendChild(btn);
-  });
-}
-
-function updateNavGrid() {
-  const dots = $navGrid.querySelectorAll(".nav-dot");
-  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
-
-  if (submitted) {
-    $navGrid.classList.remove("hidden");
-  } else {
-    $navGrid.classList.add("hidden");
-  }
-
-  dots.forEach((dot, i) => {
-    dot.className = "nav-dot";
-    let label = `Question ${i + 1}`;
-    if (i === realIdx) { dot.classList.add("active"); label += ", current"; }
-    
-    if (submitted) {
-      dot.classList.add("locked");
-      if (answers[i] === quiz[i].answer) {
-        dot.classList.add("correct"); label += ", correct";
-      } else if (answers[i] !== undefined) {
-        dot.classList.add("wrong"); label += ", incorrect";
-      } else {
-        dot.classList.add("unanswered-locked"); label += ", unanswered";
-      }
-    } else {
-      if (answers[i] !== undefined) {
-        dot.classList.add("answered"); label += ", answered";
-      }
-    }
-    dot.setAttribute("aria-label", label);
-  });
-}
-
-/* ── Progress ── */
-function updateProgress() {
-  if (reviewMode) {
-    $progText.textContent = `Reviewing ${currentQ + 1} / ${reviewIndices.length}`;
-    $progFill.style.width = `${((currentQ + 1) / reviewIndices.length) * 100}%`;
-    return;
-  }
-  const count = Object.keys(answers).length;
-  $progText.textContent = `${count} / ${quiz.length} answered`;
-  $progFill.style.width = `${(count / quiz.length) * 100}%`;
-  $btnSubmit.disabled = false;
-}
-
-/* ── Render Question ── */
-function renderQuestion() {
-  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
-  const q = quiz[realIdx];
-  $qNumber.textContent = reviewMode
-    ? `Review ${currentQ + 1} of ${reviewIndices.length}`
-    : `Question ${realIdx + 1}`;
-  $qEnglish.textContent = q.english;
-
-  $choicesGrid.innerHTML = "";
-  q.choices.forEach((c, i) => {
-    const btn = document.createElement("button");
-    btn.className = "choice-btn";
-    if (submitted) btn.classList.add("locked");
-    
-    const letters = ['a', 'b', 'c', 'd'];
-    btn.innerHTML = `<span class="choice-letter">${letters[i]}.</span><span>${c}</span>`;
-
-    const selected = answers[realIdx] === c;
-    const isCorrectChoice = c === q.answer;
-
-    if (!submitted) {
-      if (selected) btn.classList.add("selected");
-      btn.addEventListener("click", () => {
-        if (submitted) return;
-        answers[realIdx] = c;
-        renderQuestion();
-        updateNavGrid();
-        updateProgress();
-      });
-    } else {
-      if (isCorrectChoice) {
-        btn.classList.add("correct-reveal");
-        btn.innerHTML += `<span class="mark ok">✓</span>`;
-      } else if (selected && !isCorrectChoice) {
-        btn.classList.add("wrong-reveal");
-        btn.innerHTML += `<span class="mark no">✗</span>`;
-      } else {
-        btn.classList.add("faded-reveal");
-      }
-    }
-
-    $choicesGrid.appendChild(btn);
-  });
-
-  /* Feedback card */
-  const isAnswered = answers[realIdx] !== undefined;
-  if (submitted && isAnswered) {
-    renderFeedback(q, answers[realIdx]);
-  } else {
-    $feedbackCard.style.display = "none";
-    $feedbackCard.innerHTML = "";
-  }
-
-  updateNavGrid();
-
-  /* Arrow / submit visibility */
-  const total = reviewMode ? reviewIndices.length : quiz.length;
-  $btnPrev.disabled = currentQ === 0;
-
-  if (!submitted) {
-    const isLast = currentQ === quiz.length - 1;
-    if (isLast) {
-      $btnNext.classList.add("hidden");
-      $btnSubmit.classList.remove("hidden");
-    } else {
-      $btnNext.classList.remove("hidden");
-      $btnSubmit.classList.add("hidden");
-      $btnNext.textContent = "Next →";
-    }
-  } else {
-    $btnSubmit.classList.add("hidden");
-    $btnNext.classList.remove("hidden");
-    
-    if (reviewMode) {
-      if (currentQ === total - 1) {
-        $btnNext.textContent = "Done reviewing ✓";
-      } else {
-        $btnNext.textContent = "Next →";
-      }
-      $btnNext.disabled = false;
-    } else {
-      $btnNext.textContent = "Next →";
-      $btnNext.disabled = currentQ === total - 1;
-    }
-  }
-}
-
-function renderFeedback(q, given) {
-  const isCorrect = given === q.answer;
-  $feedbackCard.className = `feedback-card ${isCorrect ? "correct" : "wrong"}`;
-  $feedbackCard.style.display = "block";
-
-  let html = `<div class="fb-header">${isCorrect ? "✓ Correct" : `✗ Not quite — answer: ${q.answer}`}</div>`;
-  if (q.correctNote) html += `<div>${q.correctNote}</div>`;
-  if (q.explain)     html += `<div class="fb-block">${q.explain}</div>`;
-  if (q.connect)     html += `<div class="fb-block connect">${q.connect}</div>`;
-  if (q.warn)        html += `<div class="fb-block warn">${q.warn}</div>`;
-
-  $feedbackCard.innerHTML = html;
-}
-
-/* ── Navigation ── */
-$btnPrev.addEventListener("click", () => { if (currentQ > 0) { currentQ--; renderQuestion(); } });
-$btnNext.addEventListener("click", () => {
-  const total = reviewMode ? reviewIndices.length : quiz.length;
-  if (currentQ < total - 1) {
-    currentQ++; renderQuestion();
-  } else if (reviewMode) {
-    /* Exit review mode back to results */
-    reviewMode = false;
-    $reviewBanner.style.display = "none";
-    $scoreBanner.style.display = "block";
-    $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-});
-$btnHome.addEventListener("click", () => {
-  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-  $quizScreen.style.display = "none";
-  $nameScreen.style.display = "block";
-});
-
-/* ── Submit ── */
-$btnSubmit.addEventListener("click", submitQuiz);
-
-async function submitQuiz(force = false) {
-  const count = Object.keys(answers).length;
-  if (force !== true && count < quiz.length) {
-    const skipped = [];
-    quiz.forEach((_, i) => {
-      if (answers[i] === undefined) skipped.push(i);
-    });
-
-    $skippedWarning.innerHTML = `⚠️ You have unanswered questions: ` + 
-      skipped.map(idx => `<span class="skipped-link" onclick="jumpToQuestion(${idx})">Question ${idx + 1}</span>`).join(", ") + 
-      `. Please answer them before submitting.`;
-    $skippedWarning.classList.remove("hidden");
-    return;
-  }
-
-  $skippedWarning.classList.add("hidden");
-  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-
-  let s = 0;
-  quiz.forEach((q, i) => { if (answers[i] === q.answer) s++; });
-  submitted = true;
-
-  const pct = Math.round((s / quiz.length) * 100);
-  $scoreNum.textContent = `${s}/${quiz.length}`;
-
-  let tier;
-  if (pct === 100) {
-    tier = { label: "完璧！ Perfect!", bg: "#e8f5e9", border: "#2e7d32", text: "#1b5e20" };
-  } else if (pct >= 90) {
-    tier = { label: "すごい！ Excellent!", bg: "#e8f5e9", border: "#2e7d32", text: "#1b5e20" };
-  } else if (pct >= 70) {
-    tier = { label: "いいですね！ Good job!", bg: "#fff9c4", border: "#fbc02d", text: "#f57f17" };
-  } else {
-    tier = { label: "もう一度！ Try again!", bg: "#ffebee", border: "#c62828", text: "#b71c1c" };
-  }
-
-  $scoreLbl.textContent = tier.label;
-  $scoreBanner.style.background = tier.bg;
-  $scoreBanner.style.borderColor = tier.border;
-  $scoreBanner.style.color = tier.text;
-  $scoreBanner.style.borderStyle = "solid";
-  $scoreBanner.style.borderWidth = "1px";
-  $scoreBanner.style.display = "block";
-
-  /* Enable review button if there are wrong answers */
-  const wrongCount = quiz.length - s;
-  $btnReview.disabled = wrongCount === 0;
-  $btnReview.textContent = wrongCount === 0
-    ? "🎉 No mistakes!"
-    : `📝 Review ${wrongCount} wrong answer${wrongCount > 1 ? "s" : ""}`;
-
-  currentQ = 0;
-  renderQuestion();
-  updateNavGrid();
-  $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
-
-  /* Email setup */
-  const EMAILJS_PUBLIC_KEY  = "1oR0j0WDvUmSSYEpK";
-  const EMAILJS_SERVICE_ID  = "service_v7ifzdj";
-  const EMAILJS_TEMPLATE_ID = "template_lb9c879";
-
-  const now = new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", dateStyle: "full", timeStyle: "short" });
-  const details = quiz.map((q, i) =>
-    `${i+1}. ${q.english} → Answer: ${answers[i] || "—"} | Correct: ${q.answer} ${answers[i] === q.answer ? "✓" : "✗"}`
-  ).join("\n");
-
-  const emailParams = {
-    name: playerName,
-    email: "noreply@quiz.com",
-    subject: `[${playerName}] Vocabulary Exam — ${pct}%`,
-    message: `Minna no Nihongo - Lesson 24 Vocabulary Exam Results\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${s}/${quiz.length} (${pct}%)\n\n--- Detailed Results ---\n${details}\n\nがんばって！`,
-    time: now
-  };
-
-  if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
-    $emailRow.innerHTML = `<span class="email-pill error">⚠ EmailJS not configured</span>`;
-  } else {
-    $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
-    try {
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams, EMAILJS_PUBLIC_KEY);
-      $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
-    } catch (err) {
-      console.error("EmailJS error:", err);
-      $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || 'Email failed'}</span>`;
-    }
-  }
-}
-
-/* ── Review + Retake ── */
-$btnReview.addEventListener("click", () => {
-  reviewIndices = quiz
-    .map((q, i) => ({ i, wrong: answers[i] !== q.answer }))
-    .filter(x => x.wrong)
-    .map(x => x.i);
-  if (reviewIndices.length === 0) return;
-  reviewMode = true;
-  currentQ = 0;
-  $scoreBanner.style.display = "none";
-  $reviewBanner.style.display = "block";
-  renderQuestion();
-});
-
-$btnRetake.addEventListener("click", () => {
-  quiz = shuffle(QUESTIONS).map(q => ({ ...q, choices: shuffle(q.choices) }));
-  answers = {};
-  currentQ = 0;
-  submitted = false;
-  reviewMode = false;
-  reviewIndices = [];
-  $scoreBanner.style.display = "none";
-  $reviewBanner.style.display = "none";
-  $skippedWarning.classList.add("hidden");
-  buildNavGrid();
-  startTimer();
-  renderQuestion();
-  updateProgress();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-window.jumpToQuestion = function(idx) {
-  currentQ = idx;
-  renderQuestion();
+]
 };
 </script>
+<script src="../assets/js/quiz-common.js"></script>
 </body>
 </html>

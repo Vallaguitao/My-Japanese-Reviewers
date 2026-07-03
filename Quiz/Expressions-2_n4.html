@@ -2,706 +2,14 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.emailjs.com; img-src 'self' data: https:;">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conversation & Expression Reviewer (Part 2) | N4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    min-height: 100vh;
-    background:
-      linear-gradient(90deg, rgba(169, 52, 42, 0.06) 1px, transparent 1px),
-      linear-gradient(180deg, rgba(38, 58, 99, 0.04), transparent 34rem),
-      #f8f3ea;
-    background-size: 44px 44px, auto, auto;
-    color: #18202f;
-    font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  .container {
-    max-width: 620px;
-    margin: 0 auto;
-    padding: 32px 16px 60px;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Inline Japanese helper — slightly larger, JP-first font stack */
-  .jp {
-    font-family: 'Noto Sans JP', 'Zen Kaku Gothic New', sans-serif;
-    font-size: 1.08em;
-    font-weight: 700;
-  }
-  .blank {
-    display: inline-block;
-    min-width: 28px;
-    padding: 0 6px;
-    margin: 0 2px;
-    background: #a9342a;
-    color: #ffffff;
-    border-radius: 6px;
-    font-weight: 800;
-    text-align: center;
-  }
-  ruby rt { font-size: 0.6em; color: #667085; }
-
-  /* ── Card Styles ── */
-  .card, .q-card, .score-banner {
-    background: rgba(255, 253, 248, 0.94);
-    border-radius: 8px;
-    padding: 32px 24px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    box-shadow: 0 12px 40px rgba(24, 32, 47, 0.06);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  /* ── Name Screen ── */
-  #name-screen { margin-top: 40px; }
-
-  .badge {
-    display: inline-block;
-    background: #a9342a;
-    color: #ffffff;
-    font-weight: 800;
-    font-size: 10px;
-    padding: 5px 16px;
-    border-radius: 20px;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    box-shadow: 0 4px 12px rgba(169, 52, 42, 0.15);
-  }
-
-  .title {
-    font-size: 26px;
-    font-weight: 800;
-    margin: 16px 0 6px;
-    letter-spacing: -0.5px;
-    color: #18202f;
-  }
-
-  .subtitle {
-    font-size: 14px;
-    color: #667085;
-  }
-
-  .name-label {
-    display: block;
-    font-size: 13px;
-    color: #667085;
-    margin: 32px 0 8px;
-    text-align: left;
-    font-weight: 700;
-  }
-
-  .name-input {
-    width: 100%;
-    padding: 16px;
-    border-radius: 8px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    background: #ffffff;
-    color: #18202f;
-    font-size: 16px;
-    font-family: inherit;
-    outline: none;
-    transition: all 0.2s;
-  }
-  .name-input:focus {
-    border-color: #a9342a;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(169, 52, 42, 0.15);
-  }
-
-  .btn-primary {
-    width: 100%;
-    margin-top: 24px;
-    padding: 16px 0;
-    border-radius: 8px;
-    background: #a9342a;
-    border: none;
-    color: #ffffff;
-    font-size: 16px;
-    font-weight: 800;
-    font-family: inherit;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.25);
-    transition: all 0.25s ease;
-  }
-  .btn-primary:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(169, 52, 42, 0.35);
-    opacity: 0.95;
-  }
-  .btn-primary:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-
-  /* ── Quiz Screen ── */
-  #quiz-screen { display: none; }
-
-  .header { text-align: center; margin-bottom: 24px; }
-  .header .subtitle { margin-top: 6px; }
-
-  /* Score Banner */
-  .score-banner {
-    display: none;
-    border-radius: 8px;
-    padding: 28px 20px;
-    text-align: center;
-    margin-bottom: 24px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    box-shadow: 0 12px 40px rgba(24, 32, 47, 0.06);
-    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .score-number { font-size: 52px; font-weight: 900; letter-spacing: -1.5px; line-height: 1; margin-bottom: 6px; }
-  .score-label { font-size: 20px; font-weight: 700; margin-bottom: 14px; }
-  .lesson-breakdown {
-    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
-    margin-top: 14px;
-    margin-bottom: 14px;
-  }
-  .lesson-stat {
-    background: rgba(24, 32, 47, 0.05);
-    border: 1px solid rgba(24, 32, 47, 0.1);
-    padding: 6px 12px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 700;
-    color: inherit;
-  }
-  .email-row { margin-bottom: 20px; }
-  .email-pill {
-    display: inline-block;
-    background: rgba(24, 32, 47, 0.04);
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    font-size: 12px;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-weight: 700;
-    color: #18202f;
-  }
-  .email-pill.sent {
-    background: #e8f5e9;
-    border: 1px solid #2e7d32;
-    color: #1b5e20;
-  }
-  .email-pill.error {
-    background: #ffebee;
-    border: 1px solid #c62828;
-    color: #b71c1c;
-  }
-
-  .end-actions {
-    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
-    margin-top: 14px;
-  }
-  .btn-end {
-    background: rgba(24, 32, 47, 0.06);
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    color: #18202f;
-    padding: 12px 28px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-end:hover:not(:disabled) {
-    background: #f4ddd8;
-    border-color: rgba(169, 52, 42, 0.2);
-    color: #a9342a;
-    transform: translateY(-1px);
-  }
-  .btn-end:disabled { opacity: 0.4; cursor: default; }
-
-  /* ── Review Banner ── */
-  .review-banner {
-    display: none;
-    background: #fff9c4;
-    border: 1px solid #fbc02d;
-    color: #f57f17;
-    text-align: center;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 20px;
-  }
-
-  /* Progress */
-  .progress-row { margin-bottom: 20px; }
-  .progress-text { font-size: 12px; color: #667085; display: block; margin-bottom: 8px; font-weight: 700; }
-  .progress-bar { height: 6px; background: rgba(24, 32, 47, 0.06); border-radius: 6px; overflow: hidden; }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #a9342a, #8f241c);
-    border-radius: 6px;
-    width: 0%;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 10px rgba(169, 52, 42, 0.15);
-  }
-
-  /* Nav Grid */
-  .nav-grid {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 6px;
-    margin-bottom: 24px;
-  }
-  .nav-dot {
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: #fffdf8;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    color: #667085;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .nav-dot:hover:not(.locked) {
-    background: #f4ddd8;
-    color: #a9342a;
-    border-color: rgba(169, 52, 42, 0.2);
-  }
-  .nav-dot.answered {
-    background: rgba(169, 52, 42, 0.06);
-    border-color: rgba(169, 52, 42, 0.2);
-    color: #a9342a;
-  }
-  .nav-dot.active {
-    border-color: #a9342a;
-    background: #f4ddd8;
-    color: #a9342a;
-    box-shadow: 0 0 0 3px rgba(169, 52, 42, 0.15);
-  }
-  .nav-dot.correct {
-    background: #e8f5e9;
-    border-color: #2e7d32;
-    color: #1b5e20;
-  }
-  .nav-dot.wrong {
-    background: #ffebee;
-    border-color: #c62828;
-    color: #b71c1c;
-  }
-  .nav-dot.unanswered-locked {
-    background: rgba(24, 32, 47, 0.02);
-    border-color: rgba(24, 32, 47, 0.06);
-    color: rgba(24, 32, 47, 0.3);
-    opacity: 0.5;
-  }
-  @media (max-width: 480px) {
-    .nav-grid { gap: 4px; }
-    .nav-dot { font-size: 10px; }
-  }
-
-  /* Question Card */
-  .q-card {
-    background: rgba(255, 253, 248, 0.94);
-    border-radius: 8px;
-    padding: 28px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    margin-bottom: 20px;
-    box-shadow: 0 8px 24px rgba(24, 32, 47, 0.04);
-    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .q-meta {
-    display: flex; gap: 6px; flex-wrap: wrap;
-    margin-bottom: 12px;
-  }
-  .q-tag {
-    font-size: 11px;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 8px;
-    letter-spacing: 0.3px;
-  }
-  .q-tag.lesson-1 { background: #e3f2fd; color: #0d47a1; }
-  .q-tag.lesson-2 { background: #e8f5e9; color: #1b5e20; }
-  .q-tag.lesson-3 { background: #fff8e1; color: #ff6f00; }
-  .q-tag.lesson-4 { background: #fce4ec; color: #880e4f; }
-  .q-tag.lesson-5 { background: #f3e5f5; color: #4a148c; }
-  .q-tag.type {
-    background: rgba(24, 32, 47, 0.05);
-    color: #667085;
-  }
-
-  .q-number {
-    font-size: 11px;
-    color: #a9342a;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 10px;
-  }
-  .q-stem {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 24px;
-    line-height: 1.45;
-    color: #18202f;
-  }
-
-  .choices-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .choice-btn {
-    padding: 18px 20px;
-    border-radius: 8px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    background: #fffdf8;
-    color: #18202f;
-    text-align: left;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 17px;
-    font-weight: 600;
-    position: relative;
-    display: flex;
-    align-items: center;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow: hidden;
-  }
-  .choice-btn:hover:not(.locked) {
-    border-color: rgba(169, 52, 42, 0.3);
-    background: #f4ddd8;
-    color: #a9342a;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.05);
-  }
-  .choice-btn.selected {
-    background: #f4ddd8;
-    border-color: #a9342a;
-    color: #a9342a;
-    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.1);
-  }
-  .choice-btn.correct-reveal {
-    background: #e8f5e9;
-    border-color: #2e7d32;
-    color: #1b5e20;
-  }
-  .choice-btn.wrong-reveal {
-    background: #ffebee;
-    border-color: #c62828;
-    color: #b71c1c;
-  }
-  .choice-btn.faded-reveal {
-    opacity: 0.4;
-    border-color: rgba(24, 32, 47, 0.04);
-  }
-  .choice-letter {
-    font-weight: 800;
-    margin-right: 16px;
-    opacity: 0.5;
-    transition: opacity 0.2s;
-  }
-  .choice-btn:hover .choice-letter, .choice-btn.selected .choice-letter { opacity: 1; }
-  
-  .mark {
-    position: absolute;
-    right: 20px;
-    font-size: 20px;
-    font-weight: 900;
-  }
-  .mark.ok { color: #1b5e20; }
-  .mark.no { color: #b71c1c; }
-
-  /* Explanation Box / Feedback Card */
-  .feedback-card {
-    display: none;
-    margin-top: 24px;
-    padding: 18px 20px;
-    border-radius: 8px;
-    background: #fff8ef;
-    border: 1px solid rgba(169, 52, 42, 0.15);
-    font-size: 14px;
-    line-height: 1.55;
-    color: #18202f;
-    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .fb-header {
-    font-weight: 800;
-    margin-bottom: 8px;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .feedback-card.correct .fb-header { color: #2e7d32; }
-  .feedback-card.wrong .fb-header { color: #c62828; }
-  .fb-block { margin-top: 8px; }
-  .fb-block.connect { color: #667085; font-size: 13px; }
-  .fb-block.warn {
-    color: #b71c1c;
-    background: #ffebee;
-    border: 1px solid rgba(198, 40, 40, 0.2);
-    padding: 8px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-  }
-
-  /* Skipped warning alert box */
-  .skipped-warning {
-    margin-bottom: 20px;
-    padding: 16px;
-    background: #fff8ef;
-    border: 1px solid #a9342a;
-    border-radius: 8px;
-    color: #a9342a;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    line-height: 1.5;
-    animation: fadeIn 0.3s ease;
-  }
-  .skipped-link {
-    color: #a9342a;
-    text-decoration: underline;
-    cursor: pointer;
-    margin: 0 4px;
-    font-weight: 800;
-  }
-  .skipped-link:hover {
-    color: #8f241c;
-  }
-
-  /* Arrow Row */
-  .arrow-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .btn-nav {
-    flex: 1;
-    padding: 16px 0;
-    border-radius: 8px;
-    background: #fffdf8;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    color: #18202f;
-    font-size: 15px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-nav:hover:not(:disabled) {
-    background: #f4ddd8;
-    color: #a9342a;
-    border-color: rgba(169, 52, 42, 0.2);
-  }
-  .btn-nav:disabled { opacity: 0.25; cursor: not-allowed; }
-  
-  .btn-submit {
-    flex: 1;
-    padding: 16px 0;
-    border-radius: 8px;
-    background: #a9342a;
-    border: none;
-    color: #ffffff;
-    font-size: 15px;
-    font-weight: 800;
-    font-family: inherit;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.25);
-    transition: all 0.2s;
-  }
-  .btn-submit:hover:not(:disabled) {
-    box-shadow: 0 6px 20px rgba(169, 52, 42, 0.35);
-    opacity: 0.95;
-  }
-  .btn-submit:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
-
-  .text-center { text-align: center; }
-  .hidden { display: none !important; }
-
-  /* Mobile tweaks */
-  @media (max-width: 480px) {
-    .container { padding: 16px 12px 50px; }
-    .title { font-size: 20px; }
-    .q-stem { font-size: 16px; }
-    .choice-btn { font-size: 15px; padding: 12px 10px; }
-    .lesson-breakdown { gap: 6px; }
-    .lesson-stat { font-size: 11px; padding: 5px 9px; }
-  }
-
-/* ========== Site Breadcrumb ========== */
-.site-breadcrumb,
-.site-breadcrumb * {
-  box-sizing: border-box;
-}
-
-.site-breadcrumb {
-  position: relative;
-  z-index: 20;
-  width: min(1180px, calc(100% - 32px));
-  margin: 16px auto 12px;
-  font-family: "Noto Sans JP", "Outfit", system-ui, sans-serif;
-  color: #18202f;
-}
-
-.site-breadcrumb__list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0;
-  list-style: none;
-  margin: 0;
-  padding: 8px 12px;
-  border: 1px solid rgba(24, 32, 47, 0.12);
-  border-radius: 8px;
-  background: rgba(255, 253, 248, 0.94);
-  box-shadow: 0 10px 30px rgba(24, 32, 47, 0.08);
-}
-
-.site-breadcrumb__item {
-  display: inline-flex;
-  align-items: center;
-  min-width: 0;
-  color: #667085;
-  font-size: 0.82rem;
-  font-weight: 700;
-  line-height: 1.4;
-}
-
-.site-breadcrumb__item + .site-breadcrumb__item::before {
-  content: "/";
-  margin: 0 8px;
-  color: rgba(169, 52, 42, 0.42);
-  font-weight: 800;
-}
-
-.site-breadcrumb__link {
-  color: #667085;
-  text-decoration: none;
-  transition: color 0.18s ease, background 0.18s ease;
-}
-
-.site-breadcrumb__link:hover {
-  color: #a9342a;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.site-breadcrumb__link:focus-visible {
-  color: #a9342a;
-  outline: 2px solid rgba(169, 52, 42, 0.45);
-  outline-offset: 3px;
-  border-radius: 4px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.site-breadcrumb__category {
-  color: #a9342a;
-}
-
-.site-breadcrumb__current {
-  color: #18202f;
-  overflow-wrap: anywhere;
-}
-
-.site-breadcrumb__navigation {
-  margin-left: auto;
-}
-
-.site-breadcrumb__navigation::before {
-  display: none !important;
-}
-
-.site-breadcrumb__btn-short {
-  display: none;
-}
-
-.site-breadcrumb__btn-full {
-  display: inline;
-}
-
-.site-breadcrumb__divider {
-  color: rgba(24, 32, 47, 0.12);
-  margin: 0 6px;
-}
-
-
-
-@media (max-width: 640px) {
-  .site-breadcrumb {
-    width: min(100% - 20px, 680px);
-    margin: 12px auto 10px;
-  }
-
-  .site-breadcrumb__list {
-    padding: 8px 10px;
-  }
-
-  .site-breadcrumb__item {
-    font-size: 0.78rem;
-  }
-
-  .site-breadcrumb__btn-full {
-    display: none;
-  }
-
-  .site-breadcrumb__btn-short {
-    display: inline;
-  }
-}
-
-  /* Timer Display styling next to progress */
-  .topbar-timer {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    font-weight: 700;
-    color: #18202f;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    padding: 4px 12px;
-    border-radius: 20px;
-    background: rgba(255, 253, 248, 0.94);
-    box-shadow: 0 2px 6px rgba(24, 32, 47, 0.04);
-  }
-  .topbar-timer.warning {
-    color: #a9342a;
-    border-color: #a9342a;
-    background: #fff8ef;
-    animation: timerPulse 1s infinite alternate;
-  }
-  @keyframes timerPulse {
-    from { opacity: 1; }
-    to { opacity: 0.6; }
-  }
-</style>
+<link rel="stylesheet" href="assets/css/quiz-common.css">
 </head>
 <body>
 
@@ -794,877 +102,376 @@
 
 </div>
 <script>
-/* ═══════════════════════════════════════════════════════════════
-   QUIZ_CONFIG — edit this block to customize the quiz.
-   Everything below QUESTIONS is generic logic; do not edit unless
-   you know what you're doing.
-   ═══════════════════════════════════════════════════════════════ */
-const QUIZ_CONFIG = {
-  // Display
+window.quizConfig = {
+  lessonTitle: "Irodori 会話表現クイズ Part 2",
+  lessonTitleShort: "会話表現 Part 2",
   badge: "My-Japanese-Reviewers",
-  title: "Irodori 会話表現クイズ Part 2",
-  titleShort: "会話表現 Part 2",
   subtitle: "20 questions · Adverbs, interjections & daily-life expressions",
-
-  // Behavior
-  shuffleQuestions: true,
-  shuffleChoices: true,
-
-  // Score thresholds (PERCENTAGE, not absolute count)
-  scoreThresholds: {
-    perfect:   { min: 100, label: "完璧！ Perfect!",     bg: "#e8f5e9", border: "#2e7d32", text: "#1b5e20" },
-    excellent: { min: 90,  label: "すごい！ Excellent!",  bg: "#e8f5e9", border: "#2e7d32", text: "#1b5e20" },
-    good:      { min: 70,  label: "いいですね！ Good job!", bg: "#fff9c4", border: "#fbc02d", text: "#f57f17" },
-    fail:      { min: 0,   label: "もう一度！ Try again!", bg: "#ffebee", border: "#c62828", text: "#b71c1c" }
-  },
-
-  // EmailJS — baked in. Edit these if deploying with different credentials.
-  emailjs: {
-    publicKey:  "1oR0j0WDvUmSSYEpK",
-    serviceId:  "service_v7ifzdj",
-    templateId: "template_lb9c879",
-    timezone:   "Asia/Manila",
-    locale:     "en-PH"
-  }
-};
-
-/* ═══════════════════════════════════════════════════════════════
-   QUESTIONS — the only block you usually edit when adding content.
-   See references/schema.md for the full field reference.
-   ═══════════════════════════════════════════════════════════════ */
-const QUESTIONS = [
+  emailSubject: "会話表現 Part 2",
+  questions: [
   {
-    "lesson": 1,
-    "type": "Expression",
-    "stem": "🗣️ <ruby>久<rt>ひさ</rt></ruby>しぶりに<ruby>友達<rt>ともだち</rt></ruby>に<ruby>会<rt>あ</rt></ruby>った<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「<ruby>久<rt>ひさ</rt></ruby>しぶり。<ruby>元気<rt>げんき</rt></ruby>？」</span><br><span class=\"jp\">うん、<ruby>元気<rt>げんき</rt></ruby>。<span class=\"blank\">?</span>。</span>",
-    "answer": "久しぶり",
+    "english": "",
+    "stem": "8J+Xo++4jyA8cnVieT7kuYU8cnQ+44Gy44GVPC9ydD48L3J1Ynk+44GX44G244KK44GrPHJ1Ynk+5Y+L6YGUPHJ0PuOBqOOCguOBoOOBoTwvcnQ+PC9ydWJ5PuOBqzxydWJ5PuS8mjxydD7jgYI8L3J0PjwvcnVieT7jgaPjgZ88cnVieT7loLTpnaI8cnQ+44Gw44KB44KTPC9ydD48L3J1Ynk+Ojxicj48c3BhbiBjbGFzcz0ianAiPuOAjDxydWJ5PuS5hTxydD7jgbLjgZU8L3J0PjwvcnVieT7jgZfjgbbjgorjgII8cnVieT7lhYPmsJc8cnQ+44GS44KT44GNPC9ydD48L3J1Ynk+77yf44CNPC9zcGFuPjxicj48c3BhbiBjbGFzcz0ianAiPuOBhuOCk+OAgTxydWJ5PuWFg+awlzxydD7jgZLjgpPjgY08L3J0PjwvcnVieT7jgII8c3BhbiBjbGFzcz0iYmxhbmsiPj88L3NwYW4+44CCPC9zcGFuPg==",
+    "answer": "5LmF44GX44G244KK",
     "choices": [
       "久しぶり",
       "いらっしゃいませ",
       "もしもし",
       "ただいま"
     ],
-    "correctNote": "<ruby>久<rt>ひさ</rt></ruby>しぶり = \"Long time no see!\" A casual greeting for friends you haven't seen in a while.",
-    "explain": "The correct choice is <strong>「久しぶり」</strong>. This is the casual form of 「お久しぶりです」 (\"long time no see\"). It is the natural and appropriate greeting when meeting a friend after a long period of separation.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>いらっしゃいませ</code> is incorrect because it means \"Welcome.\" This is a greeting used exclusively by shop or restaurant staff to customers.<br>• <code>もしもし</code> is incorrect because it means \"Hello.\" This is used only when answering a phone call, not for face-to-face greetings.<br>• <code>ただいま</code> is incorrect because it means \"I'm home.\" It is said when returning to one's own house.",
-    "connect": "🔗 <span class=\"jp\">MNN L1</span> teaches はじめまして for first meetings. <ruby>久<rt>ひさ</rt></ruby>しぶり is its counterpart — for reunions. Compare: いらっしゃいませ = \"Welcome\" (shops), もしもし = \"Hello?\" (phone).",
-    "warn": "⚠️ Don't use <ruby>久<rt>ひさ</rt></ruby>しぶり with bosses or seniors — use お<ruby>久<rt>ひさ</rt></ruby>しぶりです instead!"
-  },
-  {
+    "longChoices": false,
     "lesson": 1,
     "type": "Expression",
-    "stem": "🗣️ ルールを<ruby>守<rt>まも</rt></ruby>るように<ruby>注意<rt>ちゅうい</rt></ruby>する<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「レジがすごく<ruby>混<rt>こ</rt></ruby>んでいたので、<ruby>買<rt>か</rt></ruby>う<ruby>前<rt>まえ</rt></ruby>に<ruby>少<rt>すこ</rt></ruby>しだけ<ruby>飲<rt>の</rt></ruby>んだんです。」</span><br><span class=\"jp\">それはだめですよ。<span class=\"blank\">?</span><ruby>先<rt>さき</rt></ruby>にお<ruby>金<rt>かね</rt></ruby>を<ruby>払<rt>はら</rt></ruby>わなきゃ。</span>",
-    "answer": "ちゃんと",
+    "correctNote": "PHJ1Ynk+5LmFPHJ0PuOBsuOBlTwvcnQ+PC9ydWJ5PuOBl+OBtuOCiiA9ICJMb25nIHRpbWUgbm8gc2VlISIgQSBjYXN1YWwgZ3JlZXRpbmcgZm9yIGZyaWVuZHMgeW91IGhhdmVuJ3Qgc2VlbiBpbiBhIHdoaWxlLg==",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM5LmF44GX44G244KK44CNPC9zdHJvbmc+LiBUaGlzIGlzIHRoZSBjYXN1YWwgZm9ybSBvZiDjgIzjgYrkuYXjgZfjgbbjgorjgafjgZnjgI0gKCJsb25nIHRpbWUgbm8gc2VlIikuIEl0IGlzIHRoZSBuYXR1cmFsIGFuZCBhcHByb3ByaWF0ZSBncmVldGluZyB3aGVuIG1lZXRpbmcgYSBmcmllbmQgYWZ0ZXIgYSBsb25nIHBlcmlvZCBvZiBzZXBhcmF0aW9uLjxicj48YnI+PHN0cm9uZz5XaHkgb3RoZXIgY2hvaWNlcyBhcmUgaW5jb3JyZWN0Ojwvc3Ryb25nPjxicj7igKIgPGNvZGU+44GE44KJ44Gj44GX44KD44GE44G+44GbPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiV2VsY29tZS4iIFRoaXMgaXMgYSBncmVldGluZyB1c2VkIGV4Y2x1c2l2ZWx5IGJ5IHNob3Agb3IgcmVzdGF1cmFudCBzdGFmZiB0byBjdXN0b21lcnMuPGJyPuKAoiA8Y29kZT7jgoLjgZfjgoLjgZc8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJIZWxsby4iIFRoaXMgaXMgdXNlZCBvbmx5IHdoZW4gYW5zd2VyaW5nIGEgcGhvbmUgY2FsbCwgbm90IGZvciBmYWNlLXRvLWZhY2UgZ3JlZXRpbmdzLjxicj7igKIgPGNvZGU+44Gf44Gg44GE44G+PC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiSSdtIGhvbWUuIiBJdCBpcyBzYWlkIHdoZW4gcmV0dXJuaW5nIHRvIG9uZSdzIG93biBob3VzZS4=",
+    "connect": "8J+UlyA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMTwvc3Bhbj4gdGVhY2hlcyDjga/jgZjjgoHjgb7jgZfjgaYgZm9yIGZpcnN0IG1lZXRpbmdzLiA8cnVieT7kuYU8cnQ+44Gy44GVPC9ydD48L3J1Ynk+44GX44G244KKIGlzIGl0cyBjb3VudGVycGFydCDigJQgZm9yIHJldW5pb25zLiBDb21wYXJlOiDjgYTjgonjgaPjgZfjgoPjgYTjgb7jgZsgPSAiV2VsY29tZSIgKHNob3BzKSwg44KC44GX44KC44GXID0gIkhlbGxvPyIgKHBob25lKS4=",
+    "warn": "4pqg77iPIERvbid0IHVzZSA8cnVieT7kuYU8cnQ+44Gy44GVPC9ydD48L3J1Ynk+44GX44G244KKIHdpdGggYm9zc2VzIG9yIHNlbmlvcnMg4oCUIHVzZSDjgYo8cnVieT7kuYU8cnQ+44Gy44GVPC9ydD48L3J1Ynk+44GX44G244KK44Gn44GZIGluc3RlYWQh"
+  },
+  {
+    "english": "",
+    "stem": "8J+Xo++4jyDjg6vjg7zjg6vjgpI8cnVieT7lrog8cnQ+44G+44KCPC9ydD48L3J1Ynk+44KL44KI44GG44GrPHJ1Ynk+5rOo5oSPPHJ0PuOBoeOCheOBhuOBhDwvcnQ+PC9ydWJ5PuOBmeOCizxydWJ5PuWgtOmdojxydD7jgbDjgoHjgpM8L3J0PjwvcnVieT46PGJyPjxzcGFuIGNsYXNzPSJqcCI+44CM44Os44K444GM44GZ44GU44GPPHJ1Ynk+5re3PHJ0PuOBkzwvcnQ+PC9ydWJ5PuOCk+OBp+OBhOOBn+OBruOBp+OAgTxydWJ5PuiytzxydD7jgYs8L3J0PjwvcnVieT7jgYY8cnVieT7liY08cnQ+44G+44GIPC9ydD48L3J1Ynk+44GrPHJ1Ynk+5bCRPHJ0PuOBmeOBkzwvcnQ+PC9ydWJ5PuOBl+OBoOOBkTxydWJ5PumjsjxydD7jga48L3J0PjwvcnVieT7jgpPjgaDjgpPjgafjgZnjgILjgI08L3NwYW4+PGJyPjxzcGFuIGNsYXNzPSJqcCI+44Gd44KM44Gv44Gg44KB44Gn44GZ44KI44CCPHNwYW4gY2xhc3M9ImJsYW5rIj4/PC9zcGFuPjxydWJ5PuWFiDxydD7jgZXjgY08L3J0PjwvcnVieT7jgavjgYo8cnVieT7ph5E8cnQ+44GL44GtPC9ydD48L3J1Ynk+44KSPHJ1Ynk+5omVPHJ0PuOBr+OCiTwvcnQ+PC9ydWJ5PuOCj+OBquOBjeOCg+OAgjwvc3Bhbj4=",
+    "answer": "44Gh44KD44KT44Go",
     "choices": [
       "ちゃんと",
       "ちょうど",
       "ちょっと",
       "だいたい"
     ],
-    "correctNote": "ちゃんと = \"properly / correctly / as you should.\" Used to emphasize doing things the right way.",
-    "explain": "The correct choice is <strong>「ちゃんと」</strong>. This is an adverb meaning \"properly,\" \"diligently,\" or \"correctly.\" In this context, it is used to emphasize that rules must be followed properly (i.e., paying before consuming store items).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>ちょうど</code> is incorrect because it means \"Exactly / Just.\" It indicates precision in time or quantity, which is inappropriate for describing rule compliance.<br>• <code>ちょっと</code> is incorrect because it means \"A little / Somewhat.\" It is used to indicate a small amount or acts as a hedge, which contradicts the firm correction about paying.<br>• <code>だいたい</code> is incorrect because it means \"Mostly / Roughly.\" It indicates an approximate state, which is not suitable for a strict requirement like paying.",
-    "connect": "🔗 Compare the ち-trio: ちゃんと (properly), ちょうど (exactly, <span class=\"jp\">MNN L4</span> time expressions), ちょっと (a little, <span class=\"jp\">MNN L14</span> for soft refusals). All start with ち but mean very different things!",
-    "warn": "⚠️ ちょっと = \"a little\" or a soft refusal. ちょうど = \"exactly/just.\" Neither conveys the \"do it properly!\" nuance of ちゃんと."
-  },
-  {
+    "longChoices": false,
     "lesson": 1,
     "type": "Expression",
-    "stem": "🗣️ エアコンを<ruby>消<rt>け</rt></ruby>し<ruby>忘<rt>わす</rt></ruby>れた<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「エアコンがついたままでしたよ。」</span><br><span class=\"jp\">すみません。<ruby>今度<rt>こんど</rt></ruby>から<span class=\"blank\">?</span>。</span>",
-    "answer": "気をつけます",
+    "correctNote": "44Gh44KD44KT44GoID0gInByb3Blcmx5IC8gY29ycmVjdGx5IC8gYXMgeW91IHNob3VsZC4iIFVzZWQgdG8gZW1waGFzaXplIGRvaW5nIHRoaW5ncyB0aGUgcmlnaHQgd2F5Lg==",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44Gh44KD44KT44Go44CNPC9zdHJvbmc+LiBUaGlzIGlzIGFuIGFkdmVyYiBtZWFuaW5nICJwcm9wZXJseSwiICJkaWxpZ2VudGx5LCIgb3IgImNvcnJlY3RseS4iIEluIHRoaXMgY29udGV4dCwgaXQgaXMgdXNlZCB0byBlbXBoYXNpemUgdGhhdCBydWxlcyBtdXN0IGJlIGZvbGxvd2VkIHByb3Blcmx5IChpLmUuLCBwYXlpbmcgYmVmb3JlIGNvbnN1bWluZyBzdG9yZSBpdGVtcykuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jgaHjgofjgYbjgak8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJFeGFjdGx5IC8gSnVzdC4iIEl0IGluZGljYXRlcyBwcmVjaXNpb24gaW4gdGltZSBvciBxdWFudGl0eSwgd2hpY2ggaXMgaW5hcHByb3ByaWF0ZSBmb3IgZGVzY3JpYmluZyBydWxlIGNvbXBsaWFuY2UuPGJyPuKAoiA8Y29kZT7jgaHjgofjgaPjgag8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJBIGxpdHRsZSAvIFNvbWV3aGF0LiIgSXQgaXMgdXNlZCB0byBpbmRpY2F0ZSBhIHNtYWxsIGFtb3VudCBvciBhY3RzIGFzIGEgaGVkZ2UsIHdoaWNoIGNvbnRyYWRpY3RzIHRoZSBmaXJtIGNvcnJlY3Rpb24gYWJvdXQgcGF5aW5nLjxicj7igKIgPGNvZGU+44Gg44GE44Gf44GEPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiTW9zdGx5IC8gUm91Z2hseS4iIEl0IGluZGljYXRlcyBhbiBhcHByb3hpbWF0ZSBzdGF0ZSwgd2hpY2ggaXMgbm90IHN1aXRhYmxlIGZvciBhIHN0cmljdCByZXF1aXJlbWVudCBsaWtlIHBheWluZy4=",
+    "connect": "8J+UlyBDb21wYXJlIHRoZSDjgaEtdHJpbzog44Gh44KD44KT44GoIChwcm9wZXJseSksIOOBoeOCh+OBhuOBqSAoZXhhY3RseSwgPHNwYW4gY2xhc3M9ImpwIj5NTk4gTDQ8L3NwYW4+IHRpbWUgZXhwcmVzc2lvbnMpLCDjgaHjgofjgaPjgaggKGEgbGl0dGxlLCA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMTQ8L3NwYW4+IGZvciBzb2Z0IHJlZnVzYWxzKS4gQWxsIHN0YXJ0IHdpdGgg44GhIGJ1dCBtZWFuIHZlcnkgZGlmZmVyZW50IHRoaW5ncyE=",
+    "warn": "4pqg77iPIOOBoeOCh+OBo+OBqCA9ICJhIGxpdHRsZSIgb3IgYSBzb2Z0IHJlZnVzYWwuIOOBoeOCh+OBhuOBqSA9ICJleGFjdGx5L2p1c3QuIiBOZWl0aGVyIGNvbnZleXMgdGhlICJkbyBpdCBwcm9wZXJseSEiIG51YW5jZSBvZiDjgaHjgoPjgpPjgagu"
+  },
+  {
+    "english": "",
+    "stem": "8J+Xo++4jyDjgqjjgqLjgrPjg7PjgpI8cnVieT7mtog8cnQ+44GRPC9ydD48L3J1Ynk+44GXPHJ1Ynk+5b+YPHJ0PuOCj+OBmTwvcnQ+PC9ydWJ5PuOCjOOBnzxydWJ5PuWgtOmdojxydD7jgbDjgoHjgpM8L3J0PjwvcnVieT46PGJyPjxzcGFuIGNsYXNzPSJqcCI+44CM44Ko44Ki44Kz44Oz44GM44Gk44GE44Gf44G+44G+44Gn44GX44Gf44KI44CC44CNPC9zcGFuPjxicj48c3BhbiBjbGFzcz0ianAiPuOBmeOBv+OBvuOBm+OCk+OAgjxydWJ5PuS7iuW6pjxydD7jgZPjgpPjgak8L3J0PjwvcnVieT7jgYvjgok8c3BhbiBjbGFzcz0iYmxhbmsiPj88L3NwYW4+44CCPC9zcGFuPg==",
+    "answer": "5rCX44KS44Gk44GR44G+44GZ",
     "choices": [
       "遠慮します",
       "助かります",
       "気をつけます",
       "がんばります"
     ],
-    "correctNote": "<ruby>気<rt>き</rt></ruby>をつけます = \"I'll be careful / I'll watch out.\" A promise to be more careful in the future.",
-    "explain": "The correct choice is <strong>「気をつけます」</strong>. This means \"I will be careful / pay attention.\" When apologized to for leaving the air conditioner on, 「今度から気をつけます」 (\"I will be careful from next time\") is the standard polite promise to prevent future mistakes.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>遠慮します</code> is incorrect because it means \"I will decline / refrain.\" This is used to politely turn down an offer, not to promise future care.<br>• <code>助かります</code> is incorrect because it means \"That helps / I'm saved.\" This is used to express gratitude when someone helps you.<br>• <code>がんばります</code> is incorrect because it means \"I will do my best.\" It expresses effort/hard work, which is grammatically and contextually awkward following 「今度から」 in response to a minor mistake correction.",
-    "connect": "🔗 <span class=\"jp\">MNN L17</span> covers ～ないでください (negative requests). <ruby>気<rt>き</rt></ruby>をつけます is the RESPONSE to such warnings — \"I'll be careful.\" <ruby>遠慮<rt>えんりょ</rt></ruby>します = \"I'll refrain\" (declining). <ruby>助<rt>たす</rt></ruby>かります = \"That helps\" (gratitude).",
-    "warn": "⚠️ がんばります = \"I'll do my best\" (effort). <ruby>気<rt>き</rt></ruby>をつけます = \"I'll be careful\" (caution). Different nuances — one is about effort, the other about attention!"
-  },
-  {
+    "longChoices": false,
     "lesson": 1,
     "type": "Expression",
-    "stem": "🗣️ フォームに<ruby>記入<rt>きにゅう</rt></ruby>した<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「それでは、こちらのフォームにご<ruby>記入<rt>きにゅう</rt></ruby>をお<ruby>願<rt>ねが</rt></ruby>いします。」</span><br><span class=\"jp\">はい。…<span class=\"blank\">?</span>？</span>",
-    "answer": "これでいいですか",
-    "longChoices": true,
+    "correctNote": "PHJ1Ynk+5rCXPHJ0PuOBjTwvcnQ+PC9ydWJ5PuOCkuOBpOOBkeOBvuOBmSA9ICJJJ2xsIGJlIGNhcmVmdWwgLyBJJ2xsIHdhdGNoIG91dC4iIEEgcHJvbWlzZSB0byBiZSBtb3JlIGNhcmVmdWwgaW4gdGhlIGZ1dHVyZS4=",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM5rCX44KS44Gk44GR44G+44GZ44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJJIHdpbGwgYmUgY2FyZWZ1bCAvIHBheSBhdHRlbnRpb24uIiBXaGVuIGFwb2xvZ2l6ZWQgdG8gZm9yIGxlYXZpbmcgdGhlIGFpciBjb25kaXRpb25lciBvbiwg44CM5LuK5bqm44GL44KJ5rCX44KS44Gk44GR44G+44GZ44CNICgiSSB3aWxsIGJlIGNhcmVmdWwgZnJvbSBuZXh0IHRpbWUiKSBpcyB0aGUgc3RhbmRhcmQgcG9saXRlIHByb21pc2UgdG8gcHJldmVudCBmdXR1cmUgbWlzdGFrZXMuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7pgaDmha7jgZfjgb7jgZk8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJJIHdpbGwgZGVjbGluZSAvIHJlZnJhaW4uIiBUaGlzIGlzIHVzZWQgdG8gcG9saXRlbHkgdHVybiBkb3duIGFuIG9mZmVyLCBub3QgdG8gcHJvbWlzZSBmdXR1cmUgY2FyZS48YnI+4oCiIDxjb2RlPuWKqeOBi+OCiuOBvuOBmTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIlRoYXQgaGVscHMgLyBJJ20gc2F2ZWQuIiBUaGlzIGlzIHVzZWQgdG8gZXhwcmVzcyBncmF0aXR1ZGUgd2hlbiBzb21lb25lIGhlbHBzIHlvdS48YnI+4oCiIDxjb2RlPuOBjOOCk+OBsOOCiuOBvuOBmTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIkkgd2lsbCBkbyBteSBiZXN0LiIgSXQgZXhwcmVzc2VzIGVmZm9ydC9oYXJkIHdvcmssIHdoaWNoIGlzIGdyYW1tYXRpY2FsbHkgYW5kIGNvbnRleHR1YWxseSBhd2t3YXJkIGZvbGxvd2luZyDjgIzku4rluqbjgYvjgonjgI0gaW4gcmVzcG9uc2UgdG8gYSBtaW5vciBtaXN0YWtlIGNvcnJlY3Rpb24u",
+    "connect": "8J+UlyA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMTc8L3NwYW4+IGNvdmVycyDvvZ7jgarjgYTjgafjgY/jgaDjgZXjgYQgKG5lZ2F0aXZlIHJlcXVlc3RzKS4gPHJ1Ynk+5rCXPHJ0PuOBjTwvcnQ+PC9ydWJ5PuOCkuOBpOOBkeOBvuOBmSBpcyB0aGUgUkVTUE9OU0UgdG8gc3VjaCB3YXJuaW5ncyDigJQgIkknbGwgYmUgY2FyZWZ1bC4iIDxydWJ5PumBoOaFrjxydD7jgYjjgpPjgorjgoc8L3J0PjwvcnVieT7jgZfjgb7jgZkgPSAiSSdsbCByZWZyYWluIiAoZGVjbGluaW5nKS4gPHJ1Ynk+5YqpPHJ0PuOBn+OBmTwvcnQ+PC9ydWJ5PuOBi+OCiuOBvuOBmSA9ICJUaGF0IGhlbHBzIiAoZ3JhdGl0dWRlKS4=",
+    "warn": "4pqg77iPIOOBjOOCk+OBsOOCiuOBvuOBmSA9ICJJJ2xsIGRvIG15IGJlc3QiIChlZmZvcnQpLiA8cnVieT7msJc8cnQ+44GNPC9ydD48L3J1Ynk+44KS44Gk44GR44G+44GZID0gIkknbGwgYmUgY2FyZWZ1bCIgKGNhdXRpb24pLiBEaWZmZXJlbnQgbnVhbmNlcyDigJQgb25lIGlzIGFib3V0IGVmZm9ydCwgdGhlIG90aGVyIGFib3V0IGF0dGVudGlvbiE="
+  },
+  {
+    "english": "",
+    "stem": "8J+Xo++4jyDjg5Xjgqnjg7zjg6Djgas8cnVieT7oqJjlhaU8cnQ+44GN44Gr44KF44GGPC9ydD48L3J1Ynk+44GX44GfPHJ1Ynk+5aC06Z2iPHJ0PuOBsOOCgeOCkzwvcnQ+PC9ydWJ5Pjo8YnI+PHNwYW4gY2xhc3M9ImpwIj7jgIzjgZ3jgozjgafjga/jgIHjgZPjgaHjgonjga7jg5Xjgqnjg7zjg6DjgavjgZQ8cnVieT7oqJjlhaU8cnQ+44GN44Gr44KF44GGPC9ydD48L3J1Ynk+44KS44GKPHJ1Ynk+6aGYPHJ0PuOBreOBjDwvcnQ+PC9ydWJ5PuOBhOOBl+OBvuOBmeOAguOAjTwvc3Bhbj48YnI+PHNwYW4gY2xhc3M9ImpwIj7jga/jgYTjgILigKY8c3BhbiBjbGFzcz0iYmxhbmsiPj88L3NwYW4+77yfPC9zcGFuPg==",
+    "answer": "44GT44KM44Gn44GE44GE44Gn44GZ44GL",
     "choices": [
       "知ってますか",
       "どうしていますか",
       "これでいいですか",
       "お願いできますか"
     ],
-    "correctNote": "これでいいですか = \"Is this OK?\" / \"Is this correct?\" Used to confirm your work with someone.",
-    "explain": "The correct choice is <strong>「これでいいですか」</strong>. This means \"Is it okay like this?\" or \"Is this correct?\" It is the standard polite phrase used to check if the action you just completed (such as filling out a form) meets requirements.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>知ってますか</code> is incorrect because it means \"Do you know?\" It asks if the other person has knowledge, which is irrelevant to checking your own work.<br>• <code>どうしていますか</code> is incorrect because it means \"How are you doing?\" / \"What are you doing?\" This is a casual greeting to ask about someone's current state.<br>• <code>お願いできますか</code> is incorrect because it means \"Could I ask you a favor?\" It is used to request help, not to confirm that you have finished a task.",
-    "connect": "🔗 <span class=\"jp\">MNN L14</span> ～ていいですか asks for permission (\"May I?\"). これでいいですか is different — it asks for confirmation (\"Is this OK as-is?\"). Also compare: どうですか (how is it?) vs. これでいいですか (is THIS specifically acceptable?).",
-    "warn": "⚠️ <ruby>知<rt>し</rt></ruby>ってますか = \"Do you know?\" — asks about knowledge, not confirmation. Wrong context!"
+    "longChoices": true,
+    "lesson": 1,
+    "type": "Expression",
+    "correctNote": "44GT44KM44Gn44GE44GE44Gn44GZ44GLID0gIklzIHRoaXMgT0s/IiAvICJJcyB0aGlzIGNvcnJlY3Q/IiBVc2VkIHRvIGNvbmZpcm0geW91ciB3b3JrIHdpdGggc29tZW9uZS4=",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44GT44KM44Gn44GE44GE44Gn44GZ44GL44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJJcyBpdCBva2F5IGxpa2UgdGhpcz8iIG9yICJJcyB0aGlzIGNvcnJlY3Q/IiBJdCBpcyB0aGUgc3RhbmRhcmQgcG9saXRlIHBocmFzZSB1c2VkIHRvIGNoZWNrIGlmIHRoZSBhY3Rpb24geW91IGp1c3QgY29tcGxldGVkIChzdWNoIGFzIGZpbGxpbmcgb3V0IGEgZm9ybSkgbWVldHMgcmVxdWlyZW1lbnRzLjxicj48YnI+PHN0cm9uZz5XaHkgb3RoZXIgY2hvaWNlcyBhcmUgaW5jb3JyZWN0Ojwvc3Ryb25nPjxicj7igKIgPGNvZGU+55+l44Gj44Gm44G+44GZ44GLPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiRG8geW91IGtub3c/IiBJdCBhc2tzIGlmIHRoZSBvdGhlciBwZXJzb24gaGFzIGtub3dsZWRnZSwgd2hpY2ggaXMgaXJyZWxldmFudCB0byBjaGVja2luZyB5b3VyIG93biB3b3JrLjxicj7igKIgPGNvZGU+44Gp44GG44GX44Gm44GE44G+44GZ44GLPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiSG93IGFyZSB5b3UgZG9pbmc/IiAvICJXaGF0IGFyZSB5b3UgZG9pbmc/IiBUaGlzIGlzIGEgY2FzdWFsIGdyZWV0aW5nIHRvIGFzayBhYm91dCBzb21lb25lJ3MgY3VycmVudCBzdGF0ZS48YnI+4oCiIDxjb2RlPuOBiumhmOOBhOOBp+OBjeOBvuOBmeOBizwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIkNvdWxkIEkgYXNrIHlvdSBhIGZhdm9yPyIgSXQgaXMgdXNlZCB0byByZXF1ZXN0IGhlbHAsIG5vdCB0byBjb25maXJtIHRoYXQgeW91IGhhdmUgZmluaXNoZWQgYSB0YXNrLg==",
+    "connect": "8J+UlyA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMTQ8L3NwYW4+IO+9nuOBpuOBhOOBhOOBp+OBmeOBiyBhc2tzIGZvciBwZXJtaXNzaW9uICgiTWF5IEk/IikuIOOBk+OCjOOBp+OBhOOBhOOBp+OBmeOBiyBpcyBkaWZmZXJlbnQg4oCUIGl0IGFza3MgZm9yIGNvbmZpcm1hdGlvbiAoIklzIHRoaXMgT0sgYXMtaXM/IikuIEFsc28gY29tcGFyZTog44Gp44GG44Gn44GZ44GLIChob3cgaXMgaXQ/KSB2cy4g44GT44KM44Gn44GE44GE44Gn44GZ44GLIChpcyBUSElTIHNwZWNpZmljYWxseSBhY2NlcHRhYmxlPyku",
+    "warn": "4pqg77iPIDxydWJ5PuefpTxydD7jgZc8L3J0PjwvcnVieT7jgaPjgabjgb7jgZnjgYsgPSAiRG8geW91IGtub3c/IiDigJQgYXNrcyBhYm91dCBrbm93bGVkZ2UsIG5vdCBjb25maXJtYXRpb24uIFdyb25nIGNvbnRleHQh"
   },
   {
-    "lesson": 2,
-    "type": "Expression",
-    "stem": "🏠 <ruby>自転車<rt>じてんしゃ</rt></ruby>がなくなった<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「<ruby>自転車<rt>じてんしゃ</rt></ruby>がなくなったんですか？」</span><br><span class=\"jp\">はい。<span class=\"blank\">?</span>、とられたかもしれません。</span>",
-    "answer": "もしかしたら",
+    "english": "",
+    "stem": "8J+PoCA8cnVieT7oh6rou6Lou4o8cnQ+44GY44Gm44KT44GX44KDPC9ydD48L3J1Ynk+44GM44Gq44GP44Gq44Gj44GfPHJ1Ynk+5aC06Z2iPHJ0PuOBsOOCgeOCkzwvcnQ+PC9ydWJ5Pjo8YnI+PHNwYW4gY2xhc3M9ImpwIj7jgIw8cnVieT7oh6rou6Lou4o8cnQ+44GY44Gm44KT44GX44KDPC9ydD48L3J1Ynk+44GM44Gq44GP44Gq44Gj44Gf44KT44Gn44GZ44GL77yf44CNPC9zcGFuPjxicj48c3BhbiBjbGFzcz0ianAiPuOBr+OBhOOAgjxzcGFuIGNsYXNzPSJibGFuayI+Pzwvc3Bhbj7jgIHjgajjgonjgozjgZ/jgYvjgoLjgZfjgozjgb7jgZvjgpPjgII8L3NwYW4+",
+    "answer": "44KC44GX44GL44GX44Gf44KJ",
     "choices": [
       "よろしければ",
       "もしかしたら",
       "できれば",
       "たとえば"
     ],
-    "correctNote": "もしかしたら = \"Perhaps / Maybe / It's possible that ~.\" Used for speculation about uncertain situations.",
-    "explain": "The correct choice is <strong>「もしかしたら」</strong>. This means \"perhaps,\" \"maybe,\" or \"by some chance.\" It is used to express speculation and grammatically pairs with 「かもしれません」 (\"might be/may\") at the end of the sentence.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>よろしければ</code> is incorrect because it means \"If you like / if it's alright.\" It is used to make polite offers or invitations.<br>• <code>できれば</code> is incorrect because it means \"If possible.\" It is used to express a personal wish or soft request.<br>• <code>たとえば</code> is incorrect because it means \"For example.\" It is used to introduce an illustrative example.",
-    "connect": "🔗 <span class=\"jp\">MNN L32</span> teaches かもしれません for possibility. もしかしたら at the start + かもしれません at the end is a common pair. Compare: よろしければ = \"if you don't mind\" (polite offer), できれば = \"if possible\" (wish).",
-    "warn": "⚠️ たとえば = \"for example\" — introduces examples, not speculation. よろしければ = \"if you'd like\" — a polite offer, not a guess."
-  },
-  {
+    "longChoices": false,
     "lesson": 2,
     "type": "Expression",
-    "stem": "🏠 スマホが<ruby>見<rt>み</rt></ruby>つからない<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\"><span class=\"blank\">?</span>？スマホがない！</span><br><span class=\"jp\">え、どこかで<ruby>落<rt>お</rt></ruby>とした？</span>",
-    "answer": "あれ",
+    "correctNote": "44KC44GX44GL44GX44Gf44KJID0gIlBlcmhhcHMgLyBNYXliZSAvIEl0J3MgcG9zc2libGUgdGhhdCB+LiIgVXNlZCBmb3Igc3BlY3VsYXRpb24gYWJvdXQgdW5jZXJ0YWluIHNpdHVhdGlvbnMu",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44KC44GX44GL44GX44Gf44KJ44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJwZXJoYXBzLCIgIm1heWJlLCIgb3IgImJ5IHNvbWUgY2hhbmNlLiIgSXQgaXMgdXNlZCB0byBleHByZXNzIHNwZWN1bGF0aW9uIGFuZCBncmFtbWF0aWNhbGx5IHBhaXJzIHdpdGgg44CM44GL44KC44GX44KM44G+44Gb44KT44CNICgibWlnaHQgYmUvbWF5IikgYXQgdGhlIGVuZCBvZiB0aGUgc2VudGVuY2UuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jgojjgo3jgZfjgZHjgozjgbA8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJJZiB5b3UgbGlrZSAvIGlmIGl0J3MgYWxyaWdodC4iIEl0IGlzIHVzZWQgdG8gbWFrZSBwb2xpdGUgb2ZmZXJzIG9yIGludml0YXRpb25zLjxicj7igKIgPGNvZGU+44Gn44GN44KM44GwPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiSWYgcG9zc2libGUuIiBJdCBpcyB1c2VkIHRvIGV4cHJlc3MgYSBwZXJzb25hbCB3aXNoIG9yIHNvZnQgcmVxdWVzdC48YnI+4oCiIDxjb2RlPuOBn+OBqOOBiOOBsDwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIkZvciBleGFtcGxlLiIgSXQgaXMgdXNlZCB0byBpbnRyb2R1Y2UgYW4gaWxsdXN0cmF0aXZlIGV4YW1wbGUu",
+    "connect": "8J+UlyA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMzI8L3NwYW4+IHRlYWNoZXMg44GL44KC44GX44KM44G+44Gb44KTIGZvciBwb3NzaWJpbGl0eS4g44KC44GX44GL44GX44Gf44KJIGF0IHRoZSBzdGFydCArIOOBi+OCguOBl+OCjOOBvuOBm+OCkyBhdCB0aGUgZW5kIGlzIGEgY29tbW9uIHBhaXIuIENvbXBhcmU6IOOCiOOCjeOBl+OBkeOCjOOBsCA9ICJpZiB5b3UgZG9uJ3QgbWluZCIgKHBvbGl0ZSBvZmZlciksIOOBp+OBjeOCjOOBsCA9ICJpZiBwb3NzaWJsZSIgKHdpc2gpLg==",
+    "warn": "4pqg77iPIOOBn+OBqOOBiOOBsCA9ICJmb3IgZXhhbXBsZSIg4oCUIGludHJvZHVjZXMgZXhhbXBsZXMsIG5vdCBzcGVjdWxhdGlvbi4g44KI44KN44GX44GR44KM44GwID0gImlmIHlvdSdkIGxpa2UiIOKAlCBhIHBvbGl0ZSBvZmZlciwgbm90IGEgZ3Vlc3Mu"
+  },
+  {
+    "english": "",
+    "stem": "8J+PoCDjgrnjg57jg5vjgYw8cnVieT7opos8cnQ+44G/PC9ydD48L3J1Ynk+44Gk44GL44KJ44Gq44GEPHJ1Ynk+5aC06Z2iPHJ0PuOBsOOCgeOCkzwvcnQ+PC9ydWJ5Pjo8YnI+PHNwYW4gY2xhc3M9ImpwIj48c3BhbiBjbGFzcz0iYmxhbmsiPj88L3NwYW4+77yf44K544Oe44Ob44GM44Gq44GE77yBPC9zcGFuPjxicj48c3BhbiBjbGFzcz0ianAiPuOBiOOAgeOBqeOBk+OBi+OBpzxydWJ5PuiQvTxydD7jgYo8L3J0PjwvcnVieT7jgajjgZfjgZ/vvJ88L3NwYW4+",
+    "answer": "44GC44KM",
     "choices": [
       "ほら",
       "さあ",
       "あれ",
       "ねえ"
     ],
-    "correctNote": "あれ = \"Huh?\" / \"What?\" An interjection expressing surprise when something unexpected happens.",
-    "explain": "The correct choice is <strong>「あれ」</strong>. This is a natural exclamation of surprise, confusion, or mild shock (similar to \"Huh?\" or \"Oh?\"). It is used when you notice something unexpected, such as your phone missing.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>ほら</code> is incorrect because it means \"Look!\" / \"See?\" It is used to draw someone else's attention to something.<br>• <code>さあ</code> is incorrect because it means \"Well...\" / \"I don't know.\" It expresses uncertainty or prompts action.<br>• <code>ねえ</code> is incorrect because it means \"Hey.\" It is used to get someone's attention casually.",
-    "connect": "🔗 Don't confuse this あれ (interjection) with あれ (that thing, <span class=\"jp\">MNN L2</span> こそあど). Same sound, completely different function! Compare: ほら = \"Look!/See?\" (drawing attention), さあ = \"Well...\" (uncertainty), ねえ = \"Hey\" (calling someone).",
-    "warn": "⚠️ ほら is used to show someone something (\"Look!\") or say \"I told you so!\" — it doesn't express personal confusion the way あれ does."
-  },
-  {
+    "longChoices": false,
     "lesson": 2,
     "type": "Expression",
-    "stem": "🏠 ホテルの<ruby>設備<rt>せつび</rt></ruby>を<ruby>確認<rt>かくにん</rt></ruby>する<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「すみません、お<ruby>風呂<rt>ふろ</rt></ruby>にシャンプーは<span class=\"blank\">?</span>？」</span><br><span class=\"jp\">はい。ご<ruby>自由<rt>じゆう</rt></ruby>にお<ruby>使<rt>つか</rt></ruby>いください。</span>",
-    "answer": "ついていますか",
-    "longChoices": true,
+    "correctNote": "44GC44KMID0gIkh1aD8iIC8gIldoYXQ/IiBBbiBpbnRlcmplY3Rpb24gZXhwcmVzc2luZyBzdXJwcmlzZSB3aGVuIHNvbWV0aGluZyB1bmV4cGVjdGVkIGhhcHBlbnMu",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44GC44KM44CNPC9zdHJvbmc+LiBUaGlzIGlzIGEgbmF0dXJhbCBleGNsYW1hdGlvbiBvZiBzdXJwcmlzZSwgY29uZnVzaW9uLCBvciBtaWxkIHNob2NrIChzaW1pbGFyIHRvICJIdWg/IiBvciAiT2g/IikuIEl0IGlzIHVzZWQgd2hlbiB5b3Ugbm90aWNlIHNvbWV0aGluZyB1bmV4cGVjdGVkLCBzdWNoIGFzIHlvdXIgcGhvbmUgbWlzc2luZy48YnI+PGJyPjxzdHJvbmc+V2h5IG90aGVyIGNob2ljZXMgYXJlIGluY29ycmVjdDo8L3N0cm9uZz48YnI+4oCiIDxjb2RlPuOBu+OCiTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIkxvb2shIiAvICJTZWU/IiBJdCBpcyB1c2VkIHRvIGRyYXcgc29tZW9uZSBlbHNlJ3MgYXR0ZW50aW9uIHRvIHNvbWV0aGluZy48YnI+4oCiIDxjb2RlPuOBleOBgjwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIldlbGwuLi4iIC8gIkkgZG9uJ3Qga25vdy4iIEl0IGV4cHJlc3NlcyB1bmNlcnRhaW50eSBvciBwcm9tcHRzIGFjdGlvbi48YnI+4oCiIDxjb2RlPuOBreOBiDwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIkhleS4iIEl0IGlzIHVzZWQgdG8gZ2V0IHNvbWVvbmUncyBhdHRlbnRpb24gY2FzdWFsbHku",
+    "connect": "8J+UlyBEb24ndCBjb25mdXNlIHRoaXMg44GC44KMIChpbnRlcmplY3Rpb24pIHdpdGgg44GC44KMICh0aGF0IHRoaW5nLCA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMjwvc3Bhbj4g44GT44Gd44GC44GpKS4gU2FtZSBzb3VuZCwgY29tcGxldGVseSBkaWZmZXJlbnQgZnVuY3Rpb24hIENvbXBhcmU6IOOBu+OCiSA9ICJMb29rIS9TZWU/IiAoZHJhd2luZyBhdHRlbnRpb24pLCDjgZXjgYIgPSAiV2VsbC4uLiIgKHVuY2VydGFpbnR5KSwg44Gt44GIID0gIkhleSIgKGNhbGxpbmcgc29tZW9uZSku",
+    "warn": "4pqg77iPIOOBu+OCiSBpcyB1c2VkIHRvIHNob3cgc29tZW9uZSBzb21ldGhpbmcgKCJMb29rISIpIG9yIHNheSAiSSB0b2xkIHlvdSBzbyEiIOKAlCBpdCBkb2Vzbid0IGV4cHJlc3MgcGVyc29uYWwgY29uZnVzaW9uIHRoZSB3YXkg44GC44KMIGRvZXMu"
+  },
+  {
+    "english": "",
+    "stem": "8J+PoCDjg5vjg4bjg6vjga48cnVieT7oqK3lgpk8cnQ+44Gb44Gk44GzPC9ydD48L3J1Ynk+44KSPHJ1Ynk+56K66KqNPHJ0PuOBi+OBj+OBq+OCkzwvcnQ+PC9ydWJ5PuOBmeOCizxydWJ5PuWgtOmdojxydD7jgbDjgoHjgpM8L3J0PjwvcnVieT46PGJyPjxzcGFuIGNsYXNzPSJqcCI+44CM44GZ44G/44G+44Gb44KT44CB44GKPHJ1Ynk+6aKo5ZGCPHJ0PuOBteOCjTwvcnQ+PC9ydWJ5PuOBq+OCt+ODo+ODs+ODl+ODvOOBrzxzcGFuIGNsYXNzPSJibGFuayI+Pzwvc3Bhbj7vvJ/jgI08L3NwYW4+PGJyPjxzcGFuIGNsYXNzPSJqcCI+44Gv44GE44CC44GUPHJ1Ynk+6Ieq55SxPHJ0PuOBmOOChuOBhjwvcnQ+PC9ydWJ5PuOBq+OBijxydWJ5PuS9vzxydD7jgaTjgYs8L3J0PjwvcnVieT7jgYTjgY/jgaDjgZXjgYTjgII8L3NwYW4+",
+    "answer": "44Gk44GE44Gm44GE44G+44GZ44GL",
     "choices": [
       "ちょっといいですか",
       "お持ちですか",
       "ついていますか",
       "ありませんか"
     ],
-    "correctNote": "ついていますか = \"Is it included? / Does it come with ~?\" Used to ask if something is provided or attached.",
-    "explain": "The correct choice is <strong>「ついていますか」</strong>. This means \"Is it included?\" or \"Does it come with?\" (from 「つく」 \"to be attached/included\" in the ている state form). It is used to check if hotel bathrooms come equipped with shampoo.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>ちょっといいですか</code> is incorrect because it means \"Do you have a second?\" It is used to get someone's attention before talking.<br>• <code>お持ちですか</code> is incorrect because it means \"Do you have/own?\" (honorific). It asks if the other person possesses something, whereas the question asks about the hotel room facility itself.<br>• <code>ありませんか</code> is incorrect because it means \"Is there not...?\" While grammatically valid, it is less natural than 「ついていますか」 when asking if an amenity is a standard feature/included in a room.",
-    "connect": "🔗 <span class=\"jp\">MNN L15</span> ～ています for resulting states. ついています uses this for \"is in a state of being attached.\" <span class=\"jp\">MNN L29</span> covers つく/つける (intransitive/transitive pair): <ruby>電気<rt>でんき</rt></ruby>がつく vs. <ruby>電気<rt>でんき</rt></ruby>をつける.",
-    "warn": "⚠️ お<ruby>持<rt>も</rt></ruby>ちですか = \"Do YOU have it?\" (asking about the listener's possession). ついていますか asks if the ROOM/FACILITY has it. Big difference in subject!"
-  },
-  {
+    "longChoices": true,
     "lesson": 2,
     "type": "Expression",
-    "stem": "🏠 <ruby>台風<rt>たいふう</rt></ruby>が<ruby>来<rt>く</rt></ruby>る<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「<ruby>今夜<rt>こんや</rt></ruby>、<ruby>大<rt>おお</rt></ruby>きい<ruby>台風<rt>たいふう</rt></ruby>が<ruby>来<rt>き</rt></ruby>ますよ。<ruby>川<rt>かわ</rt></ruby>が<ruby>近<rt>ちか</rt></ruby>いから、<ruby>心配<rt>しんぱい</rt></ruby>ですね。」</span><br><span class=\"jp\">そうですね。<ruby>夜<rt>よる</rt></ruby>は<ruby>危<rt>あぶ</rt></ruby>ないから、<span class=\"blank\">?</span><ruby>避難所<rt>ひなんじょ</rt></ruby>に<ruby>行<rt>い</rt></ruby>きます。</span>",
-    "answer": "早めに",
+    "correctNote": "44Gk44GE44Gm44GE44G+44GZ44GLID0gIklzIGl0IGluY2x1ZGVkPyAvIERvZXMgaXQgY29tZSB3aXRoIH4/IiBVc2VkIHRvIGFzayBpZiBzb21ldGhpbmcgaXMgcHJvdmlkZWQgb3IgYXR0YWNoZWQu",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44Gk44GE44Gm44GE44G+44GZ44GL44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJJcyBpdCBpbmNsdWRlZD8iIG9yICJEb2VzIGl0IGNvbWUgd2l0aD8iIChmcm9tIOOAjOOBpOOBj+OAjSAidG8gYmUgYXR0YWNoZWQvaW5jbHVkZWQiIGluIHRoZSDjgabjgYTjgosgc3RhdGUgZm9ybSkuIEl0IGlzIHVzZWQgdG8gY2hlY2sgaWYgaG90ZWwgYmF0aHJvb21zIGNvbWUgZXF1aXBwZWQgd2l0aCBzaGFtcG9vLjxicj48YnI+PHN0cm9uZz5XaHkgb3RoZXIgY2hvaWNlcyBhcmUgaW5jb3JyZWN0Ojwvc3Ryb25nPjxicj7igKIgPGNvZGU+44Gh44KH44Gj44Go44GE44GE44Gn44GZ44GLPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiRG8geW91IGhhdmUgYSBzZWNvbmQ/IiBJdCBpcyB1c2VkIHRvIGdldCBzb21lb25lJ3MgYXR0ZW50aW9uIGJlZm9yZSB0YWxraW5nLjxicj7igKIgPGNvZGU+44GK5oyB44Gh44Gn44GZ44GLPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiRG8geW91IGhhdmUvb3duPyIgKGhvbm9yaWZpYykuIEl0IGFza3MgaWYgdGhlIG90aGVyIHBlcnNvbiBwb3NzZXNzZXMgc29tZXRoaW5nLCB3aGVyZWFzIHRoZSBxdWVzdGlvbiBhc2tzIGFib3V0IHRoZSBob3RlbCByb29tIGZhY2lsaXR5IGl0c2VsZi48YnI+4oCiIDxjb2RlPuOBguOCiuOBvuOBm+OCk+OBizwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIklzIHRoZXJlIG5vdC4uLj8iIFdoaWxlIGdyYW1tYXRpY2FsbHkgdmFsaWQsIGl0IGlzIGxlc3MgbmF0dXJhbCB0aGFuIOOAjOOBpOOBhOOBpuOBhOOBvuOBmeOBi+OAjSB3aGVuIGFza2luZyBpZiBhbiBhbWVuaXR5IGlzIGEgc3RhbmRhcmQgZmVhdHVyZS9pbmNsdWRlZCBpbiBhIHJvb20u",
+    "connect": "8J+UlyA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMTU8L3NwYW4+IO+9nuOBpuOBhOOBvuOBmSBmb3IgcmVzdWx0aW5nIHN0YXRlcy4g44Gk44GE44Gm44GE44G+44GZIHVzZXMgdGhpcyBmb3IgImlzIGluIGEgc3RhdGUgb2YgYmVpbmcgYXR0YWNoZWQuIiA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMjk8L3NwYW4+IGNvdmVycyDjgaTjgY8v44Gk44GR44KLIChpbnRyYW5zaXRpdmUvdHJhbnNpdGl2ZSBwYWlyKTogPHJ1Ynk+6Zu75rCXPHJ0PuOBp+OCk+OBjTwvcnQ+PC9ydWJ5PuOBjOOBpOOBjyB2cy4gPHJ1Ynk+6Zu75rCXPHJ0PuOBp+OCk+OBjTwvcnQ+PC9ydWJ5PuOCkuOBpOOBkeOCiy4=",
+    "warn": "4pqg77iPIOOBijxydWJ5PuaMgTxydD7jgoI8L3J0PjwvcnVieT7jgaHjgafjgZnjgYsgPSAiRG8gWU9VIGhhdmUgaXQ/IiAoYXNraW5nIGFib3V0IHRoZSBsaXN0ZW5lcidzIHBvc3Nlc3Npb24pLiDjgaTjgYTjgabjgYTjgb7jgZnjgYsgYXNrcyBpZiB0aGUgUk9PTS9GQUNJTElUWSBoYXMgaXQuIEJpZyBkaWZmZXJlbmNlIGluIHN1YmplY3Qh"
+  },
+  {
+    "english": "",
+    "stem": "8J+PoCA8cnVieT7lj7Dpoqg8cnQ+44Gf44GE44G144GGPC9ydD48L3J1Ynk+44GMPHJ1Ynk+5p2lPHJ0PuOBjzwvcnQ+PC9ydWJ5PuOCizxydWJ5PuWgtOmdojxydD7jgbDjgoHjgpM8L3J0PjwvcnVieT46PGJyPjxzcGFuIGNsYXNzPSJqcCI+44CMPHJ1Ynk+5LuK5aScPHJ0PuOBk+OCk+OChDwvcnQ+PC9ydWJ5PuOAgTxydWJ5PuWkpzxydD7jgYrjgYo8L3J0PjwvcnVieT7jgY3jgYQ8cnVieT7lj7Dpoqg8cnQ+44Gf44GE44G144GGPC9ydD48L3J1Ynk+44GMPHJ1Ynk+5p2lPHJ0PuOBjTwvcnQ+PC9ydWJ5PuOBvuOBmeOCiOOAgjxydWJ5PuW3nTxydD7jgYvjgo88L3J0PjwvcnVieT7jgYw8cnVieT7ov5E8cnQ+44Gh44GLPC9ydD48L3J1Ynk+44GE44GL44KJ44CBPHJ1Ynk+5b+D6YWNPHJ0PuOBl+OCk+OBseOBhDwvcnQ+PC9ydWJ5PuOBp+OBmeOBreOAguOAjTwvc3Bhbj48YnI+PHNwYW4gY2xhc3M9ImpwIj7jgZ3jgYbjgafjgZnjga3jgII8cnVieT7lpJw8cnQ+44KI44KLPC9ydD48L3J1Ynk+44GvPHJ1Ynk+5Y2xPHJ0PuOBguOBtjwvcnQ+PC9ydWJ5PuOBquOBhOOBi+OCieOAgTxzcGFuIGNsYXNzPSJibGFuayI+Pzwvc3Bhbj48cnVieT7pgb/pm6PmiYA8cnQ+44Gy44Gq44KT44GY44KHPC9ydD48L3J1Ynk+44GrPHJ1Ynk+6KGMPHJ0PuOBhDwvcnQ+PC9ydWJ5PuOBjeOBvuOBmeOAgjwvc3Bhbj4=",
+    "answer": "5pep44KB44Gr",
     "choices": [
       "なるほど",
       "あわてて",
       "早めに",
       "いつでも"
     ],
-    "correctNote": "<ruby>早<rt>はや</rt></ruby>めに = \"on the early side / ahead of time.\" Suggests doing something sooner rather than later.",
-    "explain": "The correct choice is <strong>「早めに」</strong>. This means \"early,\" \"ahead of time,\" or \"sooner than later\" (from 「早い」 \"early\" + suffix 「め」 \"rather\" + 「に」). It is appropriate for advising evacuation before a typhoon gets worse.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>なるほど</code> is incorrect because it means \"I see / indeed.\" It expresses agreement or understanding, not a manner of action.<br>• <code>あわてて</code> is incorrect because it means \"In a hurry / panicking.\" It indicates acting with anxiety/panic, which is a dangerous behavior to avoid in emergencies.<br>• <code>いつでも</code> is incorrect because it means \"Anytime.\" It indicates no restriction on time, which is inappropriate for an evacuation that must happen before danger.",
-    "connect": "🔗 The ～め pattern works with other adjectives too: <ruby>多<rt>おお</rt></ruby>め (a bit more), <ruby>少<rt>すく</rt></ruby>なめ (a bit less), <ruby>大<rt>おお</rt></ruby>きめ (a bit bigger). It's a useful softener from <span class=\"jp\">MNN L44</span> (adjective usage). Compare: あわてて = \"in a panic\" — the opposite of the calm planning <ruby>早<rt>はや</rt></ruby>めに implies.",
-    "warn": "⚠️ あわてて = \"in a rush/panic.\" <ruby>早<rt>はや</rt></ruby>めに implies calm, planned earliness — not panic!"
+    "longChoices": false,
+    "lesson": 2,
+    "type": "Expression",
+    "correctNote": "PHJ1Ynk+5pepPHJ0PuOBr+OChDwvcnQ+PC9ydWJ5PuOCgeOBqyA9ICJvbiB0aGUgZWFybHkgc2lkZSAvIGFoZWFkIG9mIHRpbWUuIiBTdWdnZXN0cyBkb2luZyBzb21ldGhpbmcgc29vbmVyIHJhdGhlciB0aGFuIGxhdGVyLg==",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM5pep44KB44Gr44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJlYXJseSwiICJhaGVhZCBvZiB0aW1lLCIgb3IgInNvb25lciB0aGFuIGxhdGVyIiAoZnJvbSDjgIzml6njgYTjgI0gImVhcmx5IiArIHN1ZmZpeCDjgIzjgoHjgI0gInJhdGhlciIgKyDjgIzjgavjgI0pLiBJdCBpcyBhcHByb3ByaWF0ZSBmb3IgYWR2aXNpbmcgZXZhY3VhdGlvbiBiZWZvcmUgYSB0eXBob29uIGdldHMgd29yc2UuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jgarjgovjgbvjgak8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJJIHNlZSAvIGluZGVlZC4iIEl0IGV4cHJlc3NlcyBhZ3JlZW1lbnQgb3IgdW5kZXJzdGFuZGluZywgbm90IGEgbWFubmVyIG9mIGFjdGlvbi48YnI+4oCiIDxjb2RlPuOBguOCj+OBpuOBpjwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIkluIGEgaHVycnkgLyBwYW5pY2tpbmcuIiBJdCBpbmRpY2F0ZXMgYWN0aW5nIHdpdGggYW54aWV0eS9wYW5pYywgd2hpY2ggaXMgYSBkYW5nZXJvdXMgYmVoYXZpb3IgdG8gYXZvaWQgaW4gZW1lcmdlbmNpZXMuPGJyPuKAoiA8Y29kZT7jgYTjgaTjgafjgoI8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJBbnl0aW1lLiIgSXQgaW5kaWNhdGVzIG5vIHJlc3RyaWN0aW9uIG9uIHRpbWUsIHdoaWNoIGlzIGluYXBwcm9wcmlhdGUgZm9yIGFuIGV2YWN1YXRpb24gdGhhdCBtdXN0IGhhcHBlbiBiZWZvcmUgZGFuZ2VyLg==",
+    "connect": "8J+UlyBUaGUg772e44KBIHBhdHRlcm4gd29ya3Mgd2l0aCBvdGhlciBhZGplY3RpdmVzIHRvbzogPHJ1Ynk+5aSaPHJ0PuOBiuOBijwvcnQ+PC9ydWJ5PuOCgSAoYSBiaXQgbW9yZSksIDxydWJ5PuWwkTxydD7jgZnjgY88L3J0PjwvcnVieT7jgarjgoEgKGEgYml0IGxlc3MpLCA8cnVieT7lpKc8cnQ+44GK44GKPC9ydD48L3J1Ynk+44GN44KBIChhIGJpdCBiaWdnZXIpLiBJdCdzIGEgdXNlZnVsIHNvZnRlbmVyIGZyb20gPHNwYW4gY2xhc3M9ImpwIj5NTk4gTDQ0PC9zcGFuPiAoYWRqZWN0aXZlIHVzYWdlKS4gQ29tcGFyZTog44GC44KP44Gm44GmID0gImluIGEgcGFuaWMiIOKAlCB0aGUgb3Bwb3NpdGUgb2YgdGhlIGNhbG0gcGxhbm5pbmcgPHJ1Ynk+5pepPHJ0PuOBr+OChDwvcnQ+PC9ydWJ5PuOCgeOBqyBpbXBsaWVzLg==",
+    "warn": "4pqg77iPIOOBguOCj+OBpuOBpiA9ICJpbiBhIHJ1c2gvcGFuaWMuIiA8cnVieT7ml6k8cnQ+44Gv44KEPC9ydD48L3J1Ynk+44KB44GrIGltcGxpZXMgY2FsbSwgcGxhbm5lZCBlYXJsaW5lc3Mg4oCUIG5vdCBwYW5pYyE="
   },
   {
-    "lesson": 3,
-    "type": "Expression",
-    "stem": "🛒 <ruby>商品<rt>しょうひん</rt></ruby>を<ruby>比<rt>くら</rt></ruby>べる<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「『セーシバ』も『スギシタ』も、よく<ruby>売<rt>う</rt></ruby>れてますよ。」</span><br><span class=\"jp\"><span class=\"blank\">?</span>が<ruby>使<rt>つか</rt></ruby>いやすいですか？</span>",
-    "answer": "どっち",
+    "english": "",
+    "stem": "8J+bkiA8cnVieT7llYblk4E8cnQ+44GX44KH44GG44Gy44KTPC9ydD48L3J1Ynk+44KSPHJ1Ynk+5q+UPHJ0PuOBj+OCiTwvcnQ+PC9ydWJ5PuOBueOCizxydWJ5PuWgtOmdojxydD7jgbDjgoHjgpM8L3J0PjwvcnVieT46PGJyPjxzcGFuIGNsYXNzPSJqcCI+44CM44CO44K744O844K344OQ44CP44KC44CO44K544Ku44K344K/44CP44KC44CB44KI44GPPHJ1Ynk+5aOyPHJ0PuOBhjwvcnQ+PC9ydWJ5PuOCjOOBpuOBvuOBmeOCiOOAguOAjTwvc3Bhbj48YnI+PHNwYW4gY2xhc3M9ImpwIj48c3BhbiBjbGFzcz0iYmxhbmsiPj88L3NwYW4+44GMPHJ1Ynk+5L2/PHJ0PuOBpOOBizwvcnQ+PC9ydWJ5PuOBhOOChOOBmeOBhOOBp+OBmeOBi++8nzwvc3Bhbj4=",
+    "answer": "44Gp44Gj44Gh",
     "choices": [
       "どっち",
       "どんな",
       "どの",
       "どれ"
     ],
-    "correctNote": "どっち = \"Which one (of two)?\" The casual form of どちら — used when comparing exactly two options.",
-    "explain": "The correct choice is <strong>「どっち」</strong>. This means \"which one\" (casual form of 「どちら」). It is used when choosing between exactly <strong>two</strong> options (in this case, 'Seshiba' and 'Sugishita').<br><br><strong>Why other choices are incorrect:</strong><br>• <code>どんな</code> is incorrect because it means \"What kind of.\" It must be followed directly by a noun.<br>• <code>どの</code> is incorrect because it means \"Which.\" It must be followed directly by a noun.<br>• <code>どれ</code> is incorrect because it means \"Which one\" (used when choosing among <strong>three or more</strong> options).",
-    "connect": "🔗 <span class=\"jp\">MNN L3</span> teaches どちら (formal \"which of two\"). どっち is its casual twin. <span class=\"jp\">MNN L44</span> covers ～やすい/～にくい (easy/hard to do). Compare: どの = \"which + noun\" (どの<ruby>本<rt>ほん</rt></ruby>), どれ = \"which one (3+)\", どんな = \"what kind of.\"",
-    "warn": "⚠️ どの needs a noun after it (どの<ruby>色<rt>いろ</rt></ruby>？). どっち stands alone. どんな asks about TYPE, not which specific one."
-  },
-  {
+    "longChoices": false,
     "lesson": 3,
     "type": "Expression",
-    "stem": "🛒 <ruby>値段<rt>ねだん</rt></ruby>の<ruby>交渉<rt>こうしょう</rt></ruby>をする<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「この<ruby>電子<rt>でんし</rt></ruby>レンジ、いいですね。これ、<span class=\"blank\">?</span>？」</span><br><span class=\"jp\">うーん、そうですね…。1,000<ruby>円<rt>えん</rt></ruby><ruby>引<rt>び</rt></ruby>きはどうですか？</span>",
-    "answer": "安くなりますか",
-    "longChoices": true,
+    "correctNote": "44Gp44Gj44GhID0gIldoaWNoIG9uZSAob2YgdHdvKT8iIFRoZSBjYXN1YWwgZm9ybSBvZiDjganjgaHjgokg4oCUIHVzZWQgd2hlbiBjb21wYXJpbmcgZXhhY3RseSB0d28gb3B0aW9ucy4=",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44Gp44Gj44Gh44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJ3aGljaCBvbmUiIChjYXN1YWwgZm9ybSBvZiDjgIzjganjgaHjgonjgI0pLiBJdCBpcyB1c2VkIHdoZW4gY2hvb3NpbmcgYmV0d2VlbiBleGFjdGx5IDxzdHJvbmc+dHdvPC9zdHJvbmc+IG9wdGlvbnMgKGluIHRoaXMgY2FzZSwgJ1Nlc2hpYmEnIGFuZCAnU3VnaXNoaXRhJykuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jganjgpPjgao8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJXaGF0IGtpbmQgb2YuIiBJdCBtdXN0IGJlIGZvbGxvd2VkIGRpcmVjdGx5IGJ5IGEgbm91bi48YnI+4oCiIDxjb2RlPuOBqeOBrjwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIldoaWNoLiIgSXQgbXVzdCBiZSBmb2xsb3dlZCBkaXJlY3RseSBieSBhIG5vdW4uPGJyPuKAoiA8Y29kZT7jganjgow8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJXaGljaCBvbmUiICh1c2VkIHdoZW4gY2hvb3NpbmcgYW1vbmcgPHN0cm9uZz50aHJlZSBvciBtb3JlPC9zdHJvbmc+IG9wdGlvbnMpLg==",
+    "connect": "8J+UlyA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMzwvc3Bhbj4gdGVhY2hlcyDjganjgaHjgokgKGZvcm1hbCAid2hpY2ggb2YgdHdvIikuIOOBqeOBo+OBoSBpcyBpdHMgY2FzdWFsIHR3aW4uIDxzcGFuIGNsYXNzPSJqcCI+TU5OIEw0NDwvc3Bhbj4gY292ZXJzIO+9nuOChOOBmeOBhC/vvZ7jgavjgY/jgYQgKGVhc3kvaGFyZCB0byBkbykuIENvbXBhcmU6IOOBqeOBriA9ICJ3aGljaCArIG5vdW4iICjjganjga48cnVieT7mnKw8cnQ+44G744KTPC9ydD48L3J1Ynk+KSwg44Gp44KMID0gIndoaWNoIG9uZSAoMyspIiwg44Gp44KT44GqID0gIndoYXQga2luZCBvZi4i",
+    "warn": "4pqg77iPIOOBqeOBriBuZWVkcyBhIG5vdW4gYWZ0ZXIgaXQgKOOBqeOBrjxydWJ5PuiJsjxydD7jgYTjgo08L3J0PjwvcnVieT7vvJ8pLiDjganjgaPjgaEgc3RhbmRzIGFsb25lLiDjganjgpPjgaogYXNrcyBhYm91dCBUWVBFLCBub3Qgd2hpY2ggc3BlY2lmaWMgb25lLg=="
+  },
+  {
+    "english": "",
+    "stem": "8J+bkiA8cnVieT7lgKTmrrU8cnQ+44Gt44Gg44KTPC9ydD48L3J1Ynk+44GuPHJ1Ynk+5Lqk5riJPHJ0PuOBk+OBhuOBl+OCh+OBhjwvcnQ+PC9ydWJ5PuOCkuOBmeOCizxydWJ5PuWgtOmdojxydD7jgbDjgoHjgpM8L3J0PjwvcnVieT46PGJyPjxzcGFuIGNsYXNzPSJqcCI+44CM44GT44GuPHJ1Ynk+6Zu75a2QPHJ0PuOBp+OCk+OBlzwvcnQ+PC9ydWJ5PuODrOODs+OCuOOAgeOBhOOBhOOBp+OBmeOBreOAguOBk+OCjOOAgTxzcGFuIGNsYXNzPSJibGFuayI+Pzwvc3Bhbj7vvJ/jgI08L3NwYW4+PGJyPjxzcGFuIGNsYXNzPSJqcCI+44GG44O844KT44CB44Gd44GG44Gn44GZ44Gt4oCm44CCMSwwMDA8cnVieT7lhoY8cnQ+44GI44KTPC9ydD48L3J1Ynk+PHJ1Ynk+5byVPHJ0PuOBszwvcnQ+PC9ydWJ5PuOBjeOBr+OBqeOBhuOBp+OBmeOBi++8nzwvc3Bhbj4=",
+    "answer": "5a6J44GP44Gq44KK44G+44GZ44GL",
     "choices": [
       "持ち帰りですか",
       "安くなりますか",
       "どのぐらい貯まってますか",
       "いくらですか"
     ],
-    "correctNote": "<ruby>安<rt>やす</rt></ruby>くなりますか = \"Can it become cheaper?\" / \"Can you give a discount?\" The natural way to ask for a bargain in Japanese.",
-    "explain": "The correct choice is <strong>「安くなりますか」</strong>. This means \"Can it be cheaper?\" or \"Will the price go down?\" (literally: \"Will it become cheap?\"). It is a polite, indirect way to negotiate a discount in a store.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>持ち帰りですか</code> is incorrect because it means \"Is it for takeout?\" It is used by food staff, not customers negotiating prices for electronics.<br>• <code>どのぐらい貯まってますか</code> is incorrect because it means \"How much has accumulated?\" It refers to loyalty points or savings, not price negotiation.<br>• <code>いくらですか</code> is incorrect because it means \"How much is it?\" It asks for the base price, which does not initiate a negotiation.",
-    "connect": "🔗 <span class=\"jp\">MNN L19</span> teaches イ-adj く なります for change. <ruby>安<rt>やす</rt></ruby>くなりますか is a direct application for real-life bargaining. Compare: いくらですか = \"How much is it?\" (asking price, not negotiating).",
-    "warn": "⚠️ <ruby>持<rt>も</rt></ruby>ち<ruby>帰<rt>かえ</rt></ruby>りですか = \"Is it takeout?\" — restaurant expression, not bargaining! どのぐらい<ruby>貯<rt>た</rt></ruby>まってますか = \"How much has accumulated?\" — asking about points/savings."
-  },
-  {
+    "longChoices": true,
     "lesson": 3,
     "type": "Expression",
-    "stem": "🛒 <ruby>花<rt>はな</rt></ruby>が<ruby>全部<rt>ぜんぶ</rt></ruby>だめな<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「<ruby>最近<rt>さいきん</rt></ruby>は、<ruby>花<rt>はな</rt></ruby>は<ruby>全部<rt>ぜんぶ</rt></ruby>だめな<ruby>病院<rt>びょういん</rt></ruby>も<ruby>多<rt>おお</rt></ruby>いそうですよ。」</span><br><span class=\"jp\">じゃあ、<span class=\"blank\">?</span>？</span>",
-    "answer": "どうすればいいですか",
-    "longChoices": true,
+    "correctNote": "PHJ1Ynk+5a6JPHJ0PuOChOOBmTwvcnQ+PC9ydWJ5PuOBj+OBquOCiuOBvuOBmeOBiyA9ICJDYW4gaXQgYmVjb21lIGNoZWFwZXI/IiAvICJDYW4geW91IGdpdmUgYSBkaXNjb3VudD8iIFRoZSBuYXR1cmFsIHdheSB0byBhc2sgZm9yIGEgYmFyZ2FpbiBpbiBKYXBhbmVzZS4=",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM5a6J44GP44Gq44KK44G+44GZ44GL44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJDYW4gaXQgYmUgY2hlYXBlcj8iIG9yICJXaWxsIHRoZSBwcmljZSBnbyBkb3duPyIgKGxpdGVyYWxseTogIldpbGwgaXQgYmVjb21lIGNoZWFwPyIpLiBJdCBpcyBhIHBvbGl0ZSwgaW5kaXJlY3Qgd2F5IHRvIG5lZ290aWF0ZSBhIGRpc2NvdW50IGluIGEgc3RvcmUuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7mjIHjgaHluLDjgorjgafjgZnjgYs8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJJcyBpdCBmb3IgdGFrZW91dD8iIEl0IGlzIHVzZWQgYnkgZm9vZCBzdGFmZiwgbm90IGN1c3RvbWVycyBuZWdvdGlhdGluZyBwcmljZXMgZm9yIGVsZWN0cm9uaWNzLjxicj7igKIgPGNvZGU+44Gp44Gu44GQ44KJ44GE6LKv44G+44Gj44Gm44G+44GZ44GLPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiSG93IG11Y2ggaGFzIGFjY3VtdWxhdGVkPyIgSXQgcmVmZXJzIHRvIGxveWFsdHkgcG9pbnRzIG9yIHNhdmluZ3MsIG5vdCBwcmljZSBuZWdvdGlhdGlvbi48YnI+4oCiIDxjb2RlPuOBhOOBj+OCieOBp+OBmeOBizwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIkhvdyBtdWNoIGlzIGl0PyIgSXQgYXNrcyBmb3IgdGhlIGJhc2UgcHJpY2UsIHdoaWNoIGRvZXMgbm90IGluaXRpYXRlIGEgbmVnb3RpYXRpb24u",
+    "connect": "8J+UlyA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMTk8L3NwYW4+IHRlYWNoZXMg44KkLWFkaiDjgY8g44Gq44KK44G+44GZIGZvciBjaGFuZ2UuIDxydWJ5PuWuiTxydD7jgoTjgZk8L3J0PjwvcnVieT7jgY/jgarjgorjgb7jgZnjgYsgaXMgYSBkaXJlY3QgYXBwbGljYXRpb24gZm9yIHJlYWwtbGlmZSBiYXJnYWluaW5nLiBDb21wYXJlOiDjgYTjgY/jgonjgafjgZnjgYsgPSAiSG93IG11Y2ggaXMgaXQ/IiAoYXNraW5nIHByaWNlLCBub3QgbmVnb3RpYXRpbmcpLg==",
+    "warn": "4pqg77iPIDxydWJ5PuaMgTxydD7jgoI8L3J0PjwvcnVieT7jgaE8cnVieT7luLA8cnQ+44GL44GIPC9ydD48L3J1Ynk+44KK44Gn44GZ44GLID0gIklzIGl0IHRha2VvdXQ/IiDigJQgcmVzdGF1cmFudCBleHByZXNzaW9uLCBub3QgYmFyZ2FpbmluZyEg44Gp44Gu44GQ44KJ44GEPHJ1Ynk+6LKvPHJ0PuOBnzwvcnQ+PC9ydWJ5PuOBvuOBo+OBpuOBvuOBmeOBiyA9ICJIb3cgbXVjaCBoYXMgYWNjdW11bGF0ZWQ/IiDigJQgYXNraW5nIGFib3V0IHBvaW50cy9zYXZpbmdzLg=="
+  },
+  {
+    "english": "",
+    "stem": "8J+bkiA8cnVieT7oirE8cnQ+44Gv44GqPC9ydD48L3J1Ynk+44GMPHJ1Ynk+5YWo6YOoPHJ0PuOBnOOCk+OBtjwvcnQ+PC9ydWJ5PuOBoOOCgeOBqjxydWJ5PuWgtOmdojxydD7jgbDjgoHjgpM8L3J0PjwvcnVieT46PGJyPjxzcGFuIGNsYXNzPSJqcCI+44CMPHJ1Ynk+5pyA6L+RPHJ0PuOBleOBhOOBjeOCkzwvcnQ+PC9ydWJ5PuOBr+OAgTxydWJ5PuiKsTxydD7jga/jgao8L3J0PjwvcnVieT7jga88cnVieT7lhajpg6g8cnQ+44Gc44KT44G2PC9ydD48L3J1Ynk+44Gg44KB44GqPHJ1Ynk+55eF6ZmiPHJ0PuOBs+OCh+OBhuOBhOOCkzwvcnQ+PC9ydWJ5PuOCgjxydWJ5PuWkmjxydD7jgYrjgYo8L3J0PjwvcnVieT7jgYTjgZ3jgYbjgafjgZnjgojjgILjgI08L3NwYW4+PGJyPjxzcGFuIGNsYXNzPSJqcCI+44GY44KD44GC44CBPHNwYW4gY2xhc3M9ImJsYW5rIj4/PC9zcGFuPu+8nzwvc3Bhbj4=",
+    "answer": "44Gp44GG44GZ44KM44Gw44GE44GE44Gn44GZ44GL",
     "choices": [
       "どうすればいいですか",
       "どうしたんですか",
       "どういう意味ですか",
       "どうなさいますか"
     ],
-    "correctNote": "どうすればいいですか = \"What should I do?\" Used to ask for advice when you're unsure how to handle a situation.",
-    "explain": "The correct choice is <strong>「どうすればいいですか」</strong>. This means \"What should I do?\" or \"How should I handle this?\" (literally: \"If I do how, is it good?\"). It is used to ask for advice or instructions.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>どうしたんですか</code> is incorrect because it means \"What happened?\" It asks about the other person's situation/well-being.<br>• <code>どういう意味ですか</code> is incorrect because it means \"What does that mean?\" It asks for clarification on a statement.<br>• <code>どうなさいますか</code> is incorrect because it means \"What will you do?\" (honorific). It is used by staff to ask for a customer's decision.",
-    "connect": "🔗 <span class=\"jp\">MNN L25</span> teaches the ば-conditional. ～ばいいですか is a fixed pattern for asking advice. Compare the \"どう\" family: どうしたんですか = \"What happened?\" (concern), どういう<ruby>意味<rt>いみ</rt></ruby>ですか = \"What does it mean?\" (comprehension), どうなさいますか = \"What will you do?\" (honorific).",
-    "warn": "⚠️ どうしたんですか asks about a PAST problem. どうすればいいですか asks about a FUTURE solution. Timing matters!"
-  },
-  {
+    "longChoices": true,
     "lesson": 3,
     "type": "Expression",
-    "stem": "🛒 ATMの<ruby>使<rt>つか</rt></ruby>い<ruby>方<rt>かた</rt></ruby>がわからない<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「お<ruby>客様<rt>きゃくさま</rt></ruby>、どうなさいましたか？」</span><br><span class=\"jp\">あのう、ＡＴＭの<ruby>使<rt>つか</rt></ruby>い<ruby>方<rt>かた</rt></ruby>が<span class=\"blank\">?</span>…。</span>",
-    "answer": "よくわからなくて",
-    "longChoices": true,
+    "correctNote": "44Gp44GG44GZ44KM44Gw44GE44GE44Gn44GZ44GLID0gIldoYXQgc2hvdWxkIEkgZG8/IiBVc2VkIHRvIGFzayBmb3IgYWR2aWNlIHdoZW4geW91J3JlIHVuc3VyZSBob3cgdG8gaGFuZGxlIGEgc2l0dWF0aW9uLg==",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44Gp44GG44GZ44KM44Gw44GE44GE44Gn44GZ44GL44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJXaGF0IHNob3VsZCBJIGRvPyIgb3IgIkhvdyBzaG91bGQgSSBoYW5kbGUgdGhpcz8iIChsaXRlcmFsbHk6ICJJZiBJIGRvIGhvdywgaXMgaXQgZ29vZD8iKS4gSXQgaXMgdXNlZCB0byBhc2sgZm9yIGFkdmljZSBvciBpbnN0cnVjdGlvbnMuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jganjgYbjgZfjgZ/jgpPjgafjgZnjgYs8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJXaGF0IGhhcHBlbmVkPyIgSXQgYXNrcyBhYm91dCB0aGUgb3RoZXIgcGVyc29uJ3Mgc2l0dWF0aW9uL3dlbGwtYmVpbmcuPGJyPuKAoiA8Y29kZT7jganjgYbjgYTjgYbmhI/lkbPjgafjgZnjgYs8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJXaGF0IGRvZXMgdGhhdCBtZWFuPyIgSXQgYXNrcyBmb3IgY2xhcmlmaWNhdGlvbiBvbiBhIHN0YXRlbWVudC48YnI+4oCiIDxjb2RlPuOBqeOBhuOBquOBleOBhOOBvuOBmeOBizwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIldoYXQgd2lsbCB5b3UgZG8/IiAoaG9ub3JpZmljKS4gSXQgaXMgdXNlZCBieSBzdGFmZiB0byBhc2sgZm9yIGEgY3VzdG9tZXIncyBkZWNpc2lvbi4=",
+    "connect": "8J+UlyA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMjU8L3NwYW4+IHRlYWNoZXMgdGhlIOOBsC1jb25kaXRpb25hbC4g772e44Gw44GE44GE44Gn44GZ44GLIGlzIGEgZml4ZWQgcGF0dGVybiBmb3IgYXNraW5nIGFkdmljZS4gQ29tcGFyZSB0aGUgIuOBqeOBhiIgZmFtaWx5OiDjganjgYbjgZfjgZ/jgpPjgafjgZnjgYsgPSAiV2hhdCBoYXBwZW5lZD8iIChjb25jZXJuKSwg44Gp44GG44GE44GGPHJ1Ynk+5oSP5ZGzPHJ0PuOBhOOBvzwvcnQ+PC9ydWJ5PuOBp+OBmeOBiyA9ICJXaGF0IGRvZXMgaXQgbWVhbj8iIChjb21wcmVoZW5zaW9uKSwg44Gp44GG44Gq44GV44GE44G+44GZ44GLID0gIldoYXQgd2lsbCB5b3UgZG8/IiAoaG9ub3JpZmljKS4=",
+    "warn": "4pqg77iPIOOBqeOBhuOBl+OBn+OCk+OBp+OBmeOBiyBhc2tzIGFib3V0IGEgUEFTVCBwcm9ibGVtLiDjganjgYbjgZnjgozjgbDjgYTjgYTjgafjgZnjgYsgYXNrcyBhYm91dCBhIEZVVFVSRSBzb2x1dGlvbi4gVGltaW5nIG1hdHRlcnMh"
+  },
+  {
+    "english": "",
+    "stem": "8J+bkiBBVE3jga48cnVieT7kvb88cnQ+44Gk44GLPC9ydD48L3J1Ynk+44GEPHJ1Ynk+5pa5PHJ0PuOBi+OBnzwvcnQ+PC9ydWJ5PuOBjOOCj+OBi+OCieOBquOBhDxydWJ5PuWgtOmdojxydD7jgbDjgoHjgpM8L3J0PjwvcnVieT46PGJyPjxzcGFuIGNsYXNzPSJqcCI+44CM44GKPHJ1Ynk+5a6i5qeYPHJ0PuOBjeOCg+OBj+OBleOBvjwvcnQ+PC9ydWJ5PuOAgeOBqeOBhuOBquOBleOBhOOBvuOBl+OBn+OBi++8n+OAjTwvc3Bhbj48YnI+PHNwYW4gY2xhc3M9ImpwIj7jgYLjga7jgYbjgIHvvKHvvLTvvK3jga48cnVieT7kvb88cnQ+44Gk44GLPC9ydD48L3J1Ynk+44GEPHJ1Ynk+5pa5PHJ0PuOBi+OBnzwvcnQ+PC9ydWJ5PuOBjDxzcGFuIGNsYXNzPSJibGFuayI+Pzwvc3Bhbj7igKbjgII8L3NwYW4+",
+    "answer": "44KI44GP44KP44GL44KJ44Gq44GP44Gm",
     "choices": [
       "よくわからなくて",
       "知りませんでした",
       "勉強になります",
       "難しすぎます"
     ],
-    "correctNote": "よくわからなくて = \"I don't really understand and...\" The て-form trails off to politely imply you need help.",
-    "explain": "The correct choice is <strong>「よくわからなくて」</strong>. This means \"I don't understand well, so...\" (the negative て-form of 「わかる」). This is a polite, indirect Japanese way to ask for help without demanding it.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>知りませんでした</code> is incorrect because it means \"I didn't know.\" This is a completed statement of fact, which lacks the trailing connector for requesting assistance.<br>• <code>勉強になります</code> is incorrect because it means \"I learned a lot.\" This is used to express gratitude for a lesson, not to request help.<br>• <code>難しすぎます</code> is incorrect because it means \"It is too difficult.\" It is a direct statement, less polite and lacks the indirect request nuance of the て-form.",
-    "connect": "🔗 <span class=\"jp\">MNN L9</span> teaches わかります. The negative て-form (わからなくて) from <span class=\"jp\">MNN L39</span> (reason with て-form) lets you trail off politely. Compare: <ruby>知<rt>し</rt></ruby>りませんでした = \"I didn't know\" (past fact). よくわからなくて = \"I don't understand\" (current struggle + request).",
-    "warn": "⚠️ <ruby>勉強<rt>べんきょう</rt></ruby>になります = \"That's educational/helpful\" — a reaction to learning something, not expressing confusion!"
+    "longChoices": true,
+    "lesson": 3,
+    "type": "Expression",
+    "correctNote": "44KI44GP44KP44GL44KJ44Gq44GP44GmID0gIkkgZG9uJ3QgcmVhbGx5IHVuZGVyc3RhbmQgYW5kLi4uIiBUaGUg44GmLWZvcm0gdHJhaWxzIG9mZiB0byBwb2xpdGVseSBpbXBseSB5b3UgbmVlZCBoZWxwLg==",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44KI44GP44KP44GL44KJ44Gq44GP44Gm44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJJIGRvbid0IHVuZGVyc3RhbmQgd2VsbCwgc28uLi4iICh0aGUgbmVnYXRpdmUg44GmLWZvcm0gb2Yg44CM44KP44GL44KL44CNKS4gVGhpcyBpcyBhIHBvbGl0ZSwgaW5kaXJlY3QgSmFwYW5lc2Ugd2F5IHRvIGFzayBmb3IgaGVscCB3aXRob3V0IGRlbWFuZGluZyBpdC48YnI+PGJyPjxzdHJvbmc+V2h5IG90aGVyIGNob2ljZXMgYXJlIGluY29ycmVjdDo8L3N0cm9uZz48YnI+4oCiIDxjb2RlPuefpeOCiuOBvuOBm+OCk+OBp+OBl+OBnzwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIkkgZGlkbid0IGtub3cuIiBUaGlzIGlzIGEgY29tcGxldGVkIHN0YXRlbWVudCBvZiBmYWN0LCB3aGljaCBsYWNrcyB0aGUgdHJhaWxpbmcgY29ubmVjdG9yIGZvciByZXF1ZXN0aW5nIGFzc2lzdGFuY2UuPGJyPuKAoiA8Y29kZT7li4nlvLfjgavjgarjgorjgb7jgZk8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJJIGxlYXJuZWQgYSBsb3QuIiBUaGlzIGlzIHVzZWQgdG8gZXhwcmVzcyBncmF0aXR1ZGUgZm9yIGEgbGVzc29uLCBub3QgdG8gcmVxdWVzdCBoZWxwLjxicj7igKIgPGNvZGU+6Zuj44GX44GZ44GO44G+44GZPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiSXQgaXMgdG9vIGRpZmZpY3VsdC4iIEl0IGlzIGEgZGlyZWN0IHN0YXRlbWVudCwgbGVzcyBwb2xpdGUgYW5kIGxhY2tzIHRoZSBpbmRpcmVjdCByZXF1ZXN0IG51YW5jZSBvZiB0aGUg44GmLWZvcm0u",
+    "connect": "8J+UlyA8c3BhbiBjbGFzcz0ianAiPk1OTiBMOTwvc3Bhbj4gdGVhY2hlcyDjgo/jgYvjgorjgb7jgZkuIFRoZSBuZWdhdGl2ZSDjgaYtZm9ybSAo44KP44GL44KJ44Gq44GP44GmKSBmcm9tIDxzcGFuIGNsYXNzPSJqcCI+TU5OIEwzOTwvc3Bhbj4gKHJlYXNvbiB3aXRoIOOBpi1mb3JtKSBsZXRzIHlvdSB0cmFpbCBvZmYgcG9saXRlbHkuIENvbXBhcmU6IDxydWJ5PuefpTxydD7jgZc8L3J0PjwvcnVieT7jgorjgb7jgZvjgpPjgafjgZfjgZ8gPSAiSSBkaWRuJ3Qga25vdyIgKHBhc3QgZmFjdCkuIOOCiOOBj+OCj+OBi+OCieOBquOBj+OBpiA9ICJJIGRvbid0IHVuZGVyc3RhbmQiIChjdXJyZW50IHN0cnVnZ2xlICsgcmVxdWVzdCku",
+    "warn": "4pqg77iPIDxydWJ5PuWLieW8tzxydD7jgbnjgpPjgY3jgofjgYY8L3J0PjwvcnVieT7jgavjgarjgorjgb7jgZkgPSAiVGhhdCdzIGVkdWNhdGlvbmFsL2hlbHBmdWwiIOKAlCBhIHJlYWN0aW9uIHRvIGxlYXJuaW5nIHNvbWV0aGluZywgbm90IGV4cHJlc3NpbmcgY29uZnVzaW9uIQ=="
   },
   {
-    "lesson": 4,
-    "type": "Expression",
-    "stem": "💬 <ruby>台風<rt>たいふう</rt></ruby>の<ruby>後<rt>あと</rt></ruby>の<ruby>状況<rt>じょうきょう</rt></ruby>:<br><span class=\"jp\">「<ruby>台風<rt>たいふう</rt></ruby>、だいじょうぶだった？<ruby>電気<rt>でんき</rt></ruby>と<ruby>水道<rt>すいどう</rt></ruby>は、もう<ruby>戻<rt>もど</rt></ruby>った？」</span><br><span class=\"jp\">はい、<ruby>電気<rt>でんき</rt></ruby>も<ruby>水道<rt>すいどう</rt></ruby>も、だいじょうぶです。<span class=\"blank\">?</span>、<ruby>食<rt>た</rt></ruby>べるものがなくて、<ruby>困<rt>こま</rt></ruby>ってます。</span>",
-    "answer": "ただ",
+    "english": "",
+    "stem": "8J+SrCA8cnVieT7lj7Dpoqg8cnQ+44Gf44GE44G144GGPC9ydD48L3J1Ynk+44GuPHJ1Ynk+5b6MPHJ0PuOBguOBqDwvcnQ+PC9ydWJ5PuOBrjxydWJ5PueKtuazgTxydD7jgZjjgofjgYbjgY3jgofjgYY8L3J0PjwvcnVieT46PGJyPjxzcGFuIGNsYXNzPSJqcCI+44CMPHJ1Ynk+5Y+w6aKoPHJ0PuOBn+OBhOOBteOBhjwvcnQ+PC9ydWJ5PuOAgeOBoOOBhOOBmOOCh+OBhuOBtuOBoOOBo+OBn++8nzxydWJ5Pumbu+awlzxydD7jgafjgpPjgY08L3J0PjwvcnVieT7jgag8cnVieT7msLTpgZM8cnQ+44GZ44GE44Gp44GGPC9ydD48L3J1Ynk+44Gv44CB44KC44GGPHJ1Ynk+5oi7PHJ0PuOCguOBqTwvcnQ+PC9ydWJ5PuOBo+OBn++8n+OAjTwvc3Bhbj48YnI+PHNwYW4gY2xhc3M9ImpwIj7jga/jgYTjgIE8cnVieT7pm7vmsJc8cnQ+44Gn44KT44GNPC9ydD48L3J1Ynk+44KCPHJ1Ynk+5rC06YGTPHJ0PuOBmeOBhOOBqeOBhjwvcnQ+PC9ydWJ5PuOCguOAgeOBoOOBhOOBmOOCh+OBhuOBtuOBp+OBmeOAgjxzcGFuIGNsYXNzPSJibGFuayI+Pzwvc3Bhbj7jgIE8cnVieT7po588cnQ+44GfPC9ydD48L3J1Ynk+44G544KL44KC44Gu44GM44Gq44GP44Gm44CBPHJ1Ynk+5ZuwPHJ0PuOBk+OBvjwvcnQ+PC9ydWJ5PuOBo+OBpuOBvuOBmeOAgjwvc3Bhbj4=",
+    "answer": "44Gf44Gg",
     "choices": [
       "まず",
       "ただ",
       "そう",
       "でも"
     ],
-    "correctNote": "ただ = \"However / But / The only thing is...\" Introduces a reservation or exception after giving positive news.",
-    "explain": "The correct choice is <strong>「ただ」</strong>. This means \"however\" or \"only.\" It is used to introduce a single exception or minor issue after confirming that everything else is generally fine (e.g., electricity and water are fine, BUT they lack food).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>まず</code> is incorrect because it means \"First.\" It is used to start a sequence of actions.<br>• <code>そう</code> is incorrect because it means \"So / that way.\" It is not used as a contrastive conjunction.<br>• <code>でも</code> is incorrect because it means \"But.\" It is too strong/abrupt compared to the nuanced 「ただ」, which specifically highlights a minor exception/detail in an otherwise resolved situation.",
-    "connect": "🔗 <span class=\"jp\">MNN L2</span> teaches でも (but). ただ is a more nuanced alternative — less confrontational. Compare the contrast hierarchy: でも (general \"but\"), ただ (soft \"however/except\"), しかし (formal \"however\"), けれども (literary).",
-    "warn": "⚠️ まず = \"first of all\" (ordering ideas). そう = \"that's right.\" Neither introduces a contrast or exception."
-  },
-  {
+    "longChoices": false,
     "lesson": 4,
     "type": "Expression",
-    "stem": "💬 <ruby>仕事<rt>しごと</rt></ruby>の<ruby>進歩<rt>しんぽ</rt></ruby>を<ruby>話<rt>はな</rt></ruby>す<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「うちの<ruby>会社<rt>かいしゃ</rt></ruby>に<ruby>入<rt>はい</rt></ruby>って、そろそろ<ruby>半年<rt>はんとし</rt></ruby>だね。<ruby>仕事<rt>しごと</rt></ruby>はどう？」</span><br><span class=\"jp\">はじめは、やり<ruby>方<rt>かた</rt></ruby>がわからなくて、<ruby>苦労<rt>くろう</rt></ruby>しましたが、<ruby>今<rt>いま</rt></ruby>は、<span class=\"blank\">?</span>わかるようになりました。</span>",
-    "answer": "だいぶ",
+    "correctNote": "44Gf44GgID0gIkhvd2V2ZXIgLyBCdXQgLyBUaGUgb25seSB0aGluZyBpcy4uLiIgSW50cm9kdWNlcyBhIHJlc2VydmF0aW9uIG9yIGV4Y2VwdGlvbiBhZnRlciBnaXZpbmcgcG9zaXRpdmUgbmV3cy4=",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44Gf44Gg44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJob3dldmVyIiBvciAib25seS4iIEl0IGlzIHVzZWQgdG8gaW50cm9kdWNlIGEgc2luZ2xlIGV4Y2VwdGlvbiBvciBtaW5vciBpc3N1ZSBhZnRlciBjb25maXJtaW5nIHRoYXQgZXZlcnl0aGluZyBlbHNlIGlzIGdlbmVyYWxseSBmaW5lIChlLmcuLCBlbGVjdHJpY2l0eSBhbmQgd2F0ZXIgYXJlIGZpbmUsIEJVVCB0aGV5IGxhY2sgZm9vZCkuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jgb7jgZo8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJGaXJzdC4iIEl0IGlzIHVzZWQgdG8gc3RhcnQgYSBzZXF1ZW5jZSBvZiBhY3Rpb25zLjxicj7igKIgPGNvZGU+44Gd44GGPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiU28gLyB0aGF0IHdheS4iIEl0IGlzIG5vdCB1c2VkIGFzIGEgY29udHJhc3RpdmUgY29uanVuY3Rpb24uPGJyPuKAoiA8Y29kZT7jgafjgoI8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJCdXQuIiBJdCBpcyB0b28gc3Ryb25nL2FicnVwdCBjb21wYXJlZCB0byB0aGUgbnVhbmNlZCDjgIzjgZ/jgaDjgI0sIHdoaWNoIHNwZWNpZmljYWxseSBoaWdobGlnaHRzIGEgbWlub3IgZXhjZXB0aW9uL2RldGFpbCBpbiBhbiBvdGhlcndpc2UgcmVzb2x2ZWQgc2l0dWF0aW9uLg==",
+    "connect": "8J+UlyA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMjwvc3Bhbj4gdGVhY2hlcyDjgafjgoIgKGJ1dCkuIOOBn+OBoCBpcyBhIG1vcmUgbnVhbmNlZCBhbHRlcm5hdGl2ZSDigJQgbGVzcyBjb25mcm9udGF0aW9uYWwuIENvbXBhcmUgdGhlIGNvbnRyYXN0IGhpZXJhcmNoeTog44Gn44KCIChnZW5lcmFsICJidXQiKSwg44Gf44GgIChzb2Z0ICJob3dldmVyL2V4Y2VwdCIpLCDjgZfjgYvjgZcgKGZvcm1hbCAiaG93ZXZlciIpLCDjgZHjgozjganjgoIgKGxpdGVyYXJ5KS4=",
+    "warn": "4pqg77iPIOOBvuOBmiA9ICJmaXJzdCBvZiBhbGwiIChvcmRlcmluZyBpZGVhcykuIOOBneOBhiA9ICJ0aGF0J3MgcmlnaHQuIiBOZWl0aGVyIGludHJvZHVjZXMgYSBjb250cmFzdCBvciBleGNlcHRpb24u"
+  },
+  {
+    "english": "",
+    "stem": "8J+SrCA8cnVieT7ku5Xkuos8cnQ+44GX44GU44GoPC9ydD48L3J1Ynk+44GuPHJ1Ynk+6YCy5q2pPHJ0PuOBl+OCk+OBvTwvcnQ+PC9ydWJ5PuOCkjxydWJ5PuipsTxydD7jga/jgao8L3J0PjwvcnVieT7jgZk8cnVieT7loLTpnaI8cnQ+44Gw44KB44KTPC9ydD48L3J1Ynk+Ojxicj48c3BhbiBjbGFzcz0ianAiPuOAjOOBhuOBoeOBrjxydWJ5PuS8muekvjxydD7jgYvjgYTjgZfjgoM8L3J0PjwvcnVieT7jgas8cnVieT7lhaU8cnQ+44Gv44GEPC9ydD48L3J1Ynk+44Gj44Gm44CB44Gd44KN44Gd44KNPHJ1Ynk+5Y2K5bm0PHJ0PuOBr+OCk+OBqOOBlzwvcnQ+PC9ydWJ5PuOBoOOBreOAgjxydWJ5PuS7leS6izxydD7jgZfjgZTjgag8L3J0PjwvcnVieT7jga/jganjgYbvvJ/jgI08L3NwYW4+PGJyPjxzcGFuIGNsYXNzPSJqcCI+44Gv44GY44KB44Gv44CB44KE44KKPHJ1Ynk+5pa5PHJ0PuOBi+OBnzwvcnQ+PC9ydWJ5PuOBjOOCj+OBi+OCieOBquOBj+OBpuOAgTxydWJ5PuiLpuWKtDxydD7jgY/jgo3jgYY8L3J0PjwvcnVieT7jgZfjgb7jgZfjgZ/jgYzjgIE8cnVieT7ku4o8cnQ+44GE44G+PC9ydD48L3J1Ynk+44Gv44CBPHNwYW4gY2xhc3M9ImJsYW5rIj4/PC9zcGFuPuOCj+OBi+OCi+OCiOOBhuOBq+OBquOCiuOBvuOBl+OBn+OAgjwvc3Bhbj4=",
+    "answer": "44Gg44GE44G2",
     "choices": [
       "だいぶ",
       "まっすぐ",
       "きっと",
       "たまに"
     ],
-    "correctNote": "だいぶ = \"considerably / quite a lot / significantly.\" Shows meaningful progress or change.",
-    "explain": "The correct choice is <strong>「だいぶ」</strong>. This is an adverb meaning \"considerably,\" \"greatly,\" or \"mostly.\" It is used to describe a significant amount of progress or change over time.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>まっすぐ</code> is incorrect because it means \"Straight.\" It is used for physical direction.<br>• <code>きっと</code> is incorrect because it means \"Surely / definitely.\" It expresses strong speculation about the future.<br>• <code>たまに</code> is incorrect because it means \"Occasionally.\" It indicates low frequency, which contradicts the progress statement 「わかるようになりました」 (\"came to understand\").",
-    "connect": "🔗 <span class=\"jp\">MNN L36</span> teaches ～ようになりました for acquired abilities. だいぶ + ～ようになりました = \"I've gotten considerably better at...\" Compare degree adverbs: <ruby>少<rt>すこ</rt></ruby>し < だいぶ < すっかり < <ruby>完全<rt>かんぜん</rt></ruby>に.",
-    "warn": "⚠️ まっすぐ = \"straight (direction).\" きっと = \"surely (prediction).\" たまに = \"sometimes (frequency).\" None express degree of progress!"
-  },
-  {
+    "longChoices": false,
     "lesson": 4,
     "type": "Expression",
-    "stem": "💬 <ruby>日本語<rt>にほんご</rt></ruby>の<ruby>勉強<rt>べんきょう</rt></ruby>への<ruby>決意<rt>けつい</rt></ruby>:<br><span class=\"jp\">「<ruby>日本<rt>にほん</rt></ruby>で<ruby>暮<rt>く</rt></ruby>らすためには、やっぱり<ruby>日本語<rt>にほんご</rt></ruby>が<ruby>大切<rt>たいせつ</rt></ruby>ですよ。」</span><br><span class=\"jp\">そうですね。<ruby>最初<rt>さいしょ</rt></ruby>は<span class=\"blank\">?</span><ruby>日本語<rt>にほんご</rt></ruby>の<ruby>勉強<rt>べんきょう</rt></ruby>をがんばるつもりです。</span>",
-    "answer": "とにかく",
+    "correctNote": "44Gg44GE44G2ID0gImNvbnNpZGVyYWJseSAvIHF1aXRlIGEgbG90IC8gc2lnbmlmaWNhbnRseS4iIFNob3dzIG1lYW5pbmdmdWwgcHJvZ3Jlc3Mgb3IgY2hhbmdlLg==",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44Gg44GE44G244CNPC9zdHJvbmc+LiBUaGlzIGlzIGFuIGFkdmVyYiBtZWFuaW5nICJjb25zaWRlcmFibHksIiAiZ3JlYXRseSwiIG9yICJtb3N0bHkuIiBJdCBpcyB1c2VkIHRvIGRlc2NyaWJlIGEgc2lnbmlmaWNhbnQgYW1vdW50IG9mIHByb2dyZXNzIG9yIGNoYW5nZSBvdmVyIHRpbWUuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jgb7jgaPjgZnjgZA8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJTdHJhaWdodC4iIEl0IGlzIHVzZWQgZm9yIHBoeXNpY2FsIGRpcmVjdGlvbi48YnI+4oCiIDxjb2RlPuOBjeOBo+OBqDwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIlN1cmVseSAvIGRlZmluaXRlbHkuIiBJdCBleHByZXNzZXMgc3Ryb25nIHNwZWN1bGF0aW9uIGFib3V0IHRoZSBmdXR1cmUuPGJyPuKAoiA8Y29kZT7jgZ/jgb7jgas8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJPY2Nhc2lvbmFsbHkuIiBJdCBpbmRpY2F0ZXMgbG93IGZyZXF1ZW5jeSwgd2hpY2ggY29udHJhZGljdHMgdGhlIHByb2dyZXNzIHN0YXRlbWVudCDjgIzjgo/jgYvjgovjgojjgYbjgavjgarjgorjgb7jgZfjgZ/jgI0gKCJjYW1lIHRvIHVuZGVyc3RhbmQiKS4=",
+    "connect": "8J+UlyA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMzY8L3NwYW4+IHRlYWNoZXMg772e44KI44GG44Gr44Gq44KK44G+44GX44GfIGZvciBhY3F1aXJlZCBhYmlsaXRpZXMuIOOBoOOBhOOBtiArIO+9nuOCiOOBhuOBq+OBquOCiuOBvuOBl+OBnyA9ICJJJ3ZlIGdvdHRlbiBjb25zaWRlcmFibHkgYmV0dGVyIGF0Li4uIiBDb21wYXJlIGRlZ3JlZSBhZHZlcmJzOiA8cnVieT7lsJE8cnQ+44GZ44GTPC9ydD48L3J1Ynk+44GXIDwg44Gg44GE44G2IDwg44GZ44Gj44GL44KKIDwgPHJ1Ynk+5a6M5YWoPHJ0PuOBi+OCk+OBnOOCkzwvcnQ+PC9ydWJ5PuOBqy4=",
+    "warn": "4pqg77iPIOOBvuOBo+OBmeOBkCA9ICJzdHJhaWdodCAoZGlyZWN0aW9uKS4iIOOBjeOBo+OBqCA9ICJzdXJlbHkgKHByZWRpY3Rpb24pLiIg44Gf44G+44GrID0gInNvbWV0aW1lcyAoZnJlcXVlbmN5KS4iIE5vbmUgZXhwcmVzcyBkZWdyZWUgb2YgcHJvZ3Jlc3Mh"
+  },
+  {
+    "english": "",
+    "stem": "8J+SrCA8cnVieT7ml6XmnKzoqp48cnQ+44Gr44G744KT44GUPC9ydD48L3J1Ynk+44GuPHJ1Ynk+5YuJ5by3PHJ0PuOBueOCk+OBjeOCh+OBhjwvcnQ+PC9ydWJ5PuOBuOOBrjxydWJ5PuaxuuaEjzxydD7jgZHjgaTjgYQ8L3J0PjwvcnVieT46PGJyPjxzcGFuIGNsYXNzPSJqcCI+44CMPHJ1Ynk+5pel5pysPHJ0PuOBq+OBu+OCkzwvcnQ+PC9ydWJ5PuOBpzxydWJ5PuaarjxydD7jgY88L3J0PjwvcnVieT7jgonjgZnjgZ/jgoHjgavjga/jgIHjgoTjgaPjgbHjgoo8cnVieT7ml6XmnKzoqp48cnQ+44Gr44G744KT44GUPC9ydD48L3J1Ynk+44GMPHJ1Ynk+5aSn5YiHPHJ0PuOBn+OBhOOBm+OBpDwvcnQ+PC9ydWJ5PuOBp+OBmeOCiOOAguOAjTwvc3Bhbj48YnI+PHNwYW4gY2xhc3M9ImpwIj7jgZ3jgYbjgafjgZnjga3jgII8cnVieT7mnIDliJ08cnQ+44GV44GE44GX44KHPC9ydD48L3J1Ynk+44GvPHNwYW4gY2xhc3M9ImJsYW5rIj4/PC9zcGFuPjxydWJ5PuaXpeacrOiqnjxydD7jgavjgbvjgpPjgZQ8L3J0PjwvcnVieT7jga48cnVieT7li4nlvLc8cnQ+44G544KT44GN44KH44GGPC9ydD48L3J1Ynk+44KS44GM44KT44Gw44KL44Gk44KC44KK44Gn44GZ44CCPC9zcGFuPg==",
+    "answer": "44Go44Gr44GL44GP",
     "choices": [
       "だいたい",
       "とにかく",
       "おかげで",
       "もともと"
     ],
-    "correctNote": "とにかく = \"Anyway / In any case / First and foremost.\" Used to cut through complexity and state your priority.",
-    "explain": "The correct choice is <strong>「とにかく」</strong>. This means \"anyway\" or \"first and foremost.\" It is used to set aside other issues and prioritize one main action or goal (studying Japanese).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>だいたい</code> is incorrect because it means \"Mostly / generally.\" It describes approximate state or quantity, which doesn't fit a declaration of intent.<br>• <code>おかげで</code> is incorrect because it means \"Thanks to...\" It requires a preceding cause, but is used here at the start of a sentence.<br>• <code>もともと</code> is incorrect because it means \"Originally.\" It refers to a past baseline state, not future intention.",
-    "connect": "🔗 つもりです (<span class=\"jp\">MNN L31</span>) expresses plans/intentions. とにかく + つもりです = \"In any case, I intend to...\" Compare: だいたい = \"roughly/approximately\" — about quantity, not priority.",
-    "warn": "⚠️ おかげで = \"thanks to\" (attribution). もともと = \"originally\" (background). Neither expresses the \"above all else\" focus of とにかく."
-  },
-  {
+    "longChoices": false,
     "lesson": 4,
     "type": "Expression",
-    "stem": "💬 ガイドの<ruby>仕事<rt>しごと</rt></ruby>を<ruby>始<rt>はじ</rt></ruby>めた<ruby>理由<rt>りゆう</rt></ruby>:<br><span class=\"jp\">「どうしてガイドの<ruby>仕事<rt>しごと</rt></ruby>を<ruby>始<rt>はじ</rt></ruby>めようと<ruby>思<rt>おも</rt></ruby>いましたか？」</span><br><span class=\"jp\"><span class=\"blank\">?</span>、<ruby>旅行<rt>りょこう</rt></ruby>が<ruby>好<rt>す</rt></ruby>きで、いろいろな<ruby>国<rt>くに</rt></ruby>に<ruby>興味<rt>きょうみ</rt></ruby>があったんです。</span>",
-    "answer": "もともと",
+    "correctNote": "44Go44Gr44GL44GPID0gIkFueXdheSAvIEluIGFueSBjYXNlIC8gRmlyc3QgYW5kIGZvcmVtb3N0LiIgVXNlZCB0byBjdXQgdGhyb3VnaCBjb21wbGV4aXR5IGFuZCBzdGF0ZSB5b3VyIHByaW9yaXR5Lg==",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44Go44Gr44GL44GP44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJhbnl3YXkiIG9yICJmaXJzdCBhbmQgZm9yZW1vc3QuIiBJdCBpcyB1c2VkIHRvIHNldCBhc2lkZSBvdGhlciBpc3N1ZXMgYW5kIHByaW9yaXRpemUgb25lIG1haW4gYWN0aW9uIG9yIGdvYWwgKHN0dWR5aW5nIEphcGFuZXNlKS48YnI+PGJyPjxzdHJvbmc+V2h5IG90aGVyIGNob2ljZXMgYXJlIGluY29ycmVjdDo8L3N0cm9uZz48YnI+4oCiIDxjb2RlPuOBoOOBhOOBn+OBhDwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIk1vc3RseSAvIGdlbmVyYWxseS4iIEl0IGRlc2NyaWJlcyBhcHByb3hpbWF0ZSBzdGF0ZSBvciBxdWFudGl0eSwgd2hpY2ggZG9lc24ndCBmaXQgYSBkZWNsYXJhdGlvbiBvZiBpbnRlbnQuPGJyPuKAoiA8Y29kZT7jgYrjgYvjgZLjgac8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJUaGFua3MgdG8uLi4iIEl0IHJlcXVpcmVzIGEgcHJlY2VkaW5nIGNhdXNlLCBidXQgaXMgdXNlZCBoZXJlIGF0IHRoZSBzdGFydCBvZiBhIHNlbnRlbmNlLjxicj7igKIgPGNvZGU+44KC44Go44KC44GoPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiT3JpZ2luYWxseS4iIEl0IHJlZmVycyB0byBhIHBhc3QgYmFzZWxpbmUgc3RhdGUsIG5vdCBmdXR1cmUgaW50ZW50aW9uLg==",
+    "connect": "8J+UlyDjgaTjgoLjgorjgafjgZkgKDxzcGFuIGNsYXNzPSJqcCI+TU5OIEwzMTwvc3Bhbj4pIGV4cHJlc3NlcyBwbGFucy9pbnRlbnRpb25zLiDjgajjgavjgYvjgY8gKyDjgaTjgoLjgorjgafjgZkgPSAiSW4gYW55IGNhc2UsIEkgaW50ZW5kIHRvLi4uIiBDb21wYXJlOiDjgaDjgYTjgZ/jgYQgPSAicm91Z2hseS9hcHByb3hpbWF0ZWx5IiDigJQgYWJvdXQgcXVhbnRpdHksIG5vdCBwcmlvcml0eS4=",
+    "warn": "4pqg77iPIOOBiuOBi+OBkuOBpyA9ICJ0aGFua3MgdG8iIChhdHRyaWJ1dGlvbikuIOOCguOBqOOCguOBqCA9ICJvcmlnaW5hbGx5IiAoYmFja2dyb3VuZCkuIE5laXRoZXIgZXhwcmVzc2VzIHRoZSAiYWJvdmUgYWxsIGVsc2UiIGZvY3VzIG9mIOOBqOOBq+OBi+OBjy4="
+  },
+  {
+    "english": "",
+    "stem": "8J+SrCDjgqzjgqTjg4njga48cnVieT7ku5Xkuos8cnQ+44GX44GU44GoPC9ydD48L3J1Ynk+44KSPHJ1Ynk+5aeLPHJ0PuOBr+OBmDwvcnQ+PC9ydWJ5PuOCgeOBnzxydWJ5PueQhueUsTxydD7jgorjgobjgYY8L3J0PjwvcnVieT46PGJyPjxzcGFuIGNsYXNzPSJqcCI+44CM44Gp44GG44GX44Gm44Ks44Kk44OJ44GuPHJ1Ynk+5LuV5LqLPHJ0PuOBl+OBlOOBqDwvcnQ+PC9ydWJ5PuOCkjxydWJ5PuWnizxydD7jga/jgZg8L3J0PjwvcnVieT7jgoHjgojjgYbjgag8cnVieT7mgJ08cnQ+44GK44KCPC9ydD48L3J1Ynk+44GE44G+44GX44Gf44GL77yf44CNPC9zcGFuPjxicj48c3BhbiBjbGFzcz0ianAiPjxzcGFuIGNsYXNzPSJibGFuayI+Pzwvc3Bhbj7jgIE8cnVieT7ml4XooYw8cnQ+44KK44KH44GT44GGPC9ydD48L3J1Ynk+44GMPHJ1Ynk+5aW9PHJ0PuOBmTwvcnQ+PC9ydWJ5PuOBjeOBp+OAgeOBhOOCjeOBhOOCjeOBqjxydWJ5PuWbvTxydD7jgY/jgas8L3J0PjwvcnVieT7jgas8cnVieT7oiIjlkbM8cnQ+44GN44KH44GG44G/PC9ydD48L3J1Ynk+44GM44GC44Gj44Gf44KT44Gn44GZ44CCPC9zcGFuPg==",
+    "answer": "44KC44Go44KC44Go",
     "choices": [
       "もともと",
       "なんとか",
       "なるほど",
       "そのうち"
     ],
-    "correctNote": "もともと = \"Originally / From the start / By nature.\" Used to explain the underlying background or original reason.",
-    "explain": "The correct choice is <strong>「もともと」</strong>. This means \"originally\" or \"by nature.\" It is used to explain the initial state or preference that existed before the current situation (e.g., liking travel before becoming a guide).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>なんとか</code> is incorrect because it means \"Somehow.\" It indicates managing to do something with difficulty.<br>• <code>なるほど</code> is incorrect because it means \"I see.\" It shows agreement or comprehension.<br>• <code>そのうち</code> is incorrect because it means \"Soon / eventually.\" It refers to the future, whereas the question asks about a past reason.",
-    "connect": "🔗 ～んです (<span class=\"jp\">MNN L26</span>) adds explanation/background. もともと + ～んです is a powerful combo: \"The thing is, I originally...\" Compare: なんとか = \"somehow/manage to.\" なるほど = \"I see!\" — a reaction, not a reason.",
-    "warn": "⚠️ そのうち = \"sooner or later / eventually\" — refers to the future, while もともと refers to the past/origin."
+    "longChoices": false,
+    "lesson": 4,
+    "type": "Expression",
+    "correctNote": "44KC44Go44KC44GoID0gIk9yaWdpbmFsbHkgLyBGcm9tIHRoZSBzdGFydCAvIEJ5IG5hdHVyZS4iIFVzZWQgdG8gZXhwbGFpbiB0aGUgdW5kZXJseWluZyBiYWNrZ3JvdW5kIG9yIG9yaWdpbmFsIHJlYXNvbi4=",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44KC44Go44KC44Go44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJvcmlnaW5hbGx5IiBvciAiYnkgbmF0dXJlLiIgSXQgaXMgdXNlZCB0byBleHBsYWluIHRoZSBpbml0aWFsIHN0YXRlIG9yIHByZWZlcmVuY2UgdGhhdCBleGlzdGVkIGJlZm9yZSB0aGUgY3VycmVudCBzaXR1YXRpb24gKGUuZy4sIGxpa2luZyB0cmF2ZWwgYmVmb3JlIGJlY29taW5nIGEgZ3VpZGUpLjxicj48YnI+PHN0cm9uZz5XaHkgb3RoZXIgY2hvaWNlcyBhcmUgaW5jb3JyZWN0Ojwvc3Ryb25nPjxicj7igKIgPGNvZGU+44Gq44KT44Go44GLPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiU29tZWhvdy4iIEl0IGluZGljYXRlcyBtYW5hZ2luZyB0byBkbyBzb21ldGhpbmcgd2l0aCBkaWZmaWN1bHR5Ljxicj7igKIgPGNvZGU+44Gq44KL44G744GpPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiSSBzZWUuIiBJdCBzaG93cyBhZ3JlZW1lbnQgb3IgY29tcHJlaGVuc2lvbi48YnI+4oCiIDxjb2RlPuOBneOBruOBhuOBoTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIlNvb24gLyBldmVudHVhbGx5LiIgSXQgcmVmZXJzIHRvIHRoZSBmdXR1cmUsIHdoZXJlYXMgdGhlIHF1ZXN0aW9uIGFza3MgYWJvdXQgYSBwYXN0IHJlYXNvbi4=",
+    "connect": "8J+UlyDvvZ7jgpPjgafjgZkgKDxzcGFuIGNsYXNzPSJqcCI+TU5OIEwyNjwvc3Bhbj4pIGFkZHMgZXhwbGFuYXRpb24vYmFja2dyb3VuZC4g44KC44Go44KC44GoICsg772e44KT44Gn44GZIGlzIGEgcG93ZXJmdWwgY29tYm86ICJUaGUgdGhpbmcgaXMsIEkgb3JpZ2luYWxseS4uLiIgQ29tcGFyZTog44Gq44KT44Go44GLID0gInNvbWVob3cvbWFuYWdlIHRvLiIg44Gq44KL44G744GpID0gIkkgc2VlISIg4oCUIGEgcmVhY3Rpb24sIG5vdCBhIHJlYXNvbi4=",
+    "warn": "4pqg77iPIOOBneOBruOBhuOBoSA9ICJzb29uZXIgb3IgbGF0ZXIgLyBldmVudHVhbGx5IiDigJQgcmVmZXJzIHRvIHRoZSBmdXR1cmUsIHdoaWxlIOOCguOBqOOCguOBqCByZWZlcnMgdG8gdGhlIHBhc3Qvb3JpZ2luLg=="
   },
   {
-    "lesson": 5,
-    "type": "Expression",
-    "stem": "💭 <ruby>電気<rt>でんき</rt></ruby>がつけっぱなしの<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「あ、<ruby>会議室<rt>かいぎしつ</rt></ruby>の<ruby>電気<rt>でんき</rt></ruby>がついたままですね。」</span><br><span class=\"jp\"><ruby>本当<rt>ほんとう</rt></ruby>だ。<ruby>電気<rt>でんき</rt></ruby>が<span class=\"blank\">?</span>ね。</span>",
-    "answer": "もったいないです",
-    "longChoices": true,
+    "english": "",
+    "stem": "8J+SrSA8cnVieT7pm7vmsJc8cnQ+44Gn44KT44GNPC9ydD48L3J1Ynk+44GM44Gk44GR44Gj44Gx44Gq44GX44GuPHJ1Ynk+5aC06Z2iPHJ0PuOBsOOCgeOCkzwvcnQ+PC9ydWJ5Pjo8YnI+PHNwYW4gY2xhc3M9ImpwIj7jgIzjgYLjgIE8cnVieT7kvJrorbDlrqQ8cnQ+44GL44GE44GO44GX44GkPC9ydD48L3J1Ynk+44GuPHJ1Ynk+6Zu75rCXPHJ0PuOBp+OCk+OBjTwvcnQ+PC9ydWJ5PuOBjOOBpOOBhOOBn+OBvuOBvuOBp+OBmeOBreOAguOAjTwvc3Bhbj48YnI+PHNwYW4gY2xhc3M9ImpwIj48cnVieT7mnKzlvZM8cnQ+44G744KT44Go44GGPC9ydD48L3J1Ynk+44Gg44CCPHJ1Ynk+6Zu75rCXPHJ0PuOBp+OCk+OBjTwvcnQ+PC9ydWJ5PuOBjDxzcGFuIGNsYXNzPSJibGFuayI+Pzwvc3Bhbj7jga3jgII8L3NwYW4+",
+    "answer": "44KC44Gj44Gf44GE44Gq44GE44Gn44GZ",
     "choices": [
       "めんどくさいです",
       "もったいないです",
       "信じられないです",
       "しかたないです"
     ],
-    "correctNote": "もったいない = \"What a waste!\" / \"It's wasteful.\" Expresses regret about wasting resources, time, or potential.",
-    "explain": "The correct choice is <strong>「もったいないです」</strong>. This means \"It is wasteful.\" It is the standard expression used when resources (such as electricity, food, or water) are being wasted unnecessarily.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>めんどくさいです</code> is incorrect because it means \"It is bothersome/troublesome.\" It expresses personal annoyance at doing tasks.<br>• <code>信じられないです</code> is incorrect because it means \"It's unbelievable.\" It is too dramatic for leaving lights on.<br>• <code>しかたないです</code> is incorrect because it means \"It can't be helped.\" It expresses resignation, whereas leaving lights on is easily avoidable.",
-    "connect": "🔗 This word became internationally known thanks to Nobel laureate Wangari Maathai. In grammar, もったいない is an イ-adjective, so it conjugates like any other: もったいなかった (was wasteful), もったいなくない (not wasteful). Compare: めんどくさい = \"troublesome\" (annoyance), <ruby>信<rt>しん</rt></ruby>じられない = \"unbelievable\" (shock).",
-    "warn": "⚠️ しかたない = \"It can't be helped\" (resigned acceptance). もったいない = \"It SHOULDN'T be wasted\" (active regret). Opposite attitudes!"
-  },
-  {
+    "longChoices": true,
     "lesson": 5,
     "type": "Expression",
-    "stem": "💭 <ruby>日本語<rt>にほんご</rt></ruby>の<ruby>授業<rt>じゅぎょう</rt></ruby>に<ruby>感謝<rt>かんしゃ</rt></ruby>する<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「<ruby>日本語<rt>にほんご</rt></ruby>の<ruby>授業<rt>じゅぎょう</rt></ruby>は<ruby>大変<rt>たいへん</rt></ruby>でしたか？」</span><br><span class=\"jp\">はい。でも、<span class=\"blank\">?</span>、<ruby>今<rt>いま</rt></ruby>、<ruby>会話<rt>かいわ</rt></ruby>はあまり<ruby>問題<rt>もんだい</rt></ruby>がありません。</span>",
-    "answer": "おかげで",
+    "correctNote": "44KC44Gj44Gf44GE44Gq44GEID0gIldoYXQgYSB3YXN0ZSEiIC8gIkl0J3Mgd2FzdGVmdWwuIiBFeHByZXNzZXMgcmVncmV0IGFib3V0IHdhc3RpbmcgcmVzb3VyY2VzLCB0aW1lLCBvciBwb3RlbnRpYWwu",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44KC44Gj44Gf44GE44Gq44GE44Gn44GZ44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJJdCBpcyB3YXN0ZWZ1bC4iIEl0IGlzIHRoZSBzdGFuZGFyZCBleHByZXNzaW9uIHVzZWQgd2hlbiByZXNvdXJjZXMgKHN1Y2ggYXMgZWxlY3RyaWNpdHksIGZvb2QsIG9yIHdhdGVyKSBhcmUgYmVpbmcgd2FzdGVkIHVubmVjZXNzYXJpbHkuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jgoHjgpPjganjgY/jgZXjgYTjgafjgZk8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJJdCBpcyBib3RoZXJzb21lL3Ryb3VibGVzb21lLiIgSXQgZXhwcmVzc2VzIHBlcnNvbmFsIGFubm95YW5jZSBhdCBkb2luZyB0YXNrcy48YnI+4oCiIDxjb2RlPuS/oeOBmOOCieOCjOOBquOBhOOBp+OBmTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIkl0J3MgdW5iZWxpZXZhYmxlLiIgSXQgaXMgdG9vIGRyYW1hdGljIGZvciBsZWF2aW5nIGxpZ2h0cyBvbi48YnI+4oCiIDxjb2RlPuOBl+OBi+OBn+OBquOBhOOBp+OBmTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIkl0IGNhbid0IGJlIGhlbHBlZC4iIEl0IGV4cHJlc3NlcyByZXNpZ25hdGlvbiwgd2hlcmVhcyBsZWF2aW5nIGxpZ2h0cyBvbiBpcyBlYXNpbHkgYXZvaWRhYmxlLg==",
+    "connect": "8J+UlyBUaGlzIHdvcmQgYmVjYW1lIGludGVybmF0aW9uYWxseSBrbm93biB0aGFua3MgdG8gTm9iZWwgbGF1cmVhdGUgV2FuZ2FyaSBNYWF0aGFpLiBJbiBncmFtbWFyLCDjgoLjgaPjgZ/jgYTjgarjgYQgaXMgYW4g44KkLWFkamVjdGl2ZSwgc28gaXQgY29uanVnYXRlcyBsaWtlIGFueSBvdGhlcjog44KC44Gj44Gf44GE44Gq44GL44Gj44GfICh3YXMgd2FzdGVmdWwpLCDjgoLjgaPjgZ/jgYTjgarjgY/jgarjgYQgKG5vdCB3YXN0ZWZ1bCkuIENvbXBhcmU6IOOCgeOCk+OBqeOBj+OBleOBhCA9ICJ0cm91Ymxlc29tZSIgKGFubm95YW5jZSksIDxydWJ5PuS/oTxydD7jgZfjgpM8L3J0PjwvcnVieT7jgZjjgonjgozjgarjgYQgPSAidW5iZWxpZXZhYmxlIiAoc2hvY2spLg==",
+    "warn": "4pqg77iPIOOBl+OBi+OBn+OBquOBhCA9ICJJdCBjYW4ndCBiZSBoZWxwZWQiIChyZXNpZ25lZCBhY2NlcHRhbmNlKS4g44KC44Gj44Gf44GE44Gq44GEID0gIkl0IFNIT1VMRE4nVCBiZSB3YXN0ZWQiIChhY3RpdmUgcmVncmV0KS4gT3Bwb3NpdGUgYXR0aXR1ZGVzIQ=="
+  },
+  {
+    "english": "",
+    "stem": "8J+SrSA8cnVieT7ml6XmnKzoqp48cnQ+44Gr44G744KT44GUPC9ydD48L3J1Ynk+44GuPHJ1Ynk+5o6I5qWtPHJ0PuOBmOOCheOBjuOCh+OBhjwvcnQ+PC9ydWJ5PuOBqzxydWJ5PuaEn+isnTxydD7jgYvjgpPjgZfjgoM8L3J0PjwvcnVieT7jgZnjgos8cnVieT7loLTpnaI8cnQ+44Gw44KB44KTPC9ydD48L3J1Ynk+Ojxicj48c3BhbiBjbGFzcz0ianAiPuOAjDxydWJ5PuaXpeacrOiqnjxydD7jgavjgbvjgpPjgZQ8L3J0PjwvcnVieT7jga48cnVieT7mjojmpa08cnQ+44GY44KF44GO44KH44GGPC9ydD48L3J1Ynk+44GvPHJ1Ynk+5aSn5aSJPHJ0PuOBn+OBhOOBuOOCkzwvcnQ+PC9ydWJ5PuOBp+OBl+OBn+OBi++8n+OAjTwvc3Bhbj48YnI+PHNwYW4gY2xhc3M9ImpwIj7jga/jgYTjgILjgafjgoLjgIE8c3BhbiBjbGFzcz0iYmxhbmsiPj88L3NwYW4+44CBPHJ1Ynk+5LuKPHJ0PuOBhOOBvjwvcnQ+PC9ydWJ5PuOAgTxydWJ5PuS8muipsTxydD7jgYvjgYTjgo88L3J0PjwvcnVieT7jga/jgYLjgb7jgoo8cnVieT7llY/poYw8cnQ+44KC44KT44Gg44GEPC9ydD48L3J1Ynk+44GM44GC44KK44G+44Gb44KT44CCPC9zcGFuPg==",
+    "answer": "44GK44GL44GS44Gn",
     "choices": [
       "もしかしたら",
       "できれば",
       "おかげで",
       "それなのに"
     ],
-    "correctNote": "おかげで = \"Thanks to (that) / Because of (that positive thing).\" Used to attribute a good result to a cause.",
-    "explain": "The correct choice is <strong>「おかげで」</strong>. This means \"thanks to [something].\" It is used to link a positive cause (studying hard) to a positive result (having no trouble in conversation).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>もしかしたら</code> is incorrect because it means \"Perhaps.\" It expresses speculation.<br>• <code>できれば</code> is incorrect because it means \"If possible.\" It expresses a wish.<br>• <code>それなのに</code> is incorrect because it means \"And yet / despite that.\" It links a cause to an unexpected negative result, which is the opposite of the positive outcome here.",
-    "connect": "🔗 <span class=\"jp\">MNN L39</span> covers reason expressions (～て、～から、～ので). おかげで is specifically for POSITIVE causation with gratitude. For negative results, use せいで (\"because of [something bad]\"). Pair: おかげで (positive) ↔ せいで (negative).",
-    "warn": "⚠️ それなのに = \"and yet / despite that\" — introduces an unexpected negative result, opposite of おかげで's grateful tone."
-  },
-  {
+    "longChoices": false,
     "lesson": 5,
     "type": "Expression",
-    "stem": "💭 <ruby>外国人<rt>がいこくじん</rt></ruby>サービスを<ruby>聞<rt>き</rt></ruby>いた<ruby>場面<rt>ばめん</rt></ruby>:<br><span class=\"jp\">「<ruby>外国<rt>がいこく</rt></ruby>の<ruby>方<rt>かた</rt></ruby>のために、いろいろなサービスがありますよ。」</span><br><span class=\"jp\">へー、そうですか。<span class=\"blank\">?</span>ね。</span>",
-    "answer": "助かります",
+    "correctNote": "44GK44GL44GS44GnID0gIlRoYW5rcyB0byAodGhhdCkgLyBCZWNhdXNlIG9mICh0aGF0IHBvc2l0aXZlIHRoaW5nKS4iIFVzZWQgdG8gYXR0cmlidXRlIGEgZ29vZCByZXN1bHQgdG8gYSBjYXVzZS4=",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44GK44GL44GS44Gn44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJ0aGFua3MgdG8gW3NvbWV0aGluZ10uIiBJdCBpcyB1c2VkIHRvIGxpbmsgYSBwb3NpdGl2ZSBjYXVzZSAoc3R1ZHlpbmcgaGFyZCkgdG8gYSBwb3NpdGl2ZSByZXN1bHQgKGhhdmluZyBubyB0cm91YmxlIGluIGNvbnZlcnNhdGlvbikuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jgoLjgZfjgYvjgZfjgZ/jgok8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJQZXJoYXBzLiIgSXQgZXhwcmVzc2VzIHNwZWN1bGF0aW9uLjxicj7igKIgPGNvZGU+44Gn44GN44KM44GwPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiSWYgcG9zc2libGUuIiBJdCBleHByZXNzZXMgYSB3aXNoLjxicj7igKIgPGNvZGU+44Gd44KM44Gq44Gu44GrPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiQW5kIHlldCAvIGRlc3BpdGUgdGhhdC4iIEl0IGxpbmtzIGEgY2F1c2UgdG8gYW4gdW5leHBlY3RlZCBuZWdhdGl2ZSByZXN1bHQsIHdoaWNoIGlzIHRoZSBvcHBvc2l0ZSBvZiB0aGUgcG9zaXRpdmUgb3V0Y29tZSBoZXJlLg==",
+    "connect": "8J+UlyA8c3BhbiBjbGFzcz0ianAiPk1OTiBMMzk8L3NwYW4+IGNvdmVycyByZWFzb24gZXhwcmVzc2lvbnMgKO+9nuOBpuOAge+9nuOBi+OCieOAge+9nuOBruOBpykuIOOBiuOBi+OBkuOBpyBpcyBzcGVjaWZpY2FsbHkgZm9yIFBPU0lUSVZFIGNhdXNhdGlvbiB3aXRoIGdyYXRpdHVkZS4gRm9yIG5lZ2F0aXZlIHJlc3VsdHMsIHVzZSDjgZvjgYTjgacgKCJiZWNhdXNlIG9mIFtzb21ldGhpbmcgYmFkXSIpLiBQYWlyOiDjgYrjgYvjgZLjgacgKHBvc2l0aXZlKSDihpQg44Gb44GE44GnIChuZWdhdGl2ZSku",
+    "warn": "4pqg77iPIOOBneOCjOOBquOBruOBqyA9ICJhbmQgeWV0IC8gZGVzcGl0ZSB0aGF0IiDigJQgaW50cm9kdWNlcyBhbiB1bmV4cGVjdGVkIG5lZ2F0aXZlIHJlc3VsdCwgb3Bwb3NpdGUgb2Yg44GK44GL44GS44GnJ3MgZ3JhdGVmdWwgdG9uZS4="
+  },
+  {
+    "english": "",
+    "stem": "8J+SrSA8cnVieT7lpJblm73kuro8cnQ+44GM44GE44GT44GP44GY44KTPC9ydD48L3J1Ynk+44K144O844OT44K544KSPHJ1Ynk+6IGePHJ0PuOBjTwvcnQ+PC9ydWJ5PuOBhOOBnzxydWJ5PuWgtOmdojxydD7jgbDjgoHjgpM8L3J0PjwvcnVieT46PGJyPjxzcGFuIGNsYXNzPSJqcCI+44CMPHJ1Ynk+5aSW5Zu9PHJ0PuOBjOOBhOOBk+OBjzwvcnQ+PC9ydWJ5PuOBrjxydWJ5PuaWuTxydD7jgYvjgZ88L3J0PjwvcnVieT7jga7jgZ/jgoHjgavjgIHjgYTjgo3jgYTjgo3jgarjgrXjg7zjg5PjgrnjgYzjgYLjgorjgb7jgZnjgojjgILjgI08L3NwYW4+PGJyPjxzcGFuIGNsYXNzPSJqcCI+44G444O844CB44Gd44GG44Gn44GZ44GL44CCPHNwYW4gY2xhc3M9ImJsYW5rIj4/PC9zcGFuPuOBreOAgjwvc3Bhbj4=",
+    "answer": "5Yqp44GL44KK44G+44GZ",
     "choices": [
       "助かります",
       "大切にします",
       "嫌になります",
       "慣れました"
     ],
-    "correctNote": "<ruby>助<rt>たす</rt></ruby>かります = \"That's a big help! / That saves me!\" Expresses grateful relief that something makes your life easier.",
-    "explain": "The correct choice is <strong>「助かります」</strong>. This means \"It is helpful / I am saved\" (from 「助かる」 \"to be saved\"). It is used to express gratitude for a beneficial service or action that makes life easier.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>大切にします</code> is incorrect because it means \"I will take care of / treasure it.\" This is used for physical gifts or relationships.<br>• <code>嫌になります</code> is incorrect because it means \"I get sick of it / I hate it.\" It expresses disgust or annoyance.<br>• <code>慣れました</code> is incorrect because it means \"I got used to it.\" It describes adaptation to a situation, which is irrelevant to hearing about a new service.",
-    "connect": "🔗 <ruby>助<rt>たす</rt></ruby>ける (<span class=\"jp\">MNN L24</span>, transitive = \"to help someone\") vs. <ruby>助<rt>たす</rt></ruby>かる (intransitive = \"to be helped/saved\"). <ruby>助<rt>たす</rt></ruby>かります focuses on YOUR feeling of relief, while <ruby>助<rt>たす</rt></ruby>けてくれてありがとう thanks someone directly.",
-    "warn": "⚠️ <ruby>大切<rt>たいせつ</rt></ruby>にします = \"I'll treasure it.\" <ruby>嫌<rt>いや</rt></ruby>になります = \"I'm getting fed up.\" <ruby>慣<rt>な</rt></ruby>れました = \"I got used to it.\" None express the grateful relief of <ruby>助<rt>たす</rt></ruby>かります."
-  },
-  {
+    "longChoices": false,
     "lesson": 5,
     "type": "Expression",
-    "stem": "💭 アドバイスへの<ruby>返事<rt>へんじ</rt></ruby>:<br><span class=\"jp\">「イベントに<ruby>行<rt>い</rt></ruby>ったり、<ruby>趣味<rt>しゅみ</rt></ruby>を<ruby>始<rt>はじ</rt></ruby>めたり、<ruby>仕事以外<rt>しごといがい</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>と<ruby>話<rt>はな</rt></ruby>すのも<ruby>大切<rt>たいせつ</rt></ruby>だよ。」</span><br><span class=\"jp\">そうですね。ありがとうございます。<span class=\"blank\">?</span>。</span>",
-    "answer": "いろいろ考えてみます",
-    "longChoices": true,
+    "correctNote": "PHJ1Ynk+5YqpPHJ0PuOBn+OBmTwvcnQ+PC9ydWJ5PuOBi+OCiuOBvuOBmSA9ICJUaGF0J3MgYSBiaWcgaGVscCEgLyBUaGF0IHNhdmVzIG1lISIgRXhwcmVzc2VzIGdyYXRlZnVsIHJlbGllZiB0aGF0IHNvbWV0aGluZyBtYWtlcyB5b3VyIGxpZmUgZWFzaWVyLg==",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM5Yqp44GL44KK44G+44GZ44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJJdCBpcyBoZWxwZnVsIC8gSSBhbSBzYXZlZCIgKGZyb20g44CM5Yqp44GL44KL44CNICJ0byBiZSBzYXZlZCIpLiBJdCBpcyB1c2VkIHRvIGV4cHJlc3MgZ3JhdGl0dWRlIGZvciBhIGJlbmVmaWNpYWwgc2VydmljZSBvciBhY3Rpb24gdGhhdCBtYWtlcyBsaWZlIGVhc2llci48YnI+PGJyPjxzdHJvbmc+V2h5IG90aGVyIGNob2ljZXMgYXJlIGluY29ycmVjdDo8L3N0cm9uZz48YnI+4oCiIDxjb2RlPuWkp+WIh+OBq+OBl+OBvuOBmTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIkkgd2lsbCB0YWtlIGNhcmUgb2YgLyB0cmVhc3VyZSBpdC4iIFRoaXMgaXMgdXNlZCBmb3IgcGh5c2ljYWwgZ2lmdHMgb3IgcmVsYXRpb25zaGlwcy48YnI+4oCiIDxjb2RlPuWrjOOBq+OBquOCiuOBvuOBmTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbWVhbnMgIkkgZ2V0IHNpY2sgb2YgaXQgLyBJIGhhdGUgaXQuIiBJdCBleHByZXNzZXMgZGlzZ3VzdCBvciBhbm5veWFuY2UuPGJyPuKAoiA8Y29kZT7mhaPjgozjgb7jgZfjgZ88L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJJIGdvdCB1c2VkIHRvIGl0LiIgSXQgZGVzY3JpYmVzIGFkYXB0YXRpb24gdG8gYSBzaXR1YXRpb24sIHdoaWNoIGlzIGlycmVsZXZhbnQgdG8gaGVhcmluZyBhYm91dCBhIG5ldyBzZXJ2aWNlLg==",
+    "connect": "8J+UlyA8cnVieT7liqk8cnQ+44Gf44GZPC9ydD48L3J1Ynk+44GR44KLICg8c3BhbiBjbGFzcz0ianAiPk1OTiBMMjQ8L3NwYW4+LCB0cmFuc2l0aXZlID0gInRvIGhlbHAgc29tZW9uZSIpIHZzLiA8cnVieT7liqk8cnQ+44Gf44GZPC9ydD48L3J1Ynk+44GL44KLIChpbnRyYW5zaXRpdmUgPSAidG8gYmUgaGVscGVkL3NhdmVkIikuIDxydWJ5PuWKqTxydD7jgZ/jgZk8L3J0PjwvcnVieT7jgYvjgorjgb7jgZkgZm9jdXNlcyBvbiBZT1VSIGZlZWxpbmcgb2YgcmVsaWVmLCB3aGlsZSA8cnVieT7liqk8cnQ+44Gf44GZPC9ydD48L3J1Ynk+44GR44Gm44GP44KM44Gm44GC44KK44GM44Go44GGIHRoYW5rcyBzb21lb25lIGRpcmVjdGx5Lg==",
+    "warn": "4pqg77iPIDxydWJ5PuWkp+WIhzxydD7jgZ/jgYTjgZvjgaQ8L3J0PjwvcnVieT7jgavjgZfjgb7jgZkgPSAiSSdsbCB0cmVhc3VyZSBpdC4iIDxydWJ5PuWrjDxydD7jgYTjgoQ8L3J0PjwvcnVieT7jgavjgarjgorjgb7jgZkgPSAiSSdtIGdldHRpbmcgZmVkIHVwLiIgPHJ1Ynk+5oWjPHJ0PuOBqjwvcnQ+PC9ydWJ5PuOCjOOBvuOBl+OBnyA9ICJJIGdvdCB1c2VkIHRvIGl0LiIgTm9uZSBleHByZXNzIHRoZSBncmF0ZWZ1bCByZWxpZWYgb2YgPHJ1Ynk+5YqpPHJ0PuOBn+OBmTwvcnQ+PC9ydWJ5PuOBi+OCiuOBvuOBmS4="
+  },
+  {
+    "english": "",
+    "stem": "8J+SrSDjgqLjg4njg5DjgqTjgrnjgbjjga48cnVieT7ov5Tkuos8cnQ+44G444KT44GYPC9ydD48L3J1Ynk+Ojxicj48c3BhbiBjbGFzcz0ianAiPuOAjOOCpOODmeODs+ODiOOBqzxydWJ5PuihjDxydD7jgYQ8L3J0PjwvcnVieT7jgaPjgZ/jgorjgIE8cnVieT7otqPlkbM8cnQ+44GX44KF44G/PC9ydD48L3J1Ynk+44KSPHJ1Ynk+5aeLPHJ0PuOBr+OBmDwvcnQ+PC9ydWJ5PuOCgeOBn+OCiuOAgTxydWJ5PuS7leS6i+S7peWkljxydD7jgZfjgZTjgajjgYTjgYzjgYQ8L3J0PjwvcnVieT7jga48cnVieT7kuro8cnQ+44Gy44GoPC9ydD48L3J1Ynk+44GoPHJ1Ynk+6KmxPHJ0PuOBr+OBqjwvcnQ+PC9ydWJ5PuOBmeOBruOCgjxydWJ5PuWkp+WIhzxydD7jgZ/jgYTjgZvjgaQ8L3J0PjwvcnVieT7jgaDjgojjgILjgI08L3NwYW4+PGJyPjxzcGFuIGNsYXNzPSJqcCI+44Gd44GG44Gn44GZ44Gt44CC44GC44KK44GM44Go44GG44GU44GW44GE44G+44GZ44CCPHNwYW4gY2xhc3M9ImJsYW5rIj4/PC9zcGFuPuOAgjwvc3Bhbj4=",
+    "answer": "44GE44KN44GE44KN6ICD44GI44Gm44G/44G+44GZ",
     "choices": [
       "いろいろ考えてみます",
       "別にかまいません",
       "よろしくお伝えください",
       "そういうものですか"
     ],
-    "correctNote": "いろいろ<ruby>考<rt>かんが</rt></ruby>えてみます = \"I'll think about various things / I'll consider my options.\" A thoughtful, open-minded response to advice.",
-    "explain": "The correct choice is <strong>「いろいろ考えてみます」</strong>. This means \"I will think about various options / I will look into it.\" It is a polite and receptive response to advice, showing you will try out the suggestions.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>別にかまいません</code> is incorrect because it means \"I don't mind at all.\" It is too indifferent and dismissive in response to advice.<br>• <code>よろしくお伝えください</code> is incorrect because it means \"Please give my regards to...\" It is used to send greetings to a third party.<br>• <code>そういうものですか</code> is incorrect because it means \"Is that how it is?\" It shows skepticism or distance, which sounds slightly dismissive of the advice.",
-    "connect": "🔗 ～てみます (<span class=\"jp\">MNN L18</span>) = \"try doing.\" ～たり～たり (<span class=\"jp\">MNN L19</span>) was used in the advice itself. The response mirrors the advice's open-endedness with いろいろ (\"various things\"). Compare: <ruby>別<rt>べつ</rt></ruby>にかまいません = \"I don't mind\" (indifference). よろしくお<ruby>伝<rt>つた</rt></ruby>えください = \"Please give my regards\" (message-passing).",
-    "warn": "⚠️ <ruby>別<rt>べつ</rt></ruby>にかまいません sounds dismissive in this context — as if you don't care about the advice. いろいろ<ruby>考<rt>かんが</rt></ruby>えてみます shows genuine engagement!"
+    "longChoices": true,
+    "lesson": 5,
+    "type": "Expression",
+    "correctNote": "44GE44KN44GE44KNPHJ1Ynk+6ICDPHJ0PuOBi+OCk+OBjDwvcnQ+PC9ydWJ5PuOBiOOBpuOBv+OBvuOBmSA9ICJJJ2xsIHRoaW5rIGFib3V0IHZhcmlvdXMgdGhpbmdzIC8gSSdsbCBjb25zaWRlciBteSBvcHRpb25zLiIgQSB0aG91Z2h0ZnVsLCBvcGVuLW1pbmRlZCByZXNwb25zZSB0byBhZHZpY2Uu",
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44GE44KN44GE44KN6ICD44GI44Gm44G/44G+44GZ44CNPC9zdHJvbmc+LiBUaGlzIG1lYW5zICJJIHdpbGwgdGhpbmsgYWJvdXQgdmFyaW91cyBvcHRpb25zIC8gSSB3aWxsIGxvb2sgaW50byBpdC4iIEl0IGlzIGEgcG9saXRlIGFuZCByZWNlcHRpdmUgcmVzcG9uc2UgdG8gYWR2aWNlLCBzaG93aW5nIHlvdSB3aWxsIHRyeSBvdXQgdGhlIHN1Z2dlc3Rpb25zLjxicj48YnI+PHN0cm9uZz5XaHkgb3RoZXIgY2hvaWNlcyBhcmUgaW5jb3JyZWN0Ojwvc3Ryb25nPjxicj7igKIgPGNvZGU+5Yil44Gr44GL44G+44GE44G+44Gb44KTPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBtZWFucyAiSSBkb24ndCBtaW5kIGF0IGFsbC4iIEl0IGlzIHRvbyBpbmRpZmZlcmVudCBhbmQgZGlzbWlzc2l2ZSBpbiByZXNwb25zZSB0byBhZHZpY2UuPGJyPuKAoiA8Y29kZT7jgojjgo3jgZfjgY/jgYrkvJ3jgYjjgY/jgaDjgZXjgYQ8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJQbGVhc2UgZ2l2ZSBteSByZWdhcmRzIHRvLi4uIiBJdCBpcyB1c2VkIHRvIHNlbmQgZ3JlZXRpbmdzIHRvIGEgdGhpcmQgcGFydHkuPGJyPuKAoiA8Y29kZT7jgZ3jgYbjgYTjgYbjgoLjga7jgafjgZnjgYs8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IG1lYW5zICJJcyB0aGF0IGhvdyBpdCBpcz8iIEl0IHNob3dzIHNrZXB0aWNpc20gb3IgZGlzdGFuY2UsIHdoaWNoIHNvdW5kcyBzbGlnaHRseSBkaXNtaXNzaXZlIG9mIHRoZSBhZHZpY2Uu",
+    "connect": "8J+UlyDvvZ7jgabjgb/jgb7jgZkgKDxzcGFuIGNsYXNzPSJqcCI+TU5OIEwxODwvc3Bhbj4pID0gInRyeSBkb2luZy4iIO+9nuOBn+OCiu+9nuOBn+OCiiAoPHNwYW4gY2xhc3M9ImpwIj5NTk4gTDE5PC9zcGFuPikgd2FzIHVzZWQgaW4gdGhlIGFkdmljZSBpdHNlbGYuIFRoZSByZXNwb25zZSBtaXJyb3JzIHRoZSBhZHZpY2UncyBvcGVuLWVuZGVkbmVzcyB3aXRoIOOBhOOCjeOBhOOCjSAoInZhcmlvdXMgdGhpbmdzIikuIENvbXBhcmU6IDxydWJ5PuWIpTxydD7jgbnjgaQ8L3J0PjwvcnVieT7jgavjgYvjgb7jgYTjgb7jgZvjgpMgPSAiSSBkb24ndCBtaW5kIiAoaW5kaWZmZXJlbmNlKS4g44KI44KN44GX44GP44GKPHJ1Ynk+5LydPHJ0PuOBpOOBnzwvcnQ+PC9ydWJ5PuOBiOOBj+OBoOOBleOBhCA9ICJQbGVhc2UgZ2l2ZSBteSByZWdhcmRzIiAobWVzc2FnZS1wYXNzaW5nKS4=",
+    "warn": "4pqg77iPIDxydWJ5PuWIpTxydD7jgbnjgaQ8L3J0PjwvcnVieT7jgavjgYvjgb7jgYTjgb7jgZvjgpMgc291bmRzIGRpc21pc3NpdmUgaW4gdGhpcyBjb250ZXh0IOKAlCBhcyBpZiB5b3UgZG9uJ3QgY2FyZSBhYm91dCB0aGUgYWR2aWNlLiDjgYTjgo3jgYTjgo08cnVieT7ogIM8cnQ+44GL44KT44GMPC9ydD48L3J1Ynk+44GI44Gm44G/44G+44GZIHNob3dzIGdlbnVpbmUgZW5nYWdlbWVudCE="
   }
-];
-
-/* ═══════════════════════════════════════════════════════════════
-   STATE
-   ═══════════════════════════════════════════════════════════════ */
-let playerName = "";
-let quiz = [];
-let answers = {};
-let currentQ = 0;
-let submitted = false;
-let reviewMode = false;
-let reviewIndices = [];
-
-/* ═══════════════════════════════════════════════════════════════
-   HELPERS
-   ═══════════════════════════════════════════════════════════════ */
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function pickScoreTier(pct) {
-  const tiers = QUIZ_CONFIG.scoreThresholds;
-  if (pct >= tiers.perfect.min)   return tiers.perfect;
-  if (pct >= tiers.excellent.min) return tiers.excellent;
-  if (pct >= tiers.good.min)      return tiers.good;
-  return tiers.fail;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   INIT
-   ═══════════════════════════════════════════════════════════════ */
-emailjs.init(QUIZ_CONFIG.emailjs.publicKey);
-
-/* DOM refs */
-const $nameScreen   = document.getElementById("name-screen");
-const $quizScreen   = document.getElementById("quiz-screen");
-const $nameInput    = document.getElementById("name-input");
-const $btnStart     = document.getElementById("btn-start");
-const $subtitle     = document.getElementById("quiz-subtitle");
-const $scoreBanner  = document.getElementById("score-banner");
-const $scoreNum     = document.getElementById("score-number");
-const $scoreLbl     = document.getElementById("score-label");
-const $lessonBreak  = document.getElementById("lesson-breakdown");
-const $emailRow     = document.getElementById("email-row");
-const $btnReview    = document.getElementById("btn-review");
-const $btnRetake    = document.getElementById("btn-retake");
-const $reviewBanner = document.getElementById("review-banner");
-const $progText     = document.getElementById("progress-text");
-const $progFill     = document.getElementById("progress-fill");
-const $navGrid      = document.getElementById("nav-grid");
-const $qLessonTag   = document.getElementById("q-lesson-tag");
-const $qTypeTag     = document.getElementById("q-type-tag");
-const $qNumber      = document.getElementById("q-number");
-const $qStem        = document.getElementById("q-stem");
-const $choicesGrid  = document.getElementById("choices-grid");
-const $feedbackCard = document.getElementById("feedback-card");
-const $skippedWarning = document.getElementById("skipped-warning");
-const $timerDisplay = document.getElementById("timer-display");
-let endTime = null;
-let timeLeft = 0;
-let timerInterval = null;
-const $btnPrev      = document.getElementById("btn-prev");
-const $btnNext      = document.getElementById("btn-next");
-const $btnSubmit    = document.getElementById("btn-submit");
-
-/* Populate header text from CONFIG */
-document.title = QUIZ_CONFIG.title;
-document.getElementById("ns-badge").textContent = QUIZ_CONFIG.badge;
-document.getElementById("ns-title").textContent = QUIZ_CONFIG.title;
-document.getElementById("ns-subtitle").textContent = QUIZ_CONFIG.subtitle;
-document.getElementById("qs-badge").textContent = QUIZ_CONFIG.badge;
-document.getElementById("qs-title").textContent = QUIZ_CONFIG.titleShort;
-
-/* ═══════════════════════════════════════════════════════════════
-   NAME SCREEN
-   ═══════════════════════════════════════════════════════════════ */
-$nameInput.addEventListener("input", () => {
-  $btnStart.disabled = !$nameInput.value.trim();
-});
-$nameInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && $nameInput.value.trim()) startQuiz();
-});
-$btnStart.addEventListener("click", startQuiz);
-
-function startTimer() {
-  const qCount = quiz.length;
-  let TIME_LIMIT;
-  if (qCount <= 30) {
-    TIME_LIMIT = 20 * 60;
-  } else if (qCount <= 40) {
-    TIME_LIMIT = 25 * 60;
-  } else if (qCount <= 50) {
-    TIME_LIMIT = 30 * 60;
-  } else {
-    TIME_LIMIT = 40 * 60;
-  }
-
-  endTime = Date.now() + TIME_LIMIT * 1000;
-  timeLeft = TIME_LIMIT;
-  updateTimerDisplay();
-  if (timerInterval) clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    if (submitted) {
-      clearInterval(timerInterval);
-      return;
-    }
-    timeLeft = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
-    updateTimerDisplay();
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      alert("Time is up! Your exam will be submitted automatically.");
-      submitQuiz(true);
-    }
-  }, 1000);
-}
-
-function updateTimerDisplay() {
-  const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-  const s = String(timeLeft % 60).padStart(2, '0');
-  if ($timerDisplay) {
-    $timerDisplay.textContent = `${m}:${s}`;
-    if (timeLeft < 300) {
-      $timerDisplay.parentElement.classList.add("warning");
-    } else {
-      $timerDisplay.parentElement.classList.remove("warning");
-    }
-  }
-}
-
-function startQuiz() {
-  playerName = $nameInput.value.trim();
-  const baseQuestions = QUIZ_CONFIG.shuffleQuestions ? shuffle(QUESTIONS) : [...QUESTIONS];
-  quiz = baseQuestions.map(q => ({
-    ...q,
-    choices: QUIZ_CONFIG.shuffleChoices ? shuffle(q.choices) : [...q.choices]
-  }));
-  answers = {};
-  currentQ = 0;
-  submitted = false;
-  reviewMode = false;
-  reviewIndices = [];
-
-  $nameScreen.style.display = "none";
-  $quizScreen.style.display = "block";
-  $scoreBanner.style.display = "none";
-  $reviewBanner.style.display = "none";
-  $subtitle.textContent = `${playerName}さん — choose the correct answer for each question`;
-
-  buildNavGrid();
-  startTimer();
-  renderQuestion();
-  updateProgress();
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   NAV GRID
-   ═══════════════════════════════════════════════════════════════ */
-function buildNavGrid() {
-  $navGrid.innerHTML = "";
-  quiz.forEach((_, i) => {
-    const btn = document.createElement("button");
-    btn.className = "nav-dot";
-    btn.textContent = i + 1;
-    btn.setAttribute("aria-label", `Question ${i + 1}`);
-    btn.addEventListener("click", () => {
-      if (reviewMode) {
-        const idx = reviewIndices.indexOf(i);
-        if (idx === -1) return;
-        currentQ = idx;
-      } else {
-        currentQ = i;
-      }
-      renderQuestion();
-    });
-    $navGrid.appendChild(btn);
-  });
-}
-
-function updateNavGrid() {
-  const dots = $navGrid.querySelectorAll(".nav-dot");
-  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
-
-  if (submitted) {
-    $navGrid.classList.remove("hidden");
-  } else {
-    $navGrid.classList.add("hidden");
-  }
-
-  dots.forEach((dot, i) => {
-    dot.className = "nav-dot";
-    let label = `Question ${i + 1}`;
-    if (i === realIdx) { dot.classList.add("active"); label += ", current"; }
-    
-    if (submitted) {
-      dot.classList.add("locked");
-      if (answers[i] === quiz[i].answer) {
-        dot.classList.add("correct"); label += ", correct";
-      } else if (answers[i] !== undefined) {
-        dot.classList.add("wrong"); label += ", incorrect";
-      } else {
-        dot.classList.add("unanswered-locked"); label += ", unanswered";
-      }
-    } else {
-      if (answers[i] !== undefined) {
-        dot.classList.add("answered"); label += ", answered";
-      }
-    }
-    dot.setAttribute("aria-label", label);
-  });
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   PROGRESS
-   ═══════════════════════════════════════════════════════════════ */
-function updateProgress() {
-  if (reviewMode) {
-    $progText.textContent = `Reviewing ${currentQ + 1} / ${reviewIndices.length}`;
-    $progFill.style.width = `${((currentQ + 1) / reviewIndices.length) * 100}%`;
-    return;
-  }
-  const count = Object.keys(answers).length;
-  $progText.textContent = `${count} / ${quiz.length} answered`;
-  $progFill.style.width = `${(count / quiz.length) * 100}%`;
-  $btnSubmit.disabled = false;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   RENDER QUESTION
-   ═══════════════════════════════════════════════════════════════ */
-function renderQuestion() {
-  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
-  const q = quiz[realIdx];
-
-  /* Lesson + type tags */
-  const lessonLabels = {1: "🗣️ マナー", 2: "🏠 くらし", 3: "🛒 サービス", 4: "💬 副詞", 5: "💭 リアクション"};
-  $qLessonTag.className = `q-tag lesson-${q.lesson}`;
-  $qLessonTag.textContent = lessonLabels[q.lesson] || `📘 Lesson ${q.lesson}`;
-  $qTypeTag.textContent = q.type;
-
-  /* Number + stem */
-  $qNumber.textContent = reviewMode
-    ? `Review ${currentQ + 1} of ${reviewIndices.length}`
-    : `Question ${realIdx + 1} of ${quiz.length}`;
-  $qStem.innerHTML = q.stem;
-
-  /* Choices */
-  $choicesGrid.innerHTML = "";
-  const isAnswered = answers[realIdx] !== undefined;
-
-  q.choices.forEach((c, i) => {
-    const btn = document.createElement("button");
-    btn.className = "choice-btn";
-    if (submitted) btn.classList.add("locked");
-
-    const letters = ['a', 'b', 'c', 'd'];
-    btn.innerHTML = `<span class="choice-letter">${letters[i]}.</span><span>${c}</span>`;
-    
-    const selected = answers[realIdx] === c;
-    const isCorrectChoice = c === q.answer;
-
-    if (!submitted) {
-      if (selected) btn.classList.add("selected");
-      btn.addEventListener("click", () => {
-        if (submitted) return;
-        answers[realIdx] = c;
-        renderQuestion();
-      });
-    } else {
-      if (isCorrectChoice) {
-        btn.classList.add("correct-reveal");
-        btn.innerHTML += `<span class="mark ok">✓</span>`;
-      } else if (selected && !isCorrectChoice) {
-        btn.classList.add("wrong-reveal");
-        btn.innerHTML += `<span class="mark no">✗</span>`;
-      } else {
-        btn.classList.add("faded-reveal");
-      }
-    }
-
-    $choicesGrid.appendChild(btn);
-  });
-
-  /* Feedback card */
-  if (submitted && isAnswered) {
-    renderFeedback(q, answers[realIdx]);
-  } else {
-    $feedbackCard.style.display = "none";
-    $feedbackCard.innerHTML = "";
-  }
-
-  // Hide skipped questions warning when navigating to a question
-  $skippedWarning.classList.add("hidden");
-
-  updateNavGrid();
-  updateProgress();
-  updateNavButtons();
-}
-
-function renderFeedback(q, given) {
-  const isCorrect = given === q.answer;
-  $feedbackCard.className = `feedback-card ${isCorrect ? "correct" : "wrong"}`;
-  $feedbackCard.style.display = "block";
-
-  let html = `<div class="fb-header">${isCorrect ? "✓ Correct" : `✗ Not quite — answer: ${q.answer}`}</div>`;
-  if (q.correctNote) html += `<div>${q.correctNote}</div>`;
-  if (q.explain)     html += `<div class="fb-block">${q.explain}</div>`;
-  if (q.connect)     html += `<div class="fb-block connect">${q.connect}</div>`;
-  if (q.warn)        html += `<div class="fb-block warn">${q.warn}</div>`;
-
-  $feedbackCard.innerHTML = html;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   NAV BUTTONS
-   ═══════════════════════════════════════════════════════════════ */
-function updateNavButtons() {
-  const total = reviewMode ? reviewIndices.length : quiz.length;
-  $btnPrev.disabled = currentQ === 0;
-
-  if (!submitted) {
-    const isLast = currentQ === quiz.length - 1;
-    if (isLast) {
-      $btnNext.classList.add("hidden");
-      $btnSubmit.classList.remove("hidden");
-    } else {
-      $btnNext.classList.remove("hidden");
-      $btnSubmit.classList.add("hidden");
-      $btnNext.textContent = "Next →";
-    }
-  } else {
-    $btnSubmit.classList.add("hidden");
-    $btnNext.classList.remove("hidden");
-    
-    if (reviewMode) {
-      if (currentQ === total - 1) {
-        $btnNext.textContent = "Done reviewing ✓";
-      } else {
-        $btnNext.textContent = "Next →";
-      }
-      $btnNext.disabled = false;
-    } else {
-      $btnNext.textContent = "Next →";
-      $btnNext.disabled = currentQ === total - 1;
-    }
-  }
-}
-
-$btnPrev.addEventListener("click", () => {
-  if (currentQ > 0) { currentQ--; renderQuestion(); }
-});
-$btnNext.addEventListener("click", () => {
-  const total = reviewMode ? reviewIndices.length : quiz.length;
-  if (currentQ < total - 1) {
-    currentQ++; renderQuestion();
-  } else if (reviewMode) {
-    /* Exit review mode back to results */
-    reviewMode = false;
-    $reviewBanner.style.display = "none";
-    $scoreBanner.style.display = "block";
-    $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-});
-
-/* ═══════════════════════════════════════════════════════════════
-   SUBMIT — score, render results, send email
-   ═══════════════════════════════════════════════════════════════ */
-$btnSubmit.addEventListener("click", submitQuiz);
-
-async function submitQuiz(force = false) {
-  const count = Object.keys(answers).length;
-  if (force !== true && count < quiz.length) {
-    const skipped = [];
-    quiz.forEach((_, i) => {
-      if (answers[i] === undefined) skipped.push(i);
-    });
-
-    $skippedWarning.innerHTML = `⚠️ You have unanswered questions: ` + 
-      skipped.map(idx => `<span class="skipped-link" onclick="jumpToQuestion(${idx})">Question ${idx + 1}</span>`).join(", ") + 
-      `. Please answer them before submitting.`;
-    $skippedWarning.classList.remove("hidden");
-    return;
-  }
-
-  $skippedWarning.classList.add("hidden");
-  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-
-  let correct = 0;
-  const lessonStats = {};
-
-  quiz.forEach((q, i) => {
-    const isRight = answers[i] === q.answer;
-    if (isRight) correct++;
-    if (!lessonStats[q.lesson]) lessonStats[q.lesson] = { correct: 0, total: 0 };
-    lessonStats[q.lesson].total++;
-    if (isRight) lessonStats[q.lesson].correct++;
-  });
-
-  submitted = true;
-  const pct = Math.round((correct / quiz.length) * 100);
-  const tier = pickScoreTier(pct);
-
-  $scoreNum.textContent = `${correct}/${quiz.length}`;
-  $scoreLbl.textContent = tier.label;
-  $scoreBanner.style.background = tier.bg;
-  $scoreBanner.style.borderColor = tier.border;
-  $scoreBanner.style.color = tier.text;
-  $scoreBanner.style.display = "block";
-
-  /* Per-lesson breakdown */
-  $lessonBreak.innerHTML = "";
-  const lessonNames = {1: "マナー", 2: "くらし", 3: "サービス", 4: "副詞", 5: "リアクション"};
-  Object.keys(lessonStats).sort((a, b) => +a - +b).forEach(l => {
-    const s = lessonStats[l];
-    const span = document.createElement("span");
-    span.className = "lesson-stat";
-    span.textContent = `${lessonNames[l] || "L"+l}: ${s.correct}/${s.total}`;
-    $lessonBreak.appendChild(span);
-  });
-
-  /* Enable review button if there are wrong answers */
-  const wrongCount = quiz.length - correct;
-  $btnReview.disabled = wrongCount === 0;
-  $btnReview.textContent = wrongCount === 0
-    ? "🎉 No mistakes!"
-    : `📝 Review ${wrongCount} wrong answer${wrongCount > 1 ? "s" : ""}`;
-
-  currentQ = 0;
-  renderQuestion();
-  updateNavGrid();
-  $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
-
-  /* ── Send results via EmailJS ── */
-  const cfg = QUIZ_CONFIG.emailjs;
-  const now = new Date().toLocaleString(cfg.locale, {
-    timeZone: cfg.timezone, dateStyle: "full", timeStyle: "short"
-  });
-  const details = quiz.map((q, i) => {
-    const stripHtml = (s) => s.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
-    return `${i + 1}. [L${q.lesson} ${q.type}] ${stripHtml(q.stem)} → Answer: ${answers[i] || "—"} | Correct: ${q.answer} ${answers[i] === q.answer ? "✓" : "✗"}`;
-  }).join("\n");
-
-  const emailParams = {
-    name: playerName,
-    email: "noreply@quiz.com",
-    subject: `[${playerName}] ${QUIZ_CONFIG.title} — ${pct}%`,
-    message: `${QUIZ_CONFIG.title}\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${correct}/${quiz.length} (${pct}%)\n\n--- Per-category breakdown ---\n${Object.keys(lessonStats).sort((a, b) => +a - +b).map(l => {return `${lessonNames[l]||"L"+l}: ${lessonStats[l].correct}/${lessonStats[l].total}`}).join("\n")}\n\n--- Detailed results ---\n${details}\n\nがんばって！`,
-    time: now
-  };
-
-  $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
-  try {
-    await emailjs.send(cfg.serviceId, cfg.templateId, emailParams, cfg.publicKey);
-    $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
-  } catch (err) {
-    console.error("EmailJS error:", err);
-    $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || "Email failed"}</span>`;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   REVIEW + RETAKE
-   ═══════════════════════════════════════════════════════════════ */
-$btnReview.addEventListener("click", () => {
-  reviewIndices = quiz
-    .map((q, i) => ({ i, wrong: answers[i] !== q.answer }))
-    .filter(x => x.wrong)
-    .map(x => x.i);
-  if (reviewIndices.length === 0) return;
-  reviewMode = true;
-  currentQ = 0;
-  $scoreBanner.style.display = "none";
-  $reviewBanner.style.display = "block";
-  renderQuestion();
-});
-
-$btnRetake.addEventListener("click", () => {
-  /* Re-shuffle and reset everything */
-  const baseQuestions = QUIZ_CONFIG.shuffleQuestions ? shuffle(QUESTIONS) : [...QUESTIONS];
-  quiz = baseQuestions.map(q => ({
-    ...q,
-    choices: QUIZ_CONFIG.shuffleChoices ? shuffle(q.choices) : [...q.choices]
-  }));
-  answers = {};
-  currentQ = 0;
-  submitted = false;
-  reviewMode = false;
-  reviewIndices = [];
-  $scoreBanner.style.display = "none";
-  $reviewBanner.style.display = "none";
-  buildNavGrid();
-  startTimer();
-  renderQuestion();
-  updateProgress();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-window.jumpToQuestion = function(idx) {
-  currentQ = idx;
-  renderQuestion();
+]
 };
 </script>
+<script src="assets/js/quiz-common.js"></script>
 </body>
 </html>

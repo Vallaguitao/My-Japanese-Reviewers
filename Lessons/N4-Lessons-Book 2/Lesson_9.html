@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.emailjs.com; img-src 'self' data: https:;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lesson 9 — 成人の日は、何をするんですか？ (Annual Events & Etiquette) | N4 Book 2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -718,6 +719,15 @@
     </div>
 
     <script>
+        function decodeBase64(str) {
+            if (!str) return "";
+            try {
+                return decodeURIComponent(escape(atob(str)));
+            } catch (e) {
+                return str;
+            }
+        }
+
     let currentSlide=1;const totalSlides=20;
     function updateSlide(){document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));const a=document.querySelector(`[data-slide="${currentSlide}"]`);if(a)a.classList.add('active');document.getElementById('currentSlide').textContent=currentSlide;document.getElementById('totalSlides').textContent=totalSlides;document.getElementById('progressFill').style.width=((currentSlide-1)/(totalSlides-1)*100)+'%';document.getElementById('prevBtn').disabled=currentSlide===1;document.getElementById('nextBtn').disabled=currentSlide===totalSlides;window.scrollTo({top:0,behavior:'smooth'});}
     function nextSlide(){if(currentSlide<totalSlides){currentSlide++;updateSlide();}}
@@ -729,50 +739,63 @@
     function fb(id,ok,msg){const f=document.getElementById(id);f.className='feedback show '+(ok?'correct':'incorrect');f.innerHTML=`<strong>${ok?'✅ Correct!':'❌ Not quite.'}</strong> ${msg}`;}
     function dis(q){document.querySelectorAll(`#${q}-opts .mc-option`).forEach(o=>o.classList.add('disabled'));}
     function mrk(q,ci){document.querySelectorAll(`#${q}-opts .mc-option`).forEach((o,i)=>{if(i===ci)o.classList.add('correct-option');else if(o.classList.contains('selected'))o.classList.add('incorrect-option');});}
-    function cI(id,ans,fid,om,bm){const v=document.getElementById(id).value.trim();if(!v)return;const ok=Array.isArray(ans)?ans.includes(v):v===ans;document.getElementById(id).classList.add(ok?'correct-input':'incorrect-input');fb(fid,ok,ok?om:bm);}
-    function cM(q,ans,fid,om,bm){if(mc[q]===undefined)return;const ok=mc[q]===ans;fb(fid,ok,ok?om:bm);mrk(q,ans);dis(q);}
+    function cI(id,ans,fid,om,bm){
+        const v=document.getElementById(id).value.trim();
+        if(!v)return;
+        const decodedAns = Array.isArray(ans) ? ans.map(a => decodeBase64(a)) : decodeBase64(ans);
+        const ok=Array.isArray(decodedAns)?decodedAns.includes(v):v===decodedAns;
+        document.getElementById(id).classList.add(ok?'correct-input':'incorrect-input');
+        fb(fid,ok,ok?decodeBase64(om):decodeBase64(bm));
+    }
+    function cM(q,ans,fid,om,bm){
+        if(mc[q]===undefined)return;
+        const ok=mc[q]===ans;
+        fb(fid,ok,ok?decodeBase64(om):decodeBase64(bm));
+        mrk(q,ans);
+        dis(q);
+    }
 
     function cQ1(){
-        cI('q1','んですか','q1-fb','何をする<strong>んですか</strong>？ — Adding んですか shows genuine curiosity about what people do on this day.','The answer is <strong>んですか</strong>. Plain form + んですか asks for a detailed explanation.');
-        cM('q2',1,'q2-fb','んですか shows <strong>curiosity and asks for a detailed explanation</strong>. It signals "tell me about this — I want to understand!" rather than a simple yes/no question.','んですか adds curiosity — it\'s asking for background/explanation, not just confirming a fact.');
-        cM('q3',0,'q3-fb','<ruby>高<rt>たか</rt></ruby>い<strong>んですか</strong> — イ-adjectives connect directly to んですか without な. Only ナ-adj and Nouns need な before んですか.','イ-adjectives connect <strong>directly</strong>: 高い + んですか. The な is only needed for ナ-adjectives and nouns.');
-        cM('q4',0,'q4-fb','ナA/N + <strong>な</strong> + んですか — ナ-adjectives and nouns require な before んですか: 静かなんですか, 学生なんですか.','ナA and Nouns need <strong>な</strong> before んですか. Verbs and イ-adj connect directly.');
+        cI('q1', decodeBase64('44KT44Gn44GZ44GL'), 'q1-fb', '5L2V44KS44GZ44KLPHN0cm9uZz7jgpPjgafjgZnjgYs8L3N0cm9uZz7vvJ8g4oCUIEFkZGluZyDjgpPjgafjgZnjgYsgc2hvd3MgZ2VudWluZSBjdXJpb3NpdHkgYWJvdXQgd2hhdCBwZW9wbGUgZG8gb24gdGhpcyBkYXku', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuOCk+OBp+OBmeOBizwvc3Ryb25nPi4gUGxhaW4gZm9ybSArIOOCk+OBp+OBmeOBiyBhc2tzIGZvciBhIGRldGFpbGVkIGV4cGxhbmF0aW9uLg==');
+        cM('q2', 1, 'q2-fb', '44KT44Gn44GZ44GLIHNob3dzIDxzdHJvbmc+Y3VyaW9zaXR5IGFuZCBhc2tzIGZvciBhIGRldGFpbGVkIGV4cGxhbmF0aW9uPC9zdHJvbmc+LiBJdCBzaWduYWxzICJ0ZWxsIG1lIGFib3V0IHRoaXMg4oCUIEkgd2FudCB0byB1bmRlcnN0YW5kISIgcmF0aGVyIHRoYW4gYSBzaW1wbGUgeWVzL25vIHF1ZXN0aW9uLg==', '44KT44Gn44GZ44GLIGFkZHMgY3VyaW9zaXR5IOKAlCBpdFwncyBhc2tpbmcgZm9yIGJhY2tncm91bmQvZXhwbGFuYXRpb24sIG5vdCBqdXN0IGNvbmZpcm1pbmcgYSBmYWN0Lg==');
+        cM('q3', 0, 'q3-fb', 'PHJ1Ynk+6auYPHJ0PuOBn+OBizwvcnQ+PC9ydWJ5PuOBhDxzdHJvbmc+44KT44Gn44GZ44GLPC9zdHJvbmc+IOKAlCDjgqQtYWRqZWN0aXZlcyBjb25uZWN0IGRpcmVjdGx5IHRvIOOCk+OBp+OBmeOBiyB3aXRob3V0IOOBqi4gT25seSDjg4otYWRqIGFuZCBOb3VucyBuZWVkIOOBqiBiZWZvcmUg44KT44Gn44GZ44GLLg==', '44KkLWFkamVjdGl2ZXMgY29ubmVjdCA8c3Ryb25nPmRpcmVjdGx5PC9zdHJvbmc+OiDpq5jjgYQgKyDjgpPjgafjgZnjgYsuIFRoZSDjgaogaXMgb25seSBuZWVkZWQgZm9yIOODii1hZGplY3RpdmVzIGFuZCBub3Vucy4=');
+        cM('q4', 0, 'q4-fb', '44OKQS9OICsgPHN0cm9uZz7jgao8L3N0cm9uZz4gKyDjgpPjgafjgZnjgYsg4oCUIOODii1hZGplY3RpdmVzIGFuZCBub3VucyByZXF1aXJlIOOBqiBiZWZvcmUg44KT44Gn44GZ44GLOiDpnZnjgYvjgarjgpPjgafjgZnjgYssIOWtpueUn+OBquOCk+OBp+OBmeOBiy4=', '44OKQSBhbmQgTm91bnMgbmVlZCA8c3Ryb25nPuOBqjwvc3Ryb25nPiBiZWZvcmUg44KT44Gn44GZ44GLLiBWZXJicyBhbmQg44KkLWFkaiBjb25uZWN0IGRpcmVjdGx5Lg==');
     }
     function cQ2(){
-        cM('q5',0,'q5-fb','3つ<strong>しか</strong>乗れませんでした — しか + negative expresses disappointment: "I could <em>only</em> ride 3 (wanted more!)."','しか always pairs with a <strong>negative verb</strong> and expresses that the amount was less than expected.');
-        cM('q6',1,'q6-fb','このページ<strong>だけ</strong>コピーしてください — だけ + positive verb is a neutral instruction: "please copy only this page."','だけ is neutral and pairs with a <strong>positive verb</strong>. しか would need a negative verb and add unwanted emotional weight to an instruction.');
-        cM('q7',1,'q7-fb','しか <strong>ALWAYS</strong> requires a <strong>negative verb</strong>. This is the #1 rule — no exceptions! 500円しかあり<em>ません</em>.','しか MUST use a negative verb. This is non-negotiable: N しか + V-ません/ない.');
-        cI('q8','しか','q8-fb','500円<strong>しか</strong>ありません — しか + negative expresses disappointment about having only 500 yen.','The answer is <strong>しか</strong>. 500円しか + ありません (negative) = "I only have ¥500" with disappointment.');
+        cM('q5', 0, 'q5-fb', 'M+OBpDxzdHJvbmc+44GX44GLPC9zdHJvbmc+5LmX44KM44G+44Gb44KT44Gn44GX44GfIOKAlCDjgZfjgYsgKyBuZWdhdGl2ZSBleHByZXNzZXMgZGlzYXBwb2ludG1lbnQ6ICJJIGNvdWxkIDxlbT5vbmx5PC9lbT4gcmlkZSAzICh3YW50ZWQgbW9yZSEpLiI=', '44GX44GLIGFsd2F5cyBwYWlycyB3aXRoIGEgPHN0cm9uZz5uZWdhdGl2ZSB2ZXJiPC9zdHJvbmc+IGFuZCBleHByZXNzZXMgdGhhdCB0aGUgYW1vdW50IHdhcyBsZXNzIHRoYW4gZXhwZWN0ZWQu');
+        cM('q6', 1, 'q6-fb', '44GT44Gu44Oa44O844K4PHN0cm9uZz7jgaDjgZE8L3N0cm9uZz7jgrPjg5Tjg7zjgZfjgabjgY/jgaDjgZXjgYQg4oCUIOOBoOOBkSArIHBvc2l0aXZlIHZlcmIgaXMgYSBuZXV0cmFsIGluc3RydWN0aW9uOiAicGxlYXNlIGNvcHkgb25seSB0aGlzIHBhZ2UuIg==', '44Gg44GRIGlzIG5ldXRyYWwgYW5kIHBhaXJzIHdpdGggYSA8c3Ryb25nPnBvc2l0aXZlIHZlcmI8L3N0cm9uZz4uIOOBl+OBiyB3b3VsZCBuZWVkIGEgbmVnYXRpdmUgdmVyYiBhbmQgYWRkIHVud2FudGVkIGVtb3Rpb25hbCB3ZWlnaHQgdG8gYW4gaW5zdHJ1Y3Rpb24u');
+        cM('q7', 1, 'q7-fb', '44GX44GLIDxzdHJvbmc+QUxXQVlTPC9zdHJvbmc+IHJlcXVpcmVzIGEgPHN0cm9uZz5uZWdhdGl2ZSB2ZXJiPC9zdHJvbmc+LiBUaGlzIGlzIHRoZSAjMSBydWxlIOKAlCBubyBleGNlcHRpb25zISA1MDDlhobjgZfjgYvjgYLjgoo8ZW0+44G+44Gb44KTPC9lbT4u', '44GX44GLIE1VU1QgdXNlIGEgbmVnYXRpdmUgdmVyYi4gVGhpcyBpcyBub24tbmVnb3RpYWJsZTogTiDjgZfjgYsgKyBWLeOBvuOBm+OCky/jgarjgYQu');
+        cI('q8', decodeBase64('44GX44GL'), 'q8-fb', 'NTAw5YaGPHN0cm9uZz7jgZfjgYs8L3N0cm9uZz7jgYLjgorjgb7jgZvjgpMg4oCUIOOBl+OBiyArIG5lZ2F0aXZlIGV4cHJlc3NlcyBkaXNhcHBvaW50bWVudCBhYm91dCBoYXZpbmcgb25seSA1MDAgeWVuLg==', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuOBl+OBizwvc3Ryb25nPi4gNTAw5YaG44GX44GLICsg44GC44KK44G+44Gb44KTIChuZWdhdGl2ZSkgPSAiSSBvbmx5IGhhdmUgwqU1MDAiIHdpdGggZGlzYXBwb2ludG1lbnQu');
     }
     function cQ3(){
-        cI('q9','たりして','q9-fb','聞い<strong>たりして</strong>、のんびりしました — V-た form + りして lists representative activities.','The answer is <strong>たりして</strong>. 聞く → 聞いた (past) + り + して = "did things like listening."');
-        cM('q10',0,'q10-fb','V-たりして lists <strong>example activities</strong> implying there were more things too — "I did things LIKE shopping."','たりして lists representative examples. し (Lesson 6) lists specific reasons leading to a conclusion — different functions.');
-        cM('q11',0,'q11-fb','買い物を<strong>したりして</strong> — する → した (past) + り + して. The た form is required before り.','V-たりして uses the <strong>た form</strong>: する → した + りして. するたりして would be incorrect conjugation.');
-        cM('q12',0,'q12-fb','し lists <strong>reasons</strong> leading to a conclusion (泳いだし、食べられたし → 楽しかった). たりして lists <strong>sample activities</strong> as examples (買い物をしたりして). Different functions!','し = reasons for a conclusion. たりして = representative examples of activities. They serve different communication purposes.');
+        cI('q9', decodeBase64('44Gf44KK44GX44Gm'), 'q9-fb', '6IGe44GEPHN0cm9uZz7jgZ/jgorjgZfjgaY8L3N0cm9uZz7jgIHjga7jgpPjgbPjgorjgZfjgb7jgZfjgZ8g4oCUIFYt44GfIGZvcm0gKyDjgorjgZfjgaYgbGlzdHMgcmVwcmVzZW50YXRpdmUgYWN0aXZpdGllcy4=', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuOBn+OCiuOBl+OBpjwvc3Ryb25nPi4g6IGe44GPIOKGkiDogZ7jgYTjgZ8gKHBhc3QpICsg44KKICsg44GX44GmID0gImRpZCB0aGluZ3MgbGlrZSBsaXN0ZW5pbmcuIg==');
+        cM('q10', 0, 'q10-fb', 'Vi3jgZ/jgorjgZfjgaYgbGlzdHMgPHN0cm9uZz5leGFtcGxlIGFjdGl2aXRpZXM8L3N0cm9uZz4gaW1wbHlpbmcgdGhlcmUgd2VyZSBtb3JlIHRoaW5ncyB0b28g4oCUICJJIGRpZCB0aGluZ3MgTElLRSBzaG9wcGluZy4i', '44Gf44KK44GX44GmIGxpc3RzIHJlcHJlc2VudGF0aXZlIGV4YW1wbGVzLiDjgZcgKExlc3NvbiA2KSBsaXN0cyBzcGVjaWZpYyByZWFzb25zIGxlYWRpbmcgdG8gYSBjb25jbHVzaW9uIOKAlCBkaWZmZXJlbnQgZnVuY3Rpb25zLg==');
+        cM('q11', 0, 'q11-fb', '6LK344GE54mp44KSPHN0cm9uZz7jgZfjgZ/jgorjgZfjgaY8L3N0cm9uZz4g4oCUIOOBmeOCiyDihpIg44GX44GfIChwYXN0KSArIOOCiiArIOOBl+OBpi4gVGhlIOOBnyBmb3JtIGlzIHJlcXVpcmVkIGJlZm9yZSDjgoou', 'Vi3jgZ/jgorjgZfjgaYgdXNlcyB0aGUgPHN0cm9uZz7jgZ8gZm9ybTwvc3Ryb25nPjog44GZ44KLIOKGkiDjgZfjgZ8gKyDjgorjgZfjgaYuIOOBmeOCi+OBn+OCiuOBl+OBpiB3b3VsZCBiZSBpbmNvcnJlY3QgY29uanVnYXRpb24u');
+        cM('q12', 0, 'q12-fb', '44GXIGxpc3RzIDxzdHJvbmc+cmVhc29uczwvc3Ryb25nPiBsZWFkaW5nIHRvIGEgY29uY2x1c2lvbiAo5rOz44GE44Gg44GX44CB6aOf44G544KJ44KM44Gf44GXIOKGkiDmpb3jgZfjgYvjgaPjgZ8pLiDjgZ/jgorjgZfjgaYgbGlzdHMgPHN0cm9uZz5zYW1wbGUgYWN0aXZpdGllczwvc3Ryb25nPiBhcyBleGFtcGxlcyAo6LK344GE54mp44KS44GX44Gf44KK44GX44GmKS4gRGlmZmVyZW50IGZ1bmN0aW9ucyE=', '44GXID0gcmVhc29ucyBmb3IgYSBjb25jbHVzaW9uLiDjgZ/jgorjgZfjgaYgPSByZXByZXNlbnRhdGl2ZSBleGFtcGxlcyBvZiBhY3Rpdml0aWVzLiBUaGV5IHNlcnZlIGRpZmZlcmVudCBjb21tdW5pY2F0aW9uIHB1cnBvc2VzLg==');
     }
     function cQ4(){
-        cI('q13',['なくちゃならない','なくちゃならないし'],'q13-fb','あげ<strong>なくちゃならない</strong> — あげる → あげない → あげなくちゃならない. Casual "must give."','The answer is <strong>なくちゃならない</strong>. あげる → あげない (nai form) → あげなくちゃならない (casual obligation).');
-        cM('q14',0,'q14-fb','なくちゃならない is a casual spoken contraction of <strong>なければならない / なければなりません</strong>. Same meaning, more natural in conversation.','なくちゃならない is the casual version of なければならない (formal obligation). ないでください means "please don\'t" — completely different.');
-        cM('q15',0,'q15-fb','準備を<strong>しなくちゃならない</strong> — する → しない → しなくちゃならない. The なくちゃ replaces ない → なければ.','する → しない → し<strong>なくちゃならない</strong>. The conversion: take ない form, replace ない with なくちゃならない.');
-        cM('q16',0,'q16-fb','Most formal to most casual: <strong>なければなりません → なければならない → なくちゃならない → なきゃ</strong>. Each step drops formality.','The formality ladder goes: なければなりません (textbook) → なければならない (writing) → なくちゃならない (conversation) → なきゃ (super casual).');
+        cI('q13', ["44Gq44GP44Gh44KD44Gq44KJ44Gq44GE","44Gq44GP44Gh44KD44Gq44KJ44Gq44GE44GX"], 'q13-fb', '44GC44GSPHN0cm9uZz7jgarjgY/jgaHjgoPjgarjgonjgarjgYQ8L3N0cm9uZz4g4oCUIOOBguOBkuOCiyDihpIg44GC44GS44Gq44GEIOKGkiDjgYLjgZLjgarjgY/jgaHjgoPjgarjgonjgarjgYQuIENhc3VhbCAibXVzdCBnaXZlLiI=', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuOBquOBj+OBoeOCg+OBquOCieOBquOBhDwvc3Ryb25nPi4g44GC44GS44KLIOKGkiDjgYLjgZLjgarjgYQgKG5haSBmb3JtKSDihpIg44GC44GS44Gq44GP44Gh44KD44Gq44KJ44Gq44GEIChjYXN1YWwgb2JsaWdhdGlvbiku');
+        cM('q14', 0, 'q14-fb', '44Gq44GP44Gh44KD44Gq44KJ44Gq44GEIGlzIGEgY2FzdWFsIHNwb2tlbiBjb250cmFjdGlvbiBvZiA8c3Ryb25nPuOBquOBkeOCjOOBsOOBquOCieOBquOBhCAvIOOBquOBkeOCjOOBsOOBquOCiuOBvuOBm+OCkzwvc3Ryb25nPi4gU2FtZSBtZWFuaW5nLCBtb3JlIG5hdHVyYWwgaW4gY29udmVyc2F0aW9uLg==', '44Gq44GP44Gh44KD44Gq44KJ44Gq44GEIGlzIHRoZSBjYXN1YWwgdmVyc2lvbiBvZiDjgarjgZHjgozjgbDjgarjgonjgarjgYQgKGZvcm1hbCBvYmxpZ2F0aW9uKS4g44Gq44GE44Gn44GP44Gg44GV44GEIG1lYW5zICJwbGVhc2UgZG9uXCd0IiDigJQgY29tcGxldGVseSBkaWZmZXJlbnQu');
+        cM('q15', 0, 'q15-fb', '5rqW5YKZ44KSPHN0cm9uZz7jgZfjgarjgY/jgaHjgoPjgarjgonjgarjgYQ8L3N0cm9uZz4g4oCUIOOBmeOCiyDihpIg44GX44Gq44GEIOKGkiDjgZfjgarjgY/jgaHjgoPjgarjgonjgarjgYQuIFRoZSDjgarjgY/jgaHjgoMgcmVwbGFjZXMg44Gq44GEIOKGkiDjgarjgZHjgozjgbAu', '44GZ44KLIOKGkiDjgZfjgarjgYQg4oaSIOOBlzxzdHJvbmc+44Gq44GP44Gh44KD44Gq44KJ44Gq44GEPC9zdHJvbmc+LiBUaGUgY29udmVyc2lvbjogdGFrZSDjgarjgYQgZm9ybSwgcmVwbGFjZSDjgarjgYQgd2l0aCDjgarjgY/jgaHjgoPjgarjgonjgarjgYQu');
+        cM('q16', 0, 'q16-fb', 'TW9zdCBmb3JtYWwgdG8gbW9zdCBjYXN1YWw6IDxzdHJvbmc+44Gq44GR44KM44Gw44Gq44KK44G+44Gb44KTIOKGkiDjgarjgZHjgozjgbDjgarjgonjgarjgYQg4oaSIOOBquOBj+OBoeOCg+OBquOCieOBquOBhCDihpIg44Gq44GN44KDPC9zdHJvbmc+LiBFYWNoIHN0ZXAgZHJvcHMgZm9ybWFsaXR5Lg==', 'VGhlIGZvcm1hbGl0eSBsYWRkZXIgZ29lczog44Gq44GR44KM44Gw44Gq44KK44G+44Gb44KTICh0ZXh0Ym9vaykg4oaSIOOBquOBkeOCjOOBsOOBquOCieOBquOBhCAod3JpdGluZykg4oaSIOOBquOBj+OBoeOCg+OBquOCieOBquOBhCAoY29udmVyc2F0aW9uKSDihpIg44Gq44GN44KDIChzdXBlciBjYXN1YWwpLg==');
     }
     function cQ5(){
-        cM('q17',0,'q17-fb','ら抜き言葉 = <strong>dropping ら</strong> from Group 2 potential forms: 食べ<s>ら</s>れる → 食べれる. Common in casual speech despite being non-standard.','ら抜き = ら-dropping from Group 2 verbs\' potential form. 見られる → 見れる, 食べられる → 食べれる.');
-        cI('q18','人が多い','q18-fb','帰る<strong>人が多い</strong>です — "many people go back." S (plain) + 人が多い describes what most people do.','The answer is <strong>人が多い</strong>. S (plain form) + 人が多い = "many people [do S]."');
-        cM('q19',1,'q19-fb','旅行する<strong>人もいます</strong> — "some people also travel." 人もいます describes what <em>some</em> people do, not the majority.','人が多い = "many people." 人もいます = "some people also." "Some people travel abroad" = 人もいます.');
-        cM('q20',0,'q20-fb','来る → 来<strong>られる</strong> (standard) → 来<strong>れる</strong> (ら抜き). The reading is <ruby>来<rt>こ</rt></ruby>れる, not <ruby>来<rt>く</rt></ruby>れる.','来る → こられる → <strong>こ</strong>れる. The stem reading changes to こ-, not く-.');
+        cM('q17', 0, 'q17-fb', '44KJ5oqc44GN6KiA6JGJID0gPHN0cm9uZz5kcm9wcGluZyDjgok8L3N0cm9uZz4gZnJvbSBHcm91cCAyIHBvdGVudGlhbCBmb3Jtczog6aOf44G5PHM+44KJPC9zPuOCjOOCiyDihpIg6aOf44G544KM44KLLiBDb21tb24gaW4gY2FzdWFsIHNwZWVjaCBkZXNwaXRlIGJlaW5nIG5vbi1zdGFuZGFyZC4=', '44KJ5oqc44GNID0g44KJLWRyb3BwaW5nIGZyb20gR3JvdXAgMiB2ZXJic1wnIHBvdGVudGlhbCBmb3JtLiDopovjgonjgozjgosg4oaSIOimi+OCjOOCiywg6aOf44G544KJ44KM44KLIOKGkiDpo5/jgbnjgozjgosu');
+        cI('q18', decodeBase64('5Lq644GM5aSa44GE'), 'q18-fb', '5biw44KLPHN0cm9uZz7kurrjgYzlpJrjgYQ8L3N0cm9uZz7jgafjgZkg4oCUICJtYW55IHBlb3BsZSBnbyBiYWNrLiIgUyAocGxhaW4pICsg5Lq644GM5aSa44GEIGRlc2NyaWJlcyB3aGF0IG1vc3QgcGVvcGxlIGRvLg==', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuS6uuOBjOWkmuOBhDwvc3Ryb25nPi4gUyAocGxhaW4gZm9ybSkgKyDkurrjgYzlpJrjgYQgPSAibWFueSBwZW9wbGUgW2RvIFNdLiI=');
+        cM('q19', 1, 'q19-fb', '5peF6KGM44GZ44KLPHN0cm9uZz7kurrjgoLjgYTjgb7jgZk8L3N0cm9uZz4g4oCUICJzb21lIHBlb3BsZSBhbHNvIHRyYXZlbC4iIOS6uuOCguOBhOOBvuOBmSBkZXNjcmliZXMgd2hhdCA8ZW0+c29tZTwvZW0+IHBlb3BsZSBkbywgbm90IHRoZSBtYWpvcml0eS4=', '5Lq644GM5aSa44GEID0gIm1hbnkgcGVvcGxlLiIg5Lq644KC44GE44G+44GZID0gInNvbWUgcGVvcGxlIGFsc28uIiAiU29tZSBwZW9wbGUgdHJhdmVsIGFicm9hZCIgPSDkurrjgoLjgYTjgb7jgZku');
+        cM('q20', 0, 'q20-fb', '5p2l44KLIOKGkiDmnaU8c3Ryb25nPuOCieOCjOOCizwvc3Ryb25nPiAoc3RhbmRhcmQpIOKGkiDmnaU8c3Ryb25nPuOCjOOCizwvc3Ryb25nPiAo44KJ5oqc44GNKS4gVGhlIHJlYWRpbmcgaXMgPHJ1Ynk+5p2lPHJ0PuOBkzwvcnQ+PC9ydWJ5PuOCjOOCiywgbm90IDxydWJ5PuadpTxydD7jgY88L3J0PjwvcnVieT7jgozjgosu', '5p2l44KLIOKGkiDjgZPjgonjgozjgosg4oaSIDxzdHJvbmc+44GTPC9zdHJvbmc+44KM44KLLiBUaGUgc3RlbSByZWFkaW5nIGNoYW5nZXMgdG8g44GTLSwgbm90IOOBjy0u');
     }
     function cQ6(){
-        cI('q21','ながら','q21-fb','歌い<strong>ながら</strong>、踊ります — ます stem 歌い + ながら = "while singing." The main action (dancing) follows.','The answer is <strong>ながら</strong>. 歌います → 歌い (stem) + ながら = "while singing."');
-        cM('q22',0,'q22-fb','V-<strong>ます stem + ながら</strong> — remove ます from the polite form: 歩きます → 歩き + ながら. NOT て-form.','ながら attaches to the <strong>ます stem</strong>: 食べます → 食べ + ながら. The て-form is used for sequential actions, not simultaneous.');
-        cI('q23','によって','q23-fb','家<strong>によって</strong>違います — "It differs depending on the family." N + によって + 違います/変わります.','The answer is <strong>によって</strong>. N + によって + 違います = "it varies depending on N."');
-        cM('q24',0,'q24-fb','<strong>違います / 変わります / いろいろあります</strong> — these express variation/difference, which is exactly what によって sets up: "depending on X, it varies/changes."','によって pairs naturally with 違います (differs), 変わります (changes), and いろいろあります (there are various). These express the variation that によって introduces.');
+        cI('q21', decodeBase64('44Gq44GM44KJ'), 'q21-fb', '5q2M44GEPHN0cm9uZz7jgarjgYzjgok8L3N0cm9uZz7jgIHouIrjgorjgb7jgZkg4oCUIOOBvuOBmSBzdGVtIOatjOOBhCArIOOBquOBjOOCiSA9ICJ3aGlsZSBzaW5naW5nLiIgVGhlIG1haW4gYWN0aW9uIChkYW5jaW5nKSBmb2xsb3dzLg==', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuOBquOBjOOCiTwvc3Ryb25nPi4g5q2M44GE44G+44GZIOKGkiDmrYzjgYQgKHN0ZW0pICsg44Gq44GM44KJID0gIndoaWxlIHNpbmdpbmcuIg==');
+        cM('q22', 0, 'q22-fb', 'Vi08c3Ryb25nPuOBvuOBmSBzdGVtICsg44Gq44GM44KJPC9zdHJvbmc+IOKAlCByZW1vdmUg44G+44GZIGZyb20gdGhlIHBvbGl0ZSBmb3JtOiDmranjgY3jgb7jgZkg4oaSIOatqeOBjSArIOOBquOBjOOCiS4gTk9UIOOBpi1mb3JtLg==', '44Gq44GM44KJIGF0dGFjaGVzIHRvIHRoZSA8c3Ryb25nPuOBvuOBmSBzdGVtPC9zdHJvbmc+OiDpo5/jgbnjgb7jgZkg4oaSIOmjn+OBuSArIOOBquOBjOOCiS4gVGhlIOOBpi1mb3JtIGlzIHVzZWQgZm9yIHNlcXVlbnRpYWwgYWN0aW9ucywgbm90IHNpbXVsdGFuZW91cy4=');
+        cI('q23', decodeBase64('44Gr44KI44Gj44Gm'), 'q23-fb', '5a62PHN0cm9uZz7jgavjgojjgaPjgaY8L3N0cm9uZz7pgZXjgYTjgb7jgZkg4oCUICJJdCBkaWZmZXJzIGRlcGVuZGluZyBvbiB0aGUgZmFtaWx5LiIgTiArIOOBq+OCiOOBo+OBpiArIOmBleOBhOOBvuOBmS/lpInjgo/jgorjgb7jgZku', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuOBq+OCiOOBo+OBpjwvc3Ryb25nPi4gTiArIOOBq+OCiOOBo+OBpiArIOmBleOBhOOBvuOBmSA9ICJpdCB2YXJpZXMgZGVwZW5kaW5nIG9uIE4uIg==');
+        cM('q24', 0, 'q24-fb', 'PHN0cm9uZz7pgZXjgYTjgb7jgZkgLyDlpInjgo/jgorjgb7jgZkgLyDjgYTjgo3jgYTjgo3jgYLjgorjgb7jgZk8L3N0cm9uZz4g4oCUIHRoZXNlIGV4cHJlc3MgdmFyaWF0aW9uL2RpZmZlcmVuY2UsIHdoaWNoIGlzIGV4YWN0bHkgd2hhdCDjgavjgojjgaPjgaYgc2V0cyB1cDogImRlcGVuZGluZyBvbiBYLCBpdCB2YXJpZXMvY2hhbmdlcy4i', '44Gr44KI44Gj44GmIHBhaXJzIG5hdHVyYWxseSB3aXRoIOmBleOBhOOBvuOBmSAoZGlmZmVycyksIOWkieOCj+OCiuOBvuOBmSAoY2hhbmdlcyksIGFuZCDjgYTjgo3jgYTjgo3jgYLjgorjgb7jgZkgKHRoZXJlIGFyZSB2YXJpb3VzKS4gVGhlc2UgZXhwcmVzcyB0aGUgdmFyaWF0aW9uIHRoYXQg44Gr44KI44Gj44GmIGludHJvZHVjZXMu');
     }
     function cQF(){
-        cI('q25','んですか','q25-fb','何をする<strong>んですか</strong>？ — Asking for a detailed explanation about Coming-of-Age Day customs.','The answer is <strong>んですか</strong>. Plain form + んですか for asking about explanations.');
-        cM('q26',0,'q26-fb','食事をし<strong>ながら</strong>、話しました — "while eating, I talked." ながら = simultaneous actions by the same person. たりして would list eating as one of several example activities.','<strong>ながら</strong> = two actions at the same time (eating AND talking simultaneously). たりして would mean "I did things like eating" — listing examples, not simultaneous actions.');
-        cM('q27',0,'q27-fb','国<strong>によって</strong>違います — "It varies depending on the country." によって = "depending on." にとって means "for/to (someone)" — different meaning entirely.','<strong>によって</strong> = "depending on" (variation). にとって = "for/to someone" (perspective). Completely different meanings despite looking similar.');
-        cM('q28',1,'q28-fb','1人で旅行する<strong>人もいます</strong> — "some people also travel alone." 人もいます is for <em>some</em> people, not the majority.','人もいます = "<em>some</em> people also do ~." 人が多い = "<em>many</em> people do ~." The question says "some people" → 人もいます.');
+        cI('q25', decodeBase64('44KT44Gn44GZ44GL'), 'q25-fb', '5L2V44KS44GZ44KLPHN0cm9uZz7jgpPjgafjgZnjgYs8L3N0cm9uZz7vvJ8g4oCUIEFza2luZyBmb3IgYSBkZXRhaWxlZCBleHBsYW5hdGlvbiBhYm91dCBDb21pbmctb2YtQWdlIERheSBjdXN0b21zLg==', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuOCk+OBp+OBmeOBizwvc3Ryb25nPi4gUGxhaW4gZm9ybSArIOOCk+OBp+OBmeOBiyBmb3IgYXNraW5nIGFib3V0IGV4cGxhbmF0aW9ucy4=');
+        cM('q26', 0, 'q26-fb', '6aOf5LqL44KS44GXPHN0cm9uZz7jgarjgYzjgok8L3N0cm9uZz7jgIHoqbHjgZfjgb7jgZfjgZ8g4oCUICJ3aGlsZSBlYXRpbmcsIEkgdGFsa2VkLiIg44Gq44GM44KJID0gc2ltdWx0YW5lb3VzIGFjdGlvbnMgYnkgdGhlIHNhbWUgcGVyc29uLiDjgZ/jgorjgZfjgaYgd291bGQgbGlzdCBlYXRpbmcgYXMgb25lIG9mIHNldmVyYWwgZXhhbXBsZSBhY3Rpdml0aWVzLg==', 'PHN0cm9uZz7jgarjgYzjgok8L3N0cm9uZz4gPSB0d28gYWN0aW9ucyBhdCB0aGUgc2FtZSB0aW1lIChlYXRpbmcgQU5EIHRhbGtpbmcgc2ltdWx0YW5lb3VzbHkpLiDjgZ/jgorjgZfjgaYgd291bGQgbWVhbiAiSSBkaWQgdGhpbmdzIGxpa2UgZWF0aW5nIiDigJQgbGlzdGluZyBleGFtcGxlcywgbm90IHNpbXVsdGFuZW91cyBhY3Rpb25zLg==');
+        cM('q27', 0, 'q27-fb', '5Zu9PHN0cm9uZz7jgavjgojjgaPjgaY8L3N0cm9uZz7pgZXjgYTjgb7jgZkg4oCUICJJdCB2YXJpZXMgZGVwZW5kaW5nIG9uIHRoZSBjb3VudHJ5LiIg44Gr44KI44Gj44GmID0gImRlcGVuZGluZyBvbi4iIOOBq+OBqOOBo+OBpiBtZWFucyAiZm9yL3RvIChzb21lb25lKSIg4oCUIGRpZmZlcmVudCBtZWFuaW5nIGVudGlyZWx5Lg==', 'PHN0cm9uZz7jgavjgojjgaPjgaY8L3N0cm9uZz4gPSAiZGVwZW5kaW5nIG9uIiAodmFyaWF0aW9uKS4g44Gr44Go44Gj44GmID0gImZvci90byBzb21lb25lIiAocGVyc3BlY3RpdmUpLiBDb21wbGV0ZWx5IGRpZmZlcmVudCBtZWFuaW5ncyBkZXNwaXRlIGxvb2tpbmcgc2ltaWxhci4=');
+        cM('q28', 1, 'q28-fb', 'MeS6uuOBp+aXheihjOOBmeOCizxzdHJvbmc+5Lq644KC44GE44G+44GZPC9zdHJvbmc+IOKAlCAic29tZSBwZW9wbGUgYWxzbyB0cmF2ZWwgYWxvbmUuIiDkurrjgoLjgYTjgb7jgZkgaXMgZm9yIDxlbT5zb21lPC9lbT4gcGVvcGxlLCBub3QgdGhlIG1ham9yaXR5Lg==', '5Lq644KC44GE44G+44GZID0gIjxlbT5zb21lPC9lbT4gcGVvcGxlIGFsc28gZG8gfi4iIOS6uuOBjOWkmuOBhCA9ICI8ZW0+bWFueTwvZW0+IHBlb3BsZSBkbyB+LiIgVGhlIHF1ZXN0aW9uIHNheXMgInNvbWUgcGVvcGxlIiDihpIg5Lq644KC44GE44G+44GZLg==');
     }
 
     document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nextSlide();}else if(e.key==='ArrowLeft'){e.preventDefault();prevSlide();}});

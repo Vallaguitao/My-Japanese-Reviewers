@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.emailjs.com; img-src 'self' data: https:;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lesson 11 — ポイントカードを忘れてしまいました (Smart Shopping) | N4 Book 2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -660,6 +661,15 @@
     </div>
 
     <script>
+        function decodeBase64(str) {
+            if (!str) return "";
+            try {
+                return decodeURIComponent(escape(atob(str)));
+            } catch (e) {
+                return str;
+            }
+        }
+
     let currentSlide=1;const totalSlides=18;
     function updateSlide(){document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));const a=document.querySelector(`[data-slide="${currentSlide}"]`);if(a)a.classList.add('active');document.getElementById('currentSlide').textContent=currentSlide;document.getElementById('totalSlides').textContent=totalSlides;document.getElementById('progressFill').style.width=((currentSlide-1)/(totalSlides-1)*100)+'%';document.getElementById('prevBtn').disabled=currentSlide===1;document.getElementById('nextBtn').disabled=currentSlide===totalSlides;window.scrollTo({top:0,behavior:'smooth'});}
     function nextSlide(){if(currentSlide<totalSlides){currentSlide++;updateSlide();}}
@@ -671,38 +681,51 @@
     function fb(id,ok,msg){const f=document.getElementById(id);f.className='feedback show '+(ok?'correct':'incorrect');f.innerHTML=`<strong>${ok?'✅ Correct!':'❌ Not quite.'}</strong> ${msg}`;}
     function dis(q){document.querySelectorAll(`#${q}-opts .mc-option`).forEach(o=>o.classList.add('disabled'));}
     function mrk(q,ci){document.querySelectorAll(`#${q}-opts .mc-option`).forEach((o,i)=>{if(i===ci)o.classList.add('correct-option');else if(o.classList.contains('selected'))o.classList.add('incorrect-option');});}
-    function cI(id,ans,fid,om,bm){const v=document.getElementById(id).value.trim();if(!v)return;const ok=Array.isArray(ans)?ans.includes(v):v===ans;document.getElementById(id).classList.add(ok?'correct-input':'incorrect-input');fb(fid,ok,ok?om:bm);}
-    function cM(q,ans,fid,om,bm){if(mc[q]===undefined)return;const ok=mc[q]===ans;fb(fid,ok,ok?om:bm);mrk(q,ans);dis(q);}
+    function cI(id,ans,fid,om,bm){
+        const v=document.getElementById(id).value.trim();
+        if(!v)return;
+        const decodedAns = Array.isArray(ans) ? ans.map(a => decodeBase64(a)) : decodeBase64(ans);
+        const ok=Array.isArray(decodedAns)?decodedAns.includes(v):v===decodedAns;
+        document.getElementById(id).classList.add(ok?'correct-input':'incorrect-input');
+        fb(fid,ok,ok?decodeBase64(om):decodeBase64(bm));
+    }
+    function cM(q,ans,fid,om,bm){
+        if(mc[q]===undefined)return;
+        const ok=mc[q]===ans;
+        fb(fid,ok,ok?decodeBase64(om):decodeBase64(bm));
+        mrk(q,ans);
+        dis(q);
+    }
 
     function cQ1(){
-        cI('q1',['みてもいいですか','みてもいいですか？'],'q1-fb','着て<strong>みてもいいですか</strong> — V-てみる (try) combined with てもいいですか (permission). The perfect phrase for trying on clothes!','The answer is <strong>みてもいいですか</strong>. 着る → 着て (te-form) + みてもいいですか (may I try?).');
-        cM('q2',0,'q2-fb','V-て<strong>みる</strong> (try doing, MNN L12) + V-て<strong>もいいですか</strong> (permission, MNN L15) = V-てみてもいいですか. Two familiar patterns combined!','V-てみてもいいですか combines V-てみる (try doing) and V-てもいいですか (permission). V-てある is a state result — different pattern entirely.');
-        cM('q3',0,'q3-fb','はいて<strong>みてもいいですか</strong> — asking <strong>permission to try</strong> the shoes on. みますか would just ask "will you try?" without asking permission.','みてもいいですか asks for <strong>permission</strong> to try. みますか just asks "will you try?" — missing the permission element that\'s essential in a store setting.');
+        cI('q1', ["44G/44Gm44KC44GE44GE44Gn44GZ44GL","44G/44Gm44KC44GE44GE44Gn44GZ44GL77yf"], 'q1-fb', '552A44GmPHN0cm9uZz7jgb/jgabjgoLjgYTjgYTjgafjgZnjgYs8L3N0cm9uZz4g4oCUIFYt44Gm44G/44KLICh0cnkpIGNvbWJpbmVkIHdpdGgg44Gm44KC44GE44GE44Gn44GZ44GLIChwZXJtaXNzaW9uKS4gVGhlIHBlcmZlY3QgcGhyYXNlIGZvciB0cnlpbmcgb24gY2xvdGhlcyE=', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuOBv+OBpuOCguOBhOOBhOOBp+OBmeOBizwvc3Ryb25nPi4g552A44KLIOKGkiDnnYDjgaYgKHRlLWZvcm0pICsg44G/44Gm44KC44GE44GE44Gn44GZ44GLIChtYXkgSSB0cnk/KS4=');
+        cM('q2', 0, 'q2-fb', 'Vi3jgaY8c3Ryb25nPuOBv+OCizwvc3Ryb25nPiAodHJ5IGRvaW5nLCBNTk4gTDEyKSArIFYt44GmPHN0cm9uZz7jgoLjgYTjgYTjgafjgZnjgYs8L3N0cm9uZz4gKHBlcm1pc3Npb24sIE1OTiBMMTUpID0gVi3jgabjgb/jgabjgoLjgYTjgYTjgafjgZnjgYsuIFR3byBmYW1pbGlhciBwYXR0ZXJucyBjb21iaW5lZCE=', 'Vi3jgabjgb/jgabjgoLjgYTjgYTjgafjgZnjgYsgY29tYmluZXMgVi3jgabjgb/jgosgKHRyeSBkb2luZykgYW5kIFYt44Gm44KC44GE44GE44Gn44GZ44GLIChwZXJtaXNzaW9uKS4gVi3jgabjgYLjgosgaXMgYSBzdGF0ZSByZXN1bHQg4oCUIGRpZmZlcmVudCBwYXR0ZXJuIGVudGlyZWx5Lg==');
+        cM('q3', 0, 'q3-fb', '44Gv44GE44GmPHN0cm9uZz7jgb/jgabjgoLjgYTjgYTjgafjgZnjgYs8L3N0cm9uZz4g4oCUIGFza2luZyA8c3Ryb25nPnBlcm1pc3Npb24gdG8gdHJ5PC9zdHJvbmc+IHRoZSBzaG9lcyBvbi4g44G/44G+44GZ44GLIHdvdWxkIGp1c3QgYXNrICJ3aWxsIHlvdSB0cnk/IiB3aXRob3V0IGFza2luZyBwZXJtaXNzaW9uLg==', '44G/44Gm44KC44GE44GE44Gn44GZ44GLIGFza3MgZm9yIDxzdHJvbmc+cGVybWlzc2lvbjwvc3Ryb25nPiB0byB0cnkuIOOBv+OBvuOBmeOBiyBqdXN0IGFza3MgIndpbGwgeW91IHRyeT8iIOKAlCBtaXNzaW5nIHRoZSBwZXJtaXNzaW9uIGVsZW1lbnQgdGhhdFwncyBlc3NlbnRpYWwgaW4gYSBzdG9yZSBzZXR0aW5nLg==');
     }
     function cQ2(){
-        cI('q4','すぎます','q4-fb','派手<strong>すぎます</strong> — ナ-adjective: drop な, add すぎます. 派手（な）→ 派手すぎます = "too flashy."','The answer is <strong>すぎます</strong>. ナ-adj: drop な, add すぎます directly. 派手（な）→ 派手すぎます.');
-        cM('q5',0,'q5-fb','<ruby>大<rt>おお</rt></ruby>きい<strong>の</strong> — イ-adjective keeps い before の: 大きい + の = "a big one." の replaces the previously mentioned noun (like セーター).','イ-adjectives keep い before の: 大き<strong>い</strong>の. 大きな is a special pre-noun modifier (大きな犬) — different usage from the pronoun の pattern.');
-        cM('q6',0,'q6-fb','イ-adj: <strong>drop い, add すぎます</strong>. 高い → 高<s>い</s> + すぎます = 高すぎます ("too expensive"). Always drop the い first!','Drop い, then add すぎます. 高い → 高すぎます. Keeping い (高いすぎます) would be grammatically incorrect.');
+        cI('q4', decodeBase64('44GZ44GO44G+44GZ'), 'q4-fb', '5rS+5omLPHN0cm9uZz7jgZnjgY7jgb7jgZk8L3N0cm9uZz4g4oCUIOODii1hZGplY3RpdmU6IGRyb3Ag44GqLCBhZGQg44GZ44GO44G+44GZLiDmtL7miYvvvIjjgarvvInihpIg5rS+5omL44GZ44GO44G+44GZID0gInRvbyBmbGFzaHkuIg==', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuOBmeOBjuOBvuOBmTwvc3Ryb25nPi4g44OKLWFkajogZHJvcCDjgaosIGFkZCDjgZnjgY7jgb7jgZkgZGlyZWN0bHkuIOa0vuaJi++8iOOBqu+8ieKGkiDmtL7miYvjgZnjgY7jgb7jgZku');
+        cM('q5', 0, 'q5-fb', 'PHJ1Ynk+5aSnPHJ0PuOBiuOBijwvcnQ+PC9ydWJ5PuOBjeOBhDxzdHJvbmc+44GuPC9zdHJvbmc+IOKAlCDjgqQtYWRqZWN0aXZlIGtlZXBzIOOBhCBiZWZvcmUg44GuOiDlpKfjgY3jgYQgKyDjga4gPSAiYSBiaWcgb25lLiIg44GuIHJlcGxhY2VzIHRoZSBwcmV2aW91c2x5IG1lbnRpb25lZCBub3VuIChsaWtlIOOCu+ODvOOCv+ODvCku', '44KkLWFkamVjdGl2ZXMga2VlcCDjgYQgYmVmb3JlIOOBrjog5aSn44GNPHN0cm9uZz7jgYQ8L3N0cm9uZz7jga4uIOWkp+OBjeOBqiBpcyBhIHNwZWNpYWwgcHJlLW5vdW4gbW9kaWZpZXIgKOWkp+OBjeOBqueKrCkg4oCUIGRpZmZlcmVudCB1c2FnZSBmcm9tIHRoZSBwcm9ub3VuIOOBriBwYXR0ZXJuLg==');
+        cM('q6', 0, 'q6-fb', '44KkLWFkajogPHN0cm9uZz5kcm9wIOOBhCwgYWRkIOOBmeOBjuOBvuOBmTwvc3Ryb25nPi4g6auY44GEIOKGkiDpq5g8cz7jgYQ8L3M+ICsg44GZ44GO44G+44GZID0g6auY44GZ44GO44G+44GZICgidG9vIGV4cGVuc2l2ZSIpLiBBbHdheXMgZHJvcCB0aGUg44GEIGZpcnN0IQ==', 'RHJvcCDjgYQsIHRoZW4gYWRkIOOBmeOBjuOBvuOBmS4g6auY44GEIOKGkiDpq5jjgZnjgY7jgb7jgZkuIEtlZXBpbmcg44GEICjpq5jjgYTjgZnjgY7jgb7jgZkpIHdvdWxkIGJlIGdyYW1tYXRpY2FsbHkgaW5jb3JyZWN0Lg==');
     }
     function cQ3(){
-        cI('q7',['盗まれました','ぬすまれました'],'q7-fb','財布を<strong>盗まれました</strong> — 盗む (Group 1: -mu → -ma + れる) → 盗まれる → 盗まれました. The affected item (財布) keeps を.','The answer is <strong>盗まれました</strong>. 盗む → 盗まれる (passive). In type ③ passive, the affected belonging keeps the を particle.');
-        cM('q8',0,'q8-fb','In passive ③, the affected item takes <strong>を</strong>: 財布<strong>を</strong>盗まれた. The person is the topic (私は), and their belonging takes を — this is the key feature of this passive type.','The affected item uses <strong>を</strong>, not が. 財布<strong>を</strong>盗まれた = "I had my wallet stolen." This を is what distinguishes passive ③ from the other types.');
-        cM('q9',0,'q9-fb','足<strong>を</strong>踏<strong>まれました</strong> — Person\'s body part (足) takes を, passive verb (踏まれる). Option B uses active voice (踏みました) which would mean "I stepped on" — opposite meaning!','足<strong>を</strong>踏<strong>まれました</strong> = "I got my foot stepped on" (passive ③). 足が踏みました would be active voice and grammatically incorrect — 足 doesn\'t step on things by itself.');
+        cI('q7', ["55uX44G+44KM44G+44GX44Gf","44Gs44GZ44G+44KM44G+44GX44Gf"], 'q7-fb', '6LKh5biD44KSPHN0cm9uZz7nm5fjgb7jgozjgb7jgZfjgZ88L3N0cm9uZz4g4oCUIOebl+OCgCAoR3JvdXAgMTogLW11IOKGkiAtbWEgKyDjgozjgospIOKGkiDnm5fjgb7jgozjgosg4oaSIOebl+OBvuOCjOOBvuOBl+OBny4gVGhlIGFmZmVjdGVkIGl0ZW0gKOiyoeW4gykga2VlcHMg44KSLg==', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuebl+OBvuOCjOOBvuOBl+OBnzwvc3Ryb25nPi4g55uX44KAIOKGkiDnm5fjgb7jgozjgosgKHBhc3NpdmUpLiBJbiB0eXBlIOKRoiBwYXNzaXZlLCB0aGUgYWZmZWN0ZWQgYmVsb25naW5nIGtlZXBzIHRoZSDjgpIgcGFydGljbGUu');
+        cM('q8', 0, 'q8-fb', 'SW4gcGFzc2l2ZSDikaIsIHRoZSBhZmZlY3RlZCBpdGVtIHRha2VzIDxzdHJvbmc+44KSPC9zdHJvbmc+OiDosqHluIM8c3Ryb25nPuOCkjwvc3Ryb25nPuebl+OBvuOCjOOBny4gVGhlIHBlcnNvbiBpcyB0aGUgdG9waWMgKOengeOBryksIGFuZCB0aGVpciBiZWxvbmdpbmcgdGFrZXMg44KSIOKAlCB0aGlzIGlzIHRoZSBrZXkgZmVhdHVyZSBvZiB0aGlzIHBhc3NpdmUgdHlwZS4=', 'VGhlIGFmZmVjdGVkIGl0ZW0gdXNlcyA8c3Ryb25nPuOCkjwvc3Ryb25nPiwgbm90IOOBjC4g6LKh5biDPHN0cm9uZz7jgpI8L3N0cm9uZz7nm5fjgb7jgozjgZ8gPSAiSSBoYWQgbXkgd2FsbGV0IHN0b2xlbi4iIFRoaXMg44KSIGlzIHdoYXQgZGlzdGluZ3Vpc2hlcyBwYXNzaXZlIOKRoiBmcm9tIHRoZSBvdGhlciB0eXBlcy4=');
+        cM('q9', 0, 'q9-fb', '6LazPHN0cm9uZz7jgpI8L3N0cm9uZz7ouI88c3Ryb25nPuOBvuOCjOOBvuOBl+OBnzwvc3Ryb25nPiDigJQgUGVyc29uXCdzIGJvZHkgcGFydCAo6LazKSB0YWtlcyDjgpIsIHBhc3NpdmUgdmVyYiAo6LiP44G+44KM44KLKS4gT3B0aW9uIEIgdXNlcyBhY3RpdmUgdm9pY2UgKOi4j+OBv+OBvuOBl+OBnykgd2hpY2ggd291bGQgbWVhbiAiSSBzdGVwcGVkIG9uIiDigJQgb3Bwb3NpdGUgbWVhbmluZyE=', '6LazPHN0cm9uZz7jgpI8L3N0cm9uZz7ouI88c3Ryb25nPuOBvuOCjOOBvuOBl+OBnzwvc3Ryb25nPiA9ICJJIGdvdCBteSBmb290IHN0ZXBwZWQgb24iIChwYXNzaXZlIOKRoikuIOi2s+OBjOi4j+OBv+OBvuOBl+OBnyB3b3VsZCBiZSBhY3RpdmUgdm9pY2UgYW5kIGdyYW1tYXRpY2FsbHkgaW5jb3JyZWN0IOKAlCDotrMgZG9lc25cJ3Qgc3RlcCBvbiB0aGluZ3MgYnkgaXRzZWxmLg==');
     }
     function cQ4(){
-        cI('q10','かもしれません','q10-fb','盗まれた<strong>かもしれません</strong> — Plain past form + かもしれません = "it might have been stolen." The passive + maybe combination is very natural for uncertain misfortune.','The answer is <strong>かもしれません</strong>. V-た (plain past) + かもしれません = "might have ~." Connects directly to the plain form.');
-        cM('q11',0,'q11-fb','For ナ-adj and nouns, <strong>だ is dropped</strong> before かもしれません: 休み<s>だ</s>かもしれない. This is a special rule — verbs and イ-adj don\'t have this issue since they don\'t end in だ.','だ is dropped before かもしれません for ナ-adj and nouns. 休みだ → 休みかもしれない. Keeping だ (休みだかもしれない) sounds unnatural.');
-        cM('q12',0,'q12-fb','<strong>～かも</strong> is the standard casual shortening of かもしれません: 忘れたかもしれません → 忘れたかも. You\'ll hear this constantly in everyday Japanese!','～<strong>かも</strong> is the go-to casual form. かもね adds the particle ね for emphasis but かも alone is the standard shortening.');
+        cI('q10', decodeBase64('44GL44KC44GX44KM44G+44Gb44KT'), 'q10-fb', '55uX44G+44KM44GfPHN0cm9uZz7jgYvjgoLjgZfjgozjgb7jgZvjgpM8L3N0cm9uZz4g4oCUIFBsYWluIHBhc3QgZm9ybSArIOOBi+OCguOBl+OCjOOBvuOBm+OCkyA9ICJpdCBtaWdodCBoYXZlIGJlZW4gc3RvbGVuLiIgVGhlIHBhc3NpdmUgKyBtYXliZSBjb21iaW5hdGlvbiBpcyB2ZXJ5IG5hdHVyYWwgZm9yIHVuY2VydGFpbiBtaXNmb3J0dW5lLg==', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuOBi+OCguOBl+OCjOOBvuOBm+OCkzwvc3Ryb25nPi4gVi3jgZ8gKHBsYWluIHBhc3QpICsg44GL44KC44GX44KM44G+44Gb44KTID0gIm1pZ2h0IGhhdmUgfi4iIENvbm5lY3RzIGRpcmVjdGx5IHRvIHRoZSBwbGFpbiBmb3JtLg==');
+        cM('q11', 0, 'q11-fb', 'Rm9yIOODii1hZGogYW5kIG5vdW5zLCA8c3Ryb25nPuOBoCBpcyBkcm9wcGVkPC9zdHJvbmc+IGJlZm9yZSDjgYvjgoLjgZfjgozjgb7jgZvjgpM6IOS8keOBvzxzPuOBoDwvcz7jgYvjgoLjgZfjgozjgarjgYQuIFRoaXMgaXMgYSBzcGVjaWFsIHJ1bGUg4oCUIHZlcmJzIGFuZCDjgqQtYWRqIGRvblwndCBoYXZlIHRoaXMgaXNzdWUgc2luY2UgdGhleSBkb25cJ3QgZW5kIGluIOOBoC4=', '44GgIGlzIGRyb3BwZWQgYmVmb3JlIOOBi+OCguOBl+OCjOOBvuOBm+OCkyBmb3Ig44OKLWFkaiBhbmQgbm91bnMuIOS8keOBv+OBoCDihpIg5LyR44G/44GL44KC44GX44KM44Gq44GELiBLZWVwaW5nIOOBoCAo5LyR44G/44Gg44GL44KC44GX44KM44Gq44GEKSBzb3VuZHMgdW5uYXR1cmFsLg==');
+        cM('q12', 0, 'q12-fb', 'PHN0cm9uZz7vvZ7jgYvjgoI8L3N0cm9uZz4gaXMgdGhlIHN0YW5kYXJkIGNhc3VhbCBzaG9ydGVuaW5nIG9mIOOBi+OCguOBl+OCjOOBvuOBm+OCkzog5b+Y44KM44Gf44GL44KC44GX44KM44G+44Gb44KTIOKGkiDlv5jjgozjgZ/jgYvjgoIuIFlvdVwnbGwgaGVhciB0aGlzIGNvbnN0YW50bHkgaW4gZXZlcnlkYXkgSmFwYW5lc2Uh', '772ePHN0cm9uZz7jgYvjgoI8L3N0cm9uZz4gaXMgdGhlIGdvLXRvIGNhc3VhbCBmb3JtLiDjgYvjgoLjga0gYWRkcyB0aGUgcGFydGljbGUg44GtIGZvciBlbXBoYXNpcyBidXQg44GL44KCIGFsb25lIGlzIHRoZSBzdGFuZGFyZCBzaG9ydGVuaW5nLg==');
     }
     function cQ5(){
-        cI('q13','しまいました','q13-fb','忘れて<strong>しまいました</strong> — V-て + しまいました expresses that something regrettable happened. "I (unfortunately) forgot my point card."','The answer is <strong>しまいました</strong>. V-て + しまいました = regret/disappointment about what happened.');
-        cM('q14',0,'q14-fb','忘れて<strong>しまった</strong> → 忘れ<strong>ちゃった</strong>. The casual contraction: てしまった → <strong>ちゃった</strong>. For で-verbs (でしまった), it becomes <strong>じゃった</strong>.','てしまった → <strong>ちゃった</strong> (て-verbs). でしまった → <strong>じゃった</strong> (で-verbs). 忘れる uses て-form 忘れて, so: 忘れちゃった.');
-        cM('q15',0,'q15-fb','V-てしまいました expresses <strong>regret, disappointment, or an unfortunate outcome</strong>. It adds emotional weight: not just "I forgot" but "I (unfortunately/regrettably) forgot." Perfect for shopping mishaps!','てしまいました = regret/disappointment. It tells the listener "this wasn\'t what I wanted to happen." A polite command would use てください or てもらえますか.');
+        cI('q13', decodeBase64('44GX44G+44GE44G+44GX44Gf'), 'q13-fb', '5b+Y44KM44GmPHN0cm9uZz7jgZfjgb7jgYTjgb7jgZfjgZ88L3N0cm9uZz4g4oCUIFYt44GmICsg44GX44G+44GE44G+44GX44GfIGV4cHJlc3NlcyB0aGF0IHNvbWV0aGluZyByZWdyZXR0YWJsZSBoYXBwZW5lZC4gIkkgKHVuZm9ydHVuYXRlbHkpIGZvcmdvdCBteSBwb2ludCBjYXJkLiI=', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuOBl+OBvuOBhOOBvuOBl+OBnzwvc3Ryb25nPi4gVi3jgaYgKyDjgZfjgb7jgYTjgb7jgZfjgZ8gPSByZWdyZXQvZGlzYXBwb2ludG1lbnQgYWJvdXQgd2hhdCBoYXBwZW5lZC4=');
+        cM('q14', 0, 'q14-fb', '5b+Y44KM44GmPHN0cm9uZz7jgZfjgb7jgaPjgZ88L3N0cm9uZz4g4oaSIOW/mOOCjDxzdHJvbmc+44Gh44KD44Gj44GfPC9zdHJvbmc+LiBUaGUgY2FzdWFsIGNvbnRyYWN0aW9uOiDjgabjgZfjgb7jgaPjgZ8g4oaSIDxzdHJvbmc+44Gh44KD44Gj44GfPC9zdHJvbmc+LiBGb3Ig44GnLXZlcmJzICjjgafjgZfjgb7jgaPjgZ8pLCBpdCBiZWNvbWVzIDxzdHJvbmc+44GY44KD44Gj44GfPC9zdHJvbmc+Lg==', '44Gm44GX44G+44Gj44GfIOKGkiA8c3Ryb25nPuOBoeOCg+OBo+OBnzwvc3Ryb25nPiAo44GmLXZlcmJzKS4g44Gn44GX44G+44Gj44GfIOKGkiA8c3Ryb25nPuOBmOOCg+OBo+OBnzwvc3Ryb25nPiAo44GnLXZlcmJzKS4g5b+Y44KM44KLIHVzZXMg44GmLWZvcm0g5b+Y44KM44GmLCBzbzog5b+Y44KM44Gh44KD44Gj44GfLg==');
+        cM('q15', 0, 'q15-fb', 'Vi3jgabjgZfjgb7jgYTjgb7jgZfjgZ8gZXhwcmVzc2VzIDxzdHJvbmc+cmVncmV0LCBkaXNhcHBvaW50bWVudCwgb3IgYW4gdW5mb3J0dW5hdGUgb3V0Y29tZTwvc3Ryb25nPi4gSXQgYWRkcyBlbW90aW9uYWwgd2VpZ2h0OiBub3QganVzdCAiSSBmb3Jnb3QiIGJ1dCAiSSAodW5mb3J0dW5hdGVseS9yZWdyZXR0YWJseSkgZm9yZ290LiIgUGVyZmVjdCBmb3Igc2hvcHBpbmcgbWlzaGFwcyE=', '44Gm44GX44G+44GE44G+44GX44GfID0gcmVncmV0L2Rpc2FwcG9pbnRtZW50LiBJdCB0ZWxscyB0aGUgbGlzdGVuZXIgInRoaXMgd2FzblwndCB3aGF0IEkgd2FudGVkIHRvIGhhcHBlbi4iIEEgcG9saXRlIGNvbW1hbmQgd291bGQgdXNlIOOBpuOBj+OBoOOBleOBhCBvciDjgabjgoLjgonjgYjjgb7jgZnjgYsu');
     }
     function cQF(){
-        cM('q16',0,'q16-fb','使って<strong>みてもいいですか</strong> — "May I try using this pen?" Permission (てもいいですか) to try (てみる). みますか just asks "will you try?" without requesting permission.','みてもいいですか = permission to try. みますか = "will you try?" (no permission element). In a store, you need to ask permission!');
-        cI('q17',['とられました','取られました'],'q17-fb','携帯を<strong>とられました</strong> — とる → とられる (passive). Person-subject passive ③ with the affected item (携帯) marked by を.','The answer is <strong>とられました</strong>. とる → とられる (Group 1 passive). Belongings passive: [item]を V-（ら）れました.');
-        cM('q18',0,'q18-fb','壊れて<strong>しまいました</strong> (regret) + 高<strong>すぎた</strong>かもしれません (too expensive + maybe). すぎる uses past: 高すぎた. Option B has 高いすぎた which is wrong — you must drop い before すぎる.','壊れてしまいました (regret) is correct. 高すぎた (past of 高すぎる — drop い first!) + かもしれません. 高い<strong>すぎた</strong> keeps い which is incorrect.');
+        cM('q16', 0, 'q16-fb', '5L2/44Gj44GmPHN0cm9uZz7jgb/jgabjgoLjgYTjgYTjgafjgZnjgYs8L3N0cm9uZz4g4oCUICJNYXkgSSB0cnkgdXNpbmcgdGhpcyBwZW4/IiBQZXJtaXNzaW9uICjjgabjgoLjgYTjgYTjgafjgZnjgYspIHRvIHRyeSAo44Gm44G/44KLKS4g44G/44G+44GZ44GLIGp1c3QgYXNrcyAid2lsbCB5b3UgdHJ5PyIgd2l0aG91dCByZXF1ZXN0aW5nIHBlcm1pc3Npb24u', '44G/44Gm44KC44GE44GE44Gn44GZ44GLID0gcGVybWlzc2lvbiB0byB0cnkuIOOBv+OBvuOBmeOBiyA9ICJ3aWxsIHlvdSB0cnk/IiAobm8gcGVybWlzc2lvbiBlbGVtZW50KS4gSW4gYSBzdG9yZSwgeW91IG5lZWQgdG8gYXNrIHBlcm1pc3Npb24h');
+        cI('q17', ["44Go44KJ44KM44G+44GX44Gf","5Y+W44KJ44KM44G+44GX44Gf"], 'q17-fb', '5pC65biv44KSPHN0cm9uZz7jgajjgonjgozjgb7jgZfjgZ88L3N0cm9uZz4g4oCUIOOBqOOCiyDihpIg44Go44KJ44KM44KLIChwYXNzaXZlKS4gUGVyc29uLXN1YmplY3QgcGFzc2l2ZSDikaIgd2l0aCB0aGUgYWZmZWN0ZWQgaXRlbSAo5pC65bivKSBtYXJrZWQgYnkg44KSLg==', 'VGhlIGFuc3dlciBpcyA8c3Ryb25nPuOBqOOCieOCjOOBvuOBl+OBnzwvc3Ryb25nPi4g44Go44KLIOKGkiDjgajjgonjgozjgosgKEdyb3VwIDEgcGFzc2l2ZSkuIEJlbG9uZ2luZ3MgcGFzc2l2ZTogW2l0ZW1d44KSIFYt77yI44KJ77yJ44KM44G+44GX44GfLg==');
+        cM('q18', 0, 'q18-fb', '5aOK44KM44GmPHN0cm9uZz7jgZfjgb7jgYTjgb7jgZfjgZ88L3N0cm9uZz4gKHJlZ3JldCkgKyDpq5g8c3Ryb25nPuOBmeOBjuOBnzwvc3Ryb25nPuOBi+OCguOBl+OCjOOBvuOBm+OCkyAodG9vIGV4cGVuc2l2ZSArIG1heWJlKS4g44GZ44GO44KLIHVzZXMgcGFzdDog6auY44GZ44GO44GfLiBPcHRpb24gQiBoYXMg6auY44GE44GZ44GO44GfIHdoaWNoIGlzIHdyb25nIOKAlCB5b3UgbXVzdCBkcm9wIOOBhCBiZWZvcmUg44GZ44GO44KLLg==', '5aOK44KM44Gm44GX44G+44GE44G+44GX44GfIChyZWdyZXQpIGlzIGNvcnJlY3QuIOmrmOOBmeOBjuOBnyAocGFzdCBvZiDpq5jjgZnjgY7jgosg4oCUIGRyb3Ag44GEIGZpcnN0ISkgKyDjgYvjgoLjgZfjgozjgb7jgZvjgpMuIOmrmOOBhDxzdHJvbmc+44GZ44GO44GfPC9zdHJvbmc+IGtlZXBzIOOBhCB3aGljaCBpcyBpbmNvcnJlY3Qu');
     }
 
     document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nextSlide();}else if(e.key==='ArrowLeft'){e.preventDefault();prevSlide();}});
