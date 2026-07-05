@@ -110,6 +110,7 @@
     const $quizTitle      = document.getElementById("quiz-title") || document.getElementById("qs-title");
     const $nsTitle        = document.getElementById("ns-title");
     const $nsBadge        = document.getElementById("ns-badge");
+    const $nsSubtitle     = document.getElementById("ns-subtitle");
     const $qsBadge        = document.getElementById("qs-badge");
     const $qLessonTag     = document.getElementById("q-lesson-tag");
     const $qTypeTag       = document.getElementById("q-type-tag");
@@ -256,7 +257,7 @@
 
     /* ── Nav Grid ── */
     function buildNavGrid() {
-      $navGrid.innerHTML = "";
+      $navGrid.textContent = "";
       quiz.forEach((_, i) => {
         const btn = document.createElement("button");
         btn.className = "nav-dot";
@@ -373,7 +374,7 @@
         renderMatchingUI(q, realIdx);
       } else {
         $choicesGrid.classList.remove("hidden");
-        $choicesGrid.innerHTML = "";
+        $choicesGrid.textContent = "";
         
         if (q.choices) {
           q.choices.forEach((c, i) => {
@@ -420,7 +421,7 @@
         renderFeedback(q, answers[realIdx]);
       } else {
         $feedbackCard.style.display = "none";
-        $feedbackCard.innerHTML = "";
+        $feedbackCard.textContent = "";
       }
 
       updateNavGrid();
@@ -551,7 +552,7 @@
 
       // Lesson breakdown rendering
       if ($lessonBreak && Object.keys(lessonStats).length > 0) {
-        $lessonBreak.innerHTML = "";
+        $lessonBreak.textContent = "";
         const lessonNames = config.lessonNames || {1: "あいさつ", 2: "レストラン", 3: "やりとり", 4: "イベント", 5: "リアクション"};
         Object.keys(lessonStats).sort((a, b) => +a - +b).forEach(l => {
           const stats = lessonStats[l];
@@ -784,5 +785,34 @@
       currentQ = idx;
       renderQuestion();
     };
+
+    // Keyboard Navigation for arrow keys (previous/next question)
+    document.addEventListener("keydown", (e) => {
+      // Don't navigate if user is typing in a text input or textarea
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      // Only navigate if the quiz is active and not on the start/end screens
+      if ($nameScreen.style.display !== "none") return;
+      if (submitted && !reviewMode) return;
+
+      if (e.key === "ArrowLeft") {
+        if (currentQ > 0) {
+          currentQ--;
+          renderQuestion();
+        }
+      } else if (e.key === "ArrowRight") {
+        const total = reviewMode ? reviewIndices.length : quiz.length;
+        if (currentQ < total - 1) {
+          currentQ++;
+          renderQuestion();
+        } else if (reviewMode) {
+          /* Exit review mode back to results */
+          reviewMode = false;
+          $reviewBanner.style.display = "none";
+          $scoreBanner.style.display = "block";
+          $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    });
   });
 })();

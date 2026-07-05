@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Serif+JP:wght@400;600;900&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js" integrity="sha384-SALc35EccAf6RzGw4iNsyj7kTPr33K7RoGzYu+7heZhT8s0GZouafRiCg1qy44AS" crossorigin="anonymous"></script>
 <style>
   /* ═══════════════════════════════════════════════════════════
      夜行列車 NIGHT TRAIN — LED departure-board design system
@@ -1449,7 +1449,9 @@ function pickScoreTier(pct) {
 /* ═══════════════════════════════════════════════════════════════
    INIT / DOM REFS
    ═══════════════════════════════════════════════════════════════ */
-emailjs.init(QUIZ_CONFIG.emailjs.publicKey);
+if (typeof emailjs !== 'undefined') {
+  emailjs.init(QUIZ_CONFIG.emailjs.publicKey);
+}
 
 const $ticketScreen  = document.getElementById("ticket-screen");
 const $rideScreen    = document.getElementById("ride-screen");
@@ -1522,7 +1524,7 @@ function updateTimerDisplay() {
    ROUTE MAP
    ═══════════════════════════════════════════════════════════════ */
 function buildRoute() {
-  $routeStations.innerHTML = "";
+  $routeStations.textContent = "";
   const stops = quiz.length / QUIZ_CONFIG.stationEvery; /* 6 */
   for (let s = 0; s <= stops; s++) {
     const pct = (s / stops) * 100;
@@ -1610,7 +1612,7 @@ function renderQuestion(qi, opts = {}) {
   $qStem.innerHTML = q.stem;
 
   /* choices */
-  $choices.innerHTML = "";
+  $choices.textContent = "";
   const picked = readonly ? (pickedOverride !== null ? pickedOverride : answers[qi]) : null;
   q.choices.forEach((c, idx) => {
     const btn = document.createElement("button");
@@ -1633,7 +1635,7 @@ function renderQuestion(qi, opts = {}) {
   });
 
   /* feedback + continue */
-  $feedbackSlot.innerHTML = "";
+  $feedbackSlot.textContent = "";
   if (readonly) {
     renderFeedback(q, picked === q.answer);
     $btnContinue.classList.add("hidden");
@@ -1756,8 +1758,8 @@ function renderStation() {
         <div class="stat-chip"><div class="v led led-cyan">×${bestStreak}</div><div class="k">BEST STREAK</div></div>
       </div>
     </div>`;
-  $choices.innerHTML = "";
-  $feedbackSlot.innerHTML = "";
+  $choices.textContent = "";
+  $feedbackSlot.textContent = "";
   $btnContinue.textContent = "発車 — Depart →";
   $btnContinue.classList.remove("hidden");
   $btnHint.classList.remove("hidden");
@@ -1803,30 +1805,34 @@ async function finishRide() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 
   /* ── Send results via EmailJS ── */
-  const cfg = QUIZ_CONFIG.emailjs;
-  const now = new Date().toLocaleString(cfg.locale, {
-    timeZone: cfg.timezone, dateStyle: "full", timeStyle: "short"
-  });
-  const stripHtml = (s) => s.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
-  const details = quiz.map((q, i) =>
-    `${i + 1}. ${stripHtml(q.stem)} → Answer: ${answers[i] || "—"} | Correct: ${q.answer} ${answers[i] === q.answer ? "✓" : "✗"}`
-  ).join("\n");
+  if (typeof emailjs !== 'undefined') {
+    const cfg = QUIZ_CONFIG.emailjs;
+    const now = new Date().toLocaleString(cfg.locale, {
+      timeZone: cfg.timezone, dateStyle: "full", timeStyle: "short"
+    });
+    const stripHtml = (s) => s.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+    const details = quiz.map((q, i) =>
+      `${i + 1}. ${stripHtml(q.stem)} → Answer: ${answers[i] || "—"} | Correct: ${q.answer} ${answers[i] === q.answer ? "✓" : "✗"}`
+    ).join("\n");
 
-  const emailParams = {
-    name: playerName,
-    email: "noreply@quiz.com",
-    subject: `[${playerName}] ${QUIZ_CONFIG.title} — ${pct}%`,
-    message: `${QUIZ_CONFIG.title}\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${correctCount}/${quiz.length} (${pct}%)\nBest streak: ×${bestStreak}\nTime used: ${um}:${us}\n\n--- Detailed results ---\n${details}\n\nがんばって！`,
-    time: now
-  };
+    const emailParams = {
+      name: playerName,
+      email: "noreply@quiz.com",
+      subject: `[${playerName}] ${QUIZ_CONFIG.title} — ${pct}%`,
+      message: `${QUIZ_CONFIG.title}\n\nStudent: ${playerName}\nDate: ${now}\nScore: ${correctCount}/${quiz.length} (${pct}%)\nBest streak: ×${bestStreak}\nTime used: ${um}:${us}\n\n--- Detailed results ---\n${details}\n\nがんばって！`,
+      time: now
+    };
 
-  $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
-  try {
-    await emailjs.send(cfg.serviceId, cfg.templateId, emailParams, cfg.publicKey);
-    $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
-  } catch (err) {
-    console.error("EmailJS error:", err);
-    $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || "Email failed"}</span>`;
+    $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
+    try {
+      await emailjs.send(cfg.serviceId, cfg.templateId, emailParams, cfg.publicKey);
+      $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || "Email failed"}</span>`;
+    }
+  } else {
+    $emailRow.innerHTML = `<span class="email-pill error">⚠ EmailJS not loaded</span>`;
   }
 }
 
@@ -1834,7 +1840,7 @@ async function finishRide() {
    JOURNEY LOG — tap any question to re-read it
    ═══════════════════════════════════════════════════════════════ */
 function buildLogGrid() {
-  $logGrid.innerHTML = "";
+  $logGrid.textContent = "";
   quiz.forEach((q, i) => {
     const dot = document.createElement("button");
     dot.type = "button";
