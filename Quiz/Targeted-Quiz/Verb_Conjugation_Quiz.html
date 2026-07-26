@@ -2,634 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.emailjs.com; img-src 'self' data: https:;">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Verb Conjugation Quiz | N5</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<style>  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    min-height: 100vh;
-    background:
-      linear-gradient(90deg, rgba(169, 52, 42, 0.06) 1px, transparent 1px),
-      linear-gradient(180deg, rgba(38, 58, 99, 0.04), transparent 34rem),
-      #f8f3ea;
-    background-size: 44px 44px, auto, auto;
-    color: #18202f;
-    font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  .container {
-    max-width: 620px;
-    margin: 0 auto;
-    padding: 32px 16px 60px;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* ── Card Styles ── */
-  .card, .q-card, .score-banner {
-    background: rgba(255, 253, 248, 0.94);
-    border-radius: 8px;
-    padding: 32px 24px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    box-shadow: 0 12px 40px rgba(24, 32, 47, 0.06);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  /* ── Name Screen ── */
-  #name-screen { margin-top: 40px; }
-
-  .badge {
-    display: inline-block;
-    background: #a9342a;
-    color: #ffffff;
-    font-weight: 800;
-    font-size: 10px;
-    padding: 5px 16px;
-    border-radius: 20px;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    box-shadow: 0 4px 12px rgba(169, 52, 42, 0.15);
-  }
-
-  .title {
-    font-size: 26px;
-    font-weight: 800;
-    margin: 16px 0 6px;
-    letter-spacing: -0.5px;
-    color: #18202f;
-  }
-
-  .subtitle {
-    font-size: 14px;
-    color: #667085;
-  }
-
-  .name-label {
-    display: block;
-    font-size: 13px;
-    color: #667085;
-    margin: 32px 0 8px;
-    text-align: left;
-    font-weight: 700;
-  }
-
-  .name-input {
-    width: 100%;
-    padding: 16px;
-    border-radius: 8px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    background: #ffffff;
-    color: #18202f;
-    font-size: 16px;
-    font-family: inherit;
-    outline: none;
-    transition: all 0.2s;
-  }
-  .name-input:focus {
-    border-color: #a9342a;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(169, 52, 42, 0.15);
-  }
-
-  .btn-primary {
-    width: 100%;
-    margin-top: 24px;
-    padding: 16px 0;
-    border-radius: 8px;
-    background: #a9342a;
-    border: none;
-    color: #ffffff;
-    font-size: 16px;
-    font-weight: 800;
-    font-family: inherit;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.25);
-    transition: all 0.25s ease;
-  }
-  .btn-primary:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(169, 52, 42, 0.35);
-    opacity: 0.95;
-  }
-  .btn-primary:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-
-  /* ── Quiz Screen ── */
-  #quiz-screen { display: none; }
-
-  .header { text-align: center; margin-bottom: 24px; }
-  .header .subtitle { margin-top: 6px; }
-
-  /* Score Banner */
-  .score-banner {
-    display: none;
-    border-radius: 8px;
-    padding: 28px 20px;
-    text-align: center;
-    margin-bottom: 24px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    box-shadow: 0 12px 40px rgba(24, 32, 47, 0.06);
-    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .score-number { font-size: 52px; font-weight: 900; letter-spacing: -1.5px; line-height: 1; margin-bottom: 6px;}
-  .score-label { font-size: 20px; font-weight: 700; margin-bottom: 14px; }
-  .email-row { margin-bottom: 20px; }
-  .email-pill {
-    display: inline-block;
-    background: rgba(24, 32, 47, 0.04);
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    font-size: 12px;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-weight: 700;
-    color: #18202f;
-  }
-  .email-pill.sent {
-    background: #e8f5e9;
-    border: 1px solid #2e7d32;
-    color: #1b5e20;
-  }
-  .email-pill.error {
-    background: #ffebee;
-    border: 1px solid #c62828;
-    color: #b71c1c;
-  }
-  .btn-retake {
-    background: rgba(24, 32, 47, 0.06);
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    color: #18202f;
-    padding: 12px 28px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-retake:hover {
-    background: #f4ddd8;
-    border-color: rgba(169, 52, 42, 0.2);
-    color: #a9342a;
-    transform: translateY(-1px);
-  }
-
-  /* Progress */
-  .progress-row { margin-bottom: 20px; }
-  .progress-text { font-size: 12px; color: #667085; display: block; margin-bottom: 8px; font-weight: 700; }
-  .progress-bar { height: 6px; background: rgba(24, 32, 47, 0.06); border-radius: 6px; overflow: hidden; }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #a9342a, #8f241c);
-    border-radius: 6px;
-    width: 0%;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 10px rgba(169, 52, 42, 0.15);
-  }
-
-  /* Nav Grid */
-  .nav-grid {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 6px;
-    margin-bottom: 24px;
-  }
-  .nav-dot {
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: #fffdf8;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    color: #667085;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .nav-dot:hover:not(.answered):not(.active):not(.locked) {
-    background: #f4ddd8;
-    color: #a9342a;
-    border-color: rgba(169, 52, 42, 0.2);
-  }
-  .nav-dot.answered {
-    background: rgba(169, 52, 42, 0.06);
-    border-color: rgba(169, 52, 42, 0.2);
-    color: #a9342a;
-  }
-  .nav-dot.active {
-    border-color: #a9342a;
-    background: #f4ddd8;
-    color: #a9342a;
-    box-shadow: 0 0 0 3px rgba(169, 52, 42, 0.15);
-  }
-  .nav-dot.correct {
-    background: #e8f5e9;
-    border-color: #2e7d32;
-    color: #1b5e20;
-  }
-  .nav-dot.wrong {
-    background: #ffebee;
-    border-color: #c62828;
-    color: #b71c1c;
-  }
-  .nav-dot.unanswered-locked {
-    background: rgba(24, 32, 47, 0.02);
-    border-color: rgba(24, 32, 47, 0.06);
-    color: rgba(24, 32, 47, 0.3);
-    opacity: 0.5;
-  }
-  @media (max-width: 480px) {
-    .nav-grid {
-      gap: 4px;
-    }
-    .nav-dot {
-      font-size: 10px;
-    }
-  }
-
-  /* Question Card */
-  .q-card {
-    background: rgba(255, 253, 248, 0.94);
-    border-radius: 8px;
-    padding: 28px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    margin-bottom: 20px;
-    box-shadow: 0 8px 24px rgba(24, 32, 47, 0.04);
-    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .q-number {
-    font-size: 11px;
-    color: #a9342a;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 10px;
-  }
-  .q-text {
-    font-size: 21px;
-    font-weight: 700;
-    margin-bottom: 28px;
-    line-height: 1.45;
-    color: #18202f;
-  }
-  .choices-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-  .choice-btn {
-    padding: 18px 20px;
-    border-radius: 8px;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    background: #fffdf8;
-    color: #18202f;
-    text-align: left;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 17px;
-    font-weight: 600;
-    position: relative;
-    display: flex;
-    align-items: center;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow: hidden;
-  }
-  .choice-btn:hover:not(.locked) {
-    border-color: rgba(169, 52, 42, 0.3);
-    background: #f4ddd8;
-    color: #a9342a;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.05);
-  }
-  .choice-btn.selected {
-    background: #f4ddd8;
-    border-color: #a9342a;
-    color: #a9342a;
-    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.1);
-  }
-  
-  .choice-btn.correct-reveal {
-    background: #e8f5e9;
-    border-color: #2e7d32;
-    color: #1b5e20;
-  }
-  .choice-btn.wrong-reveal {
-    background: #ffebee;
-    border-color: #c62828;
-    color: #b71c1c;
-  }
-  .choice-btn.faded-reveal {
-    opacity: 0.4;
-    border-color: rgba(24, 32, 47, 0.04);
-  }
-  
-  .choice-letter {
-    font-weight: 800;
-    margin-right: 16px;
-    opacity: 0.5;
-    transition: opacity 0.2s;
-  }
-  .choice-btn:hover .choice-letter, .choice-btn.selected .choice-letter { opacity: 1; }
-  
-  .mark {
-    position: absolute;
-    right: 20px;
-    font-size: 20px;
-    font-weight: 900;
-  }
-  .mark.ok { color: #1b5e20; }
-  .mark.no { color: #b71c1c; }
-
-  /* Explanation Box / Feedback Card */
-  .feedback-card {
-    display: none;
-    margin-top: 24px;
-    padding: 18px 20px;
-    border-radius: 8px;
-    background: #fff8ef;
-    border: 1px solid rgba(169, 52, 42, 0.15);
-    font-size: 14px;
-    line-height: 1.55;
-    color: #18202f;
-    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .fb-header {
-    font-weight: 800;
-    margin-bottom: 8px;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .feedback-card.correct .fb-header { color: #2e7d32; }
-  .feedback-card.wrong .fb-header { color: #c62828; }
-  .fb-block { margin-top: 8px; }
-  .fb-block.connect { color: #667085; font-size: 13px; }
-  .fb-block.warn {
-    color: #b71c1c;
-    background: #ffebee;
-    border: 1px solid rgba(198, 40, 40, 0.2);
-    padding: 8px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-  }
-
-  .end-actions {
-    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
-    margin-top: 14px;
-  }
-  .btn-end {
-    background: rgba(24, 32, 47, 0.06);
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    color: #18202f;
-    padding: 12px 28px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-end:hover:not(:disabled) {
-    background: #f4ddd8;
-    border-color: rgba(169, 52, 42, 0.2);
-    color: #a9342a;
-    transform: translateY(-1px);
-  }
-  .btn-end:disabled { opacity: 0.4; cursor: default; }
-
-  /* ── Review Banner ── */
-  .review-banner {
-    display: none;
-    background: #fff9c4;
-    border: 1px solid #fbc02d;
-    color: #f57f17;
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 15px rgba(245, 127, 23, 0.08);
-    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  /* Skipped warning alert box */
-  .skipped-warning {
-    margin-bottom: 20px;
-    padding: 16px;
-    background: #fff8ef;
-    border: 1px solid #a9342a;
-    border-radius: 8px;
-    color: #a9342a;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    line-height: 1.5;
-    animation: fadeIn 0.3s ease;
-  }
-  .skipped-link {
-    color: #a9342a;
-    text-decoration: underline;
-    cursor: pointer;
-    margin: 0 4px;
-    font-weight: 800;
-  }
-  .skipped-link:hover {
-    color: #8f241c;
-  }
-
-  /* Arrow Row */
-  .arrow-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .btn-nav {
-    flex: 1;
-    padding: 16px 0;
-    border-radius: 8px;
-    background: #fffdf8;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    color: #18202f;
-    font-size: 15px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-nav:hover:not(:disabled) {
-    background: #f4ddd8;
-    color: #a9342a;
-    border-color: rgba(169, 52, 42, 0.2);
-  }
-  .btn-nav:disabled { opacity: 0.25; cursor: not-allowed; }
-  
-  .btn-submit {
-    flex: 1;
-    padding: 16px 0;
-    border-radius: 8px;
-    background: #a9342a;
-    border: none;
-    color: #ffffff;
-    font-size: 15px;
-    font-weight: 800;
-    font-family: inherit;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(169, 52, 42, 0.25);
-    transition: all 0.2s;
-  }
-  .btn-submit:hover:not(:disabled) {
-    box-shadow: 0 6px 20px rgba(169, 52, 42, 0.35);
-    opacity: 0.95;
-  }
-  .btn-submit:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
-
-  .text-center { text-align: center; }
-  .hidden { display: none !important; }
-
-/* ========== Site Breadcrumb ========== */
-.site-breadcrumb,
-.site-breadcrumb * {
-  box-sizing: border-box;
-}
-
-.site-breadcrumb {
-  position: relative;
-  z-index: 20;
-  width: min(1180px, calc(100% - 32px));
-  margin: 16px auto 12px;
-  font-family: "Noto Sans JP", "Outfit", system-ui, sans-serif;
-  color: #18202f;
-}
-
-.site-breadcrumb__list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0;
-  list-style: none;
-  margin: 0;
-  padding: 8px 12px;
-  border: 1px solid rgba(24, 32, 47, 0.12);
-  border-radius: 8px;
-  background: rgba(255, 253, 248, 0.94);
-  box-shadow: 0 10px 30px rgba(24, 32, 47, 0.08);
-}
-
-.site-breadcrumb__item {
-  display: inline-flex;
-  align-items: center;
-  min-width: 0;
-  color: #667085;
-  font-size: 0.82rem;
-  font-weight: 700;
-  line-height: 1.4;
-}
-
-.site-breadcrumb__item + .site-breadcrumb__item::before {
-  content: "/";
-  margin: 0 8px;
-  color: rgba(169, 52, 42, 0.42);
-  font-weight: 800;
-}
-
-.site-breadcrumb__link {
-  color: #667085;
-  text-decoration: none;
-  transition: color 0.18s ease, background 0.18s ease;
-}
-
-.site-breadcrumb__link:hover {
-  color: #a9342a;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.site-breadcrumb__link:focus-visible {
-  color: #a9342a;
-  outline: 2px solid rgba(169, 52, 42, 0.45);
-  outline-offset: 3px;
-  border-radius: 4px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.site-breadcrumb__category {
-  color: #a9342a;
-}
-
-.site-breadcrumb__current {
-  color: #18202f;
-  overflow-wrap: anywhere;
-}
-
-
-
-@media (max-width: 640px) {
-  .site-breadcrumb {
-    width: min(100% - 20px, 680px);
-    margin: 12px auto 10px;
-  }
-
-  .site-breadcrumb__list {
-    padding: 8px 10px;
-  }
-
-  .site-breadcrumb__item {
-    font-size: 0.78rem;
-  }
-}
-/* ========== End Site Breadcrumb ========== */
-    
-  /* Timer Display styling next to progress */
-  .topbar-timer {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    font-weight: 700;
-    color: #18202f;
-    border: 1px solid rgba(24, 32, 47, 0.12);
-    padding: 4px 12px;
-    border-radius: 20px;
-    background: rgba(255, 253, 248, 0.94);
-    box-shadow: 0 2px 6px rgba(24, 32, 47, 0.04);
-  }
-  .topbar-timer.warning {
-    color: #a9342a;
-    border-color: #a9342a;
-    background: #fff8ef;
-    animation: timerPulse 1s infinite alternate;
-  }
-  @keyframes timerPulse {
-    from { opacity: 1; }
-    to { opacity: 0.6; }
-  }
-</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js" integrity="sha384-SALc35EccAf6RzGw4iNsyj7kTPr33K7RoGzYu+7heZhT8s0GZouafRiCg1qy44AS" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="../assets/css/quiz-common.css">
 </head>
 <body>
 
@@ -697,8 +75,10 @@
     <div class="skipped-warning hidden" id="skipped-warning"></div>
 
     <div class="q-card" id="q-card">
-      <div class="q-number" id="q-number"></div>
-      <div class="q-text" id="q-text"></div>
+      <div class="q-copy">
+        <div class="q-number" id="q-number"></div>
+        <div class="q-text" id="q-text"></div>
+      </div>
       <div class="choices-grid" id="choices-grid"></div>
       <div class="feedback-card" id="feedback-card" aria-live="polite"></div>
     </div>
@@ -715,1136 +95,346 @@
 </div>
 
 <script>
-const QUESTIONS = [
+window.quizConfig = {
+  lessonTitle: "Verb Conjugation Practice | N5",
+  lessonTitleShort: "Verb Conjugation",
+  badge: "JLPT N5 Review",
+  subtitle: "Complete 30 practice items",
+  emailSubject: "Verb Conjugation Quiz",
+  questions: [
   {
-    "question": "The \"A I U E O\" conjugation is technically called _____ conjugation.",
-    "options": [
-      {
-        "id": "a",
-        "text": "Godan (<ruby>五<rt>ご</rt>段<rt>だん</rt></ruby>)"
-      },
-      {
-        "id": "b",
-        "text": "Ichidan (<ruby>一<rt>いち</rt>段<rt>だん</rt></ruby>)"
-      },
-      {
-        "id": "c",
-        "text": "Te-kei (て<ruby>形<rt>けい</rt></ruby>)"
-      },
-      {
-        "id": "d",
-        "text": "Ta-kei (た<ruby>形<rt>けい</rt></ruby>)"
-      }
+    "stem": "VGhlICJBIEkgVSBFIE8iIGNvbmp1Z2F0aW9uIGlzIHRlY2huaWNhbGx5IGNhbGxlZCBfX19fXyBjb25qdWdhdGlvbi4=",
+    "answer": "R29kYW4gKDxydWJ5PuS6lDxydD7jgZQ8L3J0PuautTxydD7jgaDjgpM8L3J0PjwvcnVieT4p",
+    "choices": [
+      "Godan (<ruby>五<rt>ご</rt>段<rt>だん</rt></ruby>)",
+      "Ichidan (<ruby>一<rt>いち</rt>段<rt>だん</rt></ruby>)",
+      "Te-kei (て<ruby>形<rt>けい</rt></ruby>)",
+      "Ta-kei (た<ruby>形<rt>けい</rt></ruby>)"
     ],
-    "correct": "a",
-    "explanation": "The correct choice is <strong>「Godan」</strong>. Group 1 verbs are called 'five-row' (Godan) verbs because their stems conjugate across all five vowel rows (a, i, u, e, o) in the hiragana chart.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>Ichidan</code> is incorrect because Group 2 verbs are called 'one-row' (Ichidan) verbs, as their stem stays fixed on a single row (i or e).<br>• <code>Te-kei</code> is incorrect because it is the te-form conjugation, not a categorization of verb conjugation classes.<br>• <code>Ta-kei</code> is incorrect because it is the ta-form conjugation (past casual)."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CMR29kYW7jgI08L3N0cm9uZz4uIEdyb3VwIDEgdmVyYnMgYXJlIGNhbGxlZCAnZml2ZS1yb3cnIChHb2RhbikgdmVyYnMgYmVjYXVzZSB0aGVpciBzdGVtcyBjb25qdWdhdGUgYWNyb3NzIGFsbCBmaXZlIHZvd2VsIHJvd3MgKGEsIGksIHUsIGUsIG8pIGluIHRoZSBoaXJhZ2FuYSBjaGFydC48YnI+PGJyPjxzdHJvbmc+V2h5IG90aGVyIGNob2ljZXMgYXJlIGluY29ycmVjdDo8L3N0cm9uZz48YnI+4oCiIDxjb2RlPkljaGlkYW48L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIEdyb3VwIDIgdmVyYnMgYXJlIGNhbGxlZCAnb25lLXJvdycgKEljaGlkYW4pIHZlcmJzLCBhcyB0aGVpciBzdGVtIHN0YXlzIGZpeGVkIG9uIGEgc2luZ2xlIHJvdyAoaSBvciBlKS48YnI+4oCiIDxjb2RlPlRlLWtlaTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgaXMgdGhlIHRlLWZvcm0gY29uanVnYXRpb24sIG5vdCBhIGNhdGVnb3JpemF0aW9uIG9mIHZlcmIgY29uanVnYXRpb24gY2xhc3Nlcy48YnI+4oCiIDxjb2RlPlRhLWtlaTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgaXMgdGhlIHRhLWZvcm0gY29uanVnYXRpb24gKHBhc3QgY2FzdWFsKS4="
   },
   {
-    "question": "Group 2 verbs are called _____ because they do not cycle through vowels.",
-    "options": [
-      {
-        "id": "a",
-        "text": "Godan (<ruby>五<rt>ご</rt>段<rt>だん</rt></ruby>)"
-      },
-      {
-        "id": "b",
-        "text": "Ichidan (<ruby>一<rt>いち</rt>段<rt>だん</rt></ruby>)"
-      },
-      {
-        "id": "c",
-        "text": "Sandan (<ruby>三<rt>さん</rt>段<rt>だん</rt></ruby>)"
-      },
-      {
-        "id": "d",
-        "text": "Yondan (<ruby>四<rt>よん</rt>段<rt>だん</rt></ruby>)"
-      }
+    "stem": "R3JvdXAgMiB2ZXJicyBhcmUgY2FsbGVkIF9fX19fIGJlY2F1c2UgdGhleSBkbyBub3QgY3ljbGUgdGhyb3VnaCB2b3dlbHMu",
+    "answer": "SWNoaWRhbiAoPHJ1Ynk+5LiAPHJ0PuOBhOOBoTwvcnQ+5q61PHJ0PuOBoOOCkzwvcnQ+PC9ydWJ5Pik=",
+    "choices": [
+      "Godan (<ruby>五<rt>ご</rt>段<rt>だん</rt></ruby>)",
+      "Ichidan (<ruby>一<rt>いち</rt>段<rt>だん</rt></ruby>)",
+      "Sandan (<ruby>三<rt>さん</rt>段<rt>だん</rt></ruby>)",
+      "Yondan (<ruby>四<rt>よん</rt>段<rt>だん</rt></ruby>)"
     ],
-    "correct": "b",
-    "explanation": "The correct choice is <strong>「Ichidan」</strong>. 'One-row' (Ichidan) verbs have stems that consistently end in either 'i' or 'e' without cycling through other vowels.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>Godan</code> is incorrect because Godan verbs cycle through all 5 vowel rows during conjugation.<br>• <code>Sandan</code> is incorrect because there is no such class as 'Sandan' (three-row) verbs in modern Japanese grammar.<br>• <code>Yondan</code> is incorrect because Yondan (four-row) is a classical Japanese verb conjugation class not used for Group 2 in modern Japanese."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CMSWNoaWRhbuOAjTwvc3Ryb25nPi4gJ09uZS1yb3cnIChJY2hpZGFuKSB2ZXJicyBoYXZlIHN0ZW1zIHRoYXQgY29uc2lzdGVudGx5IGVuZCBpbiBlaXRoZXIgJ2knIG9yICdlJyB3aXRob3V0IGN5Y2xpbmcgdGhyb3VnaCBvdGhlciB2b3dlbHMuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT5Hb2RhbjwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgR29kYW4gdmVyYnMgY3ljbGUgdGhyb3VnaCBhbGwgNSB2b3dlbCByb3dzIGR1cmluZyBjb25qdWdhdGlvbi48YnI+4oCiIDxjb2RlPlNhbmRhbjwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgdGhlcmUgaXMgbm8gc3VjaCBjbGFzcyBhcyAnU2FuZGFuJyAodGhyZWUtcm93KSB2ZXJicyBpbiBtb2Rlcm4gSmFwYW5lc2UgZ3JhbW1hci48YnI+4oCiIDxjb2RlPllvbmRhbjwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgWW9uZGFuIChmb3VyLXJvdykgaXMgYSBjbGFzc2ljYWwgSmFwYW5lc2UgdmVyYiBjb25qdWdhdGlvbiBjbGFzcyBub3QgdXNlZCBmb3IgR3JvdXAgMiBpbiBtb2Rlcm4gSmFwYW5lc2Uu"
   },
   {
-    "question": "<ruby>行<rt>い</rt></ruby>きます (to go) belongs to which verb group?",
-    "options": [
-      {
-        "id": "a",
-        "text": "Group 1 (Godan)"
-      },
-      {
-        "id": "b",
-        "text": "Group 2 (Ichidan)"
-      },
-      {
-        "id": "c",
-        "text": "Group 3 (Irregular)"
-      },
-      {
-        "id": "d",
-        "text": "It is an adjective"
-      }
+    "stem": "PHJ1Ynk+6KGMPHJ0PuOBhDwvcnQ+PC9ydWJ5PuOBjeOBvuOBmSAodG8gZ28pIGJlbG9uZ3MgdG8gd2hpY2ggdmVyYiBncm91cD8=",
+    "answer": "R3JvdXAgMSAoR29kYW4p",
+    "choices": [
+      "Group 1 (Godan)",
+      "Group 2 (Ichidan)",
+      "Group 3 (Irregular)",
+      "It is an adjective"
     ],
-    "correct": "a",
-    "explanation": "The correct choice is <strong>「Group 1 (Godan)」</strong>. The dictionary form is いく (ends in -u) and its ます-form is いきます (ends in -iます), showing a vowel shift (i ➔ u).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>Group 2 (Ichidan)</code> is incorrect because Group 2 verbs do not shift vowels (their dictionary form always ends in -ru, which is dropped before ます).<br>• <code>Group 3 (Irregular)</code> is incorrect because Group 3 only contains the irregular verbs する and くる.<br>• <code>It is an adjective</code> is incorrect because いく is a verb meaning 'to go.'"
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CMR3JvdXAgMSAoR29kYW4p44CNPC9zdHJvbmc+LiBUaGUgZGljdGlvbmFyeSBmb3JtIGlzIOOBhOOBjyAoZW5kcyBpbiAtdSkgYW5kIGl0cyDjgb7jgZktZm9ybSBpcyDjgYTjgY3jgb7jgZkgKGVuZHMgaW4gLWnjgb7jgZkpLCBzaG93aW5nIGEgdm93ZWwgc2hpZnQgKGkg4p6UIHUpLjxicj48YnI+PHN0cm9uZz5XaHkgb3RoZXIgY2hvaWNlcyBhcmUgaW5jb3JyZWN0Ojwvc3Ryb25nPjxicj7igKIgPGNvZGU+R3JvdXAgMiAoSWNoaWRhbik8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIEdyb3VwIDIgdmVyYnMgZG8gbm90IHNoaWZ0IHZvd2VscyAodGhlaXIgZGljdGlvbmFyeSBmb3JtIGFsd2F5cyBlbmRzIGluIC1ydSwgd2hpY2ggaXMgZHJvcHBlZCBiZWZvcmUg44G+44GZKS48YnI+4oCiIDxjb2RlPkdyb3VwIDMgKElycmVndWxhcik8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIEdyb3VwIDMgb25seSBjb250YWlucyB0aGUgaXJyZWd1bGFyIHZlcmJzIOOBmeOCiyBhbmQg44GP44KLLjxicj7igKIgPGNvZGU+SXQgaXMgYW4gYWRqZWN0aXZlPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSDjgYTjgY8gaXMgYSB2ZXJiIG1lYW5pbmcgJ3RvIGdvLic="
   },
   {
-    "question": "<ruby>食<rt>た</rt></ruby>べます (to eat) belongs to which verb group?",
-    "options": [
-      {
-        "id": "a",
-        "text": "Group 1 (Godan)"
-      },
-      {
-        "id": "b",
-        "text": "Group 2 (Ichidan)"
-      },
-      {
-        "id": "c",
-        "text": "Group 3 (Irregular)"
-      },
-      {
-        "id": "d",
-        "text": "Group 4"
-      }
+    "stem": "PHJ1Ynk+6aOfPHJ0PuOBnzwvcnQ+PC9ydWJ5PuOBueOBvuOBmSAodG8gZWF0KSBiZWxvbmdzIHRvIHdoaWNoIHZlcmIgZ3JvdXA/",
+    "answer": "R3JvdXAgMiAoSWNoaWRhbik=",
+    "choices": [
+      "Group 1 (Godan)",
+      "Group 2 (Ichidan)",
+      "Group 3 (Irregular)",
+      "Group 4"
     ],
-    "correct": "b",
-    "explanation": "The correct choice is <strong>「Group 2 (Ichidan)」</strong>. The syllable before ます is べ (in the 'e' column), and the dictionary form ends in える (たべる), which is the hallmark of Group 2.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>Group 1 (Godan)</code> is incorrect because Godan verbs have their ます-form syllable in the 'i' column (like かきます, のみます).<br>• <code>Group 3 (Irregular)</code> is incorrect because Group 3 only contains する and くる.<br>• <code>Group 4</code> is incorrect because there is no Group 4 class in modern Japanese verb classification."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CMR3JvdXAgMiAoSWNoaWRhbinjgI08L3N0cm9uZz4uIFRoZSBzeWxsYWJsZSBiZWZvcmUg44G+44GZIGlzIOOBuSAoaW4gdGhlICdlJyBjb2x1bW4pLCBhbmQgdGhlIGRpY3Rpb25hcnkgZm9ybSBlbmRzIGluIOOBiOOCiyAo44Gf44G544KLKSwgd2hpY2ggaXMgdGhlIGhhbGxtYXJrIG9mIEdyb3VwIDIuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT5Hcm91cCAxIChHb2Rhbik8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIEdvZGFuIHZlcmJzIGhhdmUgdGhlaXIg44G+44GZLWZvcm0gc3lsbGFibGUgaW4gdGhlICdpJyBjb2x1bW4gKGxpa2Ug44GL44GN44G+44GZLCDjga7jgb/jgb7jgZkpLjxicj7igKIgPGNvZGU+R3JvdXAgMyAoSXJyZWd1bGFyKTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgR3JvdXAgMyBvbmx5IGNvbnRhaW5zIOOBmeOCiyBhbmQg44GP44KLLjxicj7igKIgPGNvZGU+R3JvdXAgNDwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgdGhlcmUgaXMgbm8gR3JvdXAgNCBjbGFzcyBpbiBtb2Rlcm4gSmFwYW5lc2UgdmVyYiBjbGFzc2lmaWNhdGlvbi4="
   },
   {
-    "question": "<ruby>来<rt>き</rt></ruby>ます (to come) belongs to which verb group?",
-    "options": [
-      {
-        "id": "a",
-        "text": "Group 1 (Godan)"
-      },
-      {
-        "id": "b",
-        "text": "Group 2 (Ichidan)"
-      },
-      {
-        "id": "c",
-        "text": "Group 3 (Irregular)"
-      },
-      {
-        "id": "d",
-        "text": "Group 4"
-      }
+    "stem": "PHJ1Ynk+5p2lPHJ0PuOBjTwvcnQ+PC9ydWJ5PuOBvuOBmSAodG8gY29tZSkgYmVsb25ncyB0byB3aGljaCB2ZXJiIGdyb3VwPw==",
+    "answer": "R3JvdXAgMyAoSXJyZWd1bGFyKQ==",
+    "choices": [
+      "Group 1 (Godan)",
+      "Group 2 (Ichidan)",
+      "Group 3 (Irregular)",
+      "Group 4"
     ],
-    "correct": "c",
-    "explanation": "The correct choice is <strong>「Group 3 (Irregular)」</strong>. きます (dictionary form: くる) is one of the only two irregular verbs in modern Japanese (the other being する).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>Group 1 (Godan)</code> is incorrect because くる does not conjugate using regular Godan rules.<br>• <code>Group 2 (Ichidan)</code> is incorrect because くる changes its stem vowel irregularly (ki-masu, ku-ru, ko-nai) rather than holding a single vowel.<br>• <code>Group 4</code> is incorrect because there is no Group 4 class."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CMR3JvdXAgMyAoSXJyZWd1bGFyKeOAjTwvc3Ryb25nPi4g44GN44G+44GZIChkaWN0aW9uYXJ5IGZvcm06IOOBj+OCiykgaXMgb25lIG9mIHRoZSBvbmx5IHR3byBpcnJlZ3VsYXIgdmVyYnMgaW4gbW9kZXJuIEphcGFuZXNlICh0aGUgb3RoZXIgYmVpbmcg44GZ44KLKS48YnI+PGJyPjxzdHJvbmc+V2h5IG90aGVyIGNob2ljZXMgYXJlIGluY29ycmVjdDo8L3N0cm9uZz48YnI+4oCiIDxjb2RlPkdyb3VwIDEgKEdvZGFuKTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2Ug44GP44KLIGRvZXMgbm90IGNvbmp1Z2F0ZSB1c2luZyByZWd1bGFyIEdvZGFuIHJ1bGVzLjxicj7igKIgPGNvZGU+R3JvdXAgMiAoSWNoaWRhbik8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIOOBj+OCiyBjaGFuZ2VzIGl0cyBzdGVtIHZvd2VsIGlycmVndWxhcmx5IChraS1tYXN1LCBrdS1ydSwga28tbmFpKSByYXRoZXIgdGhhbiBob2xkaW5nIGEgc2luZ2xlIHZvd2VsLjxicj7igKIgPGNvZGU+R3JvdXAgNDwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgdGhlcmUgaXMgbm8gR3JvdXAgNCBjbGFzcy4="
   },
   {
-    "question": "Despite ending in \"eru\", <ruby>帰<rt>かえ</rt></ruby>る (to return) is actually a _____ verb.",
-    "options": [
-      {
-        "id": "a",
-        "text": "Group 1 (Godan)"
-      },
-      {
-        "id": "b",
-        "text": "Group 2 (Ichidan)"
-      },
-      {
-        "id": "c",
-        "text": "Group 3 (Irregular)"
-      },
-      {
-        "id": "d",
-        "text": "Noun"
-      }
+    "stem": "RGVzcGl0ZSBlbmRpbmcgaW4gImVydSIsIDxydWJ5PuW4sDxydD7jgYvjgYg8L3J0PjwvcnVieT7jgosgKHRvIHJldHVybikgaXMgYWN0dWFsbHkgYSBfX19fXyB2ZXJiLg==",
+    "answer": "R3JvdXAgMSAoR29kYW4p",
+    "choices": [
+      "Group 1 (Godan)",
+      "Group 2 (Ichidan)",
+      "Group 3 (Irregular)",
+      "Noun"
     ],
-    "correct": "a",
-    "explanation": "The correct choice is <strong>「Group 1 (Godan)」</strong>. かえる (to return) is a well-known exception that conjugates as a Group 1 verb (e.g. negative is かえらない, past is かえった).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>Group 2 (Ichidan)</code> is incorrect because although it ends in 'eru,' it does not drop 'ru' to conjugate (e.g. it is not かえます, it is かえります).<br>• <code>Group 3 (Irregular)</code> is incorrect because it conjugates regularly as a Group 1 verb.<br>• <code>Noun</code> is incorrect because かえる is a verb meaning 'to return.'"
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CMR3JvdXAgMSAoR29kYW4p44CNPC9zdHJvbmc+LiDjgYvjgYjjgosgKHRvIHJldHVybikgaXMgYSB3ZWxsLWtub3duIGV4Y2VwdGlvbiB0aGF0IGNvbmp1Z2F0ZXMgYXMgYSBHcm91cCAxIHZlcmIgKGUuZy4gbmVnYXRpdmUgaXMg44GL44GI44KJ44Gq44GELCBwYXN0IGlzIOOBi+OBiOOBo+OBnykuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT5Hcm91cCAyIChJY2hpZGFuKTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgYWx0aG91Z2ggaXQgZW5kcyBpbiAnZXJ1LCcgaXQgZG9lcyBub3QgZHJvcCAncnUnIHRvIGNvbmp1Z2F0ZSAoZS5nLiBpdCBpcyBub3Qg44GL44GI44G+44GZLCBpdCBpcyDjgYvjgYjjgorjgb7jgZkpLjxicj7igKIgPGNvZGU+R3JvdXAgMyAoSXJyZWd1bGFyKTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgY29uanVnYXRlcyByZWd1bGFybHkgYXMgYSBHcm91cCAxIHZlcmIuPGJyPuKAoiA8Y29kZT5Ob3VuPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSDjgYvjgYjjgosgaXMgYSB2ZXJiIG1lYW5pbmcgJ3RvIHJldHVybi4n"
   },
   {
-    "question": "Despite ending in \"iru\", <ruby>切<rt>き</rt></ruby>る (to cut) is actually a _____ verb.",
-    "options": [
-      {
-        "id": "a",
-        "text": "Group 1 (Godan)"
-      },
-      {
-        "id": "b",
-        "text": "Group 2 (Ichidan)"
-      },
-      {
-        "id": "c",
-        "text": "Group 3 (Irregular)"
-      },
-      {
-        "id": "d",
-        "text": "Adverb"
-      }
+    "stem": "RGVzcGl0ZSBlbmRpbmcgaW4gImlydSIsIDxydWJ5PuWIhzxydD7jgY08L3J0PjwvcnVieT7jgosgKHRvIGN1dCkgaXMgYWN0dWFsbHkgYSBfX19fXyB2ZXJiLg==",
+    "answer": "R3JvdXAgMSAoR29kYW4p",
+    "choices": [
+      "Group 1 (Godan)",
+      "Group 2 (Ichidan)",
+      "Group 3 (Irregular)",
+      "Adverb"
     ],
-    "correct": "a",
-    "explanation": "The correct choice is <strong>「Group 1 (Godan)」</strong>. きる (to cut) is an exception verb that conjugates as a Group 1 verb (e.g. negative is きらない, past is きった).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>Group 2 (Ichidan)</code> is incorrect because it conjugates as Godan (きります), unlike its homophone きる (to wear) which is Group 2 (きます).<br>• <code>Group 3 (Irregular)</code> is incorrect because it conjugates regularly as a Group 1 verb.<br>• <code>Adverb</code> is incorrect because きる is a verb meaning 'to cut.'"
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CMR3JvdXAgMSAoR29kYW4p44CNPC9zdHJvbmc+LiDjgY3jgosgKHRvIGN1dCkgaXMgYW4gZXhjZXB0aW9uIHZlcmIgdGhhdCBjb25qdWdhdGVzIGFzIGEgR3JvdXAgMSB2ZXJiIChlLmcuIG5lZ2F0aXZlIGlzIOOBjeOCieOBquOBhCwgcGFzdCBpcyDjgY3jgaPjgZ8pLjxicj48YnI+PHN0cm9uZz5XaHkgb3RoZXIgY2hvaWNlcyBhcmUgaW5jb3JyZWN0Ojwvc3Ryb25nPjxicj7igKIgPGNvZGU+R3JvdXAgMiAoSWNoaWRhbik8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IGNvbmp1Z2F0ZXMgYXMgR29kYW4gKOOBjeOCiuOBvuOBmSksIHVubGlrZSBpdHMgaG9tb3Bob25lIOOBjeOCiyAodG8gd2Vhcikgd2hpY2ggaXMgR3JvdXAgMiAo44GN44G+44GZKS48YnI+4oCiIDxjb2RlPkdyb3VwIDMgKElycmVndWxhcik8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IGNvbmp1Z2F0ZXMgcmVndWxhcmx5IGFzIGEgR3JvdXAgMSB2ZXJiLjxicj7igKIgPGNvZGU+QWR2ZXJiPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSDjgY3jgosgaXMgYSB2ZXJiIG1lYW5pbmcgJ3RvIGN1dC4n"
   },
   {
-    "question": "What is the Dictionary form of <ruby>飲<rt>の</rt></ruby>みます?",
-    "options": [
-      {
-        "id": "a",
-        "text": "<ruby>飲<rt>の</rt></ruby>む"
-      },
-      {
-        "id": "b",
-        "text": "<ruby>飲<rt>の</rt></ruby>ま"
-      },
-      {
-        "id": "c",
-        "text": "<ruby>飲<rt>の</rt></ruby>める"
-      },
-      {
-        "id": "d",
-        "text": "<ruby>飲<rt>の</rt></ruby>る"
-      }
+    "stem": "V2hhdCBpcyB0aGUgRGljdGlvbmFyeSBmb3JtIG9mIDxydWJ5PumjsjxydD7jga48L3J0PjwvcnVieT7jgb/jgb7jgZk/",
+    "answer": "PHJ1Ynk+6aOyPHJ0PuOBrjwvcnQ+PC9ydWJ5PuOCgA==",
+    "choices": [
+      "<ruby>飲<rt>の</rt></ruby>む",
+      "<ruby>飲<rt>の</rt></ruby>ま",
+      "<ruby>飲<rt>の</rt></ruby>める",
+      "<ruby>飲<rt>の</rt></ruby>る"
     ],
-    "correct": "a",
-    "explanation": "The correct choice is <strong>「飲(の)む」</strong>. To form the dictionary form of a Group 1 verb, you change the 'i' column syllable before ます (み) to the corresponding 'u' column syllable (む).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>飲(の)ま</code> is incorrect because it is the negative stem (used in のまない), not the dictionary form.<br>• <code>飲(の)める</code> is incorrect because it is the potential form ('can drink'), not the dictionary form.<br>• <code>飲(の)る</code> is incorrect because it changes the verb root to a completely different verb (のる = to ride)."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM6aOyKOOBrinjgoDjgI08L3N0cm9uZz4uIFRvIGZvcm0gdGhlIGRpY3Rpb25hcnkgZm9ybSBvZiBhIEdyb3VwIDEgdmVyYiwgeW91IGNoYW5nZSB0aGUgJ2knIGNvbHVtbiBzeWxsYWJsZSBiZWZvcmUg44G+44GZICjjgb8pIHRvIHRoZSBjb3JyZXNwb25kaW5nICd1JyBjb2x1bW4gc3lsbGFibGUgKOOCgCkuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7po7Io44GuKeOBvjwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgaXMgdGhlIG5lZ2F0aXZlIHN0ZW0gKHVzZWQgaW4g44Gu44G+44Gq44GEKSwgbm90IHRoZSBkaWN0aW9uYXJ5IGZvcm0uPGJyPuKAoiA8Y29kZT7po7Io44GuKeOCgeOCizwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgaXMgdGhlIHBvdGVudGlhbCBmb3JtICgnY2FuIGRyaW5rJyksIG5vdCB0aGUgZGljdGlvbmFyeSBmb3JtLjxicj7igKIgPGNvZGU+6aOyKOOBrinjgos8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IGNoYW5nZXMgdGhlIHZlcmIgcm9vdCB0byBhIGNvbXBsZXRlbHkgZGlmZmVyZW50IHZlcmIgKOOBruOCiyA9IHRvIHJpZGUpLg=="
   },
   {
-    "question": "What is the Nai-form (negative) of <ruby>待<rt>ま</rt></ruby>つ?",
-    "options": [
-      {
-        "id": "a",
-        "text": "<ruby>待<rt>ま</rt></ruby>ちない"
-      },
-      {
-        "id": "b",
-        "text": "<ruby>待<rt>ま</rt></ruby>たない"
-      },
-      {
-        "id": "c",
-        "text": "<ruby>待<rt>ま</rt></ruby>てない"
-      },
-      {
-        "id": "d",
-        "text": "<ruby>待<rt>ま</rt></ruby>わない"
-      }
+    "stem": "V2hhdCBpcyB0aGUgTmFpLWZvcm0gKG5lZ2F0aXZlKSBvZiA8cnVieT7lvoU8cnQ+44G+PC9ydD48L3J1Ynk+44GkPw==",
+    "answer": "PHJ1Ynk+5b6FPHJ0PuOBvjwvcnQ+PC9ydWJ5PuOBn+OBquOBhA==",
+    "choices": [
+      "<ruby>待<rt>ま</rt></ruby>ちない",
+      "<ruby>待<rt>ま</rt></ruby>たない",
+      "<ruby>待<rt>ま</rt></ruby>てない",
+      "<ruby>待<rt>ま</rt></ruby>わない"
     ],
-    "correct": "b",
-    "explanation": "The correct choice is <strong>「待(ま)たない」</strong>. For Group 1 verbs ending in つ, the final syllable 'tsu' shifts to the 'a' column syllable 'ta' before adding ない.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>待(ま)ちない</code> is incorrect because you cannot attach ない directly to the ます-stem (まち) for Group 1 verbs.<br>• <code>待(ま)てない</code> is incorrect because it is the negative potential form ('cannot wait'), not the simple negative.<br>• <code>待(ま)わない</code> is incorrect because 'tsu' changes to 'ta', not 'wa' (which is only for verbs ending in a plain 'u' vowel like かう ➔ かわない)."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM5b6FKOOBvinjgZ/jgarjgYTjgI08L3N0cm9uZz4uIEZvciBHcm91cCAxIHZlcmJzIGVuZGluZyBpbiDjgaQsIHRoZSBmaW5hbCBzeWxsYWJsZSAndHN1JyBzaGlmdHMgdG8gdGhlICdhJyBjb2x1bW4gc3lsbGFibGUgJ3RhJyBiZWZvcmUgYWRkaW5nIOOBquOBhC48YnI+PGJyPjxzdHJvbmc+V2h5IG90aGVyIGNob2ljZXMgYXJlIGluY29ycmVjdDo8L3N0cm9uZz48YnI+4oCiIDxjb2RlPuW+hSjjgb4p44Gh44Gq44GEPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSB5b3UgY2Fubm90IGF0dGFjaCDjgarjgYQgZGlyZWN0bHkgdG8gdGhlIOOBvuOBmS1zdGVtICjjgb7jgaEpIGZvciBHcm91cCAxIHZlcmJzLjxicj7igKIgPGNvZGU+5b6FKOOBvinjgabjgarjgYQ8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IGlzIHRoZSBuZWdhdGl2ZSBwb3RlbnRpYWwgZm9ybSAoJ2Nhbm5vdCB3YWl0JyksIG5vdCB0aGUgc2ltcGxlIG5lZ2F0aXZlLjxicj7igKIgPGNvZGU+5b6FKOOBvinjgo/jgarjgYQ8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlICd0c3UnIGNoYW5nZXMgdG8gJ3RhJywgbm90ICd3YScgKHdoaWNoIGlzIG9ubHkgZm9yIHZlcmJzIGVuZGluZyBpbiBhIHBsYWluICd1JyB2b3dlbCBsaWtlIOOBi+OBhiDinpQg44GL44KP44Gq44GEKS4="
   },
   {
-    "question": "What is the Volitional form (let's do) of <ruby>遊<rt>あそ</rt></ruby>ぶ?",
-    "options": [
-      {
-        "id": "a",
-        "text": "<ruby>遊<rt>あそ</rt></ruby>ぼう"
-      },
-      {
-        "id": "b",
-        "text": "<ruby>遊<rt>あそ</rt></ruby>ばう"
-      },
-      {
-        "id": "c",
-        "text": "<ruby>遊<rt>あそ</rt></ruby>びよう"
-      },
-      {
-        "id": "d",
-        "text": "<ruby>遊<rt>あそ</rt></ruby>べよう"
-      }
+    "stem": "V2hhdCBpcyB0aGUgVm9saXRpb25hbCBmb3JtIChsZXQncyBkbykgb2YgPHJ1Ynk+6YGKPHJ0PuOBguOBnTwvcnQ+PC9ydWJ5PuOBtj8=",
+    "answer": "PHJ1Ynk+6YGKPHJ0PuOBguOBnTwvcnQ+PC9ydWJ5PuOBvOOBhg==",
+    "choices": [
+      "<ruby>遊<rt>あそ</rt></ruby>ぼう",
+      "<ruby>遊<rt>あそ</rt></ruby>ばう",
+      "<ruby>遊<rt>あそ</rt></ruby>びよう",
+      "<ruby>遊<rt>あそ</rt></ruby>べよう"
     ],
-    "correct": "a",
-    "explanation": "The correct choice is <strong>「遊(あそ)ぼう」</strong>. For Group 1 verbs, the volitional is formed by changing the final 'u' column syllable (ぶ) to the 'o' column syllable (ぼ) and adding う.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>遊(あそ)ばう</code> is incorrect because the vowel must shift to the 'o' column, not the 'a' column.<br>• <code>遊(あそ)びよう</code> is incorrect because 'よう' is only used for Group 2 verb stems (e.g. 見よう), not Group 1.<br>• <code>遊(あそ)べよう</code> is incorrect because this combines potential/imperative stems with volitional endings incorrectly."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM6YGKKOOBguOBnSnjgbzjgYbjgI08L3N0cm9uZz4uIEZvciBHcm91cCAxIHZlcmJzLCB0aGUgdm9saXRpb25hbCBpcyBmb3JtZWQgYnkgY2hhbmdpbmcgdGhlIGZpbmFsICd1JyBjb2x1bW4gc3lsbGFibGUgKOOBtikgdG8gdGhlICdvJyBjb2x1bW4gc3lsbGFibGUgKOOBvCkgYW5kIGFkZGluZyDjgYYuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7pgYoo44GC44GdKeOBsOOBhjwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgdGhlIHZvd2VsIG11c3Qgc2hpZnQgdG8gdGhlICdvJyBjb2x1bW4sIG5vdCB0aGUgJ2EnIGNvbHVtbi48YnI+4oCiIDxjb2RlPumBiijjgYLjgZ0p44Gz44KI44GGPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSAn44KI44GGJyBpcyBvbmx5IHVzZWQgZm9yIEdyb3VwIDIgdmVyYiBzdGVtcyAoZS5nLiDopovjgojjgYYpLCBub3QgR3JvdXAgMS48YnI+4oCiIDxjb2RlPumBiijjgYLjgZ0p44G544KI44GGPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSB0aGlzIGNvbWJpbmVzIHBvdGVudGlhbC9pbXBlcmF0aXZlIHN0ZW1zIHdpdGggdm9saXRpb25hbCBlbmRpbmdzIGluY29ycmVjdGx5Lg=="
   },
   {
-    "question": "What is the Potential form (can do) of <ruby>話<rt>はな</rt></ruby>す?",
-    "options": [
-      {
-        "id": "a",
-        "text": "<ruby>話<rt>はな</rt></ruby>される"
-      },
-      {
-        "id": "b",
-        "text": "<ruby>話<rt>はな</rt></ruby>せる"
-      },
-      {
-        "id": "c",
-        "text": "<ruby>話<rt>はな</rt></ruby>しる"
-      },
-      {
-        "id": "d",
-        "text": "<ruby>話<rt>はな</rt></ruby>すれる"
-      }
+    "stem": "V2hhdCBpcyB0aGUgUG90ZW50aWFsIGZvcm0gKGNhbiBkbykgb2YgPHJ1Ynk+6KmxPHJ0PuOBr+OBqjwvcnQ+PC9ydWJ5PuOBmT8=",
+    "answer": "PHJ1Ynk+6KmxPHJ0PuOBr+OBqjwvcnQ+PC9ydWJ5PuOBm+OCiw==",
+    "choices": [
+      "<ruby>話<rt>はな</rt></ruby>される",
+      "<ruby>話<rt>はな</rt></ruby>せる",
+      "<ruby>話<rt>はな</rt></ruby>しる",
+      "<ruby>話<rt>はな</rt></ruby>すれる"
     ],
-    "correct": "b",
-    "explanation": "The correct choice is <strong>「話(はな)せる」</strong>. For Group 1 verbs, the potential form is created by changing the final 'u' column syllable (す) to the 'e' column syllable (せ) and adding る.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>話(はな)される</code> is incorrect because it is the passive form ('to be spoken to'), not the potential.<br>• <code>話(はな)しる</code> is incorrect because you cannot just append 'る' to the ます-stem.<br>• <code>話(はな)すれる</code> is incorrect because you cannot append 'れる' directly to the dictionary form."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM6KmxKOOBr+OBqinjgZvjgovjgI08L3N0cm9uZz4uIEZvciBHcm91cCAxIHZlcmJzLCB0aGUgcG90ZW50aWFsIGZvcm0gaXMgY3JlYXRlZCBieSBjaGFuZ2luZyB0aGUgZmluYWwgJ3UnIGNvbHVtbiBzeWxsYWJsZSAo44GZKSB0byB0aGUgJ2UnIGNvbHVtbiBzeWxsYWJsZSAo44GbKSBhbmQgYWRkaW5nIOOCiy48YnI+PGJyPjxzdHJvbmc+V2h5IG90aGVyIGNob2ljZXMgYXJlIGluY29ycmVjdDo8L3N0cm9uZz48YnI+4oCiIDxjb2RlPuipsSjjga/jgaop44GV44KM44KLPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBpcyB0aGUgcGFzc2l2ZSBmb3JtICgndG8gYmUgc3Bva2VuIHRvJyksIG5vdCB0aGUgcG90ZW50aWFsLjxicj7igKIgPGNvZGU+6KmxKOOBr+OBqinjgZfjgos8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIHlvdSBjYW5ub3QganVzdCBhcHBlbmQgJ+OCiycgdG8gdGhlIOOBvuOBmS1zdGVtLjxicj7igKIgPGNvZGU+6KmxKOOBr+OBqinjgZnjgozjgos8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIHlvdSBjYW5ub3QgYXBwZW5kICfjgozjgosnIGRpcmVjdGx5IHRvIHRoZSBkaWN0aW9uYXJ5IGZvcm0u"
   },
   {
-    "question": "The verb ある (to exist) is irregular. Its Nai-form is simply _____.",
-    "options": [
-      {
-        "id": "a",
-        "text": "あらわない"
-      },
-      {
-        "id": "b",
-        "text": "あらない"
-      },
-      {
-        "id": "c",
-        "text": "ない"
-      },
-      {
-        "id": "d",
-        "text": "ありない"
-      }
+    "stem": "VGhlIHZlcmIg44GC44KLICh0byBleGlzdCkgaXMgaXJyZWd1bGFyLiBJdHMgTmFpLWZvcm0gaXMgc2ltcGx5IF9fX19fLg==",
+    "answer": "44Gq44GE",
+    "choices": [
+      "あらわない",
+      "あらない",
+      "ない",
+      "ありない"
     ],
-    "correct": "c",
-    "explanation": "The correct choice is <strong>「ない」</strong>. The verb ある (inanimate existence) has an irregular negative form which is simply the word <strong>ない</strong>.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>あらわない</code> is incorrect because ある does not end in a plain 'u' vowel (it ends in る) and is not a regular 'u' verb.<br>• <code>あらない</code> is incorrect because it is a grammatically non-existent form that ignores the irregular rule.<br>• <code>ありない</code> is incorrect because you cannot attach 'ない' directly to the ます-stem 'あり'."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44Gq44GE44CNPC9zdHJvbmc+LiBUaGUgdmVyYiDjgYLjgosgKGluYW5pbWF0ZSBleGlzdGVuY2UpIGhhcyBhbiBpcnJlZ3VsYXIgbmVnYXRpdmUgZm9ybSB3aGljaCBpcyBzaW1wbHkgdGhlIHdvcmQgPHN0cm9uZz7jgarjgYQ8L3N0cm9uZz4uPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jgYLjgonjgo/jgarjgYQ8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIOOBguOCiyBkb2VzIG5vdCBlbmQgaW4gYSBwbGFpbiAndScgdm93ZWwgKGl0IGVuZHMgaW4g44KLKSBhbmQgaXMgbm90IGEgcmVndWxhciAndScgdmVyYi48YnI+4oCiIDxjb2RlPuOBguOCieOBquOBhDwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgaXMgYSBncmFtbWF0aWNhbGx5IG5vbi1leGlzdGVudCBmb3JtIHRoYXQgaWdub3JlcyB0aGUgaXJyZWd1bGFyIHJ1bGUuPGJyPuKAoiA8Y29kZT7jgYLjgorjgarjgYQ8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIHlvdSBjYW5ub3QgYXR0YWNoICfjgarjgYQnIGRpcmVjdGx5IHRvIHRoZSDjgb7jgZktc3RlbSAn44GC44KKJy4="
   },
   {
-    "question": "For Group 1 Te-form, verbs ending in u, tsu, ru become _____.",
-    "options": [
-      {
-        "id": "a",
-        "text": "んで (nde)"
-      },
-      {
-        "id": "b",
-        "text": "って (tte)"
-      },
-      {
-        "id": "c",
-        "text": "いて (ite)"
-      },
-      {
-        "id": "d",
-        "text": "して (shite)"
-      }
+    "stem": "Rm9yIEdyb3VwIDEgVGUtZm9ybSwgdmVyYnMgZW5kaW5nIGluIHUsIHRzdSwgcnUgYmVjb21lIF9fX19fLg==",
+    "answer": "44Gj44GmICh0dGUp",
+    "choices": [
+      "んで (nde)",
+      "って (tte)",
+      "いて (ite)",
+      "して (shite)"
     ],
-    "correct": "b",
-    "explanation": "The correct choice is <strong>「って (tte)」</strong>. Group 1 verbs ending in う, つ, or る undergo a double consonant contraction and end in って in the Te-form (e.g. かう ➔ かって, まつ ➔ まって, とる ➔ とって).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>んで (nde)</code> is incorrect because んで is for verbs ending in む, ぶ, or ぬ (e.g. よむ ➔ よんで).<br>• <code>いて (ite)</code> is incorrect because いて is for verbs ending in く (e.g. かく ➔ かいて).<br>• <code>して (shite)</code> is incorrect because して is for verbs ending in す (e.g. はなす ➔ はなして)."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44Gj44GmICh0dGUp44CNPC9zdHJvbmc+LiBHcm91cCAxIHZlcmJzIGVuZGluZyBpbiDjgYYsIOOBpCwgb3Ig44KLIHVuZGVyZ28gYSBkb3VibGUgY29uc29uYW50IGNvbnRyYWN0aW9uIGFuZCBlbmQgaW4g44Gj44GmIGluIHRoZSBUZS1mb3JtIChlLmcuIOOBi+OBhiDinpQg44GL44Gj44GmLCDjgb7jgaQg4p6UIOOBvuOBo+OBpiwg44Go44KLIOKelCDjgajjgaPjgaYpLjxicj48YnI+PHN0cm9uZz5XaHkgb3RoZXIgY2hvaWNlcyBhcmUgaW5jb3JyZWN0Ojwvc3Ryb25nPjxicj7igKIgPGNvZGU+44KT44GnIChuZGUpPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSDjgpPjgacgaXMgZm9yIHZlcmJzIGVuZGluZyBpbiDjgoAsIOOBtiwgb3Ig44GsIChlLmcuIOOCiOOCgCDinpQg44KI44KT44GnKS48YnI+4oCiIDxjb2RlPuOBhOOBpiAoaXRlKTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2Ug44GE44GmIGlzIGZvciB2ZXJicyBlbmRpbmcgaW4g44GPIChlLmcuIOOBi+OBjyDinpQg44GL44GE44GmKS48YnI+4oCiIDxjb2RlPuOBl+OBpiAoc2hpdGUpPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSDjgZfjgaYgaXMgZm9yIHZlcmJzIGVuZGluZyBpbiDjgZkgKGUuZy4g44Gv44Gq44GZIOKelCDjga/jgarjgZfjgaYpLg=="
   },
   {
-    "question": "For Group 1 Te-form, verbs ending in mu, bu, nu become _____.",
-    "options": [
-      {
-        "id": "a",
-        "text": "んで (nde)"
-      },
-      {
-        "id": "b",
-        "text": "って (tte)"
-      },
-      {
-        "id": "c",
-        "text": "いて (ite)"
-      },
-      {
-        "id": "d",
-        "text": "いで (ide)"
-      }
+    "stem": "Rm9yIEdyb3VwIDEgVGUtZm9ybSwgdmVyYnMgZW5kaW5nIGluIG11LCBidSwgbnUgYmVjb21lIF9fX19fLg==",
+    "answer": "44KT44GnIChuZGUp",
+    "choices": [
+      "んで (nde)",
+      "って (tte)",
+      "いて (ite)",
+      "いで (ide)"
     ],
-    "correct": "a",
-    "explanation": "The correct choice is <strong>「んで (nde)」</strong>. Group 1 verbs ending in む, ぶ, or ぬ soften and end in んで in the Te-form (e.g. よむ ➔ よんで, あそぶ ➔ あそんで, しぬ ➔ しんで).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>って (tte)</code> is incorrect because って is for verbs ending in う, つ, or る.<br>• <code>いて (ite)</code> is incorrect because いて is for verbs ending in く.<br>• <code>いで (ide)</code> is incorrect because いで is for voiced ぐ verbs (e.g. およぐ ➔ およいで)."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44KT44GnIChuZGUp44CNPC9zdHJvbmc+LiBHcm91cCAxIHZlcmJzIGVuZGluZyBpbiDjgoAsIOOBtiwgb3Ig44GsIHNvZnRlbiBhbmQgZW5kIGluIOOCk+OBpyBpbiB0aGUgVGUtZm9ybSAoZS5nLiDjgojjgoAg4p6UIOOCiOOCk+OBpywg44GC44Gd44G2IOKelCDjgYLjgZ3jgpPjgacsIOOBl+OBrCDinpQg44GX44KT44GnKS48YnI+PGJyPjxzdHJvbmc+V2h5IG90aGVyIGNob2ljZXMgYXJlIGluY29ycmVjdDo8L3N0cm9uZz48YnI+4oCiIDxjb2RlPuOBo+OBpiAodHRlKTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2Ug44Gj44GmIGlzIGZvciB2ZXJicyBlbmRpbmcgaW4g44GGLCDjgaQsIG9yIOOCiy48YnI+4oCiIDxjb2RlPuOBhOOBpiAoaXRlKTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2Ug44GE44GmIGlzIGZvciB2ZXJicyBlbmRpbmcgaW4g44GPLjxicj7igKIgPGNvZGU+44GE44GnIChpZGUpPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSDjgYTjgacgaXMgZm9yIHZvaWNlZCDjgZAgdmVyYnMgKGUuZy4g44GK44KI44GQIOKelCDjgYrjgojjgYTjgacpLg=="
   },
   {
-    "question": "For Group 1 Te-form, verbs ending in ku become _____.",
-    "options": [
-      {
-        "id": "a",
-        "text": "んで (nde)"
-      },
-      {
-        "id": "b",
-        "text": "って (tte)"
-      },
-      {
-        "id": "c",
-        "text": "いて (ite)"
-      },
-      {
-        "id": "d",
-        "text": "いで (ide)"
-      }
+    "stem": "Rm9yIEdyb3VwIDEgVGUtZm9ybSwgdmVyYnMgZW5kaW5nIGluIGt1IGJlY29tZSBfX19fXy4=",
+    "answer": "44GE44GmIChpdGUp",
+    "choices": [
+      "んで (nde)",
+      "って (tte)",
+      "いて (ite)",
+      "いで (ide)"
     ],
-    "correct": "c",
-    "explanation": "The correct choice is <strong>「いて (ite)」</strong>. Group 1 verbs ending in く change the く to いて in the Te-form (e.g. かく ➔ かいて, きく ➔ きいて).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>んで (nde)</code> is incorrect because んで is for verbs ending in む, ぶ, or ぬ.<br>• <code>って (tte)</code> is incorrect because って is for verbs ending in う, つ, or る.<br>• <code>いで (ide)</code> is incorrect because いで is for voiced ぐ verbs (e.g. およぐ ➔ およいで)."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44GE44GmIChpdGUp44CNPC9zdHJvbmc+LiBHcm91cCAxIHZlcmJzIGVuZGluZyBpbiDjgY8gY2hhbmdlIHRoZSDjgY8gdG8g44GE44GmIGluIHRoZSBUZS1mb3JtIChlLmcuIOOBi+OBjyDinpQg44GL44GE44GmLCDjgY3jgY8g4p6UIOOBjeOBhOOBpikuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jgpPjgacgKG5kZSk8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIOOCk+OBpyBpcyBmb3IgdmVyYnMgZW5kaW5nIGluIOOCgCwg44G2LCBvciDjgawuPGJyPuKAoiA8Y29kZT7jgaPjgaYgKHR0ZSk8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIOOBo+OBpiBpcyBmb3IgdmVyYnMgZW5kaW5nIGluIOOBhiwg44GkLCBvciDjgosuPGJyPuKAoiA8Y29kZT7jgYTjgacgKGlkZSk8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIOOBhOOBpyBpcyBmb3Igdm9pY2VkIOOBkCB2ZXJicyAoZS5nLiDjgYrjgojjgZAg4p6UIOOBiuOCiOOBhOOBpyku"
   },
   {
-    "question": "The biggest Te-form exception is <ruby>行<rt>い</rt></ruby>く. Instead of いいて, it becomes _____.",
-    "options": [
-      {
-        "id": "a",
-        "text": "いって (itte)"
-      },
-      {
-        "id": "b",
-        "text": "いんで (inde)"
-      },
-      {
-        "id": "c",
-        "text": "いして (ishite)"
-      },
-      {
-        "id": "d",
-        "text": "いで (ide)"
-      }
+    "stem": "VGhlIGJpZ2dlc3QgVGUtZm9ybSBleGNlcHRpb24gaXMgPHJ1Ynk+6KGMPHJ0PuOBhDwvcnQ+PC9ydWJ5PuOBjy4gSW5zdGVhZCBvZiDjgYTjgYTjgaYsIGl0IGJlY29tZXMgX19fX18u",
+    "answer": "44GE44Gj44GmIChpdHRlKQ==",
+    "choices": [
+      "いって (itte)",
+      "いんで (inde)",
+      "いして (ishite)",
+      "いで (ide)"
     ],
-    "correct": "a",
-    "explanation": "The correct choice is <strong>「いって (itte)」</strong>. いく (to go) is a major exception to the 'ku ➔ いて' rule; it undergoes a double consonant contraction to become いって instead of いいて.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>いんで (inde)</code> is grammatically invalid.<br>• <code>いして (ishite)</code> is grammatically invalid.<br>• <code>いで (ide)</code> is grammatically invalid."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44GE44Gj44GmIChpdHRlKeOAjTwvc3Ryb25nPi4g44GE44GPICh0byBnbykgaXMgYSBtYWpvciBleGNlcHRpb24gdG8gdGhlICdrdSDinpQg44GE44GmJyBydWxlOyBpdCB1bmRlcmdvZXMgYSBkb3VibGUgY29uc29uYW50IGNvbnRyYWN0aW9uIHRvIGJlY29tZSDjgYTjgaPjgaYgaW5zdGVhZCBvZiDjgYTjgYTjgaYuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jgYTjgpPjgacgKGluZGUpPC9jb2RlPiBpcyBncmFtbWF0aWNhbGx5IGludmFsaWQuPGJyPuKAoiA8Y29kZT7jgYTjgZfjgaYgKGlzaGl0ZSk8L2NvZGU+IGlzIGdyYW1tYXRpY2FsbHkgaW52YWxpZC48YnI+4oCiIDxjb2RlPuOBhOOBpyAoaWRlKTwvY29kZT4gaXMgZ3JhbW1hdGljYWxseSBpbnZhbGlkLg=="
   },
   {
-    "question": "What is the Te-form of <ruby>来<rt>き</rt></ruby>ます (to come)?",
-    "options": [
-      {
-        "id": "a",
-        "text": "きって"
-      },
-      {
-        "id": "b",
-        "text": "きて"
-      },
-      {
-        "id": "c",
-        "text": "きいて"
-      },
-      {
-        "id": "d",
-        "text": "くって"
-      }
+    "stem": "V2hhdCBpcyB0aGUgVGUtZm9ybSBvZiA8cnVieT7mnaU8cnQ+44GNPC9ydD48L3J1Ynk+44G+44GZICh0byBjb21lKT8=",
+    "answer": "44GN44Gm",
+    "choices": [
+      "きって",
+      "きて",
+      "きいて",
+      "くって"
     ],
-    "correct": "b",
-    "explanation": "The correct choice is <strong>「きて」</strong>. The irregular Group 3 verb きます (dictionary form: くる) conjugates to <strong>きて</strong> in the Te-form.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>きって</code> is incorrect because it is a double consonant form that doesn't apply here.<br>• <code>きいて</code> is incorrect because it is the Te-form of ききます (to listen/ask), not きます.<br>• <code>くって</code> is grammatically invalid."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44GN44Gm44CNPC9zdHJvbmc+LiBUaGUgaXJyZWd1bGFyIEdyb3VwIDMgdmVyYiDjgY3jgb7jgZkgKGRpY3Rpb25hcnkgZm9ybTog44GP44KLKSBjb25qdWdhdGVzIHRvIDxzdHJvbmc+44GN44GmPC9zdHJvbmc+IGluIHRoZSBUZS1mb3JtLjxicj48YnI+PHN0cm9uZz5XaHkgb3RoZXIgY2hvaWNlcyBhcmUgaW5jb3JyZWN0Ojwvc3Ryb25nPjxicj7igKIgPGNvZGU+44GN44Gj44GmPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBpcyBhIGRvdWJsZSBjb25zb25hbnQgZm9ybSB0aGF0IGRvZXNuJ3QgYXBwbHkgaGVyZS48YnI+4oCiIDxjb2RlPuOBjeOBhOOBpjwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgaXMgdGhlIFRlLWZvcm0gb2Yg44GN44GN44G+44GZICh0byBsaXN0ZW4vYXNrKSwgbm90IOOBjeOBvuOBmS48YnI+4oCiIDxjb2RlPuOBj+OBo+OBpjwvY29kZT4gaXMgZ3JhbW1hdGljYWxseSBpbnZhbGlkLg=="
   },
   {
-    "question": "What is the Te-form of <ruby>泳<rt>およ</rt></ruby>ぎます (to swim)?",
-    "options": [
-      {
-        "id": "a",
-        "text": "<ruby>泳<rt>およ</rt></ruby>いて"
-      },
-      {
-        "id": "b",
-        "text": "<ruby>泳<rt>およ</rt></ruby>いで"
-      },
-      {
-        "id": "c",
-        "text": "<ruby>泳<rt>およ</rt></ruby>んで"
-      },
-      {
-        "id": "d",
-        "text": "<ruby>泳<rt>およ</rt></ruby>って"
-      }
+    "stem": "V2hhdCBpcyB0aGUgVGUtZm9ybSBvZiA8cnVieT7ms7M8cnQ+44GK44KIPC9ydD48L3J1Ynk+44GO44G+44GZICh0byBzd2ltKT8=",
+    "answer": "PHJ1Ynk+5rOzPHJ0PuOBiuOCiDwvcnQ+PC9ydWJ5PuOBhOOBpw==",
+    "choices": [
+      "<ruby>泳<rt>およ</rt></ruby>いて",
+      "<ruby>泳<rt>およ</rt></ruby>いで",
+      "<ruby>泳<rt>およ</rt></ruby>んで",
+      "<ruby>泳<rt>およ</rt></ruby>って"
     ],
-    "correct": "b",
-    "explanation": "The correct choice is <strong>「泳(およ)いで」</strong>. For Group 1 verbs ending in ぐ (dictionary: およぐ), the Te-form replaces the ぐ with a voiced <strong>いで</strong> (e.g. およぐ ➔ およいで).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>泳(およ)いて</code> is incorrect because it lacks the voicing (dakuon) required for ぐ verbs.<br>• <code>泳(およ)んで</code> is incorrect because it is for verbs ending in む, ぶ, or ぬ.<br>• <code>泳(およ)って</code> is incorrect because it is for verbs ending in う, つ, or る."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM5rOzKOOBiuOCiCnjgYTjgafjgI08L3N0cm9uZz4uIEZvciBHcm91cCAxIHZlcmJzIGVuZGluZyBpbiDjgZAgKGRpY3Rpb25hcnk6IOOBiuOCiOOBkCksIHRoZSBUZS1mb3JtIHJlcGxhY2VzIHRoZSDjgZAgd2l0aCBhIHZvaWNlZCA8c3Ryb25nPuOBhOOBpzwvc3Ryb25nPiAoZS5nLiDjgYrjgojjgZAg4p6UIOOBiuOCiOOBhOOBpykuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7ms7Mo44GK44KIKeOBhOOBpjwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgbGFja3MgdGhlIHZvaWNpbmcgKGRha3VvbikgcmVxdWlyZWQgZm9yIOOBkCB2ZXJicy48YnI+4oCiIDxjb2RlPuazsyjjgYrjgogp44KT44GnPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBpcyBmb3IgdmVyYnMgZW5kaW5nIGluIOOCgCwg44G2LCBvciDjgawuPGJyPuKAoiA8Y29kZT7ms7Mo44GK44KIKeOBo+OBpjwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgaXMgZm9yIHZlcmJzIGVuZGluZyBpbiDjgYYsIOOBpCwgb3Ig44KLLg=="
   },
   {
-    "question": "What is the Ta-form (past casual) of <ruby>死<rt>し</rt></ruby>にます (to die)?",
-    "options": [
-      {
-        "id": "a",
-        "text": "<ruby>死<rt>し</rt></ruby>った"
-      },
-      {
-        "id": "b",
-        "text": "<ruby>死<rt>し</rt></ruby>んだ"
-      },
-      {
-        "id": "c",
-        "text": "<ruby>死<rt>し</rt></ruby>いた"
-      },
-      {
-        "id": "d",
-        "text": "<ruby>死<rt>し</rt></ruby>んだた"
-      }
+    "stem": "V2hhdCBpcyB0aGUgVGEtZm9ybSAocGFzdCBjYXN1YWwpIG9mIDxydWJ5PuatuzxydD7jgZc8L3J0PjwvcnVieT7jgavjgb7jgZkgKHRvIGRpZSk/",
+    "answer": "PHJ1Ynk+5q27PHJ0PuOBlzwvcnQ+PC9ydWJ5PuOCk+OBoA==",
+    "choices": [
+      "<ruby>死<rt>し</rt></ruby>った",
+      "<ruby>死<rt>し</rt></ruby>んだ",
+      "<ruby>死<rt>し</rt></ruby>いた",
+      "<ruby>死<rt>し</rt></ruby>んだた"
     ],
-    "correct": "b",
-    "explanation": "The correct choice is <strong>「死(し)んだ」</strong>. しぬ (to die) is a Group 1 verb ending in ぬ. Verbs ending in ぬ, ぶ, む replace the last syllable with <strong>んだ</strong> in the past casual (Ta-form).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>死(し)った</code> is incorrect because it is the past form of しります (to know), not しにます.<br>• <code>死(し)いた</code> is grammatically invalid.<br>• <code>死(し)んだた</code> is incorrect because it is a redundant double past conjugation."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM5q27KOOBlynjgpPjgaDjgI08L3N0cm9uZz4uIOOBl+OBrCAodG8gZGllKSBpcyBhIEdyb3VwIDEgdmVyYiBlbmRpbmcgaW4g44GsLiBWZXJicyBlbmRpbmcgaW4g44GsLCDjgbYsIOOCgCByZXBsYWNlIHRoZSBsYXN0IHN5bGxhYmxlIHdpdGggPHN0cm9uZz7jgpPjgaA8L3N0cm9uZz4gaW4gdGhlIHBhc3QgY2FzdWFsIChUYS1mb3JtKS48YnI+PGJyPjxzdHJvbmc+V2h5IG90aGVyIGNob2ljZXMgYXJlIGluY29ycmVjdDo8L3N0cm9uZz48YnI+4oCiIDxjb2RlPuatuyjjgZcp44Gj44GfPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBpcyB0aGUgcGFzdCBmb3JtIG9mIOOBl+OCiuOBvuOBmSAodG8ga25vdyksIG5vdCDjgZfjgavjgb7jgZkuPGJyPuKAoiA8Y29kZT7mrbso44GXKeOBhOOBnzwvY29kZT4gaXMgZ3JhbW1hdGljYWxseSBpbnZhbGlkLjxicj7igKIgPGNvZGU+5q27KOOBlynjgpPjgaDjgZ88L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IGlzIGEgcmVkdW5kYW50IGRvdWJsZSBwYXN0IGNvbmp1Z2F0aW9uLg=="
   },
   {
-    "question": "What is the Ta-form of <ruby>書<rt>か</rt></ruby>きます (to write)?",
-    "options": [
-      {
-        "id": "a",
-        "text": "<ruby>書<rt>か</rt></ruby>いた"
-      },
-      {
-        "id": "b",
-        "text": "<ruby>書<rt>か</rt></ruby>った"
-      },
-      {
-        "id": "c",
-        "text": "<ruby>書<rt>か</rt></ruby>んだ"
-      },
-      {
-        "id": "d",
-        "text": "<ruby>書<rt>か</rt></ruby>いだ"
-      }
+    "stem": "V2hhdCBpcyB0aGUgVGEtZm9ybSBvZiA8cnVieT7mm7g8cnQ+44GLPC9ydD48L3J1Ynk+44GN44G+44GZICh0byB3cml0ZSk/",
+    "answer": "PHJ1Ynk+5pu4PHJ0PuOBizwvcnQ+PC9ydWJ5PuOBhOOBnw==",
+    "choices": [
+      "<ruby>書<rt>か</rt></ruby>いた",
+      "<ruby>書<rt>か</rt></ruby>った",
+      "<ruby>書<rt>か</rt></ruby>んだ",
+      "<ruby>書<rt>か</rt></ruby>いだ"
     ],
-    "correct": "a",
-    "explanation": "The correct choice is <strong>「書(か)いた」</strong>. かきます is Group 1 (ends in く). In the Ta-form, the く syllable changes to <strong>いた</strong>. かく ➔ かいた.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>書(か)った</code> is incorrect because った is the past of verbs ending in う, つ, or る.<br>• <code>書(か)んだ</code> is incorrect because it is the past form of かみます (to bite/chew).<br>• <code>書(か)いだ</code> is incorrect because it lacks the correct voicing (かく is unvoiced)."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM5pu4KOOBiynjgYTjgZ/jgI08L3N0cm9uZz4uIOOBi+OBjeOBvuOBmSBpcyBHcm91cCAxIChlbmRzIGluIOOBjykuIEluIHRoZSBUYS1mb3JtLCB0aGUg44GPIHN5bGxhYmxlIGNoYW5nZXMgdG8gPHN0cm9uZz7jgYTjgZ88L3N0cm9uZz4uIOOBi+OBjyDinpQg44GL44GE44GfLjxicj48YnI+PHN0cm9uZz5XaHkgb3RoZXIgY2hvaWNlcyBhcmUgaW5jb3JyZWN0Ojwvc3Ryb25nPjxicj7igKIgPGNvZGU+5pu4KOOBiynjgaPjgZ88L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIOOBo+OBnyBpcyB0aGUgcGFzdCBvZiB2ZXJicyBlbmRpbmcgaW4g44GGLCDjgaQsIG9yIOOCiy48YnI+4oCiIDxjb2RlPuabuCjjgYsp44KT44GgPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBpcyB0aGUgcGFzdCBmb3JtIG9mIOOBi+OBv+OBvuOBmSAodG8gYml0ZS9jaGV3KS48YnI+4oCiIDxjb2RlPuabuCjjgYsp44GE44GgPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBsYWNrcyB0aGUgY29ycmVjdCB2b2ljaW5nICjjgYvjgY8gaXMgdW52b2ljZWQpLg=="
   },
   {
-    "question": "Because <ruby>切<rt>き</rt></ruby>ります (to cut) is Group 1, its Ta-form is _____.",
-    "options": [
-      {
-        "id": "a",
-        "text": "きた"
-      },
-      {
-        "id": "b",
-        "text": "きった"
-      },
-      {
-        "id": "c",
-        "text": "きいた"
-      },
-      {
-        "id": "d",
-        "text": "きんだ"
-      }
+    "stem": "QmVjYXVzZSA8cnVieT7liIc8cnQ+44GNPC9ydD48L3J1Ynk+44KK44G+44GZICh0byBjdXQpIGlzIEdyb3VwIDEsIGl0cyBUYS1mb3JtIGlzIF9fX19fLg==",
+    "answer": "44GN44Gj44Gf",
+    "choices": [
+      "きた",
+      "きった",
+      "きいた",
+      "きんだ"
     ],
-    "correct": "b",
-    "explanation": "The correct choice is <strong>「きった」</strong>. きります (dictionary form: きる) is a Group 1 verb ending in る. Verbs ending in う, つ, る replace the last syllable with <strong>った</strong> in the Ta-form.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>きた</code> is incorrect because きた is the past casual of きます (to come) or きる (to wear), which are different verb groups.<br>• <code>きいた</code> is incorrect because it is the past casual of ききます (to listen/ask).<br>• <code>きんだ</code> is grammatically invalid."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44GN44Gj44Gf44CNPC9zdHJvbmc+LiDjgY3jgorjgb7jgZkgKGRpY3Rpb25hcnkgZm9ybTog44GN44KLKSBpcyBhIEdyb3VwIDEgdmVyYiBlbmRpbmcgaW4g44KLLiBWZXJicyBlbmRpbmcgaW4g44GGLCDjgaQsIOOCiyByZXBsYWNlIHRoZSBsYXN0IHN5bGxhYmxlIHdpdGggPHN0cm9uZz7jgaPjgZ88L3N0cm9uZz4gaW4gdGhlIFRhLWZvcm0uPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jgY3jgZ88L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIOOBjeOBnyBpcyB0aGUgcGFzdCBjYXN1YWwgb2Yg44GN44G+44GZICh0byBjb21lKSBvciDjgY3jgosgKHRvIHdlYXIpLCB3aGljaCBhcmUgZGlmZmVyZW50IHZlcmIgZ3JvdXBzLjxicj7igKIgPGNvZGU+44GN44GE44GfPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBpcyB0aGUgcGFzdCBjYXN1YWwgb2Yg44GN44GN44G+44GZICh0byBsaXN0ZW4vYXNrKS48YnI+4oCiIDxjb2RlPuOBjeOCk+OBoDwvY29kZT4gaXMgZ3JhbW1hdGljYWxseSBpbnZhbGlkLg=="
   },
   {
-    "question": "Because <ruby>着<rt>き</rt></ruby>ます (to wear) is Group 2, its Ta-form is _____.",
-    "options": [
-      {
-        "id": "a",
-        "text": "きた"
-      },
-      {
-        "id": "b",
-        "text": "きった"
-      },
-      {
-        "id": "c",
-        "text": "きいた"
-      },
-      {
-        "id": "d",
-        "text": "きんだ"
-      }
+    "stem": "QmVjYXVzZSA8cnVieT7nnYA8cnQ+44GNPC9ydD48L3J1Ynk+44G+44GZICh0byB3ZWFyKSBpcyBHcm91cCAyLCBpdHMgVGEtZm9ybSBpcyBfX19fXy4=",
+    "answer": "44GN44Gf",
+    "choices": [
+      "きた",
+      "きった",
+      "きいた",
+      "きんだ"
     ],
-    "correct": "a",
-    "explanation": "The correct choice is <strong>「きた」</strong>. きます (dictionary form: きる, to wear) is a Group 2 verb. For Group 2 verbs, simply replace ます with <strong>た</strong> to get the past tense (Ta-form).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>きった</code> is incorrect because that is the past casual of きる (to cut), which is a Group 1 verb.<br>• <code>きいた</code> is incorrect because it is the past casual of ききます (to listen/ask).<br>• <code>きんだ</code> is grammatically invalid."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM44GN44Gf44CNPC9zdHJvbmc+LiDjgY3jgb7jgZkgKGRpY3Rpb25hcnkgZm9ybTog44GN44KLLCB0byB3ZWFyKSBpcyBhIEdyb3VwIDIgdmVyYi4gRm9yIEdyb3VwIDIgdmVyYnMsIHNpbXBseSByZXBsYWNlIOOBvuOBmSB3aXRoIDxzdHJvbmc+44GfPC9zdHJvbmc+IHRvIGdldCB0aGUgcGFzdCB0ZW5zZSAoVGEtZm9ybSkuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7jgY3jgaPjgZ88L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIHRoYXQgaXMgdGhlIHBhc3QgY2FzdWFsIG9mIOOBjeOCiyAodG8gY3V0KSwgd2hpY2ggaXMgYSBHcm91cCAxIHZlcmIuPGJyPuKAoiA8Y29kZT7jgY3jgYTjgZ88L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IGlzIHRoZSBwYXN0IGNhc3VhbCBvZiDjgY3jgY3jgb7jgZkgKHRvIGxpc3Rlbi9hc2spLjxicj7igKIgPGNvZGU+44GN44KT44GgPC9jb2RlPiBpcyBncmFtbWF0aWNhbGx5IGludmFsaWQu"
   },
   {
-    "question": "Grammatically, Te-form and Ta-form share euphonic changes. If Te-form is <ruby>飲<rt>の</rt></ruby>んで, Ta-form is _____.",
-    "options": [
-      {
-        "id": "a",
-        "text": "<ruby>飲<rt>の</rt></ruby>んた"
-      },
-      {
-        "id": "b",
-        "text": "<ruby>飲<rt>の</rt></ruby>んだ"
-      },
-      {
-        "id": "c",
-        "text": "<ruby>飲<rt>の</rt></ruby>った"
-      },
-      {
-        "id": "d",
-        "text": "<ruby>飲<rt>の</rt></ruby>いだ"
-      }
+    "stem": "R3JhbW1hdGljYWxseSwgVGUtZm9ybSBhbmQgVGEtZm9ybSBzaGFyZSBldXBob25pYyBjaGFuZ2VzLiBJZiBUZS1mb3JtIGlzIDxydWJ5PumjsjxydD7jga48L3J0PjwvcnVieT7jgpPjgacsIFRhLWZvcm0gaXMgX19fX18u",
+    "answer": "PHJ1Ynk+6aOyPHJ0PuOBrjwvcnQ+PC9ydWJ5PuOCk+OBoA==",
+    "choices": [
+      "<ruby>飲<rt>の</rt></ruby>んた",
+      "<ruby>飲<rt>の</rt></ruby>んだ",
+      "<ruby>飲<rt>の</rt></ruby>った",
+      "<ruby>飲<rt>の</rt></ruby>いだ"
     ],
-    "correct": "b",
-    "explanation": "The correct choice is <strong>「飲(の)んだ」</strong>. The sound changes of the Te-form and Ta-form are identical, with 'te' changing to 'ta' and 'de' changing to 'da'. Therefore, のんで ➔ <strong>のんだ</strong>.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>飲(の)んた</code> is incorrect because it lacks the voicing (dakuon) required for the む/ぶ/ぬ ending.<br>• <code>飲(の)った</code> is incorrect because it is for verbs ending in う, つ, or る (like のる ➔ のった).<br>• <code>飲(の)いだ</code> is grammatically invalid."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM6aOyKOOBrinjgpPjgaDjgI08L3N0cm9uZz4uIFRoZSBzb3VuZCBjaGFuZ2VzIG9mIHRoZSBUZS1mb3JtIGFuZCBUYS1mb3JtIGFyZSBpZGVudGljYWwsIHdpdGggJ3RlJyBjaGFuZ2luZyB0byAndGEnIGFuZCAnZGUnIGNoYW5naW5nIHRvICdkYScuIFRoZXJlZm9yZSwg44Gu44KT44GnIOKelCA8c3Ryb25nPuOBruOCk+OBoDwvc3Ryb25nPi48YnI+PGJyPjxzdHJvbmc+V2h5IG90aGVyIGNob2ljZXMgYXJlIGluY29ycmVjdDo8L3N0cm9uZz48YnI+4oCiIDxjb2RlPumjsijjga4p44KT44GfPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBsYWNrcyB0aGUgdm9pY2luZyAoZGFrdW9uKSByZXF1aXJlZCBmb3IgdGhlIOOCgC/jgbYv44GsIGVuZGluZy48YnI+4oCiIDxjb2RlPumjsijjga4p44Gj44GfPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBpcyBmb3IgdmVyYnMgZW5kaW5nIGluIOOBhiwg44GkLCBvciDjgosgKGxpa2Ug44Gu44KLIOKelCDjga7jgaPjgZ8pLjxicj7igKIgPGNvZGU+6aOyKOOBrinjgYTjgaA8L2NvZGU+IGlzIGdyYW1tYXRpY2FsbHkgaW52YWxpZC4="
   },
   {
-    "question": "What is the Potential form of <ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>する (to study)?",
-    "options": [
-      {
-        "id": "a",
-        "text": "<ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>すれる"
-      },
-      {
-        "id": "b",
-        "text": "<ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>できる"
-      },
-      {
-        "id": "c",
-        "text": "<ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>られる"
-      },
-      {
-        "id": "d",
-        "text": "<ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>せる"
-      }
+    "stem": "V2hhdCBpcyB0aGUgUG90ZW50aWFsIGZvcm0gb2YgPHJ1Ynk+5YuJPHJ0PuOBueOCkzwvcnQ+5by3PHJ0PuOBjeOCh+OBhjwvcnQ+PC9ydWJ5PuOBmeOCiyAodG8gc3R1ZHkpPw==",
+    "answer": "PHJ1Ynk+5YuJPHJ0PuOBueOCkzwvcnQ+5by3PHJ0PuOBjeOCh+OBhjwvcnQ+PC9ydWJ5PuOBp+OBjeOCiw==",
+    "choices": [
+      "<ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>すれる",
+      "<ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>できる",
+      "<ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>られる",
+      "<ruby>勉<rt>べん</rt>強<rt>きょう</rt></ruby>せる"
     ],
-    "correct": "b",
-    "explanation": "The correct choice is <strong>「勉(べん)強(きょう)できる」</strong>. The irregular Group 3 verb する (to do) conjugates to <strong>できる</strong> for its potential form. So, べんきょうする ➔ べんきょうできる.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>勉(べん)強(きょう)すれる</code> is incorrect because it is a grammatically invalid attempt to conjugate.<br>• <code>勉(べん)強(きょう)られる</code> is incorrect because 'られる' is for Group 2 potential, not Group 3.<br>• <code>勉(べん)強(きょう)せる</code> is grammatically invalid."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM5YuJKOOBueOCkynlvLco44GN44KH44GGKeOBp+OBjeOCi+OAjTwvc3Ryb25nPi4gVGhlIGlycmVndWxhciBHcm91cCAzIHZlcmIg44GZ44KLICh0byBkbykgY29uanVnYXRlcyB0byA8c3Ryb25nPuOBp+OBjeOCizwvc3Ryb25nPiBmb3IgaXRzIHBvdGVudGlhbCBmb3JtLiBTbywg44G544KT44GN44KH44GG44GZ44KLIOKelCDjgbnjgpPjgY3jgofjgYbjgafjgY3jgosuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7li4ko44G544KTKeW8tyjjgY3jgofjgYYp44GZ44KM44KLPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBpcyBhIGdyYW1tYXRpY2FsbHkgaW52YWxpZCBhdHRlbXB0IHRvIGNvbmp1Z2F0ZS48YnI+4oCiIDxjb2RlPuWLiSjjgbnjgpMp5by3KOOBjeOCh+OBhinjgonjgozjgos8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlICfjgonjgozjgosnIGlzIGZvciBHcm91cCAyIHBvdGVudGlhbCwgbm90IEdyb3VwIDMuPGJyPuKAoiA8Y29kZT7li4ko44G544KTKeW8tyjjgY3jgofjgYYp44Gb44KLPC9jb2RlPiBpcyBncmFtbWF0aWNhbGx5IGludmFsaWQu"
   },
   {
-    "question": "What is the Volitional form of <ruby>見<rt>み</rt></ruby>る?",
-    "options": [
-      {
-        "id": "a",
-        "text": "<ruby>見<rt>み</rt></ruby>よう"
-      },
-      {
-        "id": "b",
-        "text": "<ruby>見<rt>み</rt></ruby>ろう"
-      },
-      {
-        "id": "c",
-        "text": "<ruby>見<rt>み</rt></ruby>おう"
-      },
-      {
-        "id": "d",
-        "text": "<ruby>見<rt>み</rt></ruby>まよう"
-      }
+    "stem": "V2hhdCBpcyB0aGUgVm9saXRpb25hbCBmb3JtIG9mIDxydWJ5PuimizxydD7jgb88L3J0PjwvcnVieT7jgos/",
+    "answer": "PHJ1Ynk+6KaLPHJ0PuOBvzwvcnQ+PC9ydWJ5PuOCiOOBhg==",
+    "choices": [
+      "<ruby>見<rt>み</rt></ruby>よう",
+      "<ruby>見<rt>み</rt></ruby>ろう",
+      "<ruby>見<rt>み</rt></ruby>おう",
+      "<ruby>見<rt>み</rt></ruby>まよう"
     ],
-    "correct": "a",
-    "explanation": "The correct choice is <strong>「見(み)よう」</strong>. For Group 2 verbs, replace the final 'ru' with 'you' to form the volitional form: みる ➔ <strong>みよう</strong>.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>見(み)ろう</code> is grammatically invalid.<br>• <code>見(み)おう</code> is a conjugation mistake.<br>• <code>見(み)まよう</code> is incorrect because it combines the polite stem with volitional incorrectly."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM6KaLKOOBvynjgojjgYbjgI08L3N0cm9uZz4uIEZvciBHcm91cCAyIHZlcmJzLCByZXBsYWNlIHRoZSBmaW5hbCAncnUnIHdpdGggJ3lvdScgdG8gZm9ybSB0aGUgdm9saXRpb25hbCBmb3JtOiDjgb/jgosg4p6UIDxzdHJvbmc+44G/44KI44GGPC9zdHJvbmc+Ljxicj48YnI+PHN0cm9uZz5XaHkgb3RoZXIgY2hvaWNlcyBhcmUgaW5jb3JyZWN0Ojwvc3Ryb25nPjxicj7igKIgPGNvZGU+6KaLKOOBvynjgo3jgYY8L2NvZGU+IGlzIGdyYW1tYXRpY2FsbHkgaW52YWxpZC48YnI+4oCiIDxjb2RlPuimiyjjgb8p44GK44GGPC9jb2RlPiBpcyBhIGNvbmp1Z2F0aW9uIG1pc3Rha2UuPGJyPuKAoiA8Y29kZT7oposo44G/KeOBvuOCiOOBhjwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgY29tYmluZXMgdGhlIHBvbGl0ZSBzdGVtIHdpdGggdm9saXRpb25hbCBpbmNvcnJlY3RseS4="
   },
   {
-    "question": "What is the Dictionary form of <ruby>急<rt>いそ</rt></ruby>ぎます?",
-    "options": [
-      {
-        "id": "a",
-        "text": "<ruby>急<rt>いそ</rt></ruby>く"
-      },
-      {
-        "id": "b",
-        "text": "<ruby>急<rt>いそ</rt></ruby>ぐ"
-      },
-      {
-        "id": "c",
-        "text": "<ruby>急<rt>いそ</rt></ruby>む"
-      },
-      {
-        "id": "d",
-        "text": "<ruby>急<rt>いそ</rt></ruby>る"
-      }
+    "stem": "V2hhdCBpcyB0aGUgRGljdGlvbmFyeSBmb3JtIG9mIDxydWJ5PuaApTxydD7jgYTjgZ08L3J0PjwvcnVieT7jgY7jgb7jgZk/",
+    "answer": "PHJ1Ynk+5oClPHJ0PuOBhOOBnTwvcnQ+PC9ydWJ5PuOBkA==",
+    "choices": [
+      "<ruby>急<rt>いそ</rt></ruby>く",
+      "<ruby>急<rt>いそ</rt></ruby>ぐ",
+      "<ruby>急<rt>いそ</rt></ruby>む",
+      "<ruby>急<rt>いそ</rt></ruby>る"
     ],
-    "correct": "b",
-    "explanation": "The correct choice is <strong>「急(いそ)ぐ」</strong>. いそぎます is a Group 1 verb. Change the 'gi' sound before ます to the 'gu' sound in the dictionary form: いそぎ ➔ <strong>いそぐ</strong>.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>急(いそ)く</code> is incorrect because it is unvoiced (should be ぐ).<br>• <code>急(いそ)む</code> is incorrect because it uses a completely different ending syllable.<br>• <code>急(いそ)る</code> is incorrect because it uses a completely different ending syllable."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM5oClKOOBhOOBnSnjgZDjgI08L3N0cm9uZz4uIOOBhOOBneOBjuOBvuOBmSBpcyBhIEdyb3VwIDEgdmVyYi4gQ2hhbmdlIHRoZSAnZ2knIHNvdW5kIGJlZm9yZSDjgb7jgZkgdG8gdGhlICdndScgc291bmQgaW4gdGhlIGRpY3Rpb25hcnkgZm9ybTog44GE44Gd44GOIOKelCA8c3Ryb25nPuOBhOOBneOBkDwvc3Ryb25nPi48YnI+PGJyPjxzdHJvbmc+V2h5IG90aGVyIGNob2ljZXMgYXJlIGluY29ycmVjdDo8L3N0cm9uZz48YnI+4oCiIDxjb2RlPuaApSjjgYTjgZ0p44GPPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCBpcyB1bnZvaWNlZCAoc2hvdWxkIGJlIOOBkCkuPGJyPuKAoiA8Y29kZT7mgKUo44GE44GdKeOCgDwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgaXQgdXNlcyBhIGNvbXBsZXRlbHkgZGlmZmVyZW50IGVuZGluZyBzeWxsYWJsZS48YnI+4oCiIDxjb2RlPuaApSjjgYTjgZ0p44KLPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSBpdCB1c2VzIGEgY29tcGxldGVseSBkaWZmZXJlbnQgZW5kaW5nIHN5bGxhYmxlLg=="
   },
   {
-    "question": "What is the Dictionary form of <ruby>持<rt>も</rt></ruby>っていきます?",
-    "options": [
-      {
-        "id": "a",
-        "text": "<ruby>持<rt>も</rt></ruby>っていく"
-      },
-      {
-        "id": "b",
-        "text": "<ruby>持<rt>も</rt></ruby>ってう"
-      },
-      {
-        "id": "c",
-        "text": "<ruby>持<rt>も</rt></ruby>っている"
-      },
-      {
-        "id": "d",
-        "text": "<ruby>持<rt>も</rt></ruby>ってある"
-      }
+    "stem": "V2hhdCBpcyB0aGUgRGljdGlvbmFyeSBmb3JtIG9mIDxydWJ5PuaMgTxydD7jgoI8L3J0PjwvcnVieT7jgaPjgabjgYTjgY3jgb7jgZk/",
+    "answer": "PHJ1Ynk+5oyBPHJ0PuOCgjwvcnQ+PC9ydWJ5PuOBo+OBpuOBhOOBjw==",
+    "choices": [
+      "<ruby>持<rt>も</rt></ruby>っていく",
+      "<ruby>持<rt>も</rt></ruby>ってう",
+      "<ruby>持<rt>も</rt></ruby>っている",
+      "<ruby>持<rt>も</rt></ruby>ってある"
     ],
-    "correct": "a",
-    "explanation": "The correct choice is <strong>「持(も)っていく」</strong>. もっていきます ends with いきます. Its dictionary form is いく. So, もっていきます ➔ <strong>もっていく</strong>.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>持(も)ってう</code> is grammatically invalid.<br>• <code>持(も)っている</code> is incorrect because it is the present continuous form ('is carrying'), not the dictionary form.<br>• <code>持(も)ってある</code> is incorrect because it is the state form ('is kept carrying'), not the dictionary form."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM5oyBKOOCginjgaPjgabjgYTjgY/jgI08L3N0cm9uZz4uIOOCguOBo+OBpuOBhOOBjeOBvuOBmSBlbmRzIHdpdGgg44GE44GN44G+44GZLiBJdHMgZGljdGlvbmFyeSBmb3JtIGlzIOOBhOOBjy4gU28sIOOCguOBo+OBpuOBhOOBjeOBvuOBmSDinpQgPHN0cm9uZz7jgoLjgaPjgabjgYTjgY88L3N0cm9uZz4uPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT7mjIEo44KCKeOBo+OBpuOBhjwvY29kZT4gaXMgZ3JhbW1hdGljYWxseSBpbnZhbGlkLjxicj7igKIgPGNvZGU+5oyBKOOCginjgaPjgabjgYTjgos8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IGlzIHRoZSBwcmVzZW50IGNvbnRpbnVvdXMgZm9ybSAoJ2lzIGNhcnJ5aW5nJyksIG5vdCB0aGUgZGljdGlvbmFyeSBmb3JtLjxicj7igKIgPGNvZGU+5oyBKOOCginjgaPjgabjgYLjgos8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IGlzIHRoZSBzdGF0ZSBmb3JtICgnaXMga2VwdCBjYXJyeWluZycpLCBub3QgdGhlIGRpY3Rpb25hcnkgZm9ybS4="
   },
   {
-    "question": "Which form is also known as the Conjunctive Form or Gerund?",
-    "options": [
-      {
-        "id": "a",
-        "text": "Te-form (て<ruby>形<rt>けい</rt></ruby>)"
-      },
-      {
-        "id": "b",
-        "text": "Ta-form (た<ruby>形<rt>けい</rt></ruby>)"
-      },
-      {
-        "id": "c",
-        "text": "Nai-form (ない<ruby>形<rt>けい</rt></ruby>)"
-      },
-      {
-        "id": "d",
-        "text": "Dictionary form (<ruby>辞<rt>じ</rt>書<rt>しょ</rt>形<rt>けい</rt></ruby>)"
-      }
+    "stem": "V2hpY2ggZm9ybSBpcyBhbHNvIGtub3duIGFzIHRoZSBDb25qdW5jdGl2ZSBGb3JtIG9yIEdlcnVuZD8=",
+    "answer": "VGUtZm9ybSAo44GmPHJ1Ynk+5b2iPHJ0PuOBkeOBhDwvcnQ+PC9ydWJ5Pik=",
+    "choices": [
+      "Te-form (て<ruby>形<rt>けい</rt></ruby>)",
+      "Ta-form (た<ruby>形<rt>けい</rt></ruby>)",
+      "Nai-form (ない<ruby>形<rt>けい</rt></ruby>)",
+      "Dictionary form (<ruby>辞<rt>じ</rt>書<rt>しょ</rt>形<rt>けい</rt></ruby>)"
     ],
-    "correct": "a",
-    "explanation": "The correct choice is <strong>「Te-form (て形)」</strong>. The Te-form (て形) functions as a gerund or a conjunctive form used to connect clauses and show sequential actions.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>Ta-form</code> is incorrect because the た-form is the past casual tense, not a gerund.<br>• <code>Nai-form</code> is incorrect because the ない-form is the negative form, not a gerund.<br>• <code>Dictionary form</code> is incorrect because the dictionary form is the non-past plain form."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CMVGUtZm9ybSAo44Gm5b2iKeOAjTwvc3Ryb25nPi4gVGhlIFRlLWZvcm0gKOOBpuW9oikgZnVuY3Rpb25zIGFzIGEgZ2VydW5kIG9yIGEgY29uanVuY3RpdmUgZm9ybSB1c2VkIHRvIGNvbm5lY3QgY2xhdXNlcyBhbmQgc2hvdyBzZXF1ZW50aWFsIGFjdGlvbnMuPGJyPjxicj48c3Ryb25nPldoeSBvdGhlciBjaG9pY2VzIGFyZSBpbmNvcnJlY3Q6PC9zdHJvbmc+PGJyPuKAoiA8Y29kZT5UYS1mb3JtPC9jb2RlPiBpcyBpbmNvcnJlY3QgYmVjYXVzZSB0aGUg44GfLWZvcm0gaXMgdGhlIHBhc3QgY2FzdWFsIHRlbnNlLCBub3QgYSBnZXJ1bmQuPGJyPuKAoiA8Y29kZT5OYWktZm9ybTwvY29kZT4gaXMgaW5jb3JyZWN0IGJlY2F1c2UgdGhlIOOBquOBhC1mb3JtIGlzIHRoZSBuZWdhdGl2ZSBmb3JtLCBub3QgYSBnZXJ1bmQuPGJyPuKAoiA8Y29kZT5EaWN0aW9uYXJ5IGZvcm08L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIHRoZSBkaWN0aW9uYXJ5IGZvcm0gaXMgdGhlIG5vbi1wYXN0IHBsYWluIGZvcm0u"
   },
   {
-    "question": "Group 1 verbs are called Godan because the stem changes across _____ vowel sounds.",
-    "options": [
-      {
-        "id": "a",
-        "text": "Three"
-      },
-      {
-        "id": "b",
-        "text": "Four"
-      },
-      {
-        "id": "c",
-        "text": "Five"
-      },
-      {
-        "id": "d",
-        "text": "Six"
-      }
+    "stem": "R3JvdXAgMSB2ZXJicyBhcmUgY2FsbGVkIEdvZGFuIGJlY2F1c2UgdGhlIHN0ZW0gY2hhbmdlcyBhY3Jvc3MgX19fX18gdm93ZWwgc291bmRzLg==",
+    "answer": "Rml2ZQ==",
+    "choices": [
+      "Three",
+      "Four",
+      "Five",
+      "Six"
     ],
-    "correct": "c",
-    "explanation": "The correct choice is <strong>「Five」</strong>. Godan (五段) literally translates to 'five rows', representing the 5 vowel columns (A, I, U, E, O) across which Group 1 verb stems conjugate.<br><br><strong>Why other choices are incorrect:</strong><br>• <code>Three</code> is incorrect.<br>• <code>Four</code> is incorrect.<br>• <code>Six</code> is incorrect because the Japanese kana system only has five vowel sounds."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CMRml2ZeOAjTwvc3Ryb25nPi4gR29kYW4gKOS6lOautSkgbGl0ZXJhbGx5IHRyYW5zbGF0ZXMgdG8gJ2ZpdmUgcm93cycsIHJlcHJlc2VudGluZyB0aGUgNSB2b3dlbCBjb2x1bW5zIChBLCBJLCBVLCBFLCBPKSBhY3Jvc3Mgd2hpY2ggR3JvdXAgMSB2ZXJiIHN0ZW1zIGNvbmp1Z2F0ZS48YnI+PGJyPjxzdHJvbmc+V2h5IG90aGVyIGNob2ljZXMgYXJlIGluY29ycmVjdDo8L3N0cm9uZz48YnI+4oCiIDxjb2RlPlRocmVlPC9jb2RlPiBpcyBpbmNvcnJlY3QuPGJyPuKAoiA8Y29kZT5Gb3VyPC9jb2RlPiBpcyBpbmNvcnJlY3QuPGJyPuKAoiA8Y29kZT5TaXg8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIHRoZSBKYXBhbmVzZSBrYW5hIHN5c3RlbSBvbmx5IGhhcyBmaXZlIHZvd2VsIHNvdW5kcy4="
   },
   {
-    "question": "What is the Potential form of <ruby>買<rt>か</rt></ruby>います?",
-    "options": [
-      {
-        "id": "a",
-        "text": "<ruby>買<rt>か</rt></ruby>われる"
-      },
-      {
-        "id": "b",
-        "text": "<ruby>買<rt>か</rt></ruby>える"
-      },
-      {
-        "id": "c",
-        "text": "<ruby>買<rt>か</rt></ruby>いれる"
-      },
-      {
-        "id": "d",
-        "text": "<ruby>買<rt>か</rt></ruby>やれる"
-      }
+    "stem": "V2hhdCBpcyB0aGUgUG90ZW50aWFsIGZvcm0gb2YgPHJ1Ynk+6LK3PHJ0PuOBizwvcnQ+PC9ydWJ5PuOBhOOBvuOBmT8=",
+    "answer": "PHJ1Ynk+6LK3PHJ0PuOBizwvcnQ+PC9ydWJ5PuOBiOOCiw==",
+    "choices": [
+      "<ruby>買<rt>か</rt></ruby>われる",
+      "<ruby>買<rt>か</rt></ruby>える",
+      "<ruby>買<rt>か</rt></ruby>いれる",
+      "<ruby>買<rt>か</rt></ruby>やれる"
     ],
-    "correct": "b",
-    "explanation": "The correct choice is <strong>「買(か)える」</strong>. For Group 1 verbs, change the final vowel from the 'u' column to the 'e' column and append る. かう (ka-u) ➔ <strong>かえる</strong> (ka-eru).<br><br><strong>Why other choices are incorrect:</strong><br>• <code>買(か)われる</code> is incorrect because it is the passive form ('to be bought'), not the potential.<br>• <code>買(か)いれる</code> is grammatically invalid.<br>• <code>買(か)やれる</code> is grammatically invalid."
+    "explain": "VGhlIGNvcnJlY3QgY2hvaWNlIGlzIDxzdHJvbmc+44CM6LK3KOOBiynjgYjjgovjgI08L3N0cm9uZz4uIEZvciBHcm91cCAxIHZlcmJzLCBjaGFuZ2UgdGhlIGZpbmFsIHZvd2VsIGZyb20gdGhlICd1JyBjb2x1bW4gdG8gdGhlICdlJyBjb2x1bW4gYW5kIGFwcGVuZCDjgosuIOOBi+OBhiAoa2EtdSkg4p6UIDxzdHJvbmc+44GL44GI44KLPC9zdHJvbmc+IChrYS1lcnUpLjxicj48YnI+PHN0cm9uZz5XaHkgb3RoZXIgY2hvaWNlcyBhcmUgaW5jb3JyZWN0Ojwvc3Ryb25nPjxicj7igKIgPGNvZGU+6LK3KOOBiynjgo/jgozjgos8L2NvZGU+IGlzIGluY29ycmVjdCBiZWNhdXNlIGl0IGlzIHRoZSBwYXNzaXZlIGZvcm0gKCd0byBiZSBib3VnaHQnKSwgbm90IHRoZSBwb3RlbnRpYWwuPGJyPuKAoiA8Y29kZT7osrco44GLKeOBhOOCjOOCizwvY29kZT4gaXMgZ3JhbW1hdGljYWxseSBpbnZhbGlkLjxicj7igKIgPGNvZGU+6LK3KOOBiynjgoTjgozjgos8L2NvZGU+IGlzIGdyYW1tYXRpY2FsbHkgaW52YWxpZC4="
   }
-];
-
-/* ── State ── */
-let playerName = "";
-let answers = {};
-let currentQ = 0;
-let submitted = false;
-
-/* ── Initialize EmailJS (Optional) ── */
-// emailjs.init("YOUR_PUBLIC_KEY");
-
-/* ── DOM refs ── */
-const $nameScreen = document.getElementById("name-screen");
-const $quizScreen = document.getElementById("quiz-screen");
-const $nameInput  = document.getElementById("name-input");
-const $btnStart   = document.getElementById("btn-start");
-const $subtitle   = document.getElementById("quiz-subtitle");
-const $scoreBanner= document.getElementById("score-banner");
-const $scoreNum   = document.getElementById("score-number");
-const $scoreLbl   = document.getElementById("score-label");
-const $emailRow     = document.getElementById("email-row");
-const $btnRetake    = document.getElementById("btn-retake");
-const $btnReview    = document.getElementById("btn-review");
-const $reviewBanner = document.getElementById("review-banner");
-const $progText     = document.getElementById("progress-text");
-const $progFill     = document.getElementById("progress-fill");
-const $navGrid      = document.getElementById("nav-grid");
-const $qCard        = document.getElementById("q-card");
-const $qNumber      = document.getElementById("q-number");
-const $qText        = document.getElementById("q-text");
-const $choicesGrid  = document.getElementById("choices-grid");
-const $feedbackCard = document.getElementById("feedback-card");
-const $skippedWarning = document.getElementById("skipped-warning");
-const $timerDisplay = document.getElementById("timer-display");
-let reviewMode = false;
-let reviewIndices = [];
-let endTime = null;
-let timeLeft = 0;
-let timerInterval = null;
-const $btnPrev      = document.getElementById("btn-prev");
-const $btnNext      = document.getElementById("btn-next");
-const $btnSubmit    = document.getElementById("btn-submit");
-
-/* ── Name Screen ── */
-$nameInput.addEventListener("input", () => {
-  $btnStart.disabled = !$nameInput.value.trim();
-});
-$nameInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && $nameInput.value.trim()) startQuiz();
-});
-$btnStart.addEventListener("click", startQuiz);
-
-function shuffleQuestions() {
-  for (let i = QUESTIONS.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [QUESTIONS[i], QUESTIONS[j]] = [QUESTIONS[j], QUESTIONS[i]];
-  }
-}
-
-function startTimer() {
-  const qCount = QUESTIONS.length;
-  let TIME_LIMIT;
-  if (qCount <= 30) {
-    TIME_LIMIT = 20 * 60;
-  } else if (qCount <= 40) {
-    TIME_LIMIT = 25 * 60;
-  } else if (qCount <= 50) {
-    TIME_LIMIT = 30 * 60;
-  } else {
-    TIME_LIMIT = 40 * 60;
-  }
-
-  endTime = Date.now() + TIME_LIMIT * 1000;
-  timeLeft = TIME_LIMIT;
-  updateTimerDisplay();
-  if (timerInterval) clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    if (submitted) {
-      clearInterval(timerInterval);
-      return;
-    }
-    timeLeft = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
-    updateTimerDisplay();
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      alert("Time is up! Your exam will be submitted automatically.");
-      submitQuiz(true);
-    }
-  }, 1000);
-}
-
-function updateTimerDisplay() {
-  const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-  const s = String(timeLeft % 60).padStart(2, '0');
-  if ($timerDisplay) {
-    $timerDisplay.textContent = `${m}:${s}`;
-    if (timeLeft < 300) {
-      $timerDisplay.parentElement.classList.add("warning");
-    } else {
-      $timerDisplay.parentElement.classList.remove("warning");
-    }
-  }
-}
-
-function startQuiz() {
-  playerName = $nameInput.value.trim();
-  answers = {};
-  currentQ = 0;
-  submitted = false;
-  reviewMode = false;
-  reviewIndices = [];
-
-  shuffleQuestions();
-
-  $nameScreen.style.display = "none";
-  $quizScreen.style.display = "block";
-  $scoreBanner.style.display = "none";
-  $reviewBanner.style.display = "none";
-  $subtitle.textContent = `${playerName}さん — Conjugate the verbs`;
-
-  buildNavGrid();
-  startTimer();
-  renderQuestion();
-  updateProgress();
-}
-
-/* ── Nav Grid ── */
-function buildNavGrid() {
-  $navGrid.innerHTML = "";
-  QUESTIONS.forEach((_, i) => {
-    const btn = document.createElement("button");
-    btn.className = "nav-dot";
-    btn.textContent = i + 1;
-    btn.addEventListener("click", () => {
-      if (reviewMode) {
-        const idx = reviewIndices.indexOf(i);
-        if (idx === -1) return;
-        currentQ = idx;
-      } else {
-        currentQ = i;
-      }
-      renderQuestion();
-    });
-    $navGrid.appendChild(btn);
-  });
-}
-
-function updateNavGrid() {
-  const dots = $navGrid.querySelectorAll(".nav-dot");
-  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
-
-  if (submitted) {
-    $navGrid.classList.remove("hidden");
-  } else {
-    $navGrid.classList.add("hidden");
-  }
-
-  dots.forEach((dot, i) => {
-    dot.className = "nav-dot";
-    
-    if (submitted) {
-      dot.classList.add("locked");
-      if (answers[i] === QUESTIONS[i].correct) dot.classList.add("correct");
-      else if (answers[i]) dot.classList.add("wrong");
-      else dot.classList.add("unanswered-locked");
-    } else {
-      if (answers[i]) dot.classList.add("answered");
-    }
-
-    if (i === realIdx) dot.classList.add("active");
-  });
-}
-
-function updateProgress() {
-  if (reviewMode) {
-    $progText.textContent = `Reviewing ${currentQ + 1} / ${reviewIndices.length}`;
-    $progFill.style.width = `${((currentQ + 1) / reviewIndices.length) * 100}%`;
-    return;
-  }
-  const count = Object.keys(answers).length;
-  $progText.textContent = `${count} / ${QUESTIONS.length} answered`;
-  $progFill.style.width = `${(count / QUESTIONS.length) * 100}%`;
-  $btnSubmit.disabled = false;
-}
-
-/* ── Render Question ── */
-function renderQuestion() {
-  const realIdx = reviewMode ? reviewIndices[currentQ] : currentQ;
-  const q = QUESTIONS[realIdx];
-  $qNumber.textContent = reviewMode
-    ? `Review ${currentQ + 1} of ${reviewIndices.length}`
-    : `Question ${realIdx + 1} of ${QUESTIONS.length}`;
-  $qText.innerHTML = q.question;
-
-  $choicesGrid.innerHTML = "";
-  const isAnswered = answers[realIdx] !== undefined;
-
-  q.options.forEach(opt => {
-    const btn = document.createElement("button");
-    btn.className = "choice-btn";
-    if (submitted) btn.classList.add("locked");
-    
-    btn.innerHTML = `<span class="choice-letter">${opt.id}.</span><span>${opt.text}</span>`;
-
-    const selected = answers[realIdx] === opt.id;
-    const isCorrectChoice = opt.id === q.correct;
-
-    if (!submitted) {
-      if (selected) btn.classList.add("selected");
-      btn.addEventListener("click", () => {
-        if (submitted) return;
-        answers[realIdx] = opt.id;
-        renderQuestion();
-        updateProgress();
-      });
-    } else {
-      if (isCorrectChoice) {
-        btn.classList.add("correct-reveal");
-        btn.innerHTML += `<span class="mark ok">✓</span>`;
-      } else if (selected && !isCorrectChoice) {
-        btn.classList.add("wrong-reveal");
-        btn.innerHTML += `<span class="mark no">✗</span>`;
-      } else {
-        btn.classList.add("faded-reveal");
-      }
-    }
-
-    $choicesGrid.appendChild(btn);
-  });
-
-  /* Feedback Card */
-  if (submitted && isAnswered) {
-    renderFeedback(q, answers[realIdx]);
-  } else {
-    $feedbackCard.style.display = "none";
-    $feedbackCard.innerHTML = "";
-  }
-
-  // Hide skipped questions warning when navigating to a question
-  $skippedWarning.classList.add("hidden");
-
-  updateNavGrid();
-  updateNavButtons();
-}
-
-function renderFeedback(q, given) {
-  const isCorrect = given === q.correct;
-  $feedbackCard.className = `feedback-card ${isCorrect ? "correct" : "wrong"}`;
-  $feedbackCard.style.display = "block";
-
-  let html = `<div class="fb-header">${isCorrect ? "✓ Correct" : `✗ Not quite — answer: ${q.correct}`}</div>`;
-  if (q.correctNote) html += `<div>${q.correctNote}</div>`;
-  if (q.explanation) html += `<div class="fb-block">${q.explanation}</div>`;
-  if (q.connect)     html += `<div class="fb-block connect">${q.connect}</div>`;
-  if (q.warn)        html += `<div class="fb-block warn">${q.warn}</div>`;
-
-  $feedbackCard.innerHTML = html;
-}
-
-function updateNavButtons() {
-  const total = reviewMode ? reviewIndices.length : QUESTIONS.length;
-  $btnPrev.disabled = currentQ === 0;
-
-  if (!submitted) {
-    const isLast = currentQ === QUESTIONS.length - 1;
-    if (isLast) {
-      $btnNext.classList.add("hidden");
-      $btnSubmit.classList.remove("hidden");
-    } else {
-      $btnNext.classList.remove("hidden");
-      $btnSubmit.classList.add("hidden");
-      $btnNext.textContent = "Next →";
-    }
-  } else {
-    $btnSubmit.classList.add("hidden");
-    $btnNext.classList.remove("hidden");
-    
-    if (reviewMode) {
-      if (currentQ === total - 1) {
-        $btnNext.textContent = "Done reviewing ✓";
-      } else {
-        $btnNext.textContent = "Next →";
-      }
-      $btnNext.disabled = false;
-    } else {
-      $btnNext.textContent = "Next →";
-      $btnNext.disabled = currentQ === total - 1;
-    }
-  }
-}
-
-/* ── Navigation ── */
-$btnPrev.addEventListener("click", () => {
-  if (currentQ > 0) { currentQ--; renderQuestion(); }
-});
-$btnNext.addEventListener("click", () => {
-  const total = reviewMode ? reviewIndices.length : QUESTIONS.length;
-  if (currentQ < total - 1) {
-    currentQ++; renderQuestion();
-  } else if (reviewMode) {
-    reviewMode = false;
-    $reviewBanner.style.display = "none";
-    $scoreBanner.style.display = "block";
-    $scoreBanner.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-});
-
-/* ── Submit ── */
-$btnSubmit.addEventListener("click", submitQuiz);
-
-async function submitQuiz(force = false) {
-  const count = Object.keys(answers).length;
-  if (force !== true && count < QUESTIONS.length) {
-    const skipped = [];
-    QUESTIONS.forEach((_, i) => {
-      if (!answers[i]) skipped.push(i);
-    });
-
-    $skippedWarning.innerHTML = `⚠️ You have unanswered questions: ` + 
-      skipped.map(idx => `<span class="skipped-link" onclick="jumpToQuestion(${idx})">Question ${idx + 1}</span>`).join(", ") + 
-      `. Please answer them before submitting.`;
-    $skippedWarning.classList.remove("hidden");
-    return;
-  }
-
-  $skippedWarning.classList.add("hidden");
-  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-
-  let s = 0;
-  QUESTIONS.forEach((q, i) => { if (answers[i] === q.correct) s++; });
-  submitted = true;
-
-  const pct = Math.round((s / QUESTIONS.length) * 100);
-  $scoreNum.textContent = `${s}/${QUESTIONS.length}`;
-
-  if (s >= 25) {
-    $scoreLbl.textContent = "完璧！ Perfect!";
-    $scoreBanner.style.background = "#e8f5e9";
-    $scoreBanner.style.borderColor = "#2e7d32";
-    $scoreBanner.style.color = "#1b5e20";
-  } else if (s >= 15) {
-    $scoreLbl.textContent = "いいですね！ Good job!";
-    $scoreBanner.style.background = "#fff9c4";
-    $scoreBanner.style.borderColor = "#fbc02d";
-    $scoreBanner.style.color = "#f57f17";
-  } else {
-    $scoreLbl.textContent = "もう一度！ Try again!";
-    $scoreBanner.style.background = "#ffebee";
-    $scoreBanner.style.borderColor = "#c62828";
-    $scoreBanner.style.color = "#b71c1c";
-  }
-  
-  $scoreBanner.style.display = "block";
-
-  currentQ = 0;
-  renderQuestion();
-  updateNavGrid();
-
-  /* Hide submit, show next */
-  $btnSubmit.classList.add("hidden");
-  $btnNext.classList.remove("hidden");
-  $btnNext.disabled = false;
-
-  // Show review button if there are wrong answers
-  const wrongCount = QUESTIONS.length - s;
-  $btnReview.disabled = wrongCount === 0;
-  $btnReview.textContent = wrongCount === 0
-    ? "🎉 No mistakes!"
-    : `📝 Review ${wrongCount} wrong answer${wrongCount > 1 ? 's' : ''}`;
-
-  /* ══════════════════════════════════════════════════
-     EMAILJS TEMPLATE SETUP (Fallback mode simulated)
-     ══════════════════════════════════════════════════ */
-  const EMAILJS_PUBLIC_KEY  = "YOUR_PUBLIC_KEY"; // Replace to enable
-  const EMAILJS_SERVICE_ID  = "YOUR_SERVICE_ID";
-  const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
-
-  const now = new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", dateStyle: "full", timeStyle: "short" });
-  
-  if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
-    // Simulated sequence for demo
-    $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
-    setTimeout(() => {
-      $emailRow.innerHTML = `<span class="email-pill sent">✓ Results saved & simulated email sent!</span>`;
-    }, 1500);
-  } else {
-    $emailRow.innerHTML = `<span class="email-pill">📧 Sending results…</span>`;
-    try {
-      const emailParams = {
-        name: playerName,
-        subject: `[${playerName}] Verb Conjugation Quiz — ${pct}%`,
-        message: `Verb Conjugation Quiz Results\nScore: ${s}/${QUESTIONS.length} (${pct}%)\nTime: ${now}`,
-      };
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailParams, EMAILJS_PUBLIC_KEY);
-      $emailRow.innerHTML = `<span class="email-pill sent">✓ Results emailed!</span>`;
-    } catch (err) {
-      console.error("EmailJS error:", err);
-      $emailRow.innerHTML = `<span class="email-pill error">✗ ${err?.text || err?.message || 'Email failed'}</span>`;
-    }
-  }
-}
-
-/* ── Review & Retake ── */
-$btnReview.addEventListener("click", () => {
-  reviewIndices = QUESTIONS
-    .map((q, i) => ({ i, wrong: answers[i] !== q.correct }))
-    .filter(x => x.wrong)
-    .map(x => x.i);
-  if (reviewIndices.length === 0) return;
-  reviewMode = true;
-  currentQ = 0;
-  $scoreBanner.style.display = "none";
-  $reviewBanner.style.display = "block";
-  renderQuestion();
-});
-
-$btnRetake.addEventListener("click", () => {
-  answers = {};
-  currentQ = 0;
-  submitted = false;
-  reviewMode = false;
-  reviewIndices = [];
-  $scoreBanner.style.display = "none";
-  $reviewBanner.style.display = "none";
-  
-  shuffleQuestions();
-
-  buildNavGrid();
-  startTimer();
-  renderQuestion();
-  updateProgress();
-});
-
-window.jumpToQuestion = function(idx) {
-  currentQ = idx;
-  renderQuestion();
+]
 };
-
-
 </script>
+<script src="../assets/js/quiz-common.js"></script>
 </body>
 </html>
